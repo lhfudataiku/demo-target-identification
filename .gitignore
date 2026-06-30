@@ -1,0 +1,5 @@
+.DS_Store
+
+# Source data — large and/or license-restricted (UMLS, DisGeNET, etc.).
+# Staged locally / uploaded to DSS, never committed.
+data/
