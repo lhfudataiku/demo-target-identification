@@ -215,7 +215,7 @@ Instance `design.solutions.dataiku-dss.io` (DSS 14.7). Code env `primekg_kg`
 |---|---|---|
 | `compute_gene_names.py` | `gene_names` | 44,382 genes |
 | `compute_mondo.py` | `mondo_terms` / `mondo_parents` / `mondo_references` | 30,172 / 43,912 / 142,797 |
-| `compute_gene_disease.py` | `gene_disease` (Open Targets 26.06, score≥`ot_score_min`=0.3) | 77,971 |
+| `compute_gene_disease.py` | `gene_disease` (Open Targets genetic_association datatype ≥0.3) | ~89,201 |
 | `compute_ppi.py` | `protein_protein` (Menche, folder `raw_files`) | 141,296 |
 | `compute_reactome.py` | `reactome_terms` / `reactome_relations` / `reactome_ncbi` | 2,870 / 2,886 / 48,659 |
 
@@ -273,7 +273,7 @@ comparable. "Current" = our conformant build as of the drug-layer milestone.
 | disease–phenotype (pos) | 300,634 | 0 | HPO — not built |
 | biological process–protein | 289,610 | 0 | gene2go — not built |
 | cellular component–protein | 166,804 | 0 | gene2go — not built |
-| disease–protein | 160,822 | 149,012 | **OT (score≥0.3) vs DisGeNET — comparable** |
+| disease–protein | 160,822 | 173,442 | **OT genetic_association datatype ≥0.3 (~89k pairs) — DisGeNET-curated analog, comparable** |
 | molecular function–protein | 139,060 | 0 | gene2go — not built |
 | drug–phenotype | 129,568 | 0 | SIDER — not built |
 | biological process–biological process | 105,772 | 0 | GO — not built |

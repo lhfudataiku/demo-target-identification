@@ -122,13 +122,17 @@ UBERON+Bgee anatomy (heavy), CTD exposure, SIDER drug_effect.
 ### Open Targets — gene–disease + drug layer (release 26.06, no credentials)
 Parquet at `https://ftp.ebi.ac.uk/pub/databases/opentargets/platform/26.06/output/`.
 - **gene–disease** → `disease_protein` / "associated with":
-  `association_overall_direct` (`targetId` ENSG, `diseaseId` EFO/MONDO,
-  `associationScore`; **threshold** on score) → ground ENSG→Entrez/symbol (`target` +
-  `gene_names`) and EFO→MONDO (`disease.dbXRefs`, else strip `MONDO_`). Bypasses UMLS.
-  **`associationScore` is a computed harmonic-sum heuristic (0–1) over ~20 evidence
-  types incl. literature text-mining — OT states it is NOT a confidence score. It is a
-  prioritization/predicted association, not a curated fact** (unlike PrimeKG's DisGeNET
-  curated gene–disease). We keep it only as a threshold; the edge is "associated with".
+  **`association_by_datatype_direct` filtered to `aggregationValue=="genetic_association"`**
+  (the DisGeNET-curated analog — expert genetic/clinical evidence: GWAS Catalog, ClinVar,
+  Genomics England, Gene2Phenotype, UniProt, Orphanet, ClinGen; **excludes** the
+  `literature` text-mining and `animal_model` datatypes). `targetId` ENSG, `diseaseId`
+  EFO/MONDO, `associationScore` (per-datatype harmonic sum, threshold `ot_score_min`=0.3)
+  → ground ENSG→Entrez/symbol (`target` + `gene_names`) and EFO→MONDO. Bypasses UMLS.
+  After grounding to MONDO+Entrez, ~89k edges (non-disease GWAS traits drop out) —
+  comparable in scale to DisGeNET curated (~82k). Note: score is still a computed
+  prioritization heuristic (not a confidence/curated value), kept only as a threshold.
+  Tradeoff vs the old `association_overall_direct`: higher precision (no text-mining), so
+  some genes with mainly literature evidence lose edges (e.g. TNF 34→1).
 - **drug nodes**: `drug_molecule` (`id` ChEMBL, `name`, `crossReferences`→**DrugBank
   ID**). node_id = DrugBank ID; ChEMBL drugs w/o DrugBank xref drop.
 - **drug→target** → `drug_protein` (display = action type): `drug_mechanism_of_action`
