@@ -133,6 +133,17 @@ Parquet at `https://ftp.ebi.ac.uk/pub/databases/opentargets/platform/26.06/outpu
   prioritization heuristic (not a confidence/curated value), kept only as a threshold.
   Tradeoff vs the old `association_overall_direct`: higher precision (no text-mining), so
   some genes with mainly literature evidence lose edges (e.g. TNF 34→1).
+  - **Optional expansion (not enabled) — broaden coverage for inflammation targets.**
+    `genetic_association` alone is sparse for inflammatory genes whose disease links are
+    largely functional/literature-based (TNF, IL6, IL1B — persona #1). To broaden without
+    reverting to the noisy text-mined `overall` score, include additional *curated-ish*
+    datatypes: change the extract filter from `== "genetic_association"` to
+    `isin(["genetic_association", "somatic_mutation", "known_drug"])` in
+    `extract_ot_assoc.py`. `somatic_mutation` (Cancer Gene Census, IntOGen, ClinVar
+    somatic) and `known_drug` (ChEMBL clinical precedent) still exclude Europe PMC
+    text-mining and IMPC animal models. Keep `ot_score_min` as the threshold. Decision:
+    left at genetic-only for max precision; revisit if the inflammation persona needs
+    denser gene–disease edges.
 - **drug nodes**: `drug_molecule` (`id` ChEMBL, `name`, `crossReferences`→**DrugBank
   ID**). node_id = DrugBank ID; ChEMBL drugs w/o DrugBank xref drop.
 - **drug→target** → `drug_protein` (display = action type): `drug_mechanism_of_action`
