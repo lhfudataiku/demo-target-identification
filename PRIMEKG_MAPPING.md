@@ -125,13 +125,22 @@ Parquet at `https://ftp.ebi.ac.uk/pub/databases/opentargets/platform/26.06/outpu
   `association_overall_direct` (`targetId` ENSG, `diseaseId` EFO/MONDO,
   `associationScore`; **threshold** on score) → ground ENSG→Entrez/symbol (`target` +
   `gene_names`) and EFO→MONDO (`disease.dbXRefs`, else strip `MONDO_`). Bypasses UMLS.
+  **`associationScore` is a computed harmonic-sum heuristic (0–1) over ~20 evidence
+  types incl. literature text-mining — OT states it is NOT a confidence score. It is a
+  prioritization/predicted association, not a curated fact** (unlike PrimeKG's DisGeNET
+  curated gene–disease). We keep it only as a threshold; the edge is "associated with".
 - **drug nodes**: `drug_molecule` (`id` ChEMBL, `name`, `crossReferences`→**DrugBank
   ID**). node_id = DrugBank ID; ChEMBL drugs w/o DrugBank xref drop.
 - **drug→target** → `drug_protein` (display = action type): `drug_mechanism_of_action`
   (`chemblIds[]` × `targets[]` ENSG + `actionType`) → Entrez via `gene_names`.
-- **drug→disease** → `indication`: `clinical_indication` (`drugId` ChEMBL, `diseaseId`
-  EFO/MONDO, `maxClinicalStage`) → MONDO as above.
-- Caveats: nested arrays (explode); `associationScore` (not `score`); snake_case dirs.
+- **drug→disease** → **split by `maxClinicalStage`** (⚠ correction): `clinical_indication`
+  has NO score, only `maxClinicalStage`, and **aggregates all development stages** — only
+  ~13% are `APPROVAL`; ~87% are in-trial (Phase I–III), preclinical, or unknown. We must
+  NOT label all as "indication". Mapping: `APPROVAL`/`PREAPPROVAL` → relation `indication`
+  (~4.7k pairs); all other stages → relation `drug_investigated_for` (hypothesis-level,
+  ~35k pairs) with `maxClinicalStage` in `display_relation`. Disease EFO→MONDO as above.
+- Caveats: nested arrays (explode); `associationScore` (not `score`); snake_case dirs;
+  keep `maxClinicalStage` — do NOT flatten indications to one relation.
 
 ### PPI — Menche interactome
 `DataS1_interactome.tsv` (Menche 2015): `gene_ID_1, gene_ID_2, data_source(s)`, ~141k

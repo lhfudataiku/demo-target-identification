@@ -191,9 +191,17 @@ Gene-Disease, Pathways, Drugs, Assembly). Rebuilt result: 50,491 nodes / 699,440
 (drug→ENSG targets+actionType), `clinical_indication` (drug→EFO/MONDO+phase) → parsed
 `drug_target` (7,959) + `drug_indication` (40,044). Folded into `compute_kg`:
 - 5,282 **drug** nodes (`node_source='DrugBank'`, DrugBank-ID keyed).
-- `drug_protein` edges 15,918 (`display_relation`=action type); `indication` 78,078.
-- Graph now 50,476 nodes / 697,758 edges. No DDI (DrugBank-only); no contraindication/
-  off-label (DrugCentral-only) — see PRIMEKG_MAPPING §7.
+- `drug_protein` edges 15,918 (`display_relation`=action type).
+- **drug–disease split by `maxClinicalStage`** (correction — `clinical_indication`
+  aggregates all trial stages, only ~13% approved): `indication` (approved, 9,418) vs
+  `drug_investigated_for` (in-trial/hypothesis, 69,682; stage in `display_relation`).
+- Graph 50,491 nodes / 700,462 edges. No DDI (DrugBank-only); no contraindication/
+  off-label (DrugCentral-only) — see PRIMEKG_MAPPING §5/§7.
+
+> **Note on OT semantics:** the `score` lives only on gene–disease
+> (`association_overall_direct`) and is a **computed prioritization heuristic**, not a
+> confidence/curated fact (OT: "should not be interpreted as a confidence score"). The
+> drug–disease `clinical_indication` dataset has **no score** — only `maxClinicalStage`.
 
 **Not yet in conformant build** (remaining task 10): HPO phenotype + HP↔MONDO
 reclassification, GO/gene2go (protein–GO), UBERON/Bgee anatomy, CTD exposure, SIDER
@@ -277,7 +285,8 @@ comparable. "Current" = our conformant build as of the drug-layer milestone.
 | phenotype–phenotype | 37,472 | 0 | HPO — not built |
 | anatomy–anatomy | 28,064 | 0 | UBERON — not built |
 | molecular function–molecular function | 27,148 | 0 | GO — not built |
-| drug–disease (indication) | 18,776 | 78,078 | **higher: OT indications broader than DrugCentral** |
+| drug–disease (indication, approved) | 18,776 | 9,418 | OT `clinical_indication` filtered to APPROVAL/PREAPPROVAL |
+| drug–disease (investigational) | — | 69,682 | `drug_investigated_for` — OT in-trial stages (PrimeKG has no equivalent) |
 | cellular component–cellular component | 9,690 | 0 | GO — not built |
 | phenotype–protein | 6,660 | 0 | DisGeNET phenotype — not built |
 | drug–disease (off-label) | 5,136 | 0 | DrugCentral-only — not in OT |

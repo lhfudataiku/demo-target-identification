@@ -86,10 +86,14 @@ dis = read_ot("disease", columns=["id", "dbXRefs"])
 dis["mondo_id"] = dis.apply(to_mondo_int_row, axis=1)
 efo2mondo = dict(zip(dis.id, dis.mondo_id))
 
-ind = read_ot("clinical_indication", columns=["drugId", "diseaseId"])
+# Keep maxClinicalStage: approved indications vs investigational (in-trial) links are
+# distinct edge types downstream — must not be conflated as one "indication".
+ind = read_ot("clinical_indication", columns=["drugId", "diseaseId", "maxClinicalStage"])
 ind["drugbank_id"] = ind["drugId"].map(chembl2db)
 ind["mondo_id"] = ind["diseaseId"].map(efo2mondo)
-raw_di = ind.dropna(subset=["drugbank_id", "mondo_id"])[["drugbank_id", "mondo_id"]].drop_duplicates()
+raw_di = (ind.dropna(subset=["drugbank_id", "mondo_id"])
+          .rename(columns={"maxClinicalStage": "max_stage"})
+          [["drugbank_id", "mondo_id", "max_stage"]].drop_duplicates())
 
 dataiku.Dataset("drug_vocab").write_with_schema(drug_vocab)
 dataiku.Dataset("raw_drug_protein").write_with_schema(raw_dp)

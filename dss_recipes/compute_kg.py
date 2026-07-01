@@ -9,7 +9,7 @@ import pandas as pd
 
 EDGE_DATASETS = ["ppi_edges", "mondo_edges", "gene_disease_edges",
                  "reactome_gp_edges", "reactome_pp_edges",
-                 "drug_protein_edges", "drug_indication_edges"]
+                 "drug_protein_edges", "drug_disease_edges"]
 EDGE_COLS = ["x_id", "x_type", "x_source", "y_id", "y_type", "y_source",
              "relation", "display_relation"]
 
