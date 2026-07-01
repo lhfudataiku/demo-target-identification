@@ -1,162 +1,178 @@
-# PrimeKG Scripts → Our Build: Reuse/Modify Strategy & Schema Conformance
+# PrimeKG → Our Build: Source Mapping, Schema & ETL Strategy
 
-Goal: faithfully recreate PrimeKG's *scientific* pipeline (highlight #1) under our
-constraints (Open Targets instead of DisGeNET, DrugBank dropped, DrugCentral via API,
-UMLS 2024AB on hand). Two principles:
+> **Companion to [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md).** That doc is the *project*
+> view (why / who / scope / build status / reference comparison §7d). This is the
+> *engineering* view: how each source is extracted, grounded, and harmonized to
+> PrimeKG's schema, and how the flow is organized.
 
-1. **Reuse PrimeKG's harmonization/disambiguation logic verbatim** where it carries
-   scientific meaning (entity resolution, grounding, grouping). Port the code; adapt
-   only I/O.
-2. **Conform to PrimeKG's exact node/edge schema** so the output is comparable to the
-   published `kg.csv`.
+## 0. Approach — two principles
 
-This is the blueprint that supersedes the simplified core-slice schema in §7b of
-PROJECT_CONTEXT.md (which must be refactored — see "Gaps in current build").
-
----
+1. **PrimeKG's `processing_scripts/` + `build_graph.ipynb` are the REFERENCE, not code
+   to port verbatim.** Because we replace **both DrugBank and DisGeNET with Open
+   Targets**, and pull sources over HTTP/parquet/API rather than PrimeKG's on-disk
+   layout, the original scripts don't run as-is. Instead, per source we use a **hybrid**:
+   - a **Python recipe** *extracts* + does high-level transform (fetch URL / parquet /
+     OBO / REST API → a flat `raw_<source>` table) — the part visual recipes can't do;
+   - **visual recipes** (Prepare + Join) *harmonize* `raw_<source>` to the 12-column
+     PrimeKG edge schema (rename/cast/filter, ground via Join to vocab, add relation
+     constants).
+   - Each source gets its **own flow zone** with a **metadata description**.
+2. **Conform to PrimeKG's exact node/edge schema** so output is comparable to the
+   published `kg.csv` (counts tracked in [PROJECT_CONTEXT §7d](PROJECT_CONTEXT.md)).
 
 ## 1. Target schema (PrimeKG-exact)
 
-**`nodes.csv`:** `node_index, node_id, node_type, node_name, node_source`
-- `node_index` = 0..N-1 positional index over the **deduplicated union of all edge
-  endpoints** (nodes are *emergent* from edges — a node with no surviving edge does
-  not exist).
-- **Node identity is the 4-tuple `(node_id, node_type, node_name, node_source)`** — not
-  `node_id` alone. Same id under two sources/names = two nodes.
-- `node_id` = source-native id: Entrez (gene), **bare MONDO integer** e.g. `0005148`
-  (disease), HPO/GO/UBERON/Reactome/CTD id. Grouped diseases → underscore-joined ids.
-- `node_source` ∈ `NCBI | MONDO | MONDO_grouped | HPO | GO | REACTOME | UBERON | CTD | DrugCentral*`
-  (*PrimeKG uses `DrugBank`; we substitute — see §4).
+**`nodes`:** `node_index, node_id, node_type, node_name, node_source`
+- `node_index` = 0..N-1 over the **deduplicated union of edge endpoints** (nodes are
+  *emergent* from edges — no surviving edge ⇒ no node).
+- **Node identity = the 4-tuple** `(node_id, node_type, node_name, node_source)`.
+- `node_id` = source-native id: Entrez (gene), **bare-integer MONDO** e.g. `2816`
+  (disease; grouped = underscore-joined), HPO/GO/UBERON/Reactome/CTD id, **DrugBank ID**
+  (drug). 
+- `node_source` ∈ `NCBI | MONDO | MONDO_grouped | HPO | GO | REACTOME | UBERON | CTD | DrugBank`.
 
-**`kg.csv`:** `relation, display_relation, x_index, x_id, x_type, x_name, x_source,
-y_index, y_id, y_type, y_name, y_source`. **`edges.csv`** = slim
+**`kg`:** `relation, display_relation, x_index, x_id, x_type, x_name, x_source,
+y_index, y_id, y_type, y_name, y_source`. **`edges`** = slim
 `relation, display_relation, x_index, y_index`.
 
-## 2. The two load-bearing primitives — REUSE VERBATIM
+## 2. The disease coordinate system: MONDO vs UMLS
 
-- **`clean_edges(df)`** — coerce to the 10 `x_*/y_*/relation/display_relation` cols,
-  `.dropna()` (**this is the silent grounding-drop**: a failed crosswalk merge leaves
-  NaN → row discarded), `.drop_duplicates()`, drop self-loops. Applied to every edge df.
-- **Reverse-all-edges** — PrimeKG makes the graph **undirected by duplicating every
-  edge** with x/y swapped (relation strings unchanged, so relation names are
-  direction-agnostic). *This settles the earlier directionality question: PrimeKG
-  reverses ALL relations, not just symmetric ones.* Our current `directed`-flag idea is
-  dropped in favor of PrimeKG's convention.
-- **Canonical vocab anchors** (loaded once, used for grounding): `gene_names`
-  (Entrez→symbol), `umls_mondo` (UMLS↔MONDO), `mondo_terms` (id→name), `mondo_references`
-  (MONDO↔ext ontology), `hp_references` (HPO↔ext).
+Different roles — one is a node vocabulary, the other a translation table.
 
-## 3. Per-component mapping (reuse / modify / drop)
+**MONDO — the disease coordinate system.** Every disease node *is* a MONDO term. Provides:
+1. **disease nodes** (id → name); 2. **disease hierarchy** (`is_a` → `disease_disease`
+parent-child edges); 3. **a cross-reference hub** (`mondo_references`: MONDO ↔ MESH /
+OMIM / Orphanet / HP / DOID / UMLS …) — the mechanism that pulls other sources' diseases
+onto MONDO.
 
-| PrimeKG component | What it does (scientific?) | Our decision |
-|---|---|---|
-| `mondo_obo_parser.py` + `mondo.py` | parse MONDO.obo → terms/parents/refs/subsets/defs | **Port verbatim** (replaces my obonet `compute_mondo`); add `is_obsolete/replacement_id`, `subsets`, `definitions`. Use **bare-integer** MONDO ids. |
-| `hpo_obo_parser.py` + `hpo.py` + `hpoa.py` | HPO terms/parents/refs + disease–phenotype ± | **Port verbatim** (phenotype layer). |
-| `go.py`, `ncbigene.py` | GO terms/relations + protein–GO | **Port verbatim.** |
-| `reactome.py` | pathway terms/relations + NCBI→pathway | **Port** (replaces my `compute_reactome`; logic ~identical). |
-| `uberon.py`, `bgee.py` | anatomy + anatomy–gene (gene grounded by **symbol**) | **Port verbatim.** |
-| `ctd.py` | exposure + exposure–disease/protein/GO | **Port verbatim.** |
-| `sider.py` | drug–side-effect (ATC→DrugBank) | **Modify** — drug grounding changes (no DrugBank, see §4); or defer (low value w/o drug layer). |
-| `umls.py` + `map_umls_mondo.py` | MRCONSO → `umls.csv`; UMLS↔MONDO crosswalk | **Already ported** (`compute_umls*`); used by DrugCentral grounding. |
-| HGNC download (`gene_names`) | gene identity (Entrez↔symbol) | **Keep** my `compute_gene_names` (matches PrimeKG's vocab role). |
-| `drugbank_*` (drug_protein, drug_drug) | DrugBank drug layer | **DROP** (no `drug_drug`; drug→target substituted, §4). |
-| `disgenet.py` (in build_graph cells 14/21) | gene–disease + gene–phenotype, UMLS→MONDO grounding | **Replace with Open Targets** (§4). |
-| DrugCentral cell 12 | drug–disease (CAS→DrugBank, UMLS→MONDO) | **Modify** for API + struct_id drug id (§4). |
-| **`build_graph.ipynb` harmonization** | `clean_edges`, HP↔MONDO reclassify, reverse-all, giant-component, **disease grouping** | **Port the deterministic parts verbatim**; handle BERT pass specially (§5). |
+**UMLS — a bridge, not a node type.** No "UMLS nodes" exist. UMLS is used only to
+translate diseases that a source identifies by **UMLS CUI** into MONDO. In original
+PrimeKG two sources spoke UMLS: **DisGeNET** (gene–disease) and **DrugCentral**
+(drug–disease). The `umls_mondo` crosswalk is purely that CUI→MONDO translator.
 
-## 4. Substitution grounding specs (must hit the SAME node space)
+**Why UMLS is PARKED for us.** We replaced both UMLS-speaking sources with **Open
+Targets**, which codes diseases in **EFO/MONDO natively** → nothing left to translate,
+so `compute_umls*` (and the 430 MB MRCONSO) have no consumer. It stays parked even as we
+extend: the pending layers ground through **MONDO's own xrefs**, not UMLS — HPO
+`phenotype.hpoa` (OMIM/ORPHA/DECIPHER → `mondo_references`) and CTD (MESH →
+`mondo_references`). UMLS returns only if we add DrugCentral contraindication/off-label
+or another UMLS-only source. **Decision: retire from the active flow (recipes kept in
+repo).**
 
-**Open Targets gene–disease** (replaces DisGeNET disease rows → `disease_protein` /
-`associated with`):
-- `x_id` = **Entrez** (need ENSG→Entrez; we map ENSG→approvedSymbol→Entrez via
-  `gene_names`), `x_type='gene/protein'`, `x_source='NCBI'`, `x_name`=HGNC symbol.
-- `y_id` = **bare MONDO integer** (strip `MONDO_`/`MONDO:` prefix from OT id),
-  `y_type='disease'`, `y_source='MONDO'`, `y_name`=`mondo_terms` name.
-- OT is already MONDO → **skip the UMLS crosswalk** for this edge.
-- *Refactor of current `compute_gene_disease`: re-emit in the 12-col edge schema with
-  bare-integer MONDO + `disease_protein`/`associated with`.*
+## 3. Reusable harmonization logic (reproduce as reference, not port)
 
-**Drug node-id authority (DrugBank dropped):** standardize drug nodes on **DrugCentral
-`struct_id`** → `node_source='DrugCentral'`, `node_id=struct_id`, `node_name=DRUG_NAME`.
-Both drug edges share this key → consistent drug identity:
-- **drug→target** (from `drug.target.interaction.tsv`): `x`=drug(struct_id),
-  `y`=gene grounded via `GENE`/`ACCESSION`→Entrez (`gene_names`); `relation='drug_protein'`,
-  `display_relation`=`ACTION_TYPE`/target class. Filter `ORGANISM=='Homo sapiens'`.
-- **drug→disease** (DrugCentral API): `x`=drug(struct_id); `y`=`umls_cui`→MONDO via
-  `umls_mondo` → bare-integer MONDO; `relation`=`relationship_name`
-  (indication/contraindication/off-label use) into both relation+display.
-- *Deviation from PrimeKG (DrugBank-keyed drugs) — documented & internally consistent.*
+The scientific value in `build_graph.ipynb` — reproduce this behavior in the assembly
+zone (visual where possible, Python where not):
+- **`clean_edges`** — coerce to 12 cols, `dropna` (**grounding-drop**: failed crosswalk
+  ⇒ row discarded), `drop_duplicates`, drop self-loops. Visual = Distinct + Filter, or a
+  shared Python util.
+- **Reverse-all edges** — undirected by duplicating every edge x↔y (relation strings
+  unchanged). PrimeKG reverses *all* relations.
+- **Vocab anchors** for grounding joins: `gene_names` (Entrez↔symbol), `mondo_terms`
+  (id→name), `mondo_references` (MONDO↔ext ontology). (`umls_mondo` parked — see §2.)
+- **HP↔MONDO reclassification** (when HPO added): terms that are both HPO phenotype and
+  MONDO disease resolve to the MONDO node; phe/prot edges reclassify to `disease_*`.
+- **Giant-component filter** — keep the largest connected component. Not expressible
+  visually → Python/networkx (or the `graph-analytics` plugin).
+- **Disease grouping** — apply PrimeKG's **published** map (`disease_group_map` ←
+  Dataverse datafile 6180623): disease MONDO nodes in a group get the underscore-joined
+  `node_id` + group name + `node_source='MONDO_grouped'`. Deterministic; no BERT needed.
 
-## 5. Disambiguation steps to preserve (the "scientific work")
+## 4. Per-source ETL design (hybrid + zones) — BUILT
 
-1. **`clean_edges` grounding-drop** — keep (it enforces that every edge is fully
-   grounded to canonical ids).
-2. **HP↔MONDO reclassification** (build_graph cells 28–32) — terms that are both HPO
-   phenotypes and MONDO diseases are resolved to the MONDO node; phe-phe/prot-phe edges
-   get reclassified to disease_* accordingly; negative disease-phenotype dropped.
-   **Reuse verbatim** when the phenotype layer is added.
-3. **HPOA ontology-consistency filter** — keep.
-4. **Giant-component filter** (cell 73) — keep only the largest connected component.
-   **Recommend keep** (fidelity; drops orphans). Optional for POC.
-5. **Disease grouping** (cells 79–90) — merges multiple MONDO ids into one node:
-   - **Pass A — name-suffix grouping** (`same_words`, roman/numeric suffix, chromosomal
-     exclusions): **deterministic → port verbatim.**
-   - **Pass B — Bio_ClinicalBERT @0.98 cosine + interactive `input()` confirmation**:
-     **not headless-reproducible.** Options: (a) skip Pass B (keep Pass A only) for the
-     POC; (b) make it non-interactive (auto-accept ≥0.98 with the existing blocklist);
-     (c) persist a curated group map and apply deterministically. **Recommend (a) now,
-     (b) later** — and surface the count of groups affected so the deviation is explicit.
-6. **Second reverse+dedup pass** after grouping — keep.
+Each source is its own flow **zone**: `extract` (Python, native ids) → `harmonize`
+(visual Prepare, +visual Join for OT). Per-source edges are **8-col, name-free**
+(`x_id, y_id, x_type, y_type, x_source, y_source, relation, display_relation`, all
+string); names resolved once at the assembly.
 
-## 6. Gaps in current core-slice build (to refactor)
+**Zones & recipes:**
+- **Genes (HGNC):** `compute_gene_names` → `gene_names` (vocab).
+- **Diseases (MONDO):** `extract_mondo` → `mondo_terms`(vocab)/`raw_disease_disease`;
+  `harmonize_disease_disease` → `mondo_edges`.
+- **PPI (Menche):** `extract_ppi` → `raw_ppi`; `harmonize_ppi` → `ppi_edges`.
+- **Open Targets (ref):** `extract_ot_assoc`→`raw_ot_assoc`; `extract_ot_maps`→
+  `ot_target_map`/`ot_disease_map` (shared by Gene-Disease + Drugs).
+- **Gene-Disease (OT):** `join_gd_maps` (star: assoc⋈target⋈disease) → `join_gd_genes`
+  (⋈gene_names) → `harmonize_gene_disease` → `gene_disease_edges`.
+- **Pathways (Reactome):** `extract_reactome` → `reactome_terms`(vocab)/`raw_pathway_*`;
+  `harmonize_pathway_protein`/`_pathway` → `reactome_gp_edges`/`reactome_pp_edges`.
+- **Drugs (OT):** `extract_drug_ot` → `drug_vocab`/`raw_drug_*`; `join_dp_target`→
+  `join_dp_genes`→`harmonize_drug_protein`→`drug_protein_edges`; `harmonize_drug_indication`
+  →`drug_indication_edges`.
+- **Assembly:** `compute_disease_group_map`→`disease_group_map`; `compute_kg` (Python)
+  stacks *_edges → clean → reverse-all → attach names → grouping → giant component →
+  `node_index` → `primekg`/`primekg_nodes`/`primekg_edges`.
 
-My verified core slice works but is **non-conformant**; to align:
-- Node id: composite `gene:7105` / `disease:MONDO:x` → **native ids** (`7105`,
-  bare-integer MONDO) + `node_type/node_source/node_index`, 4-tuple identity.
-- Edge schema: `source,target,relation` → full `relation, display_relation, x_*, y_*`.
-- Relations: my labels (`gene_associated_with_disease`, `gene_in_pathway`, …) →
-  PrimeKG vocab (`disease_protein`/`associated with`, `pathway_protein`/`interacts with`,
-  `disease_disease`/`parent-child`, `protein_protein`/`ppi`, …).
-- Reverse **all** edges (not the symmetric-only idea).
-- Adopt `clean_edges` + giant-component + disease-grouping Pass A.
-- MONDO id format → bare integer (strip curie); reconcile Open Targets `MONDO_` ids.
+**Build gotchas:** (a) after harmonize, `set-schema` all-string then build **without**
+`--auto-update-schema` (DSS re-infers numeric ids as bigint → breaks the stack).
+(b) DSS multi-input Join is a **star** (all inputs join to input 0) — chained lookups
+(ENSG→symbol→Entrez) need two sequential joins. (c) delete a stale output dataset before
+recreating its recipe (create silently no-ops otherwise).
 
-## 7. Resolved decisions
+**Built & conformant (7 relations):** Genes(HGNC vocab), Diseases(MONDO)→disease_disease,
+PPI(Menche)→protein_protein, Gene-Disease(OT)→disease_protein, Pathways(Reactome)→
+pathway_protein+pathway_pathway, Drugs(OT)→drug_protein+indication, Assembly→primekg.
 
-- **Drug node-id authority = DrugBank ID** (matches PrimeKG). Obtained credential-free
-  from **DrugCentral's `/identifier` API** (`id_type=DRUGBANK_ID`: struct_id→DrugBank ID,
-  4,368 drugs, e.g. struct_id 5391→DB12893). No DrugBank download. Drug nodes:
-  `node_id`=DrugBank ID, `node_source`='DrugBank', `node_name`=drug name. struct_ids with
-  no DrugBank mapping drop out (matches PrimeKG's CAS→DrugBank behavior).
-- **Disease grouping = reuse PrimeKG's published map.** Download
-  `kg_grouped_diseases_bert_map.tab` (Harvard Dataverse datafile **6180623**, doi
-  10.7910/DVN/IXA7BM) and apply deterministically — gives PrimeKG's exact BERT-grouped
-  diseases (`node_source='MONDO_grouped'`, underscore-joined ids) with no model/interaction.
-  Also available: `kg_grouped_diseases.tab` (6180624) for cross-check.
-- **Giant-component filter = KEEP** (igraph, collapse-undirected, keep largest component).
+**Pending (task 10, same pattern):** GO+gene2go (bioprocess/molfunc/cellcomp +_protein
++hierarchy), HPO (phenotype + disease_phenotype±, HP↔MONDO reclassify). Optional/stretch:
+UBERON+Bgee anatomy (heavy), CTD exposure, SIDER drug_effect.
 
-### Drug layer data flow — UPDATED: Open Targets drives the drug layer
-Decision: the drug layer comes from **Open Targets** (ChEMBL-derived), not DrugCentral —
-it shares our ENSG/EFO-MONDO ID spaces (cleanest integration), is fully open, and keeps
-the whole graph on one source. DrugCentral drug plan is superseded.
-- **drug nodes:** OT `drug_molecule` (ChEMBL id, name, `crossReferences`→**DrugBank ID**).
-  node_id = DrugBank ID (via xref), node_source='DrugBank', node_name = drug name.
-- **drug→target** (`drug_protein` / action type): OT `drug_mechanism_of_action`
-  (ChEMBL drug → ENSG targets + actionType) → ground ENSG→Entrez via `gene_names`.
-- **drug→disease** (indication): OT `clinical_indication` (ChEMBL drug → EFO/MONDO +
-  trial phase) → MONDO via the same EFO→MONDO path as gene–disease.
-- **Not covered:** drug–drug interactions (DDI) — DrugBank-only, absent from both OT and
-  DrugCentral; out of scope unless DrugBank is acquired. Contraindication/off-label —
-  DrugCentral-only (OT has indications + phase); not included under this decision.
-- Superseded: DrugCentral `/identifier`, `drug.target.interaction.tsv`,
-  `/omop_relationship` (kept as fallback if contraindication/off-label later wanted).
+## 5. Per-source reference detail (schemas & grounding)
 
-## 8. Implementation shape in DSS
+### Open Targets — gene–disease + drug layer (release 26.06, no credentials)
+Parquet at `https://ftp.ebi.ac.uk/pub/databases/opentargets/platform/26.06/output/`.
+- **gene–disease** → `disease_protein` / "associated with":
+  `association_overall_direct` (`targetId` ENSG, `diseaseId` EFO/MONDO,
+  `associationScore`; **threshold** on score) → ground ENSG→Entrez/symbol (`target` +
+  `gene_names`) and EFO→MONDO (`disease.dbXRefs`, else strip `MONDO_`). Bypasses UMLS.
+- **drug nodes**: `drug_molecule` (`id` ChEMBL, `name`, `crossReferences`→**DrugBank
+  ID**). node_id = DrugBank ID; ChEMBL drugs w/o DrugBank xref drop.
+- **drug→target** → `drug_protein` (display = action type): `drug_mechanism_of_action`
+  (`chemblIds[]` × `targets[]` ENSG + `actionType`) → Entrez via `gene_names`.
+- **drug→disease** → `indication`: `clinical_indication` (`drugId` ChEMBL, `diseaseId`
+  EFO/MONDO, `maxClinicalStage`) → MONDO as above.
+- Caveats: nested arrays (explode); `associationScore` (not `score`); snake_case dirs.
 
-- Put PrimeKG's pure-python parsers + `clean_edges`/`same_words`/grouping helpers in the
-  **project code library** (`python/`), imported by thin recipes — this is the literal
-  "reuse the scripts" deliverable.
-- Each per-source recipe emits the **12-col edge schema** (already grounded).
-- One **assembly recipe** = concat all edge dfs → `clean_edges` → reverse-all → grouping
-  (Pass A) → giant component → derive `nodes` + `node_index` → write `kg`/`nodes`/`edges`.
-- Visual Graph Editor points at the conformed `nodes`/`kg` (edge `x_index`/`y_index`).
+### PPI — Menche interactome
+`DataS1_interactome.tsv` (Menche 2015): `gene_ID_1, gene_ID_2, data_source(s)`, ~141k
+Entrez pairs, 23-line `#` header. → `protein_protein` / "ppi". PrimeKG additionally used
+BioGRID+STRING (642k vs our 276k — see §7d); Menche-only is the POC choice.
+
+### UMLS → MONDO crosswalk — PARKED (see §2)
+`umls_mondo` = (`umls_id`, `mondo_id`). Built by `compute_umls` (MRCONSO ENG, 6 SABs via
+`scripts/filter_mrconso.sh`) + `compute_umls_mondo` (join MONDO xrefs: direct UMLS xrefs
++ indirect via OMIM/NCI/MSH/MDR/ICD10/SNOMEDCT). No active consumer under OT-only design.
+
+### disgenet.cn RNA-KG — optional enrichment (NOT DisGeNET)
+`items.csv`/`interactions.csv` = an RNA-centric network (miRTarBase/STRING/HMDD/ENCORI/
+RNADisease/OMIM), MONDO-keyed. Gene–disease only 5,959 (OMIM) → **not** a DisGeNET
+substitute. Optional: adds miRNA/lncRNA layers PrimeKG lacks. Parse with a real CSV
+reader (BOM, quoted commas, pipe multi-values).
+
+### DrugCentral — fallback only (superseded by Open Targets)
+If contraindication/off-label edges are later wanted (OT has neither): DrugCentral REST
+API `/omop_relationship/relationship_name/{type}` (struct_id, umls_cui) — would re-need
+the UMLS crosswalk. `struct_id → DrugBank ID` via `/identifier` (`DRUGBANK_ID`). Public
+read-only Postgres `unmtid-dbs.net:5433` (`drugcentral`/`drugman`/`dosage`) as bulk route.
+
+## 6. Disambiguation / conformance notes
+
+- Node identity is the **4-tuple**; `node_id` alone isn't unique across types/sources.
+- `.dropna()` in `clean_edges` is the **silent** grounding-drop (no logging).
+- MONDO stored **bare-integer** (`MONDO:0002816` → `2816`); reconcile OT `MONDO_x`.
+- Disease grouping changes `node_id` (underscore-join) **and** `node_source`
+  (`MONDO_grouped`) together; only `source=='MONDO'` diseases are eligible.
+
+## 7. Resolved decisions (all "lean" options taken)
+
+1. **Scope order** — reworked the 6 built sources into zoned hybrid first (piloted PPI). ✅
+2. **Layers to add next** — GO + HPO (task 10); anatomy/CTD/SIDER optional/stretch.
+3. **Assembly** — Python (giant-component/node_index/name-attachment); per-source ETL visual.
+4. **PPI** — Menche only (~276k undirected). ✅
+5. **Storage** — `filesystem_managed`. ✅
+6. **UMLS** — retired from active flow (recipe files kept in repo). ✅
+
+## 8. Reference comparison
+
+Node/edge counts vs published PrimeKG (Tables 2–3): see
+[PROJECT_CONTEXT.md §7d](PROJECT_CONTEXT.md).
