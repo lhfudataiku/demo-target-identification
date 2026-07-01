@@ -146,98 +146,50 @@ must be fetched before anything assembles.
 > now lives in the mapping doc §2 and §5, alongside the reuse/ETL strategy. See also
 > the per-source ETL/zone design (§4) and open decisions (§7) there.
 
-## 7b. Build status — Part 1 core slice (DONE, on DSS project KNOWLEDGE_GRAPH_PRIMEKG)
-
-> ⚠️ The original core slice (`graph_nodes`/`graph_edges`) used a simplified custom
-> schema. It has been **superseded by the conformant build below** (§7c). Strategy:
-> [PRIMEKG_MAPPING.md](PRIMEKG_MAPPING.md).
-
-## 7c. Conformant build — PrimeKG-exact schema + harmonization (DONE, core)
-
-`compute_kg.py` is a faithful port of `build_graph.ipynb` for the core sources.
-Outputs match the published PrimeKG schema:
-- **`primekg_nodes`** (45,193): `node_index, node_id, node_type, node_name, node_source`
-  — 17,406 NCBI gene/protein · 2,870 REACTOME pathway · 23,670 MONDO + 1,247
-  **MONDO_grouped** disease. Native ids (Entrez; **bare-integer MONDO** e.g. `2816`;
-  grouped = underscore-joined). 4-tuple identity; emergent node_index.
-- **`primekg`** (603,762 edges): `relation, display_relation, x_index, x_id, x_type,
-  x_name, x_source, y_index, y_id, y_type, y_name, y_source`. Relation vocab:
-  protein_protein/ppi · disease_protein/"associated with" · pathway_protein/"interacts
-  with" · disease_disease/parent-child · pathway_pathway/parent-child.
-- **`primekg_edges`** (603,762): slim `relation, display_relation, x_index, y_index`.
-
-Harmonization reused from PrimeKG: `clean_edges` grounding-drop; **reverse-ALL edges**
-(undirected); **disease grouping** applied from PrimeKG's published map
-(`disease_group_map` ← Dataverse datafile 6180623, 6,392 diseases → MONDO_grouped);
-**giant-component** filter (networkx; 50,675→45,193 nodes). MONDO ids reconciled to
-bare-integer; Open Targets `MONDO_x`→int.
-
-**Visual Graph Editor** (`lVWgU2m`) repointed to `primekg_nodes`/`primekg`, backend
-healthy. UI schema mapping: node group → id=`node_index`, name=`node_name`, group by
-`node_type`/`node_source`; edge group → source=`x_index`, target=`y_index`, properties
-`relation`/`display_relation`.
-
-**Flow reworked into per-source zones (hybrid Python+visual).** Each source = its own
-flow zone: Python `extract_*` (load + parse to native ids) → visual `harmonize_*`
-(Prepare; + visual Join recipes for Open Targets id-remap) → 8-col name-free `*_edges`.
-The Python `compute_kg` assembly stacks all `*_edges`, attaches names from vocab,
-reverses, groups, giant-components. 8 zones (Genes, Diseases, PPI, Open Targets ref,
-Gene-Disease, Pathways, Drugs, Assembly). Rebuilt result: 50,491 nodes / 699,440 edges
-(matches the pre-rework build). Full zone/recipe map + build gotchas in
-[PRIMEKG_MAPPING.md](PRIMEKG_MAPPING.md) §4/§8.
-
-**Drug layer (DONE) — Open Targets, replacing DrugBank.** `compute_drug_ot.py` reads OT
-`drug_molecule` (ChEMBL→DrugBank ID via `crossReferences`), `drug_mechanism_of_action`
-(drug→ENSG targets+actionType), `clinical_indication` (drug→EFO/MONDO+phase) → parsed
-`drug_target` (7,959) + `drug_indication` (40,044). Folded into `compute_kg`:
-- 5,282 **drug** nodes (`node_source='DrugBank'`, DrugBank-ID keyed).
-- `drug_protein` edges 15,918 (`display_relation`=action type).
-- **drug–disease split by `maxClinicalStage`** (correction — `clinical_indication`
-  aggregates all trial stages, only ~13% approved): `indication` (approved, 9,418) vs
-  `drug_investigated_for` (in-trial/hypothesis, 69,682; stage in `display_relation`).
-- Graph 50,491 nodes / 700,462 edges. No DDI (DrugBank-only); no contraindication/
-  off-label (DrugCentral-only) — see PRIMEKG_MAPPING §5/§7.
-
-> **Note on OT semantics:** the `score` lives only on gene–disease
-> (`association_overall_direct`) and is a **computed prioritization heuristic**, not a
-> confidence/curated fact (OT: "should not be interpreted as a confidence score"). The
-> drug–disease `clinical_indication` dataset has **no score** — only `maxClinicalStage`.
-
-**Not yet in conformant build** (remaining task 10): HPO phenotype + HP↔MONDO
-reclassification, GO/gene2go (protein–GO), UBERON/Bgee anatomy, CTD exposure, SIDER
-drug–side-effect. All follow the same edge-frame pattern in `compute_kg`.
-
+## 7b. Build status — Part 1 (BUILT & verified on DSS project KNOWLEDGE_GRAPH_PRIMEKG)
 
 Instance `design.solutions.dataiku-dss.io` (DSS 14.7). Code env `primekg_kg`
-(py3.11: pandas, pyarrow, requests, obonet). All datasets on `filesystem_managed`.
+(py3.11: pandas, pyarrow, requests, obonet, networkx). Datasets on `filesystem_managed`.
 
-| Recipe (in `dss_recipes/`) | Output(s) | Rows |
-|---|---|---|
-| `compute_gene_names.py` | `gene_names` | 44,382 genes |
-| `compute_mondo.py` | `mondo_terms` / `mondo_parents` / `mondo_references` | 30,172 / 43,912 / 142,797 |
-| `compute_gene_disease.py` | `gene_disease` (Open Targets genetic_association datatype ≥0.3) | ~89,201 |
-| `compute_ppi.py` | `protein_protein` (Menche, folder `raw_files`) | 141,296 |
-| `compute_reactome.py` | `reactome_terms` / `reactome_relations` / `reactome_ncbi` | 2,870 / 2,886 / 48,659 |
+**Flow = per-source zones, hybrid Python + visual** (full zone/recipe map + build
+gotchas in [PRIMEKG_MAPPING.md](PRIMEKG_MAPPING.md) §4/§8). Each source zone: Python
+`extract_*` (load + parse to native ids) → visual `harmonize_*` (Prepare; + visual Join
+for Open Targets id-remap) → 8-col name-free `*_edges`. The Python `compute_kg` assembly
+stacks all `*_edges`, attaches node names from vocab, reverse-alls edges, applies disease
+grouping (published PrimeKG map), and keeps the giant connected component.
 
-> The original `compute_graph.py` → `graph_nodes`/`graph_edges` (simplified schema) and
-> the `compute_ot_drug_probe` throwaway have been **deleted** from the flow. The
-> conformant assembly (§7c) is the single graph builder.
+**8 zones:** Genes (HGNC) · Diseases (MONDO) · PPI (Menche) · Open Targets (ref) ·
+Gene-Disease (OT) · Pathways (Reactome) · Drugs (OT) · Assembly.
 
-**Unified model:** `node_id = "<type>:<native>"` (`gene:<entrez>`, `disease:MONDO:x`,
-`pathway:R-HSA-x`). Nodes: 17,929 gene/protein · 29,876 disease · 2,870 pathway.
-Edges: protein_protein 141,296 · gene_associated_with_disease 77,921 ·
-gene_in_pathway 48,659 · disease_parent_of 43,912 · pathway_parent_of 2,886.
-Persona genes verified present with associations (PIK3CA 136, PTEN 108, ESR1 99,
-AKT1 54, MTOR 64, TNF 34, IL6 24, IL1B 22, LEP 2).
+**Conformant outputs (PrimeKG-exact schema):**
+- `primekg_nodes` — **51,084**: `node_index, node_id, node_type, node_name, node_source`.
+  Native ids (Entrez; bare-integer MONDO e.g. `2816`; grouped = underscore-joined).
+  18,002 gene/protein (NCBI) · 24,917 disease (23,670 MONDO + 1,247 MONDO_grouped) ·
+  2,883 pathway (REACTOME) · 5,282 drug (DrugBank).
+- `primekg` — **724,894** edges: `relation, display_relation, x_index, x_id, x_type,
+  x_name, x_source, y_index, y_id, y_type, y_name, y_source` (undirected; reverse edges
+  included). protein_protein 275,726 · disease_protein 173,442 · pathway_protein 97,618 ·
+  disease_disease 77,292 · drug_investigated_for 69,682 · drug_protein 15,918 ·
+  indication 9,418 · pathway_pathway 5,798.
+- `primekg_edges` — slim `relation, display_relation, x_index, y_index`.
 
-**Visual Graph Editor webapp:** id `lVWgU2m` ("PrimeKG Graph Editor"), type
-`webapp_visual-graph_visual-graph-editor`, pointed at `graph_nodes`/`graph_edges`,
-backend healthy (runs as local process — `containerMode=NONE`, since the plugin
-code-env container image isn't built on this instance). Schema-group mapping to set
-in the editor UI: node group → id=`node_id`, name=`node_name`, group/filter by
-`node_type`; edge group → source=`source`, target=`target`, property=`relation`.
-Created via `scripts/create_vg_webapp.py` pattern + `dku webapp set-definition`
-(CLI can't create plugin webapps directly).
+**Source specifics** (detail in PRIMEKG_MAPPING §5):
+- gene-disease = OT `genetic_association` datatype @score≥0.3 (DisGeNET-curated analog,
+  ~89k pairs). drug-disease split: `indication` (approved) vs `drug_investigated_for`
+  (trials; stage in `display_relation`). drug-target = OT mechanism (action type in
+  `display_relation`). Drug nodes keyed on DrugBank ID via OT molecule xref.
+- Reused PrimeKG harmonization: clean_edges grounding-drop, reverse-all, disease grouping
+  (Dataverse map → 1,247 grouped), giant-component filter.
+
+**Visual Graph Editor** webapp `lVWgU2m` (type `webapp_visual-graph_visual-graph-editor`)
+→ `primekg_nodes`/`primekg`, runs as local process (`containerMode=NONE`; the plugin
+code-env container image isn't built on this instance). UI schema mapping: node group
+id=`node_index`, name=`node_name`, group by `node_type`/`node_source`; edge group
+source=`x_index`, target=`y_index`, properties `relation`/`display_relation`.
+
+**Not yet built** (task 10, same zoned-hybrid pattern): GO + gene2go (bioprocess/
+molfunc/cellcomp + protein-GO), HPO (phenotype + disease_phenotype±, HP↔MONDO
+reclassification). Optional/stretch: UBERON+Bgee anatomy, CTD exposure, SIDER.
 
 ## 7d. Reference comparison vs published PrimeKG
 
@@ -252,7 +204,7 @@ comparable. "Current" = our conformant build as of the drug-layer milestone.
 | Node type | PrimeKG | Current | Notes |
 |---|--:|--:|---|
 | Biological process (GO) | 28,642 | 0 | GO/gene2go not built |
-| Protein (gene/protein) | 27,671 | 17,407 | rises once GO/Bgee/anatomy proteins added |
+| Protein (gene/protein) | 27,671 | 18,002 | rises once GO/Bgee/anatomy proteins added |
 | Disease | 17,080 | 24,917 | higher: OT + full MONDO hierarchy; less grouping/pruning |
 | Phenotype (HPO) | 15,311 | 0 | HPO not built |
 | Anatomy (UBERON) | 14,035 | 0 | UBERON/Bgee not built |
@@ -261,7 +213,7 @@ comparable. "Current" = our conformant build as of the drug-layer milestone.
 | Cellular component (GO) | 4,176 | 0 | not built |
 | Pathway | 2,516 | 2,870 | close (Reactome version) |
 | Exposure (CTD) | 818 | 0 | CTD not built |
-| **Total** | **129,375** | **50,476** | |
+| **Total** | **129,375** | **51,084** | |
 
 ### Edges (undirected counts)
 
@@ -293,7 +245,7 @@ comparable. "Current" = our conformant build as of the drug-layer milestone.
 | pathway–pathway | 5,070 | 5,772 | **close** |
 | exposure–* (6 relations) | 14,532 | 0 | CTD — not built |
 | disease–phenotype (negative) | 2,386 | 0 | HPO — not built |
-| **Total** | **8,100,498** | **697,758** | |
+| **Total** | **8,100,498** | **724,894** | |
 
 **Reading this:** where we have the layer, counts are in the right ballpark
 (disease–protein, pathway–protein, pathway–pathway) or intentionally different
