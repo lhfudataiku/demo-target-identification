@@ -1,8 +1,8 @@
 # Assembly zone — the graph-algorithm core (Python).
 # Stacks per-source *_edges (8-col, name-free), attaches node names from the vocab
 # tables, applies PrimeKG harmonization (clean, reverse-all, disease grouping, giant
-# component), derives emergent nodes + node_index. Outputs PrimeKG-exact primekg /
-# primekg_nodes / primekg_edges.
+# component), derives emergent nodes + node_index. Outputs PrimeKG-exact kg /
+# graph_nodes / graph_edges.
 import dataiku
 import networkx as nx
 import pandas as pd
@@ -79,10 +79,10 @@ yi = nodes.rename(columns={"node_index": "y_index", "node_id": "y_id",
 kg = kg.merge(xi, on=["x_id", "x_type", "x_name", "x_source"], how="left") \
        .merge(yi, on=["y_id", "y_type", "y_name", "y_source"], how="left")
 
-dataiku.Dataset("primekg_nodes").write_with_schema(
+dataiku.Dataset("graph_nodes").write_with_schema(
     nodes[["node_index", "node_id", "node_type", "node_name", "node_source"]])
-dataiku.Dataset("primekg").write_with_schema(
+dataiku.Dataset("kg").write_with_schema(
     kg[["relation", "display_relation", "x_index", "x_id", "x_type", "x_name", "x_source",
         "y_index", "y_id", "y_type", "y_name", "y_source"]])
-dataiku.Dataset("primekg_edges").write_with_schema(
+dataiku.Dataset("graph_edges").write_with_schema(
     kg[["relation", "display_relation", "x_index", "y_index"]].drop_duplicates())

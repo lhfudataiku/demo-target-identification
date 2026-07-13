@@ -6,9 +6,11 @@ identification**, and renders it with the **Visual Graph** plugin.
 
 ## Orient yourself first (do this before acting)
 1. Read **`PROJECT_CONTEXT.md`** (project view: why/personas/scope, source decisions §6,
-   build status §7b, PrimeKG reference comparison §7d) and **`PRIMEKG_MAPPING.md`**
+   build status §7b, PrimeKG reference comparison §7d), **`PRIMEKG_MAPPING.md`**
    (engineering view: per-source ETL/zones §4, MONDO-vs-UMLS §2, source schemas §5,
-   build gotchas §8). These two are the source of truth — trust them over your memory.
+   build gotchas §8), and **`TARGET_PRIORITIZER.md`** (Part 2 flagship design: the
+   Explainable Target Prioritizer analytical layer). These are the source of truth —
+   trust them over your memory.
 2. Check my auto-memory (`MEMORY.md` + files) for standing preferences.
 3. Confirm live state with the `dku` CLI (see below) — the docs can lag the flow.
 
@@ -25,9 +27,9 @@ identification**, and renders it with the **Visual Graph** plugin.
 Per-source **flow zones**, each = Python `extract_*` (load→native ids) → visual
 `harmonize_*` (Prepare; + visual Join for Open Targets) → 8-col name-free `*_edges`;
 then Python `compute_kg` assembly (stack → attach names → reverse-all → disease grouping
-→ giant component) → **`primekg` / `primekg_nodes` / `primekg_edges`** (PrimeKG-exact
+→ giant component) → **`kg` / `graph_nodes` / `graph_edges`** (PrimeKG-exact
 schema). Current: **51,084 nodes / 724,894 edges**, 8 relations. Visual Graph Editor
-webapp `lVWgU2m` points at `primekg_nodes`/`primekg`.
+webapp `lVWgU2m` points at `graph_nodes`/`graph_edges`.
 
 Sources live: HGNC (genes), MONDO (disease + hierarchy), Open Targets
 (gene–disease via **genetic_association** datatype; drug layer — DrugBank-ID nodes,
@@ -36,8 +38,11 @@ Menche PPI, Reactome pathways. UMLS retired (unused under OT-only). DrugBank/Dis
 dropped → replaced by Open Targets.
 
 ## Next up
-- **Task 10:** add GO + gene2go and HPO (with HP↔MONDO reclassification) layers, same
-  zoned-hybrid pattern. Optional stretch: UBERON+Bgee anatomy, CTD, SIDER.
+- **Part 2 flagship (prioritized): Explainable Target Prioritizer** — a Visual ML + SHAP
+  target-ranking layer on the graph. Design in **`TARGET_PRIORITIZER.md`** (discovery-first;
+  network-topology features via Visual Graph plugin recipes; toxicity/(b) deferred).
+- **Task 10 (after the flagship):** add GO + gene2go and HPO (with HP↔MONDO reclassification)
+  layers, same zoned-hybrid pattern. Optional stretch: UBERON+Bgee anatomy, CTD, SIDER.
 
 ## How I want you to work (my preferences)
 - **Never `git commit`/`push` without asking me first.** Make changes, summarize, ask.
@@ -56,10 +61,10 @@ dropped → replaced by Open Targets.
 export DKU_PROJECT=KNOWLEDGE_GRAPH_PRIMEKG
 dku flow zones                          # 8 source zones
 dku recipe list ; dku dataset list
-dku dataset count primekg ; dku dataset head primekg_nodes --format json
-dku dataset head primekg --rows 800000 --format json   # relation breakdown
+dku dataset count kg ; dku dataset head graph_nodes --format json
+dku dataset head kg --rows 800000 --format json   # relation breakdown
 dku webapp logs lVWgU2m                 # Visual Graph Editor health
-dku job run --target primekg_nodes --type RECURSIVE_BUILD --auto-update-schema --wait
+dku job run --target graph_nodes --type RECURSIVE_BUILD --auto-update-schema --wait
 ```
 
 ## First message suggestion

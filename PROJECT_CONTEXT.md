@@ -62,7 +62,9 @@ demo scenarios to drive graph exploration and, later, target prioritization.
 knowledge graph, recreating the PrimeKG pipeline in a Dataiku Flow and rendering
 it with the Visual Graph plugin.
 
-**Part 2 (stretch / follow-on):**
+**Part 2 (flagship analytical layer — now designed; prioritized ahead of Task 10):**
+See **[TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md)** for the full design — an
+**Explainable Target Prioritizer** (Visual ML + SHAP, discovery-first).
 - Train an ML model on graph-derived features to prioritize targets.
 - Visualize/contextualize predictions on the graph.
 - Cross-reference targets with literature, trial registries, and patents
@@ -162,16 +164,16 @@ grouping (published PrimeKG map), and keeps the giant connected component.
 Gene-Disease (OT) · Pathways (Reactome) · Drugs (OT) · Assembly.
 
 **Conformant outputs (PrimeKG-exact schema):**
-- `primekg_nodes` — **51,084**: `node_index, node_id, node_type, node_name, node_source`.
+- `graph_nodes` — **51,084**: `node_index, node_id, node_type, node_name, node_source`.
   Native ids (Entrez; bare-integer MONDO e.g. `2816`; grouped = underscore-joined).
   18,002 gene/protein (NCBI) · 24,917 disease (23,670 MONDO + 1,247 MONDO_grouped) ·
   2,883 pathway (REACTOME) · 5,282 drug (DrugBank).
-- `primekg` — **724,894** edges: `relation, display_relation, x_index, x_id, x_type,
+- `kg` — **724,894** edges: `relation, display_relation, x_index, x_id, x_type,
   x_name, x_source, y_index, y_id, y_type, y_name, y_source` (undirected; reverse edges
   included). protein_protein 275,726 · disease_protein 173,442 · pathway_protein 97,618 ·
   disease_disease 77,292 · drug_investigated_for 69,682 · drug_protein 15,918 ·
   indication 9,418 · pathway_pathway 5,798.
-- `primekg_edges` — slim `relation, display_relation, x_index, y_index`.
+- `graph_edges` — slim `relation, display_relation, x_index, y_index`.
 
 **Source specifics** (detail in PRIMEKG_MAPPING §5):
 - gene-disease = OT `genetic_association` datatype @score≥0.3 (DisGeNET-curated analog,
@@ -182,7 +184,7 @@ Gene-Disease (OT) · Pathways (Reactome) · Drugs (OT) · Assembly.
   (Dataverse map → 1,247 grouped), giant-component filter.
 
 **Visual Graph Editor** webapp `lVWgU2m` (type `webapp_visual-graph_visual-graph-editor`)
-→ `primekg_nodes`/`primekg`, runs as local process (`containerMode=NONE`; the plugin
+→ `graph_nodes`/`graph_edges`, runs as local process (`containerMode=NONE`; the plugin
 code-env container image isn't built on this instance). UI schema mapping: node group
 id=`node_index`, name=`node_name`, group by `node_type`/`node_source`; edge group
 source=`x_index`, target=`y_index`, properties `relation`/`display_relation`.
@@ -196,7 +198,7 @@ reclassification). Optional/stretch: UBERON+Bgee anatomy, CTD exposure, SIDER.
 Reference: PrimeKG paper (Chandak et al., *Sci Data* 2023), Tables 2–3
 ([nodes](https://www.nature.com/articles/s41597-023-01960-3/tables/2),
 [edges](https://www.nature.com/articles/s41597-023-01960-3/tables/3)). Both PrimeKG
-and our `primekg` are **undirected (reverse edges included)**, so counts are directly
+and our `kg` are **undirected (reverse edges included)**, so counts are directly
 comparable. "Current" = our conformant build as of the drug-layer milestone.
 
 ### Nodes

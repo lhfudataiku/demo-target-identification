@@ -101,7 +101,7 @@ string); names resolved once at the assembly.
   →`drug_indication_edges`.
 - **Assembly:** `compute_disease_group_map`→`disease_group_map`; `compute_kg` (Python)
   stacks *_edges → clean → reverse-all → attach names → grouping → giant component →
-  `node_index` → `primekg`/`primekg_nodes`/`primekg_edges`.
+  `node_index` → `kg`/`graph_nodes`/`graph_edges`.
 
 **Build gotchas:** (a) after harmonize, `set-schema` all-string then build **without**
 `--auto-update-schema` (DSS re-infers numeric ids as bigint → breaks the stack).
@@ -111,7 +111,7 @@ recreating its recipe (create silently no-ops otherwise).
 
 **Built & conformant (7 relations):** Genes(HGNC vocab), Diseases(MONDO)→disease_disease,
 PPI(Menche)→protein_protein, Gene-Disease(OT)→disease_protein, Pathways(Reactome)→
-pathway_protein+pathway_pathway, Drugs(OT)→drug_protein+indication, Assembly→primekg.
+pathway_protein+pathway_pathway, Drugs(OT)→drug_protein+indication, Assembly→kg.
 
 **Pending (task 10, same pattern):** GO+gene2go (bioprocess/molfunc/cellcomp +_protein
 +hierarchy), HPO (phenotype + disease_phenotype±, HP↔MONDO reclassify). Optional/stretch:
