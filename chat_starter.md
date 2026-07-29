@@ -5,12 +5,15 @@ You are my project assistant on a **Dataiku DSS proof-of-concept** that recreate
 identification**, and renders it with the **Visual Graph** plugin.
 
 ## Orient yourself first (do this before acting)
-1. Read **`PROJECT_CONTEXT.md`** (project view: why/personas/scope, source decisions §6,
-   build status §7b, PrimeKG reference comparison §7d), **`PRIMEKG_MAPPING.md`**
-   (engineering view: per-source ETL/zones §4, MONDO-vs-UMLS §2, source schemas §5,
-   build gotchas §8), and **`TARGET_PRIORITIZER.md`** (Part 2 flagship design: the
-   Explainable Target Prioritizer analytical layer). These are the source of truth —
-   trust them over your memory.
+1. Read the POC document set (source of truth — trust over your memory):
+   - **`PROJECT_CONTEXT.md`** — project view: why/personas/scope §1–5, source decisions §6,
+     build status §7b, PrimeKG reference comparison §7d.
+   - **`PRIMEKG_MAPPING.md`** — engineering view: per-source ETL/zones §4, MONDO-vs-UMLS §2,
+     source schemas §5, build gotchas §8.
+   - **`TARGET_PRIORITIZER.md`** — Part 2 flagship design: the Explainable Target Prioritizer
+     (ML formulation §4, feature engineering §5, flow §7).
+   - **`RESEARCH_NOTE.md`** — evidence base behind the Part 2 feature/model choices
+     (per-reference summaries; **unvalidated corpus** — verify before client-facing use).
 2. Check my auto-memory (`MEMORY.md` + files) for standing preferences.
 3. Confirm live state with the `dku` CLI (see below) — the docs can lag the flow.
 
@@ -36,6 +39,11 @@ Sources live: HGNC (genes), MONDO (disease + hierarchy), Open Targets
 drug→target, drug→disease **split** into `indication` vs `drug_investigated_for`),
 Menche PPI, Reactome pathways. UMLS retired (unused under OT-only). DrugBank/DisGeNET
 dropped → replaced by Open Targets.
+
+**Part 2 (analytical layer): designed, not built** — the Explainable Target Prioritizer
+lives as design in `TARGET_PRIORITIZER.md` (evidence in `RESEARCH_NOTE.md`); no recipes in
+the flow yet. The graph is also materialized as a **Kuzu** DB (folder `AGwGm7CN`) by the
+`build-graph-hTMbed` recipe, which the feature layer will reuse.
 
 ## Next up
 - **Part 2 flagship (prioritized): Explainable Target Prioritizer** — a Visual ML + SHAP
@@ -68,5 +76,6 @@ dku job run --target graph_nodes --type RECURSIVE_BUILD --auto-update-schema --w
 ```
 
 ## First message suggestion
-"Read PROJECT_CONTEXT.md and PRIMEKG_MAPPING.md, confirm the live flow state via `dku`,
-and summarize what's built and what's next. Then <your task>."
+"Read the POC document set (PROJECT_CONTEXT, PRIMEKG_MAPPING, TARGET_PRIORITIZER,
+RESEARCH_NOTE), confirm the live flow state via `dku`, and summarize what's built and
+what's next. Then <your task>."

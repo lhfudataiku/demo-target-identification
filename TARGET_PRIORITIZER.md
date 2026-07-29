@@ -42,6 +42,9 @@ The candidate + its evidence path highlight on the **Visual Graph Editor** (`lVW
 
 ## 3. Scientific basis & precedent
 
+> Full per-reference summaries with methodology mapped to each feature — plus the source
+> index and provenance/validation caveats — are in **[RESEARCH_NOTE.md](RESEARCH_NOTE.md)**.
+
 This is a well-trodden method family; we reproduce the industry-standard pattern, not
 invent one.
 
@@ -83,8 +86,8 @@ invent one.
 ## 5. Feature engineering (network-topology only)
 
 Most features are computed **not** in hand-written `networkx`, but with the **Visual Graph
-plugin's own recipes** over the materialized **Kuzu** graph (folder `AGwGm7CN`, built by the
-existing `build-graph-hTMbed` recipe — §7). This is a more no-code, plugin-native path that
+plugin's own recipes** over the materialized **Kuzu** graph (folder `5Fbx2exi`, built by the
+existing `build-graph-8KjiSQ` recipe — §7). This is a more no-code, plugin-native path that
 also dogfoods POC highlight #2. Only `rwr_score` stays Python — no installed plugin offers
 seeded PageRank (§11). `G`=gene/protein, `D`=disease, `P`=pathway, `C`=drug. Module
 aggregations use {mean, max} unless noted.
@@ -135,12 +138,12 @@ aggregations use {mean, max} unless noted.
 ## 7. Flow design (zoned-hybrid, plugin-recipe-based)
 
 New flow zone **"Target Prioritization (ML)"**. It **reuses the existing materialized Kuzu
-graph** (`build-graph-hTMbed` → folder `AGwGm7CN`, `/built-graphs/hTMbed/db.kz`, which also
+graph** (`build-graph-8KjiSQ` → folder `5Fbx2exi`, `/built-graphs/hTMbed/db.kz`, which also
 powers webapp `lVWgU2m`); feature computation is pushed into Visual Graph plugin recipes,
 leaving one thin Python step.
 
 ```
-graph_nodes/graph_edges ─▶ [Build Graph]* ─▶ AGwGm7CN  (Kuzu db.kz; *already built)
+graph_nodes/graph_edges ─▶ [Build Graph]* ─▶ 5Fbx2exi  (Kuzu db.kz; *already built)
                                                 │
      ┌─────────────────────────┬────────────────┴──────────┬───────────────────────┐
 [Graph Features]        [Execute Cypher ×N]          [Projected Graph]        [PY] rwr_score
@@ -165,7 +168,7 @@ per-node metrics        pair/path features           shared-pathway sim       ne
 - **Edge-masking is a query predicate** (§6), not a graph rebuild.
 - **Build gotchas apply** (PRIMEKG_MAPPING §8): keep ids string; delete a stale output before
   recreating its recipe; visual multi-input Join is a **star**. Plugin recipes need
-  `params.customConfig` + `params.containerSelection` (else NPE) — mirror `build-graph-hTMbed`.
+  `params.customConfig` + `params.containerSelection` (else NPE) — mirror `build-graph-8KjiSQ`.
 - **Remaining build-time unknown:** each plugin recipe's exact `customConfig` keys and
   input-role names (learned by inspecting the plugin's `recipe.json` or first-run iteration);
   recipe *execution* itself is verified.
@@ -216,7 +219,7 @@ per-node metrics        pair/path features           shared-pathway sim       ne
 - Negative-sampling ratio and DWPC metapath set to be tuned during the feature prototype.
 - **Plugin recipe schemas** — the exact `customConfig`/input-role structure for the Graph
   Features and Execute Cypher recipes is the only remaining build-time unknown; recipe
-  *execution* on this instance is verified (§7). Mirror `build-graph-hTMbed`'s params shape.
+  *execution* on this instance is verified (§7). Mirror `build-graph-8KjiSQ`'s params shape.
 
 ## 12. Decision log
 
@@ -225,7 +228,7 @@ per-node metrics        pair/path features           shared-pathway sim       ne
 - 2026-07-08 — First model = **network-topology features only** (no KGE).
 - 2026-07-08 — **Design doc first** before any build (this doc).
 - 2026-07-08 — Feature engineering pushed into **Visual Graph plugin recipes** (Graph
-  Features + Execute Cypher over the existing Kuzu graph `AGwGm7CN`) instead of monolithic
+  Features + Execute Cypher over the existing Kuzu graph `5Fbx2exi`) instead of monolithic
   `networkx`; only `rwr_score` stays Python. **Verified:** plugin recipes run here (Build
   Graph executed via container conf `default`; engine is **Kuzu**).
 - 2026-07-08 — Confirmed **neither `visual-graph` nor `graph-analytics` exposes
@@ -234,6 +237,9 @@ per-node metrics        pair/path features           shared-pathway sim       ne
   degree-matched z-score dropped) — the supervised model absorbs hubness.
 
 ## References
+
+> See **[RESEARCH_NOTE.md](RESEARCH_NOTE.md)** for per-reference summaries, the feature→reference
+> map, the full 23-source index, and provenance/validation caveats.
 
 - Open Targets L2G — Mountjoy et al., *Nat Genet* 2021; https://platform-docs.opentargets.org/gentropy/locus-to-gene-l2g
 - Open Targets Target Prioritisation — https://platform-docs.opentargets.org/web-interface/target-prioritisation

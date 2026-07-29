@@ -3,7 +3,9 @@
 > **Companion to [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md).** That doc is the *project*
 > view (why / who / scope / build status / reference comparison §7d). This is the
 > *engineering* view: how each source is extracted, grounded, and harmonized to
-> PrimeKG's schema, and how the flow is organized.
+> PrimeKG's schema, and how the flow is organized. **Part 2** — the analytical layer built on
+> top of this graph — is designed in [TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md) (evidence
+> in [RESEARCH_NOTE.md](RESEARCH_NOTE.md)).
 
 ## 0. Approach — two principles
 

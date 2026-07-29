@@ -4,9 +4,13 @@
 > contributor (human or AI) on *why* the project exists, *who* it serves, and
 > *what* we are building.
 >
-> **Companion doc:** [PRIMEKG_MAPPING.md](PRIMEKG_MAPPING.md) — the *engineering* view
-> (per-source extraction, grounding, schema conformance, ETL/zone design). This file is
-> the *project* view.
+> **The POC document set** (this file is the *project* view — why / who / scope / status):
+> - [PRIMEKG_MAPPING.md](PRIMEKG_MAPPING.md) — *engineering* view: per-source extraction,
+>   grounding, schema conformance, ETL/zone design (Part 1).
+> - [TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md) — Part 2 flagship design: the Explainable
+>   Target Prioritizer analytical layer (Visual ML + SHAP; discovery-first).
+> - [RESEARCH_NOTE.md](RESEARCH_NOTE.md) — evidence base (literature/industry) behind the
+>   Part 2 feature & model choices.
 
 ## 1. Purpose
 
