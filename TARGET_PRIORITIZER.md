@@ -94,7 +94,9 @@ aggregations use {mean, max} unless noted.
 
 | Feature | Layer(s) | Computed by | Definition |
 |---|---|---|---|
-| `gene_degree`, `gene_ppi_degree`, centrality (`closeness`, `eigenvector`, `clustering`) | all / PPI | **Graph Features** recipe | one recipe → per-node metric columns; hubness controls + extra centralities for free |
+| `gene_degree`, `gene_ppi_degree` | all / PPI | **Execute Cypher** (`COUNT{}`) | node degrees — hubness controls (computed alongside the DWPCs) |
+| `pagerank` (global) | all | **Graph Features** recipe (Kuzu) | global node influence — the eigenvector-centrality substitute / hubness control |
+| ~~`closeness`, `eigenvector`, `clustering`~~ | all / PPI | Graph Features **(Neo4j only)** | ⛔ **deferred** — Kuzu Graph Features exposes only PageRank + Connected Components; these centralities need a Neo4j connection (no account yet). See constraint note below. |
 | `gene_n_diseases` | disease_protein | Execute Cypher / Prepare | # diseases the gene is linked to |
 | `prox_closest` | PPI | **Execute Cypher** | shortest-path length from `g` to nearest module gene (raw — z-score dropped, see below) |
 | `ppi_common_neighbors`, `ppi_adamic_adar`, `ppi_jaccard` | PPI | **Execute Cypher** | neighbor-set overlap of `g` with module genes (Adamic-Adar weights by node degree in-query) |
@@ -114,6 +116,18 @@ aggregations use {mean, max} unless noted.
   avoiding the Guney degree-matched randomization (the annoying Python piece). The z-score
   matters for the *unsupervised* proximity test, not inside a model that sees degree directly.
 - **KGE triple-score features deferred** (§11) — pure topology, no extra code-env deps.
+- **⚠️ Graph-engine constraint (Kuzu-only).** The **Graph Features** recipe on the default
+  **Kuzu** engine (what the webapp uses) exposes **only PageRank and Connected Components** —
+  the classic centralities (closeness, eigenvector, clustering, betweenness) require a **Neo4j**
+  connection, which this instance doesn't have yet. Consequence for the feature layer:
+  (a) **degree features come from Execute Cypher `COUNT{}`** (already computed inside the DWPC
+  queries), (b) **global Kuzu PageRank stands in for eigenvector** as the hubness/influence
+  control, (c) **closeness/clustering are deferred** to when Neo4j is available (clustering can
+  be approximated with a Cypher triangle-count if needed sooner). Net impact is small — the
+  discriminative signal (DWPCs, proximity, neighbor-overlap, shared-pathway, RWR) is all Execute
+  Cypher / Python and unaffected; the centralities were controls, and degree + PageRank cover
+  that role. **Kuzu PageRank is *global* (unseeded)** — it is *not* `rwr_score`, which still
+  needs the module-seeded Python/networkx walk.
 
 ## 6. Correctness crux (the two things that make it honest)
 
@@ -217,9 +231,22 @@ per-node metrics        pair/path features           shared-pathway sim       ne
 - **GO annotations** (from Task 10) would add molecular-function / biological-process
   features to §5.
 - Negative-sampling ratio and DWPC metapath set to be tuned during the feature prototype.
-- **Plugin recipe schemas** — the exact `customConfig`/input-role structure for the Graph
-  Features and Execute Cypher recipes is the only remaining build-time unknown; recipe
-  *execution* on this instance is verified (§7). Mirror `build-graph-8KjiSQ`'s params shape.
+- **Plugin recipe schemas — RESOLVED.** The Execute Cypher recipe is built and validated:
+  Kuzu schema is typed node tables (`protein`/`disease`/`drug`/`pathway`) + one rel table per
+  relation; queries use **undirected Kuzu-Cypher** (storage direction is mixed, undirected only
+  rescales DWPC by a global constant → ranking preserved); `//` comments, `COUNT{}` subqueries,
+  `pow()`, `CAST(... AS DOUBLE)` all supported; a real aggregate (`count(DISTINCT)`) must be used
+  as a *filter only* (not nested inside `sum()`). The three DWPCs (`GGD`/`GPGD`/`GCD`) are built
+  and validated (positives > negatives; breast-cancer top genes biologically coherent, incl. GCD
+  surfacing aromatase/ER/CDK4-6/HER2).
+- **Graph-engine = Kuzu (no Neo4j account).** Graph Features exposes only PageRank + Connected
+  Components; closeness/eigenvector/clustering are deferred to a future Neo4j connection (see §5
+  constraint note). Degree controls come from Cypher `COUNT{}`; global PageRank substitutes for
+  eigenvector.
+- **Build Graph config caveat.** Non-`node_index` node PKs silently drop that node type's edges
+  (pathway layer was lost until its PK was fixed to `node_index`); every edge relation needs its
+  own edge group with a `relation matches …` filter (a missing/empty filter drops it, as happened
+  to `pathway_protein` and `drug_investigated_for`).
 
 ## 12. Decision log
 
