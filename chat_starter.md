@@ -26,31 +26,84 @@ identification**, and renders it with the **Visual Graph** plugin.
   Recipe code mirrored in `dss_recipes/`; helpers in `scripts/`. `data/` is gitignored
   (large / license-restricted UMLS — never commit it).
 
-## What's built (current)
+## What's built (current — 2026-08-09)
 Per-source **flow zones**, each = Python `extract_*` (load→native ids) → visual
 `harmonize_*` (Prepare; + visual Join for Open Targets) → 8-col name-free `*_edges`;
 then Python `compute_kg` assembly (stack → attach names → reverse-all → disease grouping
-→ giant component) → **`kg` / `graph_nodes` / `graph_edges`** (PrimeKG-exact
-schema). Current: **51,084 nodes / 724,894 edges**, 8 relations. Visual Graph Editor
-webapp `lVWgU2m` points at `graph_nodes`/`graph_edges`.
+→ giant component) → **`kg` / `graph_nodes` / `graph_edges`** (PrimeKG-exact schema).
+**Enriched graph: 113,544 nodes / 2,852,298 edges, 18 relations** (validated: 0 duplicates,
+0 self-loops, 0 dangling endpoints, reverse-all symmetry holds).
 
-Sources live: HGNC (genes), MONDO (disease + hierarchy), Open Targets
-(gene–disease via **genetic_association** datatype; drug layer — DrugBank-ID nodes,
-drug→target, drug→disease **split** into `indication` vs `drug_investigated_for`),
-Menche PPI, Reactome pathways. UMLS retired (unused under OT-only). DrugBank/DisGeNET
-dropped → replaced by Open Targets.
+Sources live: HGNC, MONDO, Open Targets (**genetic_association + somatic_mutation**; drug
+layer split `indication` / `drug_investigated_for`), **PPI = Menche + HuRI + STRING merged**
+(`ppi_sources` provenance in `edge_metadata`), Reactome, **GO+gene2go**, **HPO** (with
+HP↔MONDO reclassification). UMLS retired; DrugBank/DisGeNET dropped.
 
-**Part 2 (analytical layer): designed, not built** — the Explainable Target Prioritizer
-lives as design in `TARGET_PRIORITIZER.md` (evidence in `RESEARCH_NOTE.md`); no recipes in
-the flow yet. The graph is also materialized as a **Kuzu** DB (folder `AGwGm7CN`) by the
-`build-graph-hTMbed` recipe, which the feature layer will reuse.
+**Part 2 (analytical layer): BUILT + tuned through a 3-run ablation.** Feature layer →
+`enriched_graph_features_1` (18.4M pairs) → `join_disease_family_id` → candidate strategies → models:
+- **`JONvgmkZ` = CURRENT BASELINE** (run 3, **12 features**: 8 pruned + `ppi_common_neighbors_z`
+  + `ppi_evidence_depth` + `dwpc_GFGD` + `dwpc_GBGD`). Pooled AUC 0.895,
+  **macro per-disease AUC 0.8137**, degree spread +0.105.
+- superseded: `9Xr84fs9` (15 feat, per-disease 0.774) · `6EtVWdE2` (run 1, 8 feat, 0.761 — **failed**)
+  · `EHsHTJTG` (run 2, 10 feat, 0.777) · `5t2ek90a` (candidate_2 filter variant)
+
+**Read TARGET_PRIORITIZER §6f/§6g/§6h before touching the model** — the feature audit, the
+ablation results, and the mandatory feature-handling standard.
+
+Zones: `enriched_graph features_1`, `enriched_resampling_1`, `validation`, `persona`,
+**`family validation`** (per-family AUC + top-genes; all S3/parquet on `dataiku-managed-storage`).
+Kuzu snapshot = folder **`enriched_clean-gFdnaU` (`tblWzpfx`)** — all 10 `compute_enriched_*`
+Cypher/graph-feature recipes point at it.
+
+**Read TARGET_PRIORITIZER §6d/§6e/§8b first** — three leaks found and fixed, the granularity
+finding, and the Visual Graph Cypher queries.
 
 ## Next up
-- **Part 2 flagship (prioritized): Explainable Target Prioritizer** — a Visual ML + SHAP
-  target-ranking layer on the graph. Design in **`TARGET_PRIORITIZER.md`** (discovery-first;
-  network-topology features via Visual Graph plugin recipes; toxicity/(b) deferred).
-- **Task 10 (after the flagship):** add GO + gene2go and HPO (with HP↔MONDO reclassification)
-  layers, same zoned-hybrid pattern. Optional stretch: UBERON+Bgee anatomy, CTD, SIDER.
+- **Discuss disease-level granularity** — §6e shows family aggregation buys AUC
+  (breast cancer 0.704 → 0.907) but costs specificity (mechanism-specific DNA-repair genes →
+  pan-cancer drivers). Current recommendation: **split by family, report by disease.**
+- **Run the §8b Cypher queries** in the Graph Explorer (MRN-complex demo: RAD50/MRE11 novel
+  + NBN known). Stretch: materialize `predicted_score` as gene-node properties so the queries
+  stop needing pasted gene lists.
+- **Apples-to-apples model comparison** — candidate_2's population is a strict *subset* of
+  candidate_3's, so their AUCs aren't directly comparable; score `9Xr84fs9` on
+  `enriched_test_set_2` to settle it.
+- **Druggability / target class is the top remaining feature gap** (§5b new-candidates table).
+  It's the only thing that addresses the unresolved **ligand-vs-receptor** problem — the model
+  ranks non-druggable secreted peptides (GCG/GIP/IAPP) above the druggable receptors that are the
+  actual known targets (GLP1R/GIPR/CALCR). Cheapest first step: `is_plasma_membrane` /
+  `is_secreted` from GO cellular_component, **already in the graph** (7,569/20,861 genes).
+- **§5b still unbuilt**: `disease_phenotype_context`, `dwpc_GCcGD`, `dwpc_GHD` (blocked).
+  `has_inflammatory_go_annotation` was built and **rejected** (88% null, AUC exactly 0.500);
+  `dwpc_GFGD`/`dwpc_GBGD` are built and are the current baseline's biggest win.
+- Optional stretch, undecided: UBERON+Bgee anatomy, CTD, SIDER.
+
+## Sharp edges (bit us repeatedly — check these first)
+- **`node_index` is NOT stable** across `compute_kg` rebuilds (positional `reset_index`).
+  Always re-derive via `(node_id, node_type, node_source)`. Current personas:
+  breast cancer **15347**, breast carcinoma **16029**, obesity disorder **16415**,
+  morbid obesity **61925**.
+- **Stale schemas** on datasets whose upstream changed → rebuild with `--auto-update-schema`
+  (hit on `validation_set_personas`, `persona_scored`).
+- **Visual filter recipes can silently ignore the shown expression** if `uiData.$filterOptions`
+  is `"rules"` with a half-configured `conditions` block — set `mode`/`$filterOptions` to
+  `"CUSTOM"`. This caused a 14.79M-vs-6.75M row discrepancy that survived clean rebuilds.
+- **Manually-created datasets need `"managed": true`** or builds fail with
+  *"Clearing external datasets … is forbidden."*
+- **Execute Cypher *recipe*** is unreliable on this graph (opaque `IndexError`; buffer-pool
+  OOM on `1..3` expansion **and on the GO metapaths even with a fanout guard**). The interactive
+  Explorer works; heavy graph features are all Python now
+  (`compute_enriched_prox_closest_bfs_test`, `compute_enriched_rwr_score_1`,
+  `compute_dwpc_go_metapaths`). For metapath DWPCs the trick is that the weight **factorizes** —
+  associate right-to-left so you never form the gene×gene matrix.
+- **Audit `per_feature` after EVERY lab deploy.** DSS guesses `rescaling`/`missing_impute_with`
+  inconsistently — run 3's deploy came back `NONE`/`CONSTANT` on 9 of 12 features, run 2's mostly
+  correct, on identical data. Standard is `AVGSTD` + `IMPUTE MEAN` everywhere (TARGET_PRIORITIZER §6h);
+  `CONSTANT 0` on a high-null-gap feature re-opens the missingness leak.
+- **Report macro per-disease AUC, never pooled.** Pooled overstates by ~9 pts and hid a real
+  regression in ablation run 1 (pooled flat, per-disease −0.013).
+- **`prediction` column is near-useless for discovery** — the threshold is F1-optimised against a
+  ~2% base rate, so 590/762 known obesity targets are false negatives. Rank and take top-N.
 
 ## How I want you to work (my preferences)
 - **Never `git commit`/`push` without asking me first.** Make changes, summarize, ask.

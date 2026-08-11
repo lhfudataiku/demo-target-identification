@@ -1,9 +1,18 @@
 # Open Targets — EXTRACT association (Python: parquet load, per-part filter).
-# Uses the `genetic_association` DATATYPE (DisGeNET-curated analog: expert genetic/
-# clinical evidence — GWAS Catalog, ClinVar, Genomics England, Gene2Phenotype, UniProt,
-# Orphanet, ClinGen), EXCLUDING literature text-mining + animal-model datatypes that
-# make the overall score noisy.
-# Output raw_ot_assoc (targetId ENSG, diseaseId EFO/MONDO, score). No joins here.
+# Uses `genetic_association` (DisGeNET-curated analog: expert genetic/clinical evidence —
+# GWAS Catalog, ClinVar, Genomics England, Gene2Phenotype, UniProt, Orphanet, ClinGen)
+# + `somatic_mutation` (Cancer Gene Census, IntOGen, ClinVar somatic — added 2026-08-06,
+# cancer persona only, see PRIMEKG_MAPPING.md §5: it surfaces tumor-driver genes e.g.
+# PIK3CA/GATA3/MAP3K1/CDH1, complementary to genetic_association's germline-risk genes
+# e.g. BRCA1/2, ATM, PALB2, CHEK2). Still EXCLUDES literature text-mining, animal-model,
+# and known_drug datatypes (known_drug rejected as redundant with dwpc_GCD — see
+# TARGET_PRIORITIZER.md §11).
+# Output raw_ot_assoc (targetId ENSG, diseaseId EFO/MONDO, score, datatypes -- which
+# datatype(s) support the max score, kept for traceability). No joins here.
+#
+# NOTE: widens disease_protein/is_target for cancer-type diseases -- re-check
+# has-path-evidence coverage + the leakage diagnosis (TARGET_PRIORITIZER.md §6b) for
+# those diseases before trusting new Part 2 results there (decision log §12).
 import os
 import re
 import tempfile
@@ -14,7 +23,7 @@ import requests
 
 BASE = "https://ftp.ebi.ac.uk/pub/databases/opentargets/platform/26.06/output/"
 HEADERS = {"User-Agent": "Mozilla/5.0"}
-DATATYPE = "genetic_association"
+DATATYPES = ["genetic_association", "somatic_mutation"]
 try:
     SCORE_MIN = float(dataiku.get_custom_variables().get("ot_score_min", 0.3))
 except Exception:
@@ -33,10 +42,12 @@ for f in sorted(files):
     try:
         # by_datatype encodes the datatype in aggregationValue (aggregationType="dataType")
         p = pd.read_parquet(tmp, columns=["targetId", "diseaseId", "aggregationValue", "associationScore"])
-        frames.append(p[(p.aggregationValue == DATATYPE) & (p.associationScore >= SCORE_MIN)])
+        frames.append(p[p.aggregationValue.isin(DATATYPES) & (p.associationScore >= SCORE_MIN)])
     finally:
         os.remove(tmp)
 
-out = (pd.concat(frames, ignore_index=True).rename(columns={"associationScore": "score"})
-       .groupby(["targetId", "diseaseId"], as_index=False)["score"].max())
+all_rows = pd.concat(frames, ignore_index=True).rename(columns={"associationScore": "score"})
+out = (all_rows.groupby(["targetId", "diseaseId"], as_index=False)
+       .agg(score=("score", "max"),
+            datatypes=("aggregationValue", lambda s: "+".join(sorted(set(s))))))
 dataiku.Dataset("raw_ot_assoc").write_with_schema(out)

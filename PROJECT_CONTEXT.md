@@ -2,15 +2,17 @@
 
 > Internal context for a Dataiku DSS proof-of-concept. This file orients any
 > contributor (human or AI) on *why* the project exists, *who* it serves, and
-> *what* we are building.
+> *what* has been built.
 >
 > **The POC document set** (this file is the *project* view — why / who / scope / status):
 > - [PRIMEKG_MAPPING.md](PRIMEKG_MAPPING.md) — *engineering* view: per-source extraction,
 >   grounding, schema conformance, ETL/zone design (Part 1).
-> - [TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md) — Part 2 flagship design: the Explainable
->   Target Prioritizer analytical layer (Visual ML + SHAP; discovery-first).
+> - [TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md) — Part 2: the Explainable Target
+>   Prioritizer (features → model → validation → persona results).
 > - [RESEARCH_NOTE.md](RESEARCH_NOTE.md) — evidence base (literature/industry) behind the
 >   Part 2 feature & model choices.
+>
+> Decisions are logged in the **appendix** of each document, not inline.
 
 ## 1. Purpose
 
@@ -18,15 +20,12 @@ Demonstrate that the Dataiku platform can **recreate a biomedical knowledge-grap
 data pipeline for drug-discovery target identification**, end to end, in a single
 governed flow.
 
-The POC has two highlights:
+Two highlights:
 
-1. **Recreate the PrimeKG pipeline by reusing the scripts published by PrimeKG**
-   ([mims-harvard/PrimeKG](https://github.com/mims-harvard/PrimeKG#building-an-updated-primekg)) —
-   ingest multiple public biomedical sources and harmonize them into graph
-   nodes and edges, orchestrated as a Dataiku Flow.
-2. **Materialize and explore the graph using the Dataiku Visual Graph plugin** —
-   turn the harmonized node/edge tables into an interactive, queryable knowledge
-   graph for target exploration.
+1. **Recreate the PrimeKG pipeline** ([mims-harvard/PrimeKG](https://github.com/mims-harvard/PrimeKG#building-an-updated-primekg)) —
+   ingest public biomedical sources and harmonize them into graph nodes/edges as a Dataiku Flow.
+2. **Materialize and explore the graph with the Dataiku Visual Graph plugin** — an
+   interactive, queryable knowledge graph for target exploration.
 
 ## 2. Business context
 
@@ -37,16 +36,12 @@ phenotypic screening to a **data-driven, targeted approach**, where **target
 identification** is the critical "go/no-go" checkpoint: generating a therapeutic
 hypothesis backed by foundational evidence *before* significant capital is deployed.
 
-This requires cross-referencing multi-omics evidence (genomic, transcriptomic,
-clinical) to find novel pathophysiological pathways and "druggable" targets
-(enzymes, receptors, transcription factors, DNA sequences). Knowledge graphs are
-the central tool for solving the **data-silo problem** — integrating fragmented
-biomedical data so that ML and analytics can reason over it at scale.
+Knowledge graphs are the central tool for the **data-silo problem** — integrating
+fragmented biomedical data so ML can reason over it at scale.
 
-**Value narrative for the POC:** integrating siloed biomedical data into one graph
-enables (a) discovery of novel targets, (b) early prediction of off-target toxicity
-and clinical biomarkers, and therefore (c) reduced early-stage attrition and higher
-probability of success (PoS) downstream.
+**Value narrative:** integrating siloed data into one graph enables (a) discovery of
+novel targets, (b) early prediction of off-target toxicity and clinical biomarkers,
+therefore (c) reduced early-stage attrition and higher probability of success.
 
 **Accounts of interest:** Ipsen, Boehringer, Pfizer, Astellas (Japan), Jazz.
 
@@ -54,239 +49,202 @@ probability of success (PoS) downstream.
 
 | # | Persona | Goal |
 |---|---------|------|
-| 1 | Computational biologist, early R&D (metabolic diseases) | Understand obesity-related biological networks to identify key inflammatory & metabolic targets (e.g., IL6, TNF, IL1B; LEP/LEPR & insulin signaling → GLP-1 agonist) as intervention points. |
-| 2 | Oncology data scientist, cancer center | Investigate signaling hubs/pathways in breast-cancer progression to validate & extend targets across tumor biology and immune response (e.g., PI3K/AKT/mTOR — PIK3CA, AKT1, MTOR, PTEN; hormone signaling — ESR1). |
+| 1 | Computational biologist, early R&D (metabolic diseases) | Understand obesity-related biological networks to identify key inflammatory & metabolic targets (e.g. IL6, TNF, IL1B; LEP/LEPR & insulin signaling → GLP-1 agonist) as intervention points. |
+| 2 | Oncology data scientist, cancer center | Investigate signaling hubs/pathways in breast-cancer progression to validate & extend targets across tumor biology and immune response (e.g. PI3K/AKT/mTOR — PIK3CA, AKT1, MTOR, PTEN; hormone signaling — ESR1). |
 
-These two disease areas (metabolic/obesity and breast cancer) are the concrete
-demo scenarios to drive graph exploration and, later, target prioritization.
+Persona diseases drive both graph exploration and Part 2 validation
+(TARGET_PRIORITIZER §9).
 
-## 4. Scope
+## 4. Scope & status
 
-**Part 1 (this POC's core):** ingest multiple biomedical datasets and build a
-knowledge graph, recreating the PrimeKG pipeline in a Dataiku Flow and rendering
-it with the Visual Graph plugin.
+| Part | Scope | Status |
+|---|---|---|
+| **Part 1 — knowledge graph** | Ingest biomedical sources, harmonize to PrimeKG-exact schema, render in Visual Graph | **BUILT** — 113,544 nodes / 2,852,298 edges, 18 relations |
+| **Part 2 — Explainable Target Prioritizer** | Visual ML + SHAP ranking of candidate targets per disease, with on-graph evidence paths | **BUILT & VALIDATED** — see TARGET_PRIORITIZER.md |
+| Part 2b — toxicity / safety | DepMap essentiality + tissue expression → efficacy×safety | **Deferred** |
+| Literature / trial cross-reference | PubMed, ClinicalTrials.gov | **Optional, not built** |
 
-**Part 2 (flagship analytical layer — now designed; prioritized ahead of Task 10):**
-See **[TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md)** for the full design — an
-**Explainable Target Prioritizer** (Visual ML + SHAP, discovery-first).
-- Train an ML model on graph-derived features to prioritize targets.
-- Visualize/contextualize predictions on the graph.
-- Cross-reference targets with literature, trial registries, and patents
-  (PubMed, ClinicalTrials.gov — optional).
+## 5. Data sources — in the build
 
-## 5. Data sources
+Every source below is freely downloadable over HTTP(S) (no credentials) and is fetched
+inside a DSS Python recipe. Extraction/grounding detail per source: PRIMEKG_MAPPING §5.
 
-PrimeKG integrates ~20 public resources into a graph of ~17k disease nodes and
-~4M relationships across vertex types: gene/protein, drug, disease, phenotype,
-anatomy, GO biological-process / molecular-function / cellular-component, pathway,
-exposure, and side-effect.
+| Source | Provides | Node types contributed | Edge relations contributed |
+|---|---|---|---|
+| **HGNC** | gene identity vocab (symbol ↔ Entrez ↔ UniProt) | — *(vocab; every gene-touching edge joins on it)* | — |
+| **MONDO** (`MONDO.obo`) | disease backbone + cross-reference hub | `disease` (25,906 MONDO + 1,247 MONDO_grouped) | `disease_disease` |
+| **Open Targets** (26.06) | gene–disease associations + the whole drug layer | `drug` (5,282, DrugBank-keyed) | `disease_protein`, `drug_protein`, `indication`, `drug_investigated_for` |
+| **PPI: Menche + HuRI + STRING** | protein interactome (merged, provenance kept in `edge_metadata.ppi_sources`) | `gene/protein` (20,861, NCBI) | `protein_protein` |
+| **Reactome** | curated pathways | `pathway` (2,883) | `pathway_protein`, `pathway_pathway` |
+| **GO + NCBI gene2go** | functional annotation, 3 namespaces | `biological_process` (24,129), `molecular_function` (10,041), `cellular_component` (4,075) | `bioprocess_protein`, `molfunc_protein`, `cellcomp_protein`, `bioprocess_bioprocess`, `molfunc_molfunc`, `cellcomp_cellcomp` |
+| **HPO** (`hp.obo`, `phenotype.hpoa`, `genes_to_phenotype`) | phenotype layer | `effect/phenotype` (19,120) | `disease_phenotype_positive`, `disease_phenotype_negative`, `phenotype_protein`, `phenotype_phenotype` |
+| **Hetionet DO Slim** | 137 curated Disease Ontology terms | **none — adds no nodes or edges** | **none** |
 
-**Two ways to obtain the data:**
-- **Pre-built graph** — `kg.csv` from Harvard Dataverse
-  (`https://dataverse.harvard.edu/api/access/datafile/6180620`), no credentials.
-  Fast path to a working Visual Graph demo; kept as a fallback.
-- **Build from scratch (chosen path)** — run PrimeKG's per-source processors + the
-  `knowledge_graph/` assembly in a Dataiku Flow. This is what showcases the
-  pipeline-recreation story (highlight #1). Several sources are credential-gated or
-  have shifted access since PrimeKG was published — resolved source-by-source in §6.
+**Hetionet is not a graph source.** It is a curated *anchor set* used only to build
+`disease_family_id` for leakage-controlled train/test splitting (TARGET_PRIORITIZER §6).
 
-**POC build strategy:** freely-downloadable sources + **UMLS 2024AB** (on hand) +
-**Menche PPI** (downloaded) + **Open Targets** for gene–disease (replacing DisGeNET).
-**DrugBank is dropped** (no drug layer); OMIM deferred. This covers both personas.
-Scoping doc also lists Hetionet and Open Targets as alternative/complementary graphs.
+## 6. Data sources — deferred or not freely accessible
 
-## 6. Source-by-source status & access ⚠️
+| Source | Gate / reason | Decision |
+|---|---|---|
+| **DisGeNET** | Portal moved to a paid API model (2023); legacy URL returns an HTML login page | **Replaced by Open Targets** for gene–disease |
+| **DrugBank** | Account + commercial license, manual download | **Replaced by Open Targets** drug layer (DrugBank IDs still used as `node_id` via OT xref) |
+| **UMLS Metathesaurus** | UMLS/UTS license (2024AB is on hand) | **Parked** — both UMLS-speaking sources were replaced by OT, which is EFO/MONDO-native, so nothing is left to translate (PRIMEKG_MAPPING §2) |
+| **OMIM** | Free API key required | **Deferred** — loses Mendelian-disease enrichment |
+| **DrugCentral** | Full dump ~4.5 GB; REST API viable | **Fallback only** — the sole route to contraindication / off-label edges, which OT lacks |
+| **UBERON + Bgee** | Free, but heavy (anatomy + expression) | **Optional / stretch** — would add ~3M anatomy–protein edges |
+| **CTD** | Free | **Optional / stretch** — exposure edges |
+| **SIDER** | Free | **Optional / stretch** — drug side-effect edges |
+| **disgenet.cn RNA-KG** | Free | **Optional** — an RNA-centric KG, *not* a DisGeNET substitute (gene–disease only 5,959) |
 
-Findings from auditing PrimeKG's `datasets/primary_data_resources.sh` + notebooks,
-**with live URL checks performed 2026-06 (HTTP status + content-type verified).**
+## 7. Build status
 
-### Freely downloadable (no key) — verified live
+**Instance:** `design.solutions.dataiku-dss.io` (DSS 14.7), project `KNOWLEDGE_GRAPH_PRIMEKG`.
+**Code env:** `primekg_kg` (py3.11: pandas, pyarrow, requests, obonet, networkx, scipy).
+**Storage:** S3 `dataiku-managed-storage`, parquet (Spark-capable).
 
-All reachable over HTTP(S) (none actually FTP), so each is fetchable inside a DSS
-Python/Download recipe. `.gz` sources need decompression in the recipe.
+**Flow pattern:** one zone per source — Python `extract_*` (fetch → parse to native ids) →
+visual `harmonize_*` (Prepare/Join → 8-col name-free `*_edges`) → Python `compute_kg`
+assembly (stack → clean → reverse-all → attach names → disease grouping → giant component
+→ emergent `node_index`). Zone/recipe detail: PRIMEKG_MAPPING §4.
 
-| Source | Feeds | Format | Live? |
-|--------|-------|--------|-------|
-| **HGNC** (genenames custom download) | `gene_names.csv` (gene/protein identity: symbol↔Entrez) | tab-text | ✅ 200 |
-| **MONDO** (`MONDO.obo`) | disease nodes + `mondo_references.csv` | obo (~52 MB) | ✅ 200 |
-| **HPO** (`hp.obo`, `phenotype.hpoa`) | phenotype nodes + disease–phenotype | obo / tsv | ✅ 200 |
-| **GO** (`go-basic.obo`) + **NCBI gene2go** | GO terms + protein–GO | obo / `.gz` | ✅ 200 |
-| **Reactome** (3 files) | pathway nodes/edges + NCBI↔pathway | txt | ✅ 200 |
-| **UBERON** (`ext.obo`) + **Bgee** | anatomy + anatomy–gene expression | obo / `.gz` | ✅ 200 |
-| **CTD** (`CTD_exposure_events`) | exposure edges | `.gz` | ✅ 200 |
-| **SIDER** (`meddra_all_se`, `drug_atc`) | side-effect edges | `.gz` / tsv | ✅ 200 |
+**Outputs (PrimeKG-exact schema):** `graph_nodes` · `kg` (12-col) · `graph_edges` (4-col)
+· `edge_metadata` (provenance side table: `datatypes`, `ppi_sources`).
 
-### Access-changed / credential-gated — current decisions
+### Nodes — 113,544
 
-| Source | Gate / change | Decision |
-|--------|---------------|----------|
-| **DisGeNET** | Legacy static URL now returns an **HTML login page** (portal moved to paid/API model 2023). | **REPLACED by Open Targets** for gene–disease edges. See §7. |
-| **DrugBank** | Account + **license**; manual download. | **DROPPED.** Removes the drug layer (`drug_protein`, `drug_drug`, `drugbank_vocabulary`, `drugbank_atc_codes` + 12 feature files). Neither persona needs drug nodes. *(If re-added later: via the Snowflake Marketplace **"DrugBank: Biomedical Knowledge"** listing `GZTYZJ6Q7W0` — relational tables, not the XML PrimeKG parses, so it'd be new SQL recipes.)* |
-| **UMLS Metathesaurus** | UMLS license via UTS. | **AVAILABLE — full 2024AB on hand.** Powers the UMLS↔MONDO disease crosswalk. See §7. |
-| **PPI** | No download URL in the script ("copy manually"). | **Menche et al. 2015 interactome** (downloaded). See §7. |
-| **DrugCentral** | `drug_disease.csv` lives in the `omop_relationship` table; full DB dump is ~4.5 GB. | **Use the DrugCentral REST API** (`/omop_relationship/relationship_name/{type}`) — no download, no DB. ~70k edges, carries `umls_cui` + `struct_id`. Public Postgres is a fallback. Drug→target comes from a separate flat file. See §7. |
-| **OMIM** | **API key** (free at omim.org/api). | Deferred. Loses OMIM Mendelian-disease enrichment (`append_omim.ipynb`). |
+| Node type | Count | Source of record |
+|---|--:|---|
+| disease | 27,153 | MONDO (25,906 + 1,247 grouped) |
+| biological_process | 24,129 | GO |
+| gene/protein | 20,861 | NCBI (via HGNC) |
+| effect/phenotype | 19,120 | HPO |
+| molecular_function | 10,041 | GO |
+| drug | 5,282 | DrugBank ID via OT xref |
+| cellular_component | 4,075 | GO |
+| pathway | 2,883 | Reactome |
 
-### Data inventory — what's already in `data/`
+### Edges — 2,852,298 (undirected; reverse edges included)
 
-| Path | Source | Status |
-|------|--------|--------|
-| `data/umls_for_primekg.rrf` (430 MB) | UMLS 2024AB MRCONSO, pre-filtered | ✅ ready → `umls_mondo` |
-| `data/PPI/DataS1_interactome.tsv` (3.3 MB) | Menche 2015 PPI | ✅ ready → `protein_protein` |
-| `data/PPI/DataS2–4_*.tsv` | Menche disease-genes / extras | bonus, not required |
-| `data/drug.target.interaction.tsv` (4.3 MB, 19,379 rows) | DrugCentral drug→target | ✅ DrugBank-free drug–protein substitute |
-| `data/DisGeNET/items.csv` + `interactions.csv` | **RNA-centric KG** (NOT DisGeNET classic) | optional enrichment only — see §7 |
+| Relation | Count | Provenance |
+|---|--:|---|
+| protein_protein | 520,380 | Menche + HuRI + STRING (merged; `ppi_sources`) |
+| phenotype_protein | 487,054 | HPO `genes_to_phenotype` |
+| disease_phenotype_positive | 380,280 | HPO `phenotype.hpoa` |
+| disease_protein | 378,888 | OT `genetic_association` + `somatic_mutation` @≥0.3 (`datatypes`) |
+| bioprocess_protein | 251,858 | GO + gene2go |
+| cellcomp_protein | 186,806 | GO + gene2go |
+| molfunc_protein | 156,248 | GO + gene2go |
+| disease_disease | 129,606 | MONDO `is_a` |
+| pathway_protein | 97,618 | Reactome NCBI2Reactome |
+| bioprocess_bioprocess | 81,726 | GO hierarchy |
+| drug_investigated_for | 69,682 | OT `clinical_indication`, in-trial stages |
+| phenotype_phenotype | 45,912 | HPO hierarchy |
+| molfunc_molfunc | 24,536 | GO hierarchy |
+| drug_protein | 15,918 | OT mechanism of action |
+| indication | 9,418 | OT `clinical_indication`, APPROVAL/PREAPPROVAL |
+| cellcomp_cellcomp | 9,386 | GO hierarchy |
+| pathway_pathway | 5,798 | Reactome hierarchy |
+| disease_phenotype_negative | 1,184 | HPO (`NOT` qualifier) |
 
-**Still to fetch (free, verified live):** HGNC, MONDO, HPO, GO, gene2go, Reactome,
-UBERON, Bgee, CTD, SIDER, **Open Targets** (association_overall_direct + target + disease).
+**Validated:** 0 duplicate rows, 0 self-loops, 0 dangling endpoints, reverse-all symmetry
+holds on every sampled relation.
 
-**Hard-blocker dependencies:** **MONDO** (disease backbone *and* the MONDO half of the
-UMLS crosswalk) and **HGNC** (`gene_names.csv` — every gene-touching edge joins on it)
-must be fetched before anything assembles.
+**Kuzu snapshot:** folder `enriched_clean-gFdnaU` (`tblWzpfx`), built by `build-graph-gFdnaU`.
+All `compute_enriched_*` graph-feature recipes read from it.
 
-## 7. Resolved source schemas & decisions
+**Visual Graph Editor** webapp `lVWgU2m` → `graph_nodes`/`graph_edges`; runs as a local
+process (`containerMode=NONE`). Schema mapping: node id=`node_index`, name=`node_name`,
+group by `node_type`/`node_source`; edge source=`x_index`, target=`y_index`.
 
-> **Migrated to [PRIMEKG_MAPPING.md](PRIMEKG_MAPPING.md).** The per-source extraction,
-> grounding, and schema detail (Open Targets gene–disease + drug layer, PPI/Menche, the
-> MONDO vs UMLS roles + why UMLS is parked, disgenet.cn RNA-KG, DrugCentral fallback)
-> now lives in the mapping doc §2 and §5, alongside the reuse/ETL strategy. See also
-> the per-source ETL/zone design (§4) and open decisions (§7) there.
+## 8. Reference comparison vs published PrimeKG
 
-## 7b. Build status — Part 1 (BUILT & verified on DSS project KNOWLEDGE_GRAPH_PRIMEKG)
+Reference: Chandak et al., *Sci Data* 2023, Tables
+[2](https://www.nature.com/articles/s41597-023-01960-3/tables/2) /
+[3](https://www.nature.com/articles/s41597-023-01960-3/tables/3). Both are undirected.
 
-Instance `design.solutions.dataiku-dss.io` (DSS 14.7). Code env `primekg_kg`
-(py3.11: pandas, pyarrow, requests, obonet, networkx). Datasets on `filesystem_managed`.
-
-**Flow = per-source zones, hybrid Python + visual** (full zone/recipe map + build
-gotchas in [PRIMEKG_MAPPING.md](PRIMEKG_MAPPING.md) §4/§8). Each source zone: Python
-`extract_*` (load + parse to native ids) → visual `harmonize_*` (Prepare; + visual Join
-for Open Targets id-remap) → 8-col name-free `*_edges`. The Python `compute_kg` assembly
-stacks all `*_edges`, attaches node names from vocab, reverse-alls edges, applies disease
-grouping (published PrimeKG map), and keeps the giant connected component.
-
-**8 zones:** Genes (HGNC) · Diseases (MONDO) · PPI (Menche) · Open Targets (ref) ·
-Gene-Disease (OT) · Pathways (Reactome) · Drugs (OT) · Assembly.
-
-**Conformant outputs (PrimeKG-exact schema):**
-- `graph_nodes` — **51,084**: `node_index, node_id, node_type, node_name, node_source`.
-  Native ids (Entrez; bare-integer MONDO e.g. `2816`; grouped = underscore-joined).
-  18,002 gene/protein (NCBI) · 24,917 disease (23,670 MONDO + 1,247 MONDO_grouped) ·
-  2,883 pathway (REACTOME) · 5,282 drug (DrugBank).
-- `kg` — **724,894** edges: `relation, display_relation, x_index, x_id, x_type,
-  x_name, x_source, y_index, y_id, y_type, y_name, y_source` (undirected; reverse edges
-  included). protein_protein 275,726 · disease_protein 173,442 · pathway_protein 97,618 ·
-  disease_disease 77,292 · drug_investigated_for 69,682 · drug_protein 15,918 ·
-  indication 9,418 · pathway_pathway 5,798.
-- `graph_edges` — slim `relation, display_relation, x_index, y_index`.
-
-**Source specifics** (detail in PRIMEKG_MAPPING §5):
-- gene-disease = OT `genetic_association` datatype @score≥0.3 (DisGeNET-curated analog,
-  ~89k pairs). drug-disease split: `indication` (approved) vs `drug_investigated_for`
-  (trials; stage in `display_relation`). drug-target = OT mechanism (action type in
-  `display_relation`). Drug nodes keyed on DrugBank ID via OT molecule xref.
-- Reused PrimeKG harmonization: clean_edges grounding-drop, reverse-all, disease grouping
-  (Dataverse map → 1,247 grouped), giant-component filter.
-
-**Visual Graph Editor** webapp `lVWgU2m` (type `webapp_visual-graph_visual-graph-editor`)
-→ `graph_nodes`/`graph_edges`, runs as local process (`containerMode=NONE`; the plugin
-code-env container image isn't built on this instance). UI schema mapping: node group
-id=`node_index`, name=`node_name`, group by `node_type`/`node_source`; edge group
-source=`x_index`, target=`y_index`, properties `relation`/`display_relation`.
-
-**Not yet built** (task 10, same zoned-hybrid pattern): GO + gene2go (bioprocess/
-molfunc/cellcomp + protein-GO), HPO (phenotype + disease_phenotype±, HP↔MONDO
-reclassification). Optional/stretch: UBERON+Bgee anatomy, CTD exposure, SIDER.
-
-## 7d. Reference comparison vs published PrimeKG
-
-Reference: PrimeKG paper (Chandak et al., *Sci Data* 2023), Tables 2–3
-([nodes](https://www.nature.com/articles/s41597-023-01960-3/tables/2),
-[edges](https://www.nature.com/articles/s41597-023-01960-3/tables/3)). Both PrimeKG
-and our `kg` are **undirected (reverse edges included)**, so counts are directly
-comparable. "Current" = our conformant build as of the drug-layer milestone.
-
-### Nodes
-
-| Node type | PrimeKG | Current | Notes |
+| Node type | PrimeKG | Ours | Note |
 |---|--:|--:|---|
-| Biological process (GO) | 28,642 | 0 | GO/gene2go not built |
-| Protein (gene/protein) | 27,671 | 18,002 | rises once GO/Bgee/anatomy proteins added |
-| Disease | 17,080 | 24,917 | higher: OT + full MONDO hierarchy; less grouping/pruning |
-| Phenotype (HPO) | 15,311 | 0 | HPO not built |
-| Anatomy (UBERON) | 14,035 | 0 | UBERON/Bgee not built |
-| Molecular function (GO) | 11,169 | 0 | not built |
-| Drug | 7,957 | 5,282 | OT drugs w/ DrugBank xref vs full DrugBank |
-| Cellular component (GO) | 4,176 | 0 | not built |
-| Pathway | 2,516 | 2,870 | close (Reactome version) |
-| Exposure (CTD) | 818 | 0 | CTD not built |
-| **Total** | **129,375** | **51,084** | |
+| Biological process | 28,642 | 24,129 | close |
+| Protein | 27,671 | 20,861 | no anatomy/exposure proteins |
+| Disease | 17,080 | 27,153 | higher — full MONDO, less grouping |
+| Phenotype | 15,311 | 19,120 | higher — full HPO |
+| Anatomy | 14,035 | 0 | UBERON/Bgee not built |
+| Molecular function | 11,169 | 10,041 | close |
+| Drug | 7,957 | 5,282 | OT drugs with a DrugBank xref only |
+| Cellular component | 4,176 | 4,075 | close |
+| Pathway | 2,516 | 2,883 | close |
+| Exposure | 818 | 0 | CTD not built |
+| **Total** | **129,375** | **113,544** | |
 
-### Edges (undirected counts)
-
-| Relation | PrimeKG | Current | Status |
+| Relation | PrimeKG | Ours | Note |
 |---|--:|--:|---|
-| anatomy–protein (present) | 3,036,406 | 0 | Bgee — not built |
-| drug–drug | 2,672,628 | 0 | DrugBank-only (DDI) — out of scope |
-| protein–protein | 642,150 | 275,724 | Menche only (PrimeKG adds BioGRID+STRING) |
-| disease–phenotype (pos) | 300,634 | 0 | HPO — not built |
-| biological process–protein | 289,610 | 0 | gene2go — not built |
-| cellular component–protein | 166,804 | 0 | gene2go — not built |
-| disease–protein | 160,822 | 173,442 | **OT genetic_association datatype ≥0.3 (~89k pairs) — DisGeNET-curated analog, comparable** |
-| molecular function–protein | 139,060 | 0 | gene2go — not built |
-| drug–phenotype | 129,568 | 0 | SIDER — not built |
-| biological process–biological process | 105,772 | 0 | GO — not built |
-| pathway–protein | 85,292 | 95,962 | **close** |
-| disease–disease | 64,388 | 77,292 | higher (MONDO version) |
-| drug–disease (contraindication) | 61,350 | 0 | DrugCentral-only — not in OT |
-| drug–protein | 51,306 | 15,918 | OT mechanism vs DrugBank (all target roles) |
-| anatomy–protein (absent) | 39,774 | 0 | Bgee — not built |
-| phenotype–phenotype | 37,472 | 0 | HPO — not built |
-| anatomy–anatomy | 28,064 | 0 | UBERON — not built |
-| molecular function–molecular function | 27,148 | 0 | GO — not built |
-| drug–disease (indication, approved) | 18,776 | 9,418 | OT `clinical_indication` filtered to APPROVAL/PREAPPROVAL |
-| drug–disease (investigational) | — | 69,682 | `drug_investigated_for` — OT in-trial stages (PrimeKG has no equivalent) |
-| cellular component–cellular component | 9,690 | 0 | GO — not built |
-| phenotype–protein | 6,660 | 0 | DisGeNET phenotype — not built |
-| drug–disease (off-label) | 5,136 | 0 | DrugCentral-only — not in OT |
-| pathway–pathway | 5,070 | 5,772 | **close** |
-| exposure–* (6 relations) | 14,532 | 0 | CTD — not built |
-| disease–phenotype (negative) | 2,386 | 0 | HPO — not built |
-| **Total** | **8,100,498** | **724,894** | |
+| anatomy–protein (present/absent) | 3,076,180 | 0 | not built |
+| drug–drug | 2,672,628 | 0 | DrugBank-only DDI, out of scope |
+| protein–protein | 642,150 | 520,380 | **closed the gap** — was 276k with Menche alone |
+| disease–phenotype (pos) | 300,634 | 380,280 | higher — full HPO |
+| biological process–protein | 289,610 | 251,858 | close |
+| cellular component–protein | 166,804 | 186,806 | close |
+| disease–protein | 160,822 | 378,888 | higher — OT genetic + somatic |
+| molecular function–protein | 139,060 | 156,248 | close |
+| drug–phenotype | 129,568 | 0 | SIDER not built |
+| bioprocess–bioprocess | 105,772 | 81,726 | close |
+| pathway–protein | 85,292 | 97,618 | close |
+| disease–disease | 64,388 | 129,606 | higher — MONDO version |
+| drug–disease (contraindication) | 61,350 | 0 | DrugCentral-only |
+| drug–protein | 51,306 | 15,918 | OT mechanism vs DrugBank all-roles |
+| phenotype–phenotype | 37,472 | 45,912 | close |
+| molfunc–molfunc | 27,148 | 24,536 | close |
+| drug–disease (indication) | 18,776 | 9,418 | OT APPROVAL/PREAPPROVAL only |
+| drug–disease (investigational) | — | 69,682 | **no PrimeKG equivalent** |
+| cellcomp–cellcomp | 9,690 | 9,386 | close |
+| phenotype–protein | 6,660 | 487,054 | **far higher** — HPO `genes_to_phenotype` is much denser than PrimeKG's DisGeNET-derived edge |
+| drug–disease (off-label) | 5,136 | 0 | DrugCentral-only |
+| pathway–pathway | 5,070 | 5,798 | close |
+| exposure–* | 14,532 | 0 | CTD not built |
+| disease–phenotype (neg) | 2,386 | 1,184 | lower |
+| **Total** | **8,100,498** | **2,852,298** | |
 
-**Reading this:** where we have the layer, counts are in the right ballpark
-(disease–protein, pathway–protein, pathway–pathway) or intentionally different
-(indication higher — OT broader; drug–protein lower — OT mechanism vs DrugBank's
-target/enzyme/carrier/transporter; PPI lower — Menche only). The bulk of the gap is
-**unbuilt layers** (GO, HPO, anatomy, exposure) and **deliberately-excluded** ones
-(drug–drug DDI; contraindication/off-label — see §7, PRIMEKG_MAPPING §7).
+**Reading this:** every built layer is now in the right ballpark or intentionally different.
+The remaining gap is almost entirely **unbuilt layers** (anatomy ~3.1M, drug–drug 2.7M,
+side-effect, exposure) rather than under-coverage of what we do build.
 
-## 8. Platform building blocks (Dataiku)
+## 9. Platform building blocks (Dataiku)
 
-- **Flow + Flow zones** — one zone per source group (download → parse → node/edge CSVs)
-  feeding a "graph assembly" zone, recreating the PrimeKG structure.
-- **Code recipes** — reuse PrimeKG's Python parsers (OBO parsers, per-source processors).
-- **Visual Graph plugin** — render and explore the harmonized graph (highlight #2).
-- **Code env** — Python env mirroring PrimeKG's `requirements.txt`.
-- **Plugins** — Visual Graph (+ any others added during build).
-- **Supported connections (per scoping):** PostgreSQL ✅, Snowflake ✅, MSSQL ✅(dates parsed),
-  Redshift ✅(needs S3 fallback), S3 ✅, Azure Blob ✅. Not targeted: Synapse, BigQuery, GCS.
+- **Flow + flow zones** — one zone per source group, feeding an assembly zone.
+- **Code recipes** — Python for extraction, graph math, and anything visual recipes can't express.
+- **Visual recipes** — Prepare/Join/Group/Split for harmonization and resampling.
+- **Visual Graph plugin** — Build Graph (Kuzu), Execute Cypher, Graph Features, Explorer webapp.
+- **Visual ML** — XGBoost + native Shapley for Part 2.
+- **Code env** `primekg_kg`; storage on S3 `dataiku-managed-storage` (parquet).
 
-## 9. Open questions
+## 10. Open questions
 
-- **Open Targets scope:** full association set with a `score` threshold, or
-  pre-filter to the persona-disease MONDO subtrees to keep the POC graph small?
-- Which subset of node/edge types is the minimum to make persona stories #1 and #2 land?
-- Is Part 2 (ML target prioritization) in scope for this POC or a follow-on?
-- DrugCentral `drug_disease` — include it via the REST API (~70k edges, drug nodes
-  consistent with the drug→target layer), or leave the drug–disease edge out? Pure
-  scope decision; no infra/download cost either way.
+- Which optional layers (anatomy/CTD/SIDER) are worth the ingest cost for the demo story?
+- Include DrugCentral contraindication/off-label edges (~70k, needs UMLS crosswalk revived)?
+- Part 2b (toxicity/safety) — in scope for this POC or a follow-on?
 
-**Resolved:** DisGeNET → replaced by Open Targets · DrugBank → dropped · UMLS →
-available (2024AB) · PPI → Menche (downloaded) · build path → from-scratch in DSS.
+---
+
+## Appendix — decision log
+
+| Date | Decision |
+|---|---|
+| 2026-06 | **Build from scratch** in DSS rather than loading the pre-built Dataverse `kg.csv` — the pipeline recreation *is* highlight #1. Pre-built graph kept as a fallback. |
+| 2026-06 | **DisGeNET → Open Targets** for gene–disease (portal went paid). |
+| 2026-06 | **DrugBank dropped → Open Targets drug layer** (license gate). DrugBank IDs retained as `node_id` via OT cross-reference. |
+| 2026-06 | **UMLS parked** — replacing both UMLS-speaking sources with OT (EFO/MONDO-native) left nothing to translate. Recipes kept in repo. |
+| 2026-06 | **PPI = Menche only** initially; storage `filesystem_managed`. |
+| 2026-07 | **Part 2 prioritized ahead of further source ingestion** — a more valuable graph beats a bigger graph for the demo. |
+| 2026-08-05 | **Task 10 scope set:** add GO+gene2go and HPO (with HP↔MONDO reclassification and a `phenotype_protein` replacement); add `somatic_mutation` to the OT gene–disease filter (cancer persona); add `drug_investigated_for` to the Kuzu graph. **Rejected:** OT `known_drug` datatype (redundant with the `dwpc_GCD` metapath). |
+| 2026-08-06 | **PPI augmented to Menche + HuRI + STRING** as a single `protein_protein` relation with `ppi_sources` provenance in `edge_metadata`, rather than separate relations — HuRI adds unbiased Y2H coverage, STRING adds filtered experimental/database evidence. |
+| 2026-08-08 | **Hetionet DO Slim adopted as split-control vocabulary only** — no graph contribution. |
+| 2026-08-09 | **Storage migrated to S3 `dataiku-managed-storage` (parquet)** to enable the Spark engine. All new datasets go there. |
+| 2026-08-10 | Reference comparison refreshed: PPI gap closed (276k → 520k); `phenotype_protein` far exceeds PrimeKG because HPO's own gene file is denser than PrimeKG's DisGeNET-derived edge. |
 
 ## References
 
 - PrimeKG repo & build guide: https://github.com/mims-harvard/PrimeKG#building-an-updated-primekg
-- PrimeKG (Robert Haas overview): https://robert-haas.github.io/awesome-biomedical-knowledge-graphs/notebooks/primekg.html
+- PrimeKG paper: Chandak et al., *Sci Data* 2023
 - Hetionet: https://github.com/hetio/hetionet
 - Open Targets: https://platform-docs.opentargets.org/getting-started
