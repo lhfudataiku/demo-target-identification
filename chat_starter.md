@@ -6,12 +6,12 @@ identification**, and renders it with the **Visual Graph** plugin.
 
 ## Orient yourself first (do this before acting)
 1. Read the POC document set (source of truth — trust over your memory):
-   - **`PROJECT_CONTEXT.md`** — project view: why/personas/scope §1–5, source decisions §6,
-     build status §7b, PrimeKG reference comparison §7d.
-   - **`PRIMEKG_MAPPING.md`** — engineering view: per-source ETL/zones §4, MONDO-vs-UMLS §2,
-     source schemas §5, build gotchas §8.
-   - **`TARGET_PRIORITIZER.md`** — Part 2 flagship design: the Explainable Target Prioritizer
-     (ML formulation §4, feature engineering §5, flow §7).
+   - **`PROJECT_CONTEXT.md`** — project view: purpose/personas §1–4, sources in/out §5–6,
+     build status + node/edge provenance §7, PrimeKG comparison §8. Decisions in the appendix.
+   - **`PRIMEKG_MAPPING.md`** — engineering view: schema §1, MONDO-vs-UMLS §2, flow zones +
+     build gotchas §4, entity→source mapping §5. Decisions in the appendix.
+   - **`TARGET_PRIORITIZER.md`** — Part 2, in MLOps order: data §4, features §5, splitting §6,
+     hyperparameters §7, feature/model selection §8, validation §9, persona results §10.
    - **`RESEARCH_NOTE.md`** — evidence base behind the Part 2 feature/model choices
      (per-reference summaries; **unvalidated corpus** — verify before client-facing use).
 2. Check my auto-memory (`MEMORY.md` + files) for standing preferences.
@@ -41,38 +41,38 @@ HP↔MONDO reclassification). UMLS retired; DrugBank/DisGeNET dropped.
 
 **Part 2 (analytical layer): BUILT + tuned through a 3-run ablation.** Feature layer →
 `enriched_graph_features_1` (18.4M pairs) → `join_disease_family_id` → candidate strategies → models:
-- **`JONvgmkZ` = CURRENT BASELINE** (run 3, **12 features**: 8 pruned + `ppi_common_neighbors_z`
-  + `ppi_evidence_depth` + `dwpc_GFGD` + `dwpc_GBGD`). Pooled AUC 0.895,
-  **macro per-disease AUC 0.8137**, degree spread +0.105.
-- superseded: `9Xr84fs9` (15 feat, per-disease 0.774) · `6EtVWdE2` (run 1, 8 feat, 0.761 — **failed**)
-  · `EHsHTJTG` (run 2, 10 feat, 0.777) · `5t2ek90a` (candidate_2 filter variant)
+- **`m3-f13` (`L06mKJEF`) = PRODUCTION** (13 features). Pooled AUC 0.898,
+  **macro per-disease AUC 0.8175**, per-family 0.7997, degree spread +0.110.
+- ladder: `baseline-f8` (`oNBxtK2z`, 0.761 per-disease — pruning alone **failed**) →
+  `m2-f11` (`uvUgakzg`, +PPI provenance controls) → `m3-f13` (+`dwpc_GFGD`/`dwpc_GBGD`).
+- `GlVckALL` / `ciuubnE2` are pre-enrichment leftovers — safe to retire.
+- **Druggability annotation** (`enriched_gene_druggability`, 92.2% coverage) joins into
+  `target_candidates`, now **top-50** per persona with `druggability_class` /
+  `ot_sm_tractable` / `has_approved_drug`. It annotates, it does **not** re-rank.
 
-**Read TARGET_PRIORITIZER §6f/§6g/§6h before touching the model** — the feature audit, the
-ablation results, and the mandatory feature-handling standard.
+**Read TARGET_PRIORITIZER §7.1 before touching the model** — the mandatory feature-handling
+standard. §6 is the leakage/splitting story; §8 is the ablation.
 
-Zones: `enriched_graph features_1`, `enriched_resampling_1`, `validation`, `persona`,
+Zones: `enriched_graph features_1`, `enriched_resampling_1`, `validation`, `persona`, `druggability`,
 **`family validation`** (per-family AUC + top-genes; all S3/parquet on `dataiku-managed-storage`).
 Kuzu snapshot = folder **`enriched_clean-gFdnaU` (`tblWzpfx`)** — all 10 `compute_enriched_*`
 Cypher/graph-feature recipes point at it.
 
-**Read TARGET_PRIORITIZER §6d/§6e/§8b first** — three leaks found and fixed, the granularity
-finding, and the Visual Graph Cypher queries.
-
 ## Next up
-- **Discuss disease-level granularity** — §6e shows family aggregation buys AUC
-  (breast cancer 0.704 → 0.907) but costs specificity (mechanism-specific DNA-repair genes →
-  pan-cancer drivers). Current recommendation: **split by family, report by disease.**
-- **Run the §8b Cypher queries** in the Graph Explorer (MRN-complex demo: RAD50/MRE11 novel
-  + NBN known). Stretch: materialize `predicted_score` as gene-node properties so the queries
-  stop needing pasted gene lists.
-- **Apples-to-apples model comparison** — candidate_2's population is a strict *subset* of
-  candidate_3's, so their AUCs aren't directly comparable; score `9Xr84fs9` on
-  `enriched_test_set_2` to settle it.
-- **Druggability / target class is the top remaining feature gap** (§5b new-candidates table).
-  It's the only thing that addresses the unresolved **ligand-vs-receptor** problem — the model
-  ranks non-druggable secreted peptides (GCG/GIP/IAPP) above the druggable receptors that are the
-  actual known targets (GLP1R/GIPR/CALCR). Cheapest first step: `is_plasma_membrane` /
-  `is_secreted` from GO cellular_component, **already in the graph** (7,569/20,861 genes).
+- **Run the §10.4 Cypher queries** in the Graph Explorer (MRN-complex demo: RAD50/MRE11 novel
+  + NBN known; GLP1R sparse-neighbourhood contrast shot). Stretch: materialize
+  `predicted_score` as gene-node properties so the queries stop needing pasted gene lists.
+- **`m2-f11` per-disease AUC was never captured** (only pooled) — run the validation chain
+  against `uvUgakzg` if the full three-rung per-disease comparison is wanted.
+- **Stricter `has-path-evidence` experiment** — a ≥2-of-3 evidence variant nearly eliminates
+  the missingness channel (mean |gap| 16.5 → 4.2 pp, positives 1.89% → 4.30%) at the cost of
+  half the positives. Logged in TARGET_PRIORITIZER appendix; not run.
+- **Ligand-vs-receptor is still unfixed in the *ranking*.** Druggability is now annotated
+  (§10.5) so it's visible, but the model doesn't see it — secreted ligands still outrank
+  receptors. Options: post-hoc re-sort within `druggability_class`, or add as a model feature
+  (expect **no AUC gain** — druggability is orthogonal to the `is_target` label).
+- **Demo diseases: breast cancer + obesity disorder.** breast carcinoma returns 50/50 known
+  targets (no novelty); morbid obesity 0/50 known but scores decay to 0.749.
 - **§5b still unbuilt**: `disease_phenotype_context`, `dwpc_GCcGD`, `dwpc_GHD` (blocked).
   `has_inflammatory_go_annotation` was built and **rejected** (88% null, AUC exactly 0.500);
   `dwpc_GFGD`/`dwpc_GBGD` are built and are the current baseline's biggest win.

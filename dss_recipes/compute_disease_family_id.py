@@ -23,6 +23,37 @@ import networkx as nx
 import pandas as pd
 
 MAX_DEPTH = 15
+# Option 5 -- "lift the split key one level". The split key is NOT the anchor itself but the
+# anchor's most-specific parent, so an anchor and its own parent/siblings land in ONE family.
+# Motivation: `diabetes mellitus` (parent) sat in validation while `type 2 diabetes mellitus`
+# (child, an anchor) sat in TRAIN -- a direct MONDO parent/child pair straddling the split,
+# which is leak 3 recurring. The upward-only rollup cannot fix that: a parent can never join
+# its own child-anchor's family.
+#
+# Measured alternatives, all rejected:
+#   - merging the parent INTO the child-anchor family: clinically backwards
+#   - promoting siblings to anchors: makes grouping FINER (wrong direction for a split key)
+#   - adding anchor-parents to the key SET: does not merge -- an anchor is already a key,
+#     so it never walks up to its parent
+#
+# The key set is built ONCE (lift every anchor to its most-specific parent under the cap),
+# then every disease finds its nearest member of THAT set. Keying directly on the elevated
+# set is what broadens coverage: a disease sitting under `diabetes mellitus` but under
+# neither of its anchor children (e.g. `monogenic diabetes`) now finds the key, where the
+# earlier "find anchor first, then lift" order left it as a self-fallback singleton.
+# Measured: coverage 27.4% -> 34.7%, families 900 -> 841, largest family 35.
+#
+# SPLIT_PARENT_FANOUT_CAP keeps classificatory blobs (`hereditary disease`, 1,762 children)
+# from becoming split keys; above the cap we keep the anchor itself. The cap is a sharp
+# threshold, not a dial: at 50 `cancer` becomes a key and absorbs 143 diseases, and the
+# breast-cancer/breast-carcinoma pair SPLITS again. 20 keeps the largest family at 35 with
+# anatomically coherent top groups; 30 reaches 36.6% coverage but lets `hematologic
+# disorder` grow to 55.
+#
+# The split key carries NO clinical meaning and is never reported -- it only has to guarantee
+# that biologically-related diseases land on the same side. Scoring stays at `disease_index`
+# granularity (lung adenocarcinoma != small-cell lung carcinoma for target validation).
+SPLIT_PARENT_FANOUT_CAP = 20
 
 hetionet = dataiku.Dataset("hetionet_disease_slim").get_dataframe(infer_with_pandas=False)
 mondo_refs = dataiku.Dataset("mondo_references").get_dataframe(infer_with_pandas=False)
@@ -33,6 +64,7 @@ target_diseases = target_diseases.disease_index.unique()
 
 disease_nodes = nodes[(nodes.node_type == "disease") & (nodes.node_source == "MONDO")]
 id_to_index = dict(zip(disease_nodes.node_id.astype(str), disease_nodes.node_index.astype(int)))
+index_to_name = dict(zip(nodes.node_index.astype(int), nodes.node_name))
 
 doid_to_mondo = (mondo_refs[mondo_refs.ontology == "DOID"]
                  .groupby("ontology_id").mondo_id.apply(list).to_dict())
@@ -52,6 +84,48 @@ mapped["child_idx"] = mapped.child_idx.astype(int)
 
 Gdir = nx.DiGraph()
 Gdir.add_edges_from(mapped[["child_idx", "parent_idx"]].itertuples(index=False, name=None))
+
+parents_of = mapped.groupby("child_idx").parent_idx.apply(set).to_dict()
+fanout = mapped.groupby("parent_idx").child_idx.nunique().to_dict()
+
+
+def lift_key(anchor):
+    """Most-specific parent of `anchor` under the fanout cap; the anchor itself if none."""
+    cands = [p for p in parents_of.get(anchor, set())
+             if fanout.get(p, 0) <= SPLIT_PARENT_FANOUT_CAP]
+    if not cands:
+        return anchor, "anchor (no parent under cap)"
+    return min(cands, key=lambda p: (fanout.get(p, 0), p)), "lifted to parent"
+
+
+# build the elevated key set once, then key every disease against it
+SPLIT_KEYS, key_origin = set(), {}
+for _a in anchor_indices:
+    _k, _rule = lift_key(_a)
+    SPLIT_KEYS.add(_k)
+    key_origin.setdefault(_k, _rule)
+
+
+def nearest_split_key(d):
+    """Nearest member of the elevated key set at or above d."""
+    if d in SPLIT_KEYS:
+        return d, key_origin.get(d, "is a split key")
+    if d not in Gdir:
+        return None, None
+    seen, frontier, depth = {d}, [d], 0
+    while frontier and depth < MAX_DEPTH:
+        depth += 1
+        nxt, found = [], set()
+        for n in frontier:
+            for p in Gdir.successors(n):
+                if p not in seen:
+                    seen.add(p); nxt.append(p)
+                    if p in SPLIT_KEYS:
+                        found.add(p)
+        if found:
+            return min(found), "under a split key"
+        frontier = nxt
+    return None, None
 
 
 def nearest_anchor(d):
@@ -86,11 +160,20 @@ for d in target_diseases:
     d = int(d)
     anchor, depth, name = nearest_anchor(d)
     family_id = anchor if anchor is not None else d
+    split_key, rule = nearest_split_key(d)
+    if split_key is None:
+        split_key, rule = d, "self (no key above)"
     rows.append({"disease_index": d, "disease_family_id": int(family_id),
-                 "anchor_name": name, "hop_depth": depth})
+                 "anchor_name": name, "hop_depth": depth,
+                 "disease_split_key": int(split_key),
+                 "split_key_name": index_to_name.get(int(split_key)),
+                 "split_key_rule": rule})
 
 out = pd.DataFrame(rows)
 print("disease_family_id rows:", out.shape,
       "| covered by an anchor:", out.anchor_name.notna().sum(),
       "| self-fallback:", out.anchor_name.isna().sum())
+print("families (old anchor key) :", out.disease_family_id.nunique())
+print("families (lifted split key):", out.disease_split_key.nunique())
+print(out.split_key_rule.value_counts().to_string())
 dataiku.Dataset("disease_family_id").write_with_schema(out)

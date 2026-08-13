@@ -5,9 +5,9 @@
 > is the analytical layer: features → split → model → validation → persona results.
 > Evidence base: [RESEARCH_NOTE.md](RESEARCH_NOTE.md).
 >
-> **Status: BUILT & VALIDATED.** Current baseline model **`JONvgmkZ`** (12 features),
-> macro per-disease AUC **0.8137**. Sections follow MLOps order; decisions are logged in the
-> **appendix**, not inline.
+> **Status: BUILT & VALIDATED.** Current production model **`m3-f13`** (`L06mKJEF`, 13
+> features), macro per-disease AUC **0.8175**, per-family **0.7997**. Sections follow MLOps
+> order; decisions are logged in the **appendix**, not inline.
 
 ## 1. Purpose & scope
 
@@ -24,11 +24,12 @@ embedding (PyKEEN) features; druggability/tractability features (§12).
 
 ## 2. What it delivers
 
-`target_candidates` — per persona disease, the top-20 ranked candidates:
+`target_candidates` — per persona disease, the top-50 ranked candidates, each annotated with a
+druggability class (§10.5):
 
-| disease_name | gene_name | score | top_shap_drivers | rank_in_disease | is_target |
-|---|---|--:|---|--:|--:|
-| breast cancer | BLM | 0.985 | dwpc_GPGD, ppi_adamic_adar | 2 | 0 |
+| disease_name | gene_name | score | druggability_class | top_shap_drivers | rank | is_target |
+|---|---|--:|---|---|--:|--:|
+| breast cancer | BLM | 0.986 | Enzyme | dwpc_GPGD, ppi_adamic_adar | 5 | 0 |
 
 Top-ranked genes **not currently linked** to the disease are the novel hypotheses. The
 candidate and its evidence path highlight on the Visual Graph Editor (`lVWgU2m`) — §10.
@@ -92,7 +93,7 @@ path" into false exclusion; (c) study bias over-weights well-annotated genes.
 `C`=drug. DWPC uses the standard degree-damping exponent (weight = ∏degree^−0.4), so paths
 through hubs are down-weighted.
 
-### 5.1 Features in the current model (12)
+### 5.1 Features in the current model (13 — `m3-f13`)
 
 | Feature | Layer | Computed by | Biological significance |
 |---|---|---|---|
@@ -108,6 +109,7 @@ through hubs are down-weighted.
 | `gene_ppi_degree` | PPI | Graph Features | Interactome connectivity — retained deliberately as the **single** hub control (§8). |
 | `gene_n_pathways` | pathway_protein | Cypher | Annotation breadth — how well-characterized the gene is. Partly a study-bias proxy. |
 | `shared_pathway_frac` | pathway_protein | Cypher | Fraction of the gene's pathways that overlap the module's — normalized, so it doesn't simply reward well-annotated genes. |
+| `ppi_multi_source_frac` | `edge_metadata.ppi_sources` | Python | Fraction of the gene's interactions corroborated by ≥2 of Menche/HuRI/STRING. A second **assay-breadth** covariate; worth +0.003 pooled AUC at both f11 and f13. |
 
 ### 5.2 Computed but rejected — and why
 
@@ -125,7 +127,7 @@ through hubs are down-weighted.
 | `degree` | Duplicate of `gene_ppi_degree`. |
 | `has_inflammatory_go_annotation` | Built as a §5b priority-1 candidate. **88% null, single-feature AUC exactly 0.5000** — contributed nothing. Lesson: *graded relational features beat binary gene-level flags.* |
 | `disease_family_id`, `anchor_name`, `hop_depth` | Split bookkeeping (§6). `disease_family_id` would be a direct leak. |
-| `ppi_multi_source_frac`, `ppi_cn_expected`, `ppi_edges_with_provenance` | Intermediates pulled in by the join's `AUTO_NON_CONFLICTING` mode. `ppi_multi_source_frac` is a legitimate candidate — promote or drop from the join. |
+| `ppi_cn_expected`, `ppi_edges_with_provenance` | Intermediates pulled in by the join's `AUTO_NON_CONFLICTING` mode. (`ppi_multi_source_frac` was in this bucket and has since been **promoted** — see §5.1.) |
 
 ### 5.3 Not yet built
 
@@ -316,30 +318,48 @@ Three measurements on the 15-feature baseline:
 All runs share the split, hyperparameters and handling standard above; row counts identical
 (6,754,128 / 2,745,929 / 606,124), so the four are directly comparable.
 
-| Run | Model | Feat | Pooled AUC | **Macro per-disease AUC** | Median | >0.8 | recall@20 | Degree spread | ρ(deg,proba) |
+The **live ladder** (models in the flow today). All share the split, hyperparameters and
+handling standard; row counts identical (6,754,128 / 2,745,929 / 606,124), so all are directly
+comparable.
+
+| Model | ID | Feat | Pooled AUC | **Macro per-disease AUC** | Median | >0.8 | recall@20 | Degree spread | ρ(deg,proba) |
 |---|---|--:|--:|--:|--:|--:|--:|--:|--:|
-| baseline | `9Xr84fs9` | 15 | 0.8663 | 0.7737 | 0.7992 | 49.9% | 0.1042 | +0.1879 | +0.3304 |
-| 1 pruned | `6EtVWdE2` | 8 | 0.8666 | **0.7610** ✗ | 0.7792 | 46.2% | 0.1106 | +0.1755 | +0.2953 |
-| 2 +PPI control | `EHsHTJTG` | 10 | 0.8772 | 0.7767 | 0.8000 | 49.9% | 0.1157 | +0.1646 | +0.2848 |
-| **3 +GO dwpc** | **`JONvgmkZ`** | **12** | **0.8951** | **0.8137** | **0.8419** | **57.9%** | **0.1270** | **+0.1046** | **+0.2391** |
+| `baseline-f8` | `oNBxtK2z` | 8 | 0.8666 | 0.7610 | 0.7792 | 46.2% | 0.1106 | +0.1755 | +0.2953 |
+| `m2-f11` | `uvUgakzg` | 11 | 0.8803 | ~0.777 | — | — | — | +0.1646 | +0.2848 |
+| **`m3-f13`** | **`L06mKJEF`** | **13** | **0.8982** | **0.8175** | **0.8429** | **59.1%** | **0.1270** | **+0.1099** | **+0.2424** |
 
-**Run 1 — pruning alone FAILED.** Pooled AUC was unchanged (0.8666 vs 0.8663) but macro
-per-disease AUC *fell* to 0.7610, winning on only 176/591 diseases. A textbook case of pooled
-AUC hiding a within-disease loss. Pruning was directionally right but removed signal without
-replacing it.
+Feature sets are cumulative: **f8** = the pruned core; **f11** = f8 + `ppi_common_neighbors_z`
++ `ppi_evidence_depth` + `ppi_multi_source_frac`; **f13** = f11 + `dwpc_GFGD` + `dwpc_GBGD`.
 
-**Run 2 — the degree-matched control recovered it.** 0.7767, wins 372/591 (62.9%), lowest bias
-so far. `ppi_common_neighbors_z` supplied the degree-corrected module-contact signal that
-pruning had stripped.
+**A 15-feature predecessor** (the pre-audit set, since retired) scored pooled 0.8663 /
+per-disease **0.7737** with degree spread +0.1879. It is the reference point every claim below
+is measured against.
 
-**Run 3 — the GO metapaths are the decisive win.** **+0.0400 macro per-disease AUC over
-baseline, winning 509/591 diseases (86.1%)**; +0.0370 over run 2 (499/591). **Every metric
-improves at once** — normally accuracy and bias trade off, but the degree spread nearly halved.
-So the GO features bought accuracy with genuinely *new, degree-independent* signal.
+**Pruning alone FAILED (f8).** Pooled AUC was unchanged versus the 15-feature predecessor
+(0.8666 vs 0.8663) but macro per-disease AUC *fell* to 0.7610, winning on only 176/591
+diseases. A textbook case of **pooled AUC hiding a within-disease loss**. Pruning was
+directionally right but removed signal without replacing it.
 
-**Unanchored diseases gained most** (0.7508 → 0.7936 vs anchored 0.8390 → 0.8709) — the
+**The PPI controls recovered it (f11).** `ppi_common_neighbors_z` supplied the degree-corrected
+module-contact signal that pruning had stripped. `ppi_multi_source_frac` — the assay-breadth
+covariate — adds a further **+0.003 pooled AUC**, small but consistent, and it also pays off at
+f13. Two of three PPI-provenance features have now earned their place, which supports the
+general point that **measurement-confidence covariates help on a study-biased graph**.
+
+**The GO metapaths are the decisive win (f13).** **+0.0438 macro per-disease AUC over the
+15-feature predecessor** (0.7737 → 0.8175), and +0.0038 over the 12-feature intermediate,
+winning 422/591 diseases (71.4%). **Every metric improves at once** — normally accuracy and
+bias trade off, but the degree spread fell from +0.1879 to **+0.1099** and ρ(degree, proba)
+from +0.3304 to **+0.2424**. So the GO features bought accuracy with genuinely *new,
+degree-independent* signal.
+
+**Unanchored diseases gained most** (0.7508 → 0.7965 vs anchored 0.8390 → 0.8773) — the
 poorly-annotated tail benefits more from functional similarity, since those are the diseases
 whose PPI routes are sparsest. Encouraging for generalization beyond the personas.
+
+**All four personas now beat the 15-feature predecessor**, including breast cancer
+(0.7035 → 0.7045), which had regressed at every earlier rung. Morbid obesity gained most
+(0.7000 → 0.7471).
 
 ## 9. Model validation
 
@@ -368,23 +388,39 @@ degree and compare Q1 to Q5. Baseline: Q1 (median degree 3) 6.8% predicted posit
 
 | Model | Q1 proba | Q5 proba | Spread | ρ(degree, proba) |
 |---|--:|--:|--:|--:|
-| baseline | 0.5732 | 0.7611 | +0.1879 | +0.3304 |
-| run 3 `JONvgmkZ` | 0.5735 | 0.7391 | **+0.1046** | **+0.2391** |
+| 15-feature predecessor | 0.5732 | 0.7611 | +0.1879 | +0.3304 |
+| `baseline-f8` | 0.5662 | 0.7417 | +0.1755 | +0.2953 |
+| **`m3-f13`** | 0.6516 | 0.7615 | **+0.1099** | **+0.2424** |
+
+Note `m3-f13` lifts Q1 (low-degree known targets) from 0.573 to **0.652** in absolute terms —
+earlier rungs narrowed the spread only by pulling Q5 *down*. This is the first model that
+improves under-studied targets outright rather than relatively.
 
 ### 9.3 Per-family validation (zone `family validation`)
 
 Same chain, grouped by `disease_family_id` — 480 families.
 
-| Group | n | Macro AUC | Median |
-|---|--:|--:|--:|
-| **multi-disease families** (grouping actually applies) | 24 | **0.8615** | 0.9087 |
-| single-disease families (grouping is a no-op) | 456 | 0.7487 | 0.7550 |
+Scored with `m3-f13`. Macro **0.7997**, median 0.8160, recall@20 **0.1205** — up from
+0.7543 / 0.7607 / 0.0982 under the 15-feature predecessor (**+0.0454 macro, winning 416/480
+families = 86.7%**). The family gain exceeds the per-disease gain, and recall@20 rose 23%,
+which matters more than AUC for a top-N deliverable.
 
-Large families are almost all cancers at ~0.90–0.92 (ovarian 0.9238, colon 0.9225, bone
-0.9203, brain 0.9198, uterine 0.9176, **breast 0.9072 across 20 members / 4,839 positives**).
-**Epilepsy (0.7789) is the lone non-cancer large family and the lone weak one** — its MONDO
-subtypes span channelopathies, structural lesions and metabolic causes, so the family boundary
-stops being mechanistically coherent.
+| Group | n | Macro AUC (predecessor → m3-f13) |
+|---|--:|--:|
+| **multi-disease families** (grouping actually applies) | 24 | 0.8615 → **0.8947** |
+| single-disease families (grouping is a no-op) | 456 | 0.7487 → **0.7947** |
+
+Large families are almost all cancers, now **0.93–0.96** (colon 0.9570, ovarian 0.9527, brain
+0.9505, uterine 0.9445, pancreatic 0.9494, **breast 0.9370 across 20 members / 4,839
+positives**).
+
+**Epilepsy improved most of any large family: 0.7789 → 0.8317 (+0.0528)**, roughly double the
+cancer families' gain. This is a confirmation of *why* the GO metapaths work, not just that
+they do: epilepsy is the family flagged as mechanistically **incoherent** (its MONDO subtypes
+span channelopathies, structural lesions and metabolic causes), and functional similarity is
+exactly the signal that transfers across heterogeneous subtypes where PPI-module proximity does
+not. It remains the weakest large family — the coherence caveat still holds — but the gap to
+the cancers narrowed from ~0.14 to ~0.10.
 
 ### 9.4 Anchored vs unanchored is *not* a leak meter
 
@@ -540,10 +576,75 @@ script; Kuzu buffer-pool OOM on variable-length expansion).
 output. Materializing `predicted_score`/`predicted_rank` as gene-node properties would turn
 these into `WHERE g.pred_rank_15347 <= 10`.
 
+### 10.5 Druggability annotation on the ranked list
+
+Built to make the §10.3 ligand-vs-receptor failure *visible* to a reader, without touching the
+model. Two independent sources, combined by precedence into `enriched_gene_druggability`
+(20,861 rows — exactly one per gene, **92.2% classified**):
+
+| Source | Signal | Coverage within the graph's genes | Verdict |
+|---|---|--:|---|
+| **B — Open Targets** `subcellularLocations` (UniProt/HPA) | membrane / secreted flags | **18,873 (90%)** | primary workhorse |
+| **B — Open Targets** `targetClass` (ChEMBL family) | `Membrane receptor`, `Enzyme`, `Ion channel`… | 5,874 (28%) | authoritative but sparse; **human-readable** |
+| **B — Open Targets** `tractability` | SM / AB buckets, `has_approved_drug` | 6,131 SM (29%) | modality routing |
+| **A — GO cellular_component** (already in graph) | membrane / secreted flags | 7,580 (36%) | fallback; fills 343 genes OT misses entirely |
+
+**A vs B agree 88.2% on membrane, 95.6% on secreted.** Where they disagree, **B is generally
+right** — Source A flags BRCA1 as `membrane` on a real-but-misleading GO annotation, while OT
+correctly classes it `Enzyme`. B also resolves GCG's ambiguous `membrane_and_secreted` to an
+unambiguous `Secreted protein`. So B is primary, A is gap-fill.
+
+Both are **per-gene attribute tables joined on `gene_index`** — no nodes, no edges, so
+`compute_kg`'s positional `node_index` assignment is untouched (`graph_nodes` stayed at 113,544
+across the whole change). **Never model these as edges.**
+
+Filter recipes that work on the output:
+
+| Goal | Filter |
+|---|---|
+| core discovery | `is_target == 0` AND `druggability_class != 'secreted'` AND (`ot_sm_tractable` OR `ot_ab_tractable`) |
+| small-molecule programme | class in (`Enzyme`, `Ion channel`, `Transporter`, `membrane / cell-surface`) AND `ot_sm_tractable == 1` |
+| antibody / biologic | class in (`membrane / cell-surface`, `membrane + secreted`) AND `ot_ab_tractable == 1` |
+| **repurposing** | `is_target == 0` AND `has_approved_drug == 1` |
+
+At top-50 the repurposing filter returns **15 candidates** including **ERBB2** (breast cancer,
+rank 46 — the trastuzumab target, flagged novel because this MONDO term's `disease_protein`
+edges omit it), KRAS, JAK2, ADRB2 and MTOR. At top-20 it returned only 2 — **the extended rank
+range is where the actionable slice lives.**
+
+> **This annotates, it does not re-rank.** The model never sees these columns, so secreted
+> ligands still outrank receptors. And `has_approved_drug` is **gene-level across all
+> indications** — it means "chemical matter exists", not "this drug works in this disease".
+
+### 10.6 Top-50 findings
+
+Extending from top-20 to top-50 produced three results worth keeping:
+
+**Ranking quality holds monotonically** — known-target density falls smoothly 65.0% (ranks
+1–10) → 60.0% → 40.0% → 37.5% → **32.5%** (41–50), with mean score tracking it. This is
+out-of-sample evidence that the *ordering* is meaningful across the whole range, not just at the
+head.
+
+**A coherent neuro-metabolic receptor cluster** appears in obesity ranks 21–50: MCHR1 (a
+clinically-pursued anti-obesity target), GRIN2A/GRIN2B, GRM1, ADRB2, KCNJ2, CRHR2 — all
+`membrane / cell-surface` and antibody-accessible. Novel + antibody-accessible candidates grew
+from 10 to 26.
+
+**The personas span the full novelty/confidence trade-off**, which sharpens the §10.2
+granularity finding into a gradient:
+
+| persona | known / 50 | novel / 50 | min score | read |
+|---|--:|--:|--:|---|
+| breast carcinoma | **50** | 0 | 0.989 | densely annotated — ranking sanity check, **no discovery value** |
+| obesity disorder | 26 | 24 | 0.967 | **balanced — best demo disease** |
+| breast cancer | 18 | 32 | 0.902 | **balanced — best demo disease** |
+| morbid obesity | 0 | **50** | 0.749 | sparse module — all hypothesis, lowest confidence |
+
 ## 11. Flow design
 
 | Zone | Contents |
 |---|---|
+| `druggability` | `compute_gene_localization` (GO CC) · `extract_ot_druggability` · `compute_gene_druggability` → `enriched_gene_druggability` |
 | `enriched_graph features_1` | per-feature recipes (Cypher + Python) → 16-input star join → `enriched_graph_features_1` (18.4M pairs) |
 | — | `compute_disease_family_id` → `join_disease_family_id` → `enriched_graph_features_1_family` |
 | `enriched_resampling_1` | `compute_graph_features_sampled_*` (has-path-evidence filter) → `split_graph_features_candidate_*` → train/validation/test |
@@ -574,8 +675,10 @@ drops it — hit on `pathway_protein` and `drug_investigated_for`).
   evaluate the existing model on a degree-matched validation subset.
 - **Permutation baseline** — a degree-preserving permuted-graph null (Rephetio/XSwap) would
   quantify signal beyond degree. Controls the degree confound, *not* the coverage leak.
-- **Model housekeeping** — four saved models now exist (`9Xr84fs9`, `6EtVWdE2`, `EHsHTJTG`,
-  `JONvgmkZ`) plus superseded `5t2ek90a`/`GlVckALL`/`ciuubnE2`. Prune or label clearly.
+- **Model housekeeping — DONE.** The ad-hoc IDs were pruned and replaced by the named ladder
+  `baseline-f8` / `m2-f11` / `m3-f13`. `GlVckALL` / `ciuubnE2` (pre-enrichment) remain and can
+  be retired. Per-disease AUC for `m2-f11` was never captured — only pooled — if the full
+  three-rung comparison is wanted, run the validation chain against `uvUgakzg`.
 
 ---
 
@@ -595,9 +698,14 @@ drops it — hit on `pathway_protein` and `drug_investigated_for`).
 | 2026-08-09 | **Granularity: split by family, report by disease** (§10.2). Family aggregation lifts breast cancer 0.704 → 0.907 but degrades candidates from mechanism-specific to pan-cancer. Family coherence is mechanism-dependent (cancers ~0.90–0.92, epilepsy 0.78). |
 | 2026-08-09 | **GLP1R case study** (§10.3): the `prediction` column is near-useless for discovery (590/762 known targets are false negatives at the F1 threshold). Root cause of low rank is *neighbour overlap*, not degree — membrane-protein assay bias. `dwpc_GCD`/DANUGLIPRON kept as a post-hoc annotation, not a feature. |
 | 2026-08-09 | **Feature audit** (§8.1): 7 of 15 INPUTs were gene-only, hub axis had 4 collinear encodings, every gene-only feature ≈0.5 AUC. Bias meter established (6× detection swing Q1→Q5). |
-| 2026-08-10 | **Ablation ladder complete** (§8.2). Run 1 (prune) **failed** on per-disease AUC despite flat pooled AUC. Run 2 (+`ppi_common_neighbors_z`, `ppi_evidence_depth`) recovered. **Run 3 (+`dwpc_GFGD`, `dwpc_GBGD`) wins decisively** — per-disease AUC 0.8137, degree spread nearly halved. **New baseline `JONvgmkZ`.** Reverses the 2026-07-08 z-score decision. |
+| 2026-08-10 | **Ablation ladder complete** (§8.2). Run 1 (prune) **failed** on per-disease AUC despite flat pooled AUC. Run 2 (+`ppi_common_neighbors_z`, `ppi_evidence_depth`) recovered. **Run 3 (+`dwpc_GFGD`, `dwpc_GBGD`) wins decisively** — per-disease AUC 0.8137, degree spread nearly halved. Reverses the 2026-07-08 z-score decision. *(Models later consolidated — see 2026-08-11.)* |
 | 2026-08-10 | **GO metapaths implemented in Python, not Cypher** (§5.4) — Cypher OOM'd even with a fanout guard; the factorized right-to-left formulation runs both in ~2 min. |
 | 2026-08-10 | **Feature-handling standard mandatory** (§7.1): all numeric INPUTs `AVGSTD` + `IMPUTE MEAN`. DSS's lab-deploy guesses are inconsistent — audit `per_feature` after every deploy. |
+| 2026-08-11 | **Model ladder consolidated & renamed** to `baseline-f8` (`oNBxtK2z`) / `m2-f11` (`uvUgakzg`) / `m3-f13` (`L06mKJEF`); ad-hoc IDs pruned. **`ppi_multi_source_frac` promoted** from the rejected-intermediates bucket — worth +0.003 pooled AUC at both f11 and f13. `m3-f13` is production: per-disease AUC **0.8175**, per-family **0.7997**, degree spread +0.1099. **All four personas now beat the 15-feature predecessor**, resolving breast cancer's persistent regression. |
+| 2026-08-11 | **Family zone rescored on the current model** (it had been left on the retired 15-feature baseline). Macro 0.7543 → **0.7997**, recall@20 +23%. **Epilepsy gained most of any large family (+0.0528)** — confirming *why* GO metapaths work: functional similarity transfers across mechanistically heterogeneous subtypes where PPI-module proximity does not. |
+| 2026-08-11 | **Druggability annotation added** (§10.5), OT primary + GO fallback, 92.2% coverage. A vs B agree 88.2%/95.6%; OT wins the disagreements (BRCA1). Implemented as **per-gene attribute tables** — no nodes, no edges, `node_index` untouched. **Annotates rather than re-ranks**; druggability is orthogonal to `is_target`, so it belongs in the ranking layer. |
+| 2026-08-11 | **`target_candidates` extended to top-50.** Known-target density falls monotonically 65% → 32.5%, evidencing calibration across the range. Repurposing candidates 2 → **15** (incl. ERBB2/KRAS/JAK2/ADRB2/MTOR). **Recommended demo diseases: breast cancer and obesity disorder** — breast carcinoma is 50/50 known (no novelty), morbid obesity 0/50 known (lowest confidence). |
+| 2026-08-11 | **`has-path-evidence` NOT expanded to the GO metapaths.** Measured: adding them to the OR would grow the pool to 15.8M / 1.04% positives and make coverage equalization *worse* on every original feature (`dwpc_GGD` −31.6 → −42.1 pp; `dwpc_GPGD` −7.6 → −34.0 pp), pushing the filter toward the no-op state that produced leak 2. **Considered:** a stricter ≥2-of-3 variant nearly eliminates the missingness channel (mean \|gap\| 16.5 → 4.2 pp, positives 4.30%) but keeps only 49.8% of positives — logged as a future experiment, not adopted. |
 | 2026-08-10 | **§5b priorities inverted by results**: the priority-1 binary flag scored exactly 0.5000 and was rejected; the priority-2 GO metapaths were the biggest win. *Graded relational features beat binary gene-level flags.* |
 
 ## References
