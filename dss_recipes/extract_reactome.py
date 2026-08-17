@@ -1,6 +1,17 @@
 # Pathways zone — EXTRACT (Python: load + parse only, native ids).
 # Names resolved at assembly from reactome_terms. No cross-dataset joins here.
 # Outputs: reactome_terms (vocab), raw_pathway_protein, raw_pathway_pathway.
+# ----------------------------------------------------------------------------
+# SOURCE PROVENANCE  (recorded 2026-08-13)
+# Source        : Reactome pathway hierarchy + protein mappings
+# URL in use    : https://reactome.org/download/current/          <-- UNPINNED, literally "current"
+# Version used  : release 97 (from https://reactome.org/ContentService/data/database/version,
+#                 queried 2026-08-13) -> 2,883 rows in `reactome_terms`
+# TO FREEZE     : Reactome keeps per-release archives; the documented pattern is
+#                 https://reactome.org/download/archive/<release>/ -- VERIFY the exact path
+#                 before relying on it (not tested here). Otherwise snapshot to raw_files.
+# ----------------------------------------------------------------------------
+
 import io
 
 import dataiku
@@ -40,3 +51,5 @@ raw_pp = rels[rels.parent_id.isin(human) & rels.child_id.isin(human)].drop_dupli
 dataiku.Dataset("reactome_terms").write_with_schema(terms)
 dataiku.Dataset("raw_pathway_protein").write_with_schema(raw_gp)
 dataiku.Dataset("raw_pathway_pathway").write_with_schema(raw_pp)
+
+

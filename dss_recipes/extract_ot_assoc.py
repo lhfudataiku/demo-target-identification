@@ -13,6 +13,16 @@
 # NOTE: widens disease_protein/is_target for cancer-type diseases -- re-check
 # has-path-evidence coverage + the leakage diagnosis (TARGET_PRIORITIZER.md §6b) for
 # those diseases before trusting new Part 2 results there (decision log §12).
+# ----------------------------------------------------------------------------
+# SOURCE PROVENANCE  (recorded 2026-08-13)
+# Source        : Open Targets Platform (parquet exports over FTP)
+# URL in use    : https://ftp.ebi.ac.uk/pub/databases/opentargets/platform/26.06/output/
+# Version used  : platform release 26.06 -- ALREADY PINNED in the URL. Reachable 2026-08-13.
+# TO FREEZE     : nothing to do; the release is in the path. Bumping Open Targets means
+#                 editing this URL deliberately, and OT changes column layouts between
+#                 releases, so re-verify the schema when you do.
+# ----------------------------------------------------------------------------
+
 import os
 import re
 import tempfile
@@ -51,3 +61,5 @@ out = (all_rows.groupby(["targetId", "diseaseId"], as_index=False)
        .agg(score=("score", "max"),
             datatypes=("aggregationValue", lambda s: "+".join(sorted(set(s))))))
 dataiku.Dataset("raw_ot_assoc").write_with_schema(out)
+
+

@@ -1,6 +1,16 @@
 # Open Targets — EXTRACT reference maps (Python: parquet load + nested-array parse).
 # Shared by the gene-disease and drug zones for visual joins downstream.
 # Outputs: ot_target_map (ensg, symbol), ot_disease_map (diseaseId, mondo_id bare-int).
+# ----------------------------------------------------------------------------
+# SOURCE PROVENANCE  (recorded 2026-08-13)
+# Source        : Open Targets Platform (parquet exports over FTP)
+# URL in use    : https://ftp.ebi.ac.uk/pub/databases/opentargets/platform/26.06/output/
+# Version used  : platform release 26.06 -- ALREADY PINNED in the URL. Reachable 2026-08-13.
+# TO FREEZE     : nothing to do; the release is in the path. Bumping Open Targets means
+#                 editing this URL deliberately, and OT changes column layouts between
+#                 releases, so re-verify the schema when you do.
+# ----------------------------------------------------------------------------
+
 import os
 import re
 import tempfile
@@ -52,3 +62,5 @@ disease = dis.rename(columns={"id": "diseaseId"})[["diseaseId", "mondo_id"]].dro
 
 dataiku.Dataset("ot_target_map").write_with_schema(target)
 dataiku.Dataset("ot_disease_map").write_with_schema(disease)
+
+

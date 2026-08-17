@@ -1,134 +1,141 @@
 # Chat starter — Target Identification POC (paste into a new chat)
 
-You are my project assistant on a **Dataiku DSS proof-of-concept** that recreates the
-**PrimeKG** biomedical knowledge-graph pipeline for drug-discovery **target
-identification**, and renders it with the **Visual Graph** plugin.
+You are my project assistant on a **Dataiku DSS proof-of-concept** that creates a **PrimeKG-like**
+biomedical knowledge-graph pipeline for drug-discovery **target identification**, renders it with the
+**Visual Graph** plugin, and ranks candidate targets per disease with an explainable model.
 
 ## Orient yourself first (do this before acting)
-1. Read the POC document set (source of truth — trust over your memory):
-   - **`PROJECT_CONTEXT.md`** — project view: purpose/personas §1–4, sources in/out §5–6,
-     build status + node/edge provenance §7, PrimeKG comparison §8. Decisions in the appendix.
-   - **`PRIMEKG_MAPPING.md`** — engineering view: schema §1, MONDO-vs-UMLS §2, flow zones +
-     build gotchas §4, entity→source mapping §5. Decisions in the appendix.
-   - **`TARGET_PRIORITIZER.md`** — Part 2, in MLOps order: data §4, features §5, splitting §6,
-     hyperparameters §7, feature/model selection §8, validation §9, persona results §10.
-   - **`RESEARCH_NOTE.md`** — evidence base behind the Part 2 feature/model choices
-     (per-reference summaries; **unvalidated corpus** — verify before client-facing use).
+
+1. Read the document set — source of truth, trust it over your memory:
+   - **`PROJECT_CONTEXT.md`** — start here. Purpose, the two published numbers that anchor the pitch,
+     personas, and **how the two projects fit together** (§4, including the shared-object contract).
+   - **`GRAPH_BUILDING.md`** — technical doc for `DEMO_KG_LS`: input sources §2, graph schema §3,
+     pipeline §4, the graph webapp §6, final statistics §7.
+   - **`TARGET_PRIORITIZER.md`** — technical doc for `DEMO_TARGET_IDENTIFICATION`: data exploration
+     §3, features §4, splitting/leakage §5, model selection §6, validation §7, results §8,
+     flow zones §9, migration status §10.
+   - **`DSS_CHEATSHEET.md`** — platform behaviours and CLI patterns, generic. **Read §1 before
+     trusting any output** — those failures produce plausible results rather than errors.
+   - **`RESEARCH_NOTE.md`** — evidence base behind the modelling choices (**unvalidated corpus** —
+     verify before client-facing use).
+   - `DISCOVERY_LANDSCAPE.md` — the wider discovery chain (stages 1–6); separate framework.
 2. Check my auto-memory (`MEMORY.md` + files) for standing preferences.
-3. Confirm live state with the `dku` CLI (see below) — the docs can lag the flow.
+3. Confirm live state with the `dku` CLI. **The docs can lag the flow, and `dss_recipes/` can lag
+   DSS** — pull real code with `dku recipe get-code` before reasoning about a recipe.
 
-## Environment
-- **DSS project:** `KNOWLEDGE_GRAPH_PRIMEKG` on `design.solutions.dataiku-dss.io` (DSS 14.7).
-  Operate it with the **`dku` CLI** (skill `dataiku-mcp:dku-cli`). Set once:
-  `export DKU_PROJECT=KNOWLEDGE_GRAPH_PRIMEKG`.
-- **Code env:** `primekg_kg` (py3.11: pandas, pyarrow, requests, obonet, networkx).
-- **Repo:** `~/Documents/GitHub/demo-target-identification` (branch `flow-building`).
-  Recipe code mirrored in `dss_recipes/`; helpers in `scripts/`. `data/` is gitignored
-  (large / license-restricted UMLS — never commit it).
+## Environment — three projects
 
-## What's built (current — 2026-08-09)
-Per-source **flow zones**, each = Python `extract_*` (load→native ids) → visual
-`harmonize_*` (Prepare; + visual Join for Open Targets) → 8-col name-free `*_edges`;
-then Python `compute_kg` assembly (stack → attach names → reverse-all → disease grouping
-→ giant component) → **`kg` / `graph_nodes` / `graph_edges`** (PrimeKG-exact schema).
-**Enriched graph: 113,544 nodes / 2,852,298 edges, 18 relations** (validated: 0 duplicates,
-0 self-loops, 0 dangling endpoints, reverse-all symmetry holds).
+| Project | Role | Scale |
+|---|---|---|
+| **`DEMO_KG_LS`** | data pipeline + graph-building webapp | 47 recipes, 65 datasets |
+| **`DEMO_TARGET_IDENTIFICATION`** | modelling, validation, result visualisation | 68 recipes, 78 datasets, 4 models |
+| **`KNOWLEDGE_GRAPH_PRIMEKG`** | **frozen reference** — the original single-project build | do not modify or rebuild |
 
-Sources live: HGNC, MONDO, Open Targets (**genetic_association + somatic_mutation**; drug
-layer split `indication` / `drug_investigated_for`), **PPI = Menche + HuRI + STRING merged**
-(`ppi_sources` provenance in `edge_metadata`), Reactome, **GO+gene2go**, **HPO** (with
-HP↔MONDO reclassification). UMLS retired; DrugBank/DisGeNET dropped.
+All on `design.solutions.dataiku-dss.io` (DSS 14.7). Set `export DKU_PROJECT=…` per project.
+**Code env:** `primekg_kg` (py3.11: pandas, pyarrow, requests, obonet, networkx, scipy).
+**Repo:** `~/Documents/GitHub/demo-target-identification` (branch `flow-building`). Recipe code
+mirrored in `dss_recipes/`; `data/` is gitignored (large / licence-restricted — never commit it).
 
-**Part 2 (analytical layer): BUILT + tuned through a 3-run ablation.** Feature layer →
-`enriched_graph_features_1` (18.4M pairs) → `join_disease_family_id` → candidate strategies → models:
-- **`m3-f13` (`L06mKJEF`) = PRODUCTION** (13 features). Pooled AUC 0.898,
-  **macro per-disease AUC 0.8175**, per-family 0.7997, degree spread +0.110.
-- ladder: `baseline-f8` (`oNBxtK2z`, 0.761 per-disease — pruning alone **failed**) →
-  `m2-f11` (`uvUgakzg`, +PPI provenance controls) → `m3-f13` (+`dwpc_GFGD`/`dwpc_GBGD`).
-- `GlVckALL` / `ciuubnE2` are pre-enrichment leftovers — safe to retire.
-- **Druggability annotation** (`enriched_gene_druggability`, 92.2% coverage) joins into
-  `target_candidates`, now **top-50** per persona with `druggability_class` /
-  `ot_sm_tractable` / `has_approved_drug`. It annotates, it does **not** re-rank.
+## What's built (current — 2026-08-17)
 
-**Read TARGET_PRIORITIZER §7.1 before touching the model** — the mandatory feature-handling
-standard. §6 is the leakage/splitting story; §8 is the ablation.
+**Part 1 — the graph. Complete.** 113,391 nodes / 2,851,510 edges / 18 relations, rebuilt from source
+and accepted against the frozen reference: 7 of 9 node groups and 14 of 18 relations reproduce **to
+the row**, and every delta is functional-annotation drift traced to the *reference* being stale.
+`node_index` is now **deterministic** (a visual Window recipe over an explicit sort, verified by two
+byte-identical builds) — it used to be positional and renumbered the whole graph on every rebuild.
+Note it is **1-based** here and **0-based** in the reference.
 
-Zones: `enriched_graph features_1`, `enriched_resampling_1`, `validation`, `persona`, `druggability`,
-**`family validation`** (per-family AUC + top-genes; all S3/parquet on `dataiku-managed-storage`).
-Kuzu snapshot = folder **`enriched_clean-gFdnaU` (`tblWzpfx`)** — all 10 `compute_enriched_*`
-Cypher/graph-feature recipes point at it.
+**Part 2 — the prioritizer. Built and validated on the rebuilt graph.** Champion **`m3-f12`** (12
+features): macro per-disease AUC **0.8197** over 670 diseases, per-split-key 0.8007, pooled 0.8915,
+per-family 0.7976, drug-target 0.6911. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12`.
+`m7-drug-label` is a **deliberately retained negative result** — do not read its 0.9324 drug-target
+AUC as a win.
+
+**Migration status: COMPLETE and verified (2026-08-17).** The modelling project reads the graph
+through **10 shared objects** (PROJECT_CONTEXT §4.3) in its `00 Shared from DEMO_KG_LS` zone; Part 1
+components removed; indices remapped; flow rebuilt end to end. **Every metric landed within ±0.01 of
+the frozen reference** against a ±0.02 tolerance set in advance, and the candidate pool total is
+bit-identical (6,754,128). See TARGET_PRIORITIZER §10.
 
 ## Next up
-- **Run the §10.4 Cypher queries** in the Graph Explorer (MRN-complex demo: RAD50/MRE11 novel
-  + NBN known; GLP1R sparse-neighbourhood contrast shot). Stretch: materialize
-  `predicted_score` as gene-node properties so the queries stop needing pasted gene lists.
-- **`m2-f11` per-disease AUC was never captured** (only pooled) — run the validation chain
-  against `uvUgakzg` if the full three-rung per-disease comparison is wanted.
-- **Stricter `has-path-evidence` experiment** — a ≥2-of-3 evidence variant nearly eliminates
-  the missingness channel (mean |gap| 16.5 → 4.2 pp, positives 1.89% → 4.30%) at the cost of
-  half the positives. Logged in TARGET_PRIORITIZER appendix; not run.
-- **Ligand-vs-receptor is still unfixed in the *ranking*.** Druggability is now annotated
-  (§10.5) so it's visible, but the model doesn't see it — secreted ligands still outrank
-  receptors. Options: post-hoc re-sort within `druggability_class`, or add as a model feature
-  (expect **no AUC gain** — druggability is orthogonal to the `is_target` label).
-- **Demo diseases: breast cancer + obesity disorder.** breast carcinoma returns 50/50 known
-  targets (no novelty); morbid obesity 0/50 known but scores decay to 0.749.
-- **§5b still unbuilt**: `disease_phenotype_context`, `dwpc_GCcGD`, `dwpc_GHD` (blocked).
-  `has_inflammatory_go_annotation` was built and **rejected** (88% null, AUC exactly 0.500);
-  `dwpc_GFGD`/`dwpc_GBGD` are built and are the current baseline's biggest win.
-- Optional stretch, undecided: UBERON+Bgee anatomy, CTD, SIDER.
 
-## Sharp edges (bit us repeatedly — check these first)
-- **`node_index` is NOT stable** across `compute_kg` rebuilds (positional `reset_index`).
-  Always re-derive via `(node_id, node_type, node_source)`. Current personas:
-  breast cancer **15347**, breast carcinoma **16029**, obesity disorder **16415**,
-  morbid obesity **61925**.
-- **Stale schemas** on datasets whose upstream changed → rebuild with `--auto-update-schema`
-  (hit on `validation_set_personas`, `persona_scored`).
-- **Visual filter recipes can silently ignore the shown expression** if `uiData.$filterOptions`
-  is `"rules"` with a half-configured `conditions` block — set `mode`/`$filterOptions` to
-  `"CUSTOM"`. This caused a 14.79M-vs-6.75M row discrepancy that survived clean rebuilds.
-- **Manually-created datasets need `"managed": true`** or builds fail with
-  *"Clearing external datasets … is forbidden."*
-- **Execute Cypher *recipe*** is unreliable on this graph (opaque `IndexError`; buffer-pool
-  OOM on `1..3` expansion **and on the GO metapaths even with a fanout guard**). The interactive
-  Explorer works; heavy graph features are all Python now
-  (`compute_enriched_prox_closest_bfs_test`, `compute_enriched_rwr_score_1`,
-  `compute_dwpc_go_metapaths`). For metapath DWPCs the trick is that the weight **factorizes** —
-  associate right-to-left so you never form the gene×gene matrix.
-- **Audit `per_feature` after EVERY lab deploy.** DSS guesses `rescaling`/`missing_impute_with`
-  inconsistently — run 3's deploy came back `NONE`/`CONSTANT` on 9 of 12 features, run 2's mostly
-  correct, on identical data. Standard is `AVGSTD` + `IMPUTE MEAN` everywhere (TARGET_PRIORITIZER §6h);
-  `CONSTANT 0` on a high-null-gap feature re-opens the missingness leak.
-- **Report macro per-disease AUC, never pooled.** Pooled overstates by ~9 pts and hid a real
-  regression in ablation run 1 (pooled flat, per-disease −0.013).
-- **`prediction` column is near-useless for discovery** — the threshold is F1-optimised against a
+1. **Retire `KNOWLEDGE_GRAPH_PRIMEKG`** — the acceptance criterion is met, so the frozen reference has
+   served its purpose. Also retire the older Kuzu snapshot in `DEMO_KG_LS`.
+2. **A direct safety measurement + the dashboard** — the largest remaining increment of demo value.
+   The filterable table is DONE (`target_candidates_2`, 63,020 ranked rows with tractability, class
+   and liability annotations), and the two *free* safety signals were measured and **rejected as
+   filters** (TARGET_PRIORITIZER §10.3). What is still needed: essentiality / tissue-expression
+   breadth (a new source), then the UI. **Attributes, never edges.**
+3. **Re-pick the persona panel on evidence** — type 2 diabetes is the flagship but the weakest case on
+   both metrics (per-disease 0.634, drug-target 0.256); two non-persona cancers are the strongest
+   therapeutic showcases.
+4. **Minor cleanups:** regenerate the demo Cypher gene literals from the rebuilt ranking; rebuild the
+   drug-label chain (its `psplit_*_drug` inputs were not rebuilt); materialise the hub-bias meter as a
+   recipe rather than an ad-hoc calculation.
+
+## Sharp edges (check these first)
+
+**Read `DSS_CHEATSHEET.md` §1 for the full set — these are the ones specific to this work:**
+
+- **NEVER use recursive build types in `KNOWLEDGE_GRAPH_PRIMEKG`** — it walks up into the graph zone
+  and renumbers every node. This hazard is *why* the projects were split.
+- **`compute_kg` / the graph must never be recomputed unless I say so.**
+- **A benchmark a lookup table wins is measuring the lookup.** Drug-target AUC is dominated by gene
+  popularity: a no-graph lookup scores 0.9354, beating the drug-trained model. Report it as a warning
+  flag; never optimise against it.
+- **Report macro per-disease AUC, never pooled** — pooled overstates by ~7 points.
+- **The rank-sum AUC orientation depends on rank direction**, and getting it backwards is silent (a
+  plausible sub-random AUC alongside perfect precision@50). Ascending ranks → no leading `1 −`.
+- **The prediction column is near-useless for discovery** — the threshold is F1-optimised against a
   ~2% base rate, so 590/762 known obesity targets are false negatives. Rank and take top-N.
+- **Verify a rebuild by job history, not row count.** This has caused three rounds of wrong numbers.
+- **Read dataframes with inference disabled and cast join keys to string** — dtypes are inferred per
+  65,536-row chunk, so joins silently miss on some chunks.
+- **The query recipe is unreliable on this graph** (opaque errors, buffer-pool exhaustion). The
+  interactive explorer works; heavy graph math is all code.
+- **Druggability is INVERTED under the association label** (membrane receptor: 0.78x assoc, 3.16x
+  drug). Never add it as a model feature; group the presentation by class instead.
+- **Safety proxies point WITH efficacy, not against it.** Genetic constraint and curated liabilities
+  both favour drugged targets. Neither is a safety filter. Absence of a liability means nobody looked.
+- **The candidate filter is THREE clauses: novel → tractable → not-secreted.** Validated per persona at
+  1.42-1.71x enrichment on drug-validated targets with **100% recall**. Do NOT add "exclude known
+  liability" — it destroys 15-70% of validated targets and takes obesity to 0.54x (worse than no
+  filter). Obesity's ADRB2 is a validated target that carries a liability flag.
+- **A join's MANUAL column selection can silently select nothing** — check the recipe status message,
+  switch to auto. And a new output column needs a schema-updating build, which then clears downstream.
+- **Rules that key on integer ORDER are not migration-safe.** Three here depended on `node_index`
+  ordering rather than identity — a split modulo, a family tie-break, a parent-selection minimum.
+  Remapping literals is not enough; audit anything that ranks, mods or minimises on an id.
+- **The per-disease AUC code recipe emits two levels in one table** (`disease` + `split_key`). Filter
+  on `level` before comparing it to the visual chain, or you manufacture a 0.16 discrepancy.
+- **A container-orchestration failure looks like a recipe failure in the job list.** If the log shows
+  pod/`kubectl` errors rather than a Python traceback, just retry.
 
 ## How I want you to work (my preferences)
+
 - **Never `git commit`/`push` without asking me first.** Make changes, summarize, ask.
-- **Joins go in visual Join recipes, not pandas `.merge()`** in Python. Python extracts
-  only load + parse to native ids; visual recipes do grounding/harmonization.
-- Verify with real data (row counts, schema, sample), not just exit 0.
-- DSS build gotchas (see PRIMEKG_MAPPING §8): after a visual harmonize, `set-schema`
-  all-string then build **without** `--auto-update-schema` (else numeric ids re-infer as
-  bigint and break the cross-source stack); multi-input joins are **star** (chained
-  lookups need sequential joins); **delete a stale output dataset before recreating its
-  recipe**; and **`dku dataset delete` silently cascade-deletes recipes that consume it**
-  (re-list recipes after any dataset delete).
+- **Joins go in visual Join recipes, not pandas `.merge()`.** Python extracts only load and parse to
+  native identifiers; visual recipes do grounding and harmonization.
+- Verify with real data (row counts, schema, sample values), not just exit 0.
+- New datasets go on the **S3 connection** (`dataiku-managed-storage`, parquet).
+- After a visual harmonize, force the schema to all-string then build **without** schema
+  auto-update — otherwise numeric identifiers re-infer as integers and break the cross-source union.
 
 ## Useful commands
+
 ```
-export DKU_PROJECT=KNOWLEDGE_GRAPH_PRIMEKG
-dku flow zones                          # 8 source zones
-dku recipe list ; dku dataset list
+export DKU_PROJECT=DEMO_TARGET_IDENTIFICATION     # or DEMO_KG_LS
+dku flow zones ; dku recipe list ; dku dataset list ; dku model list
+dku --format json flow graph                       # full dependency map
 dku dataset count kg ; dku dataset head graph_nodes --format json
-dku dataset head kg --rows 800000 --format json   # relation breakdown
-dku webapp logs lVWgU2m                 # Visual Graph Editor health
-dku job run --target graph_nodes --type RECURSIVE_BUILD --auto-update-schema --wait
+dku dataset download graph_nodes ./nodes.csv       # for local comparison work
+dku recipe get-code <recipe>                       # dss_recipes/ can be stale
+dku job list --limit 60                            # verify WHEN something was built
+dku ml settings <analysis_id> <mltask_id>          # audit per-feature config before training
 ```
 
 ## First message suggestion
-"Read the POC document set (PROJECT_CONTEXT, PRIMEKG_MAPPING, TARGET_PRIORITIZER,
-RESEARCH_NOTE), confirm the live flow state via `dku`, and summarize what's built and
-what's next. Then <your task>."
+
+"Read the document set (PROJECT_CONTEXT, GRAPH_BUILDING, TARGET_PRIORITIZER, DSS_CHEATSHEET),
+confirm the live state of both active projects via `dku`, and summarize what's built and what's next.
+Then <your task>."

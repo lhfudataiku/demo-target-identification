@@ -17,11 +17,14 @@ SETS = {"train": "enriched_train_full_2",
         "validation": "enriched_validation_set_2",
         "test": "enriched_test_set_2"}
 # personas + the pair that motivated the elevated key
-# indices re-derived after the last graph rebuild (node_index is positional and shifts)
-WATCH = {61925: "morbid obesity", 16415: "obesity disorder",
-         15347: "breast cancer", 16029: "breast carcinoma",
-         16420: "diabetes mellitus", 16596: "type 2 diabetes mellitus",
-         19569: "type 1 diabetes mellitus"}
+# Indices remapped 2026-08-17 for the DEMO_KG_LS graph, resolved through
+# (node_id, node_type, node_source) -- see index_remap.json. node_index is DETERMINISTIC in that
+# graph, so these are stable from here on; they were not stable in the old single-project build.
+# They are still project-specific: the same diseases carry different integers per graph build.
+WATCH = {47530: "morbid obesity", 37143: "obesity disorder",
+         49721: "breast cancer", 47415: "breast carcinoma",
+         47437: "diabetes mellitus", 47537: "type 2 diabetes mellitus",
+         54058: "type 1 diabetes mellitus"}
 
 frames = {k: dataiku.Dataset(v).get_dataframe(columns=COLS) for k, v in SETS.items()}
 
@@ -78,3 +81,5 @@ out["overlap_train_val_keys"] = len(keys["train"] & keys["validation"])
 out["overlap_test_val_keys"] = len(keys["test"] & keys["validation"])
 out["straddling_split_keys"] = int((straddle > 1).sum())
 dataiku.Dataset("split_audit_2").write_with_schema(out)
+
+

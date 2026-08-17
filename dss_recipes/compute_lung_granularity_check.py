@@ -1,6 +1,6 @@
 # Does the model DISTINGUISH histological subtypes, or just re-rank the same gene list?
 #
-# WHY: every disease under split key 14654 (`respiratory system cancer`) scores AUC 0.91-0.96,
+# WHY: every disease in the lung-cancer family scores AUC 0.91-0.96,
 # and `lung adenocarcinoma` (0.938) vs `small cell lung carcinoma` (0.944) are within noise.
 # Equal AUC is not the question that matters for target validation -- the question is whether
 # the top-ranked GENES differ. If two histologies with different pathophysiology and different
@@ -12,15 +12,23 @@ import dataiku
 import pandas as pd
 from itertools import combinations
 
-KEY = 14654           # respiratory system cancer
+# Select the LUNG CANCER FAMILY, not a split key. In the reference graph the lung subtypes
+# shared the `respiratory system cancer` split key, so that key was the right selector. In the
+# rebuilt graph they roll up to `thoracic cancer` instead -- the elevation step picks among a
+# disease's multiple parents by lowest node_index, and renumbering flipped that choice -- which
+# merges lung with BREAST. Selecting on the split key would therefore compare breast lists to
+# lung lists, a different question. The anchor-level family is the stable way to say
+# "lung cancer and its histological subtypes".
+KEY = 52236           # disease_family_id: lung cancer
 TOPN = 50
 SCORE = "proba_1"
 
-df = dataiku.Dataset("validation_set_2_scored").get_dataframe(
-    columns=["disease_index", "gene_index", "is_target", "disease_split_key", SCORE])
-df = df[df.disease_split_key == KEY]
+# Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46
+df = dataiku.Dataset("scored_m3").get_dataframe(
+    columns=["disease_index", "gene_index", "is_target", "disease_family_id", SCORE])
+df = df[df.disease_family_id == KEY]
 
-nodes = dataiku.Dataset("graph_nodes").get_dataframe(
+nodes = dataiku.Dataset("DEMO_KG_LS.graph_nodes").get_dataframe(
     columns=["node_index", "node_name", "node_type"], infer_with_pandas=False)
 nodes["node_index"] = nodes.node_index.astype(int)
 gname = dict(zip(nodes[nodes.node_type == "gene/protein"].node_index,
@@ -63,3 +71,6 @@ print(f"\n  mean pairwise Jaccard: {sum(js)/len(js):.3f}   "
       f"(1.0 = identical gene lists, i.e. no subtype resolution)")
 
 dataiku.Dataset("lung_granularity_check").write_with_schema(out)
+
+
+

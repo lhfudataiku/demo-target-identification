@@ -22,7 +22,7 @@ import pandas as pd
 
 SCORE = "proba_1"
 
-nodes = dataiku.Dataset("graph_nodes").get_dataframe(
+nodes = dataiku.Dataset("DEMO_KG_LS.graph_nodes").get_dataframe(
     columns=["node_index", "node_id", "node_type", "node_name"], infer_with_pandas=False)
 nodes["node_index"] = nodes.node_index.astype(int)
 nodes["node_id"] = nodes.node_id.astype(str)
@@ -32,8 +32,8 @@ dis_map = dict(zip(dis.node_id, dis.node_index))
 gene_map = dict(zip(gen.node_id, gen.node_index))
 dname = dict(zip(dis.node_index, dis.node_name))
 
-dd = dataiku.Dataset("drug_disease_edges").get_dataframe(infer_with_pandas=False)
-dp = dataiku.Dataset("drug_protein_edges").get_dataframe(infer_with_pandas=False)
+dd = dataiku.Dataset("DEMO_KG_LS.drug_disease_edges").get_dataframe(infer_with_pandas=False)
+dp = dataiku.Dataset("DEMO_KG_LS.drug_protein_edges").get_dataframe(infer_with_pandas=False)
 ind = dd[dd.relation.astype(str).str.fullmatch("indication", case=False, na=False)].copy()
 dcol, xcol = ("x_id", "y_id") if (ind.x_type == "drug").any() else ("y_id", "x_id")
 ind["drug"] = ind[dcol].astype(str)
@@ -47,7 +47,8 @@ truth = (ind.dropna(subset=["disease_index"])[["drug", "disease_index"]]
 tset = truth.groupby("disease_index").gene_index.apply(set).to_dict()
 
 drg = dataiku.Dataset("enriched_gene_druggability").get_dataframe()
-sc = dataiku.Dataset("validation_set_2_scored").get_dataframe(
+# Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46
+sc = dataiku.Dataset("scored_m3").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", SCORE])
 sc = sc.merge(drg, on="gene_index", how="left")
 
@@ -116,10 +117,13 @@ print("  %val@50 = validated targets landing in the filtered top 50, as a share 
 print("  AUC is not comparable across rungs -- the negative set changes at every rung.")
 
 print("\n=== per-persona hits@50, clean rungs only ===")
-P = [14644, 16415, 16596, 14274, 15624, 15317]
+P = [47654, 37143, 47537, 47469, 47604, 52236]
 piv = (out[out.status == "clean"][out.disease_index.isin(P)]
        .pivot_table(index="disease_name", columns="filter",
                     values="hits_at_50", aggfunc="first"))
 print(piv.to_string())
 
 dataiku.Dataset("drug_target_benchmark_staged").write_with_schema(out)
+
+
+

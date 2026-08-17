@@ -4,6 +4,16 @@
 # Outputs: drug_vocab (drugbank_id, drug_name),
 #          raw_drug_protein (drugbank_id, ensg, action_type),
 #          raw_drug_indication (drugbank_id, mondo_id bare-int).
+# ----------------------------------------------------------------------------
+# SOURCE PROVENANCE  (recorded 2026-08-13)
+# Source        : Open Targets Platform (parquet exports over FTP)
+# URL in use    : https://ftp.ebi.ac.uk/pub/databases/opentargets/platform/26.06/output/
+# Version used  : platform release 26.06 -- ALREADY PINNED in the URL. Reachable 2026-08-13.
+# TO FREEZE     : nothing to do; the release is in the path. Bumping Open Targets means
+#                 editing this URL deliberately, and OT changes column layouts between
+#                 releases, so re-verify the schema when you do.
+# ----------------------------------------------------------------------------
+
 import os
 import re
 import tempfile
@@ -98,3 +108,5 @@ raw_di = (ind.dropna(subset=["drugbank_id", "mondo_id"])
 dataiku.Dataset("drug_vocab").write_with_schema(drug_vocab)
 dataiku.Dataset("raw_drug_protein").write_with_schema(raw_dp)
 dataiku.Dataset("raw_drug_indication").write_with_schema(raw_di)
+
+
