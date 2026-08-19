@@ -89,10 +89,18 @@ is exactly right for TNBC.
 3. **BRCA1 at rank 252**, and it is a *known* association. Most BRCA1-mutant breast cancer is
    triple-negative. Meanwhile BRCA2 is at rank 5. The model treats the two paralogues completely
    differently with no biological justification.
-4. **TROP2 / TACSTD2 and PDCD1 / CD274 are not in the candidate pool at all** — no path evidence, so
-   they are unreachable, not just low-ranked. **Sacituzumab govitecan (anti-TROP2) and pembrolizumab
-   (anti-PD-1) are both approved in TNBC.** The two most important modern TNBC targets cannot be
-   surfaced by this model for this disease. That is a coverage failure (§5.2), not a ranking one.
+4. **TACSTD2 (TROP2) is not in the candidate pool at all** — the model cannot score it for this
+   disease at any rank. Sacituzumab govitecan is approved here, and TACSTD2 is one of only *two*
+   target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90). So the
+   single best-evidenced TNBC target is invisible to the model. That is a coverage failure, not a
+   ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1,157
+   diseases** in the graph.
+
+   *Corrected after measurement:* an earlier draft of this briefing also listed PDCD1/CD274
+   (pembrolizumab's target) as structurally unreachable. **That was wrong** — those genes are reachable
+   for 62% and 53% of diseases respectively, so their absence here is specific to triple-negative's
+   known-gene set rather than a property of the graph. If the surgeon raises immunotherapy, the honest
+   answer is "reachable in principle, missed for this disease", not "invisible".
 
 Also note **TP53 at rank 2 is labelled "novel"** — but TP53 is mutated in ~80% of TNBC and appears in
 the *known* block for HER2+ and for the umbrella term. So "novel" here means *"not annotated for this
@@ -127,6 +135,11 @@ ADRB2 case in TARGET_PRIORITIZER §10.3.
   (0.69) — the parent term is beaten by its own children.
 - **§3.4 should be narrowed** from "cannot resolve subtype" to "cannot resolve *morphological*
   subtype", with breast molecular subtypes as the counter-example.
-- **The TNBC pool gap is a real finding about the candidate-pool design** (§5.2): requiring path
-  evidence makes approved-drug targets unreachable for sparsely-annotated diseases. This is the
-  strongest argument yet for the embedding features listed as still-open in §10.5.
+- **The TNBC pool gap is real but narrow.** Measured across all 207 evaluable diseases, the candidate
+  pool contains **98.5%** of curated target–disease pairs, and coverage does **not** track how sparsely
+  a disease is annotated (Spearman +0.081). TNBC is one of only two diseases below 50% coverage. Do not
+  present this as a systemic failure — present it as the specific reason TACSTD2 is missing here.
+- **A separate and larger pool problem was found while checking this** (TARGET_PRIORITIZER §5.2.1): the
+  third route in the pool filter is drug-mediated, which admits 25% of approved drug-target pairs to the
+  evaluation *because of the relationship being evaluated*. Fixing it raises drug-target AUC from 0.691
+  to 0.734. Not clinician-facing, but it changes numbers that are.
