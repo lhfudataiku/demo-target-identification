@@ -1,0 +1,118 @@
+{
+  "exported": "2026-08-19",
+  "source_project": "DEMO_TARGET_IDENTIFICATION",
+  "graph_generation": "2026-08-17 rebuild from DEMO_KG_LS shared graph",
+  "scored_m3_rows": 3958921,
+  "candidate_pool_rows": 6754128,
+  "why": "Analyses pruned from the DSS flow because no scientist asks about them in a demo. Snapshotted rather than deleted, after the m7-drug-label deletion on 2026-08-18 left its findings with no artifact.",
+  "reproducible": true,
+  "note": "Outside the DSS build graph. Nothing detects staleness. Re-export after any graph rebuild.",
+  "datasets": {
+    "disease_hierarchy_annotation": {
+      "rows": 27153,
+      "columns": 27,
+      "column_names": [
+        "disease_index",
+        "mondo_id",
+        "disease_name",
+        "node_source",
+        "module_size",
+        "is_eligible",
+        "is_anchor",
+        "anchor_doid",
+        "anchor_hetionet_name",
+        "current_family_id",
+        "current_family_name",
+        "current_anchor_name",
+        "current_hop_depth",
+        "n_parents",
+        "n_children",
+        "n_eligible_children",
+        "n_anchor_children",
+        "is_parent_term",
+        "parent_names",
+        "anchor_children_names",
+        "n_anchor_ancestors",
+        "n_anchor_descendants",
+        "is_ancestor_of_anchor",
+        "is_descendant_of_anchor",
+        "antichain_ok_as_anchor",
+        "n_descendants",
+        "n_eligible_descendants"
+      ]
+    },
+    "drug_target_benchmark_staged": {
+      "rows": 780,
+      "columns": 10,
+      "column_names": [
+        "filter",
+        "status",
+        "disease_index",
+        "pool",
+        "n_val_kept",
+        "n_val_total",
+        "hits_at_50",
+        "median_pct",
+        "auc",
+        "disease_name"
+      ]
+    },
+    "maturity_confound": {
+      "rows": 60,
+      "columns": 13,
+      "column_names": [
+        "disease_index",
+        "disease",
+        "cls",
+        "maturity",
+        "delta",
+        "n_approved_drugs",
+        "n_trial_drugs",
+        "novel_linked_total_approved",
+        "novel_linked_total_investigational",
+        "lift_top50_approved",
+        "lift_top50_investigational",
+        "hits_top50_approved",
+        "hits_top50_investigational"
+      ]
+    },
+    "model_comparison": {
+      "rows": 2010,
+      "columns": 7,
+      "column_names": [
+        "model",
+        "disease_index",
+        "auc_assoc",
+        "n_assoc",
+        "auc_drug",
+        "n_drug",
+        "hits_at_50"
+      ]
+    },
+    "target_reachability": {
+      "rows": 44,
+      "columns": 4,
+      "column_names": [
+        "group",
+        "feature",
+        "mean_pct",
+        "null_rate"
+      ]
+    },
+    "validation_auc_by_disease_2": {
+      "rows": 1113,
+      "columns": 9,
+      "column_names": [
+        "disease_index",
+        "n_pos",
+        "n_neg",
+        "auc",
+        "hits_at_50",
+        "recall_at_50",
+        "level",
+        "split_key_name",
+        "pooled_auc"
+      ]
+    }
+  }
+}

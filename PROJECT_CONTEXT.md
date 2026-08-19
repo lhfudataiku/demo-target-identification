@@ -9,11 +9,16 @@
 > | **this file** | purpose, market evidence, personas, how the pieces fit | — |
 > | **[GRAPH_BUILDING.md](GRAPH_BUILDING.md)** | input sources, pipeline, graph schema, graph statistics, the graph webapp | `DEMO_KG_LS` |
 > | **[TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md)** | data exploration, feature & model selection, validation, results | `DEMO_TARGET_IDENTIFICATION` |
+> | **[DEMO_NARRATIVE.md](DEMO_NARRATIVE.md)** | **what we show scientists and in what order** — the objection ladder, the punch line, what not to show | both |
 > | **[DISCOVERY_LANDSCAPE.md](DISCOVERY_LANDSCAPE.md)** | the wider drug-discovery chain (stages 1–6) and where a platform belongs | — |
 > | **[RESEARCH_NOTE.md](RESEARCH_NOTE.md)** | per-reference evidence base for the Part 2 method choices | — |
 > | **[DSS_CHEATSHEET.md](DSS_CHEATSHEET.md)** | platform behaviours and CLI patterns, stated generically | — |
 >
 > Decisions are logged in the **appendix** of each document, not inline.
+>
+> **Read [DEMO_NARRATIVE.md](DEMO_NARRATIVE.md) before designing the dashboard or pruning the flow.**
+> Both should be derived from the story. We tried the reverse and it produced a plan to delete our
+> strongest evidence — see TARGET_PRIORITIZER §9.1.
 
 ## 1. Purpose
 
@@ -113,11 +118,16 @@ targets, (b) early prediction of off-target liability, therefore (c) reduced ear
 
 Persona diseases drive both graph exploration and model validation (TARGET_PRIORITIZER §9).
 
-**A finding worth carrying into any demo:** the coarser, smaller-module disease term surfaces
-*novel* candidates while the larger-module term mostly *re-identifies known* ones. Recommended
-demo diseases are **breast cancer** and **obesity disorder** — both balanced between known and
-novel. `breast carcinoma` returns 50/50 already-known targets (no discovery value) and
-`morbid obesity` returns 0/50 known (lowest confidence). See TARGET_PRIORITIZER §10.
+**Demo diseases are now chosen by measurement** — see [DEMO_NARRATIVE.md](DEMO_NARRATIVE.md) §6 and
+TARGET_PRIORITIZER §8.8, §8.13. The panel is **non-small cell lung carcinoma** (the MAPK3 discovery
+story), **HER2-positive breast carcinoma** (passes clinical sanity outright: ERBB2 at rank 13, AUC
+0.93 on 599 known targets), **diabetes mellitus** and **obesity disorder**.
+
+⚠ **An earlier version of this section recommended the generic `breast cancer` term on no
+measurement.** It is the *worst* term in the breast panel — AUC **0.69**, beaten by its own subtypes.
+The parent-term intuition was backwards here. **Triple-negative** is kept as a deliberate hard case for
+clinician review rather than as a showcase, because it has only 8 known gene associations and cannot be
+scored against our labels at all.
 
 ## 4. The two projects
 
@@ -166,26 +176,37 @@ metrics cross-checking to 1.9×10⁻⁴, and a documented negative result.
 
 ### 4.3 The interface between them
 
-`DEMO_KG_LS` exposes **10 objects** to `DEMO_TARGET_IDENTIFICATION`, which appear in its
-`00 Shared from DEMO_KG_LS` flow zone. This list *is* the contract — anything else in the graph
-project can change freely.
+`DEMO_KG_LS` exposes **13 objects** to `DEMO_TARGET_IDENTIFICATION`, which appear in its
+`00 Imported from DEMO_KG_LS (synced)` flow zone. This list *is* the contract — anything else in the
+graph project can change freely.
 
-| Shared object | Consumers | Why the modelling project needs it |
+**Since 2026-08-18 the datasets are consumed through local synced copies, not read across the project
+boundary.** Each of the 12 foreign dataset references now feeds **exactly one Sync recipe** and
+nothing else; every downstream recipe reads the local copy of the same name. That makes the import
+surface auditable in one place and stops a rename in the graph project breaking 26 recipes at once.
+**The Kuzu folder is the exception — it is read directly by the 10 Cypher recipes**, because folder
+sync is not a supported DSS pattern.
+
+| Shared object | Local consumers | Why the modelling project needs it |
 |---|--:|---|
-| `enriched_index_freezed-6bRVGs` *(Kuzu folder)* | 10 | the materialized graph — every Cypher feature recipe reads it |
-| `graph_nodes` | 19 | node identity, types, names; the index→entity lookup |
+| `enriched_index_freezed` *(Kuzu folder)* | 10 | the materialized graph — every Cypher feature recipe reads it. **Not synced; read across the boundary** |
+| `graph_nodes` | 26 | node identity, types, names; the index→entity lookup |
+| `drug_disease_edges` | 11 | therapeutic-axis ground truth — `indication` and `drug_investigated_for` |
+| `drug_protein_edges` | 11 | tractability-axis ground truth — the only uninflated drug label |
 | `graph_edges` | 6 | matrix-form features computed outside Kuzu |
-| `drug_disease_edges` | 7 | drug-validated-target benchmark ground truth |
-| `drug_protein_edges` | 7 | as above |
+| `gene_names` | 3 | gene symbols for the candidate tables |
 | `raw_disease_disease` | 2 | **pre-reversal** hierarchy — assembly makes edges undirected, so hierarchy direction only survives here |
 | `mondo_references` | 2 | cross-reference hub, for the split-control anchor mapping |
 | `edge_metadata` | 1 | interaction-source provenance → measurement-confidence features |
 | `raw_go_hierarchy` | 1 | functional-annotation hierarchy → gene localization |
-| `gene_names` | 1 | gene symbols for the candidate tables |
+| `raw_ot_druggability` | 1 | Open Targets tractability buckets → druggability class annotation |
+| `raw_ot_safety` | 1 | Open Targets safety liabilities → display-only annotation |
+| `raw_ot_known_drug` | 1 | the curated `known_drug` evaluation label (TARGET_PRIORITIZER §8.1) |
 
-**Everything else the modelling project needs, it owns.** Two source recipes stay on the modelling
-side deliberately: the split-control disease vocabulary and the druggability annotation. Neither
-contributes nodes or edges to the graph, so neither belongs in the graph project.
+**Everything else the modelling project needs, it owns.** One source recipe stays on the modelling
+side deliberately — the split-control disease vocabulary — because it contributes no nodes or edges to
+the graph. **The three Open Targets extractions moved the other way**, into `DEMO_KG_LS`: they are
+source ingestion, which is that project's job, even though only the modelling project consumes them.
 
 ### 4.4 `KNOWLEDGE_GRAPH_PRIMEKG` — frozen reference
 
@@ -213,12 +234,13 @@ average because nothing averages out.
 - **Retire `KNOWLEDGE_GRAPH_PRIMEKG`** — the acceptance criterion is now met, so the frozen reference
   has served its purpose. Also retire the older of the two Kuzu snapshots in `DEMO_KG_LS`.
 - **Target prioritisation (stage 2) — the deliverable is now filterable, the safety axis is not
-  solved.** `target_candidates_2` is 63,020 ranked candidates carrying tractability, target class and
-  known-liability annotations, so a scientist filters instead of receiving a pre-cut list. But the two
-  freely-available safety signals were measured and **rejected as filters** — genetic constraint runs
-  *with* druggability and curated liabilities mark drug precedent, not risk (TARGET_PRIORITIZER
-  §10.3). A real safety axis needs a direct measurement (essentiality, tissue-expression breadth),
-  which means a new source. That plus the dashboard is the largest remaining increment of demo value.
+  solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying
+  tractability, target class and known-liability annotations, so a scientist filters instead of
+  receiving a pre-cut list. But the two freely-available safety signals were measured and **rejected
+  as filters** — genetic constraint runs *with* druggability and curated liabilities mark drug
+  precedent, not risk (TARGET_PRIORITIZER §10.3). A real safety axis needs a direct measurement
+  (essentiality, tissue-expression breadth), which means a new source. That plus the dashboard is the
+  largest remaining increment of demo value.
 - **Re-pick the persona panel on evidence.** The flagship metabolic disease is the weakest case on
   both metrics while two non-persona cancers are the strongest therapeutic showcases
   (TARGET_PRIORITIZER §8.1).
@@ -242,8 +264,10 @@ modelling decisions in [TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md).
 | 2026-08-13 | **Split graph construction from modelling into two projects** — the governing structural decision. They change on incompatible cadences, and one shared flow allowed a modelling experiment to trigger a graph rebuild and renumber every node. |
 | 2026-08-13 | **Acceptance criterion for the rebuild = structural, not byte-exact.** Pinning every source was considered and rejected as a first step: it would have ended the pipeline's ability to bootstrap itself from public URLs, in exchange for an exact diff. Sources stay live and each records its version and freeze instructions. |
 | 2026-08-17 | **Freeze the original single-project build as the reference** and migrate rather than rebuild the modelling side — this preserves the trained models, the persona chain and the whole diagnostic suite, which would be expensive to recreate and are the evidence base for the method choices. |
-| 2026-08-17 | **The cross-project interface is an explicit 10-object contract** (§4.3), not "whatever the modelling project happens to read". Everything else in the graph project is free to change. |
+| 2026-08-17 | **The cross-project interface is an explicit object contract** (§4.3), not "whatever the modelling project happens to read". Everything else in the graph project is free to change. |
 | 2026-08-17 | **Documentation restructured to mirror the project split** — one technical document per project, a shared index, and platform/tooling findings extracted into a generic cheatsheet so they stay useful outside this POC. |
 | 2026-08-17 | **Migration accepted.** The modelling flow rebuilt on the shared graph reproduces the frozen reference within ±0.01 on every metric (§4.5). The two-project split is therefore complete and validated end to end, and the reference can be retired. |
+| 2026-08-17 | **Discovery adopted as a third reported axis, and it is the strongest result in the POC** (TARGET_PRIORITIZER §8.3). Ranking accuracy and therapeutic agreement say nothing about whether the model surfaces *unannotated* targets — the deliverable's actual claim. Measured against the drug layer, the novel candidates are **4–13× enriched above chance** for real drug targets, recovering 206 approved and 1,802 trial-stage targets in the top-200 novel. Report against **both** ground truths (approved and in-trial); the choice reverses per-disease conclusions. |
 | 2026-08-17 | **Both stage-2 design questions settled by measurement, not training** (TARGET_PRIORITIZER §10.3). Druggability as a model input is **rejected** — under the association label it is *inverted*, not merely neutral, so it would reinforce the ligand-vs-receptor failure; a class-grouped presentation recovers the benefit at no risk. Safety as a filter is **rejected on a refuted prediction** — the free signals point the same way as efficacy, so filtering on them would remove the best candidates. Both answers cost three recipes rather than three training runs. |
 | 2026-08-17 | **Recorded a general hazard for any identifier migration:** three separate rules in the modelling layer depended on integer *ordering* rather than on identity — a split modulo, a family tie-break, and a parent-selection minimum. Remapping the literals is not sufficient; every rule that ranks, mods or minimises on an identifier has to be audited (TARGET_PRIORITIZER §10.2). |
+| 2026-08-18 | **The contract grew to 13 objects and changed shape** (§4.3). The three Open Targets extractions were relocated into `DEMO_KG_LS` — source ingestion belongs to the graph project even when only the modelling project consumes it. More importantly, the 12 dataset references are now consumed via **local synced copies**: each foreign ref feeds exactly one Sync recipe and nothing else. The import surface is auditable in one zone, and a rename upstream breaks 1 recipe instead of 26. **The Kuzu folder stays a direct cross-project read** — folder sync is not a supported DSS pattern. |

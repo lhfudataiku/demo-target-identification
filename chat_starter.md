@@ -48,30 +48,43 @@ Note it is **1-based** here and **0-based** in the reference.
 **Part 2 — the prioritizer. Built and validated on the rebuilt graph.** Champion **`m3-f12`** (12
 features): macro per-disease AUC **0.8197** over 670 diseases, per-split-key 0.8007, pooled 0.8915,
 per-family 0.7976, drug-target 0.6911. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12`.
-`m7-drug-label` is a **deliberately retained negative result** — do not read its 0.9324 drug-target
-AUC as a win.
+The `m7-drug-label` negative result (§7.5) was **deleted from the flow on 2026-08-18** — do not read
+its 0.9324 drug-target AUC as a win, and note those numbers now exist **only in the documentation**.
+The point it proves: a gene-popularity lookup table scores **0.9354** on that benchmark, beating the
+trained model.
 
 **Migration status: COMPLETE and verified (2026-08-17).** The modelling project reads the graph
-through **10 shared objects** (PROJECT_CONTEXT §4.3) in its `00 Shared from DEMO_KG_LS` zone; Part 1
+through **13 shared objects** (PROJECT_CONTEXT §4.3) in its `00 Imported from DEMO_KG_LS (synced)`
+zone — 12 datasets via local synced copies, the Kuzu folder read directly; Part 1
 components removed; indices remapped; flow rebuilt end to end. **Every metric landed within ±0.01 of
 the frozen reference** against a ±0.02 tolerance set in advance, and the candidate pool total is
 bit-identical (6,754,128). See TARGET_PRIORITIZER §10.
+
+**The demo story is written and it governs the build order.**
+[DEMO_NARRATIVE.md](DEMO_NARRATIVE.md) frames the demo as a six-question interrogation (Q1 *"show me
+the list"* → Q6 *"what can't it do?"*), because that is the order a sceptical scientist asks in. Every
+flow zone description in DSS now names the question it answers. **Derive the dashboard from that
+document, not the reverse** — a pruning plan derived from the dashboard cut 46 of 62 validation items
+including the answer to the most common objection.
 
 ## Next up
 
 1. **Retire `KNOWLEDGE_GRAPH_PRIMEKG`** — the acceptance criterion is met, so the frozen reference has
    served its purpose. Also retire the older Kuzu snapshot in `DEMO_KG_LS`.
 2. **A direct safety measurement + the dashboard** — the largest remaining increment of demo value.
-   The filterable table is DONE (`target_candidates_2`, 63,020 ranked rows with tractability, class
-   and liability annotations), and the two *free* safety signals were measured and **rejected as
+   The filterable table is DONE (`target_candidates_2`, **129,253 ranked rows over 13 personas** with
+   tractability, class and liability annotations), and the two *free* safety signals were measured and **rejected as
    filters** (TARGET_PRIORITIZER §10.3). What is still needed: essentiality / tissue-expression
    breadth (a new source), then the UI. **Attributes, never edges.**
 3. **Re-pick the persona panel on evidence** — type 2 diabetes is the flagship but the weakest case on
    both metrics (per-disease 0.634, drug-target 0.256); two non-persona cancers are the strongest
    therapeutic showcases.
-4. **Minor cleanups:** regenerate the demo Cypher gene literals from the rebuilt ranking; rebuild the
-   drug-label chain (its `psplit_*_drug` inputs were not rebuilt); materialise the hub-bias meter as a
-   recipe rather than an ad-hoc calculation.
+4. **The dashboard is the next build.** The flow now has a `60 Dashboard (serving)` zone with the
+   flattened tables (`dashboard_candidates`, `dashboard_persona_trust`, `drug_evidence_pairs`); what is
+   missing is the UI.
+5. **Minor cleanups:** regenerate the demo Cypher gene literals from the rebuilt ranking; materialise
+   the hub-bias meter as a recipe rather than an ad-hoc calculation; delete the orphaned Visual Graph
+   webapps from `DEMO_TARGET_IDENTIFICATION`.
 
 ## Sharp edges (check these first)
 
@@ -98,9 +111,16 @@ bit-identical (6,754,128). See TARGET_PRIORITIZER §10.
 - **Safety proxies point WITH efficacy, not against it.** Genetic constraint and curated liabilities
   both favour drugged targets. Neither is a safety filter. Absence of a liability means nobody looked.
 - **The candidate filter is THREE clauses: novel → tractable → not-secreted.** Validated per persona at
-  1.42-1.71x enrichment on drug-validated targets with **100% recall**. Do NOT add "exclude known
+  1.42-1.71x enrichment with **98-100% recall on both ground truths**. Do NOT add "exclude known
   liability" — it destroys 15-70% of validated targets and takes obesity to 0.54x (worse than no
   filter). Obesity's ADRB2 is a validated target that carries a liability flag.
+- **ALWAYS report both drug ground truths.** `indication` (approved, 4,110 pairs) and
+  `drug_investigated_for` (in-trial, 52,734). The choice reverses conclusions: NSCLC scores 0/33 on
+  approved and **11/379 at 6.8x** on investigational. Metabolic diseases excel on approved (41x),
+  oncology on investigational. Investigational includes FAILED programmes.
+- **Discovery is a separate axis from ranking accuracy.** "Share of the top-50 already known" is a
+  PRECISION measure, not a novelty ceiling — normalised, NSCLC's 96% is 19x enrichment (best) and
+  CKD's 2% is 2.9x (worst). Measure discovery on the novel sub-list (`novel_discovery_eval`).
 - **A join's MANUAL column selection can silently select nothing** — check the recipe status message,
   switch to auto. And a new output column needs a schema-updating build, which then clears downstream.
 - **Rules that key on integer ORDER are not migration-safe.** Three here depended on `node_index`

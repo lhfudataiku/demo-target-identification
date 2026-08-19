@@ -24,7 +24,11 @@ import numpy as np
 import pandas as pd
 from scipy import sparse
 
+# Dataset DEMO_KG_LS.graph_edges renamed to DEMO_KG_graph_edges_copy by liheng.fu@dataiku.com on 2026-08-18 09:38:18
+# Dataset DEMO_KG_graph_edges_copy renamed to graph_edges by liheng.fu@dataiku.com on 2026-08-18 09:56:56
 edges = dataiku.Dataset("graph_edges").get_dataframe(columns=["relation", "x_index", "y_index"])
+# Dataset DEMO_KG_LS.graph_nodes renamed to DEMO_KG_graph_nodes_copy by liheng.fu@dataiku.com on 2026-08-18 09:38:35
+# Dataset DEMO_KG_graph_nodes_copy renamed to graph_nodes by liheng.fu@dataiku.com on 2026-08-18 09:56:41
 nodes = dataiku.Dataset("graph_nodes").get_dataframe(columns=["node_index", "node_type"])
 genes = set(nodes.loc[nodes.node_type == "gene/protein", "node_index"])
 
@@ -79,3 +83,4 @@ out = pd.DataFrame({
 print("ppi_cn_zscore rows:", out.shape)
 print(out.ppi_common_neighbors_z.describe().to_string())
 dataiku.Dataset("enriched_ppi_cn_zscore").write_with_schema(out)
+

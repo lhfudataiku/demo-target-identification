@@ -23,6 +23,8 @@ ot = dataiku.Dataset("raw_ot_druggability").get_dataframe()
 loc = dataiku.Dataset("enriched_gene_localization").get_dataframe()
 nodes = dataiku.Dataset("graph_nodes").get_dataframe(
     columns=["node_index", "node_id", "node_type"], infer_with_pandas=False)
+# Dataset DEMO_KG_LS.gene_names renamed to DEMO_KG_gene_names_copy by liheng.fu@dataiku.com on 2026-08-18 09:39:43
+# Dataset DEMO_KG_gene_names_copy renamed to gene_names by liheng.fu@dataiku.com on 2026-08-18 09:57:09
 gn = dataiku.Dataset("gene_names").get_dataframe(columns=["symbol", "entrez_id"])
 
 # ENSG -> symbol -> entrez -> gene_index
@@ -93,3 +95,4 @@ print("\n=== evidence source ===")
 print(out.druggability_evidence.value_counts().to_string())
 print(f"\ncoverage (class != unknown): {(out.druggability_class != 'unknown').mean():.1%}")
 dataiku.Dataset("enriched_gene_druggability").write_with_schema(out)
+

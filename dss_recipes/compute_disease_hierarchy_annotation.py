@@ -111,3 +111,4 @@ for _, r in v.iterrows():
     print(f"  {r.disease_name} -> ancestor of {r.n_anchor_descendants} anchor(s)")
 
 dataiku.Dataset("disease_hierarchy_annotation").write_with_schema(out)
+

@@ -17,6 +17,8 @@
 import dataiku
 import pandas as pd
 
+# Dataset DEMO_KG_LS.edge_metadata renamed to DEMO_KG_edge_metadata_copy by liheng.fu@dataiku.com on 2026-08-18 09:37:49
+# Dataset DEMO_KG_edge_metadata_copy renamed to edge_metadata by liheng.fu@dataiku.com on 2026-08-18 09:57:21
 meta = dataiku.Dataset("edge_metadata").get_dataframe(
     columns=["x_index", "y_index", "relation", "ppi_sources"])
 ppi = meta[(meta.relation == "protein_protein") & meta.ppi_sources.notna()].copy()
@@ -35,3 +37,4 @@ agg = ppi.groupby("x_index").agg(
 print("ppi_evidence_depth rows:", agg.shape)
 print(agg[["ppi_evidence_depth", "ppi_multi_source_frac"]].describe().to_string())
 dataiku.Dataset("enriched_ppi_evidence_depth").write_with_schema(agg)
+

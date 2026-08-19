@@ -27,6 +27,8 @@ dis_map = dict(zip(nodes[nodes.node_type == "disease"].node_id,
 gene_map = dict(zip(nodes[nodes.node_type == "gene/protein"].node_id,
                     nodes[nodes.node_type == "gene/protein"].node_index))
 
+# Dataset DEMO_KG_LS.drug_disease_edges renamed to DEMO_KG_drug_disease_edges_copy by liheng.fu@dataiku.com on 2026-08-18 09:42:00
+# Dataset DEMO_KG_drug_disease_edges_copy renamed to drug_disease_edges by liheng.fu@dataiku.com on 2026-08-18 09:57:52
 dd = dataiku.Dataset("drug_disease_edges").get_dataframe(infer_with_pandas=False)
 dp = dataiku.Dataset("drug_protein_edges").get_dataframe(infer_with_pandas=False)
 print("drug_disease relations:", dd.relation.value_counts().to_dict())
@@ -50,7 +52,8 @@ truth = (ind[["drug", "disease_index"]].merge(dp[["drug", "gene_index"]], on="dr
 print(f"\nvalidated (disease, target) pairs: {len(truth)} over "
       f"{truth.disease_index.nunique()} diseases, {truth.gene_index.nunique()} genes")
 
-sc = dataiku.Dataset("validation_set_2_scored").get_dataframe(
+# Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46
+sc = dataiku.Dataset("scored_m3").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", "disease_split_key", SCORE])
 pairs = set(map(tuple, truth.values))
 
@@ -117,3 +120,5 @@ print(w[["disease", "n_validated_targets", "auc_drug_targets", "auc_assoc_labels
 
 out["disease_name"] = out.disease_index.map(nm)
 dataiku.Dataset("drug_target_benchmark").write_with_schema(out)
+
+

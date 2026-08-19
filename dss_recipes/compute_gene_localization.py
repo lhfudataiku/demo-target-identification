@@ -27,6 +27,8 @@ SECRETED_ANCHORS = ["GO:0005576"]   # extracellular region
 nodes = dataiku.Dataset("graph_nodes").get_dataframe(
     columns=["node_index", "node_id", "node_type"], infer_with_pandas=False)
 edges = dataiku.Dataset("graph_edges").get_dataframe(columns=["relation", "x_index", "y_index"])
+# Dataset DEMO_KG_LS.raw_go_hierarchy renamed to DEMO_KG_raw_go_hierarchy_copy by liheng.fu@dataiku.com on 2026-08-18 09:43:28
+# Dataset DEMO_KG_raw_go_hierarchy_copy renamed to raw_go_hierarchy by liheng.fu@dataiku.com on 2026-08-18 09:55:48
 hier = dataiku.Dataset("raw_go_hierarchy").get_dataframe(infer_with_pandas=False)
 
 nodes["node_index"] = nodes.node_index.astype(int)
@@ -85,3 +87,4 @@ out["localization_class"] = np.select(
 print(f"\ngenes: {len(out):,}")
 print(out.localization_class.value_counts().to_string())
 dataiku.Dataset("enriched_gene_localization").write_with_schema(out)
+

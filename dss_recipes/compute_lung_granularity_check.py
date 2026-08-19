@@ -28,7 +28,7 @@ df = dataiku.Dataset("scored_m3").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", "disease_family_id", SCORE])
 df = df[df.disease_family_id == KEY]
 
-nodes = dataiku.Dataset("DEMO_KG_LS.graph_nodes").get_dataframe(
+nodes = dataiku.Dataset("graph_nodes").get_dataframe(
     columns=["node_index", "node_name", "node_type"], infer_with_pandas=False)
 nodes["node_index"] = nodes.node_index.astype(int)
 gname = dict(zip(nodes[nodes.node_type == "gene/protein"].node_index,
@@ -71,6 +71,7 @@ print(f"\n  mean pairwise Jaccard: {sum(js)/len(js):.3f}   "
       f"(1.0 = identical gene lists, i.e. no subtype resolution)")
 
 dataiku.Dataset("lung_granularity_check").write_with_schema(out)
+
 
 
 
