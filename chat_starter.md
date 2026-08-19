@@ -74,7 +74,7 @@ including the answer to the most common objection.
 2. **A direct safety measurement + the dashboard** — the largest remaining increment of demo value.
    The filterable table is DONE (`target_candidates_2`, **129,253 ranked rows over 13 personas** with
    tractability, class and liability annotations), and the two *free* safety signals were measured and **rejected as
-   filters** (TARGET_PRIORITIZER §10.3). What is still needed: essentiality / tissue-expression
+   filters** (TARGET_PRIORITIZER §10.2). What is still needed: essentiality / tissue-expression
    breadth (a new source), then the UI. **Attributes, never edges.**
 3. **Re-pick the persona panel on evidence** — type 2 diabetes is the flagship but the weakest case on
    both metrics (per-disease 0.634, drug-target 0.256); two non-persona cancers are the strongest

@@ -124,7 +124,7 @@ Arriving with your own list of defects is what makes the rest credible.
 
 **Do not present the liability column as a safety verdict.** 48 of 118 rows carry the flag. It is
 *enriched* for good targets, because liabilities are discovered *by* drugging something — see the
-ADRB2 case in TARGET_PRIORITIZER §10.3.
+ADRB2 case in TARGET_PRIORITIZER §10.2.
 
 ---
 

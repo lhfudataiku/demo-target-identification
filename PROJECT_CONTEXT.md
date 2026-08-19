@@ -12,9 +12,11 @@
 > | **[DEMO_NARRATIVE.md](DEMO_NARRATIVE.md)** | **what we show scientists and in what order** — the objection ladder, the punch line, what not to show | both |
 > | **[DISCOVERY_LANDSCAPE.md](DISCOVERY_LANDSCAPE.md)** | the wider drug-discovery chain (stages 1–6) and where a platform belongs | — |
 > | **[RESEARCH_NOTE.md](RESEARCH_NOTE.md)** | per-reference evidence base for the Part 2 method choices | — |
+> | **[DECISIONS.md](DECISIONS.md)** | **the Part 2 decision log** — every call, including the reversals | `DEMO_TARGET_IDENTIFICATION` |
 > | **[DSS_CHEATSHEET.md](DSS_CHEATSHEET.md)** | platform behaviours and CLI patterns, stated generically | — |
 >
-> Decisions are logged in the **appendix** of each document, not inline.
+> Decisions are logged in the **appendix** of each document, not inline — except Part 2's, which
+> outgrew its appendix and now lives in [DECISIONS.md](DECISIONS.md).
 >
 > **Read [DEMO_NARRATIVE.md](DEMO_NARRATIVE.md) before designing the dashboard or pruning the flow.**
 > Both should be derived from the story. We tried the reverse and it produced a plan to delete our
@@ -119,7 +121,7 @@ targets, (b) early prediction of off-target liability, therefore (c) reduced ear
 Persona diseases drive both graph exploration and model validation (TARGET_PRIORITIZER §9).
 
 **Demo diseases are now chosen by measurement** — see [DEMO_NARRATIVE.md](DEMO_NARRATIVE.md) §6 and
-TARGET_PRIORITIZER §8.8, §8.13. The panel is **non-small cell lung carcinoma** (the MAPK3 discovery
+TARGET_PRIORITIZER §8.7, §8.10. The panel is **non-small cell lung carcinoma** (the MAPK3 discovery
 story), **HER2-positive breast carcinoma** (passes clinical sanity outright: ERBB2 at rank 13, AUC
 0.93 on 599 known targets), **diabetes mellitus** and **obesity disorder**.
 
@@ -238,14 +240,14 @@ average because nothing averages out.
   tractability, target class and known-liability annotations, so a scientist filters instead of
   receiving a pre-cut list. But the two freely-available safety signals were measured and **rejected
   as filters** — genetic constraint runs *with* druggability and curated liabilities mark drug
-  precedent, not risk (TARGET_PRIORITIZER §10.3). A real safety axis needs a direct measurement
+  precedent, not risk (TARGET_PRIORITIZER §10.2). A real safety axis needs a direct measurement
   (essentiality, tissue-expression breadth), which means a new source. That plus the dashboard is the
   largest remaining increment of demo value.
 - **Re-pick the persona panel on evidence.** The flagship metabolic disease is the weakest case on
   both metrics while two non-persona cancers are the strongest therapeutic showcases
   (TARGET_PRIORITIZER §8.1).
 - **Minor:** regenerate the demo query literals, rebuild the drug-label chain, and materialise the
-  hub-bias meter as a recipe (TARGET_PRIORITIZER §10.3).
+  hub-bias meter as a recipe (TARGET_PRIORITIZER §10.2).
 
 ---
 
@@ -268,6 +270,6 @@ modelling decisions in [TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md).
 | 2026-08-17 | **Documentation restructured to mirror the project split** — one technical document per project, a shared index, and platform/tooling findings extracted into a generic cheatsheet so they stay useful outside this POC. |
 | 2026-08-17 | **Migration accepted.** The modelling flow rebuilt on the shared graph reproduces the frozen reference within ±0.01 on every metric (§4.5). The two-project split is therefore complete and validated end to end, and the reference can be retired. |
 | 2026-08-17 | **Discovery adopted as a third reported axis, and it is the strongest result in the POC** (TARGET_PRIORITIZER §8.3). Ranking accuracy and therapeutic agreement say nothing about whether the model surfaces *unannotated* targets — the deliverable's actual claim. Measured against the drug layer, the novel candidates are **4–13× enriched above chance** for real drug targets, recovering 206 approved and 1,802 trial-stage targets in the top-200 novel. Report against **both** ground truths (approved and in-trial); the choice reverses per-disease conclusions. |
-| 2026-08-17 | **Both stage-2 design questions settled by measurement, not training** (TARGET_PRIORITIZER §10.3). Druggability as a model input is **rejected** — under the association label it is *inverted*, not merely neutral, so it would reinforce the ligand-vs-receptor failure; a class-grouped presentation recovers the benefit at no risk. Safety as a filter is **rejected on a refuted prediction** — the free signals point the same way as efficacy, so filtering on them would remove the best candidates. Both answers cost three recipes rather than three training runs. |
+| 2026-08-17 | **Both stage-2 design questions settled by measurement, not training** (TARGET_PRIORITIZER §10.2). Druggability as a model input is **rejected** — under the association label it is *inverted*, not merely neutral, so it would reinforce the ligand-vs-receptor failure; a class-grouped presentation recovers the benefit at no risk. Safety as a filter is **rejected on a refuted prediction** — the free signals point the same way as efficacy, so filtering on them would remove the best candidates. Both answers cost three recipes rather than three training runs. |
 | 2026-08-17 | **Recorded a general hazard for any identifier migration:** three separate rules in the modelling layer depended on integer *ordering* rather than on identity — a split modulo, a family tie-break, and a parent-selection minimum. Remapping the literals is not sufficient; every rule that ranks, mods or minimises on an identifier has to be audited (TARGET_PRIORITIZER §10.2). |
 | 2026-08-18 | **The contract grew to 13 objects and changed shape** (§4.3). The three Open Targets extractions were relocated into `DEMO_KG_LS` — source ingestion belongs to the graph project even when only the modelling project consumes it. More importantly, the 12 dataset references are now consumed via **local synced copies**: each foreign ref feeds exactly one Sync recipe and nothing else. The import surface is auditable in one zone, and a rename upstream breaks 1 recipe instead of 26. **The Kuzu folder stays a direct cross-project read** — folder sync is not a supported DSS pattern. |

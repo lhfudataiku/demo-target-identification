@@ -22,24 +22,26 @@
 >
 > Decisions are logged in the **appendix**.
 
-## 1. What it delivers
+## 1. Scope, and how to read this
 
-For a given disease, a ranked shortlist of candidate gene/protein targets, each carrying **two
-complementary explanations**: a SHAP attribution (*which evidence drove this*) and a **graph path**
-to the disease module rendered on the graph webapp (*show me the mechanism*).
+This is the **methodology** record: what the data forced, why these features and this model, what was
+measured, and what was refuted. Every table names the dataset it comes from, or is marked
+`notebook-only`.
 
-`target_candidates_2` — **every scored candidate per persona disease, ranked** (129,253 rows across
-13 personas), so the scientist filters rather than receiving a pre-cut list (§8.10):
+- **The demo narrative and the executive summary are in [DEMO_NARRATIVE.md](DEMO_NARRATIVE.md)** — what
+  to show a scientist, in what order, and what not to show. Read that first if you are presenting.
+- **Why the project exists** is in [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md).
+- **Why each decision was made**, including the reversals, is in [DECISIONS.md](DECISIONS.md).
 
-| disease_name | gene_name | score | druggability_class | top_shap_drivers | rank | is_target |
-|---|---|--:|---|---|--:|--:|
-| breast cancer | BLM | 0.986 | Enzyme | dwpc_GPGD, ppi_adamic_adar | 5 | 0 |
+**Every section names its source.** A `*Source:*` line under each heading gives the flow dataset the
+numbers come from and the notebook that re-derives them, or says `notebook-only` where no flow artifact
+exists. Four notebooks in `DEMO_TARGET_IDENTIFICATION` (`nb1`–`nb4`, code env `primekg_kg`) assert every
+quoted aggregate against live data, so drift fails loudly — see [notebooks/README.md](notebooks/README.md).
+**If a number here has no source line, treat it as unverified.**
 
-Top-ranked genes **not currently linked** to the disease are the novel hypotheses.
-
-**In scope:** network-topology and functional-annotation features, on the graph we already have.
-**Deferred:** safety/toxicity features; knowledge-graph-embedding features; tractability as a
-*model* input (§4.3 explains why it belongs in the ranking layer instead).
+**One thing to know before reading any number here:** the headline metric is *association* AUC, and it
+is **statistically orthogonal** to therapeutic relevance — r = +0.024, R² = 0.0006 over 130 diseases
+(§7.4). Every claim in §8 is scoped to one axis. Which axis is never optional.
 
 ## 2. Scientific basis
 
@@ -56,7 +58,7 @@ differentiator is reproducibility, lineage and explainability, not the algorithm
   modules", and proximity to a module predicts association — indication classification at AUC ≈ 0.81
   (Guney et al., *Nat Commun* 2016). Menche et al. (*Science* 2015) established disease modules
   **and the incomplete-interactome caveat: ~80% of interactions are unmapped** — which turns out to
-  matter a great deal here (§8.9).
+  matter a great deal here (§8.8).
 - **Degree-weighted path counts (DWPC).** Typed path counts over a heterogeneous network,
   degree-damped so hubs don't dominate (Himmelstein et al., *eLife* 2017).
 - **Interpretability drives adoption.** TxGNN (*Nat Med* 2024, built on PrimeKG) showed path
@@ -68,58 +70,95 @@ Four exploration findings each changed the design. They are the reason the model
 
 ### 3.1 The label set is study-biased, and that governs every metric
 
-**Label:** `is_target` = 1 if a disease–protein association edge exists (genetic association +
-somatic mutation @ score ≥ 0.3).
+*Source: `graph_edges` (`disease_protein`) · `nb5`. Measured 2026-08-19; previously asserted without numbers.*
 
-Curated associations skew toward well-studied genes, which are also interactome hubs. **A model that
+**Label:** `is_target` = 1 if a disease–protein association edge exists (genetic association +
+somatic mutation @ score ≥ 0.3). **189,444 unique (disease, gene) associations.**
+
+**The bias is severe, and it is far worse on the disease side than the gene side:**
+
+| | diseases | genes |
+|---|--:|--:|
+| entities with ≥1 association | 7,039 | 13,442 |
+| **median associations** | **2** | 5 |
+| p90 / p99 | 49 / 616 | 27 / 165 |
+| maximum | **3,245** | 622 |
+| share of the label held by the top 1% | **31.2%** | 16.0% |
+| share held by the top 10% | **83.9%** | 58.6% |
+
+**The top 10% of diseases carry 84% of the label, and the median disease has two known genes.** Every
+per-disease metric in §7 is therefore an average over a population where most members are almost
+unannotated — which is why §7.1 reports *macro* per-disease AUC rather than pooled, and why §8.10's
+triple-negative arm (8 known genes) is normal rather than exceptional.
+
+Curated associations also skew toward well-studied genes, which are interactome hubs. **A model that
 exploits hub-ness therefore scores *better* on AUC even when it is less useful for finding
-under-studied targets.** This is why §7.2 measures hub bias explicitly as a second axis rather than
-trusting AUC alone.
+under-studied targets.** That is why §7.2 measures hub bias as a separate axis rather than trusting
+AUC — and §7.2 now shows the champion is *worse* on it than its predecessor.
 
 ### 3.2 The disease ontology is redundant, and it leaks
 
-Inspecting the disease nodes surfaced **18 separate breast-carcinoma concepts** (`breast carcinoma`,
-`invasive ductal breast carcinoma`, `female breast carcinoma`, …). Confirmed live on the persona
-diseases:
+*Source: `raw_disease_disease`, `graph_nodes` · `nb5`. Re-measured 2026-08-19.*
 
-- **`breast cancer` ↔ `breast carcinoma`** and **`obesity disorder` ↔ `morbid obesity`** are each
-  **immediate parent/child, one hop apart** — and each pair was split across the train boundary.
-  **All four personas were compromised**, two by being in train outright, two by having their
-  parent or child in train.
+The ontology is deeply redundant. A scan for breast concepts alone returns **225 disease nodes**
+(`breast carcinoma`, `invasive ductal breast carcinoma`, `female breast carcinoma`, `HER2 positive
+breast carcinoma`, …), many of them one hop apart. Left alone, parent and child land on opposite sides
+of a split and every metric inflates.
 
-**Graph-topological family construction was tried and rejected — it collapses at every setting:**
+**Graph-topological family construction was tried and rejected. Re-measured:**
 
-| Approach | Largest component (of ~900–1,150 eligible diseases) |
+| Property | Measured |
 |---|---|
-| undirected transitive closure | 24,917 (the whole ontology) |
-| undirected K-hop, K=1 / K=2 | 930 (81%) / 1,145 (99%) |
-| directed ancestor + hub filter (9 configurations) | 759–872 (83–96%) |
+| eligible diseases (in the candidate pool) | **1,157** |
+| hierarchy edges resolving onto the graph | 34,019 |
+| **eligible diseases with more than one direct parent** | **52.8%** (468 of 887 that have any) |
+| undirected transitive closure — largest component | **907 of 1,157 eligible (78.4%)** |
 
-Two causes: broad classificatory terms (one has 1,906 children) are themselves eligible diseases and
-are *genuine* ancestors, so directionality doesn't help; and **51% of eligible diseases have more
-than one direct parent** — it is a directed acyclic graph, so transitive union-find chains unrelated
-branches together. **No clean global partition of the ontology exists.** §5.3 is the workaround.
+**The ontology is a DAG, not a tree.** Because **52.8%** of eligible diseases have multiple parents,
+transitive union-find chains unrelated branches together — one component swallows 78% of the eligible
+set. Broad classificatory terms are themselves eligible diseases *and* genuine ancestors, so
+restricting to directed edges does not help either. **No clean global partition exists**, which is why
+§5.3 borrows an external curated one instead.
 
-### 3.3 Granularity trades novelty against confidence
+> ⚠ The retired version of this table also quoted K-hop grouping figures (930 at K=1, 1,145 at K=2).
+> Those are **not reproduced here** — `nb5` measures the largest *single* K-hop neighbourhood (10 at
+> K=1, 44 at K=2), which is a different quantity from whatever the original used, and the original
+> method was never written down. Do not quote either set until one is defined.
 
-The coarser, smaller-module term surfaces *novel* candidates; the larger-module term mostly
-*re-identifies known* targets.
+### 3.3 Granularity does *not* trade away confidence — the earlier claim was backwards
 
-| persona | known / 50 | novel / 50 | min score | read |
-|---|--:|--:|--:|---|
-| breast carcinoma | **50** | 0 | 0.989 | densely annotated — a ranking sanity check, **no discovery value** |
-| obesity disorder | 26 | 24 | 0.967 | **balanced — best demo disease** |
-| breast cancer | 18 | 32 | 0.902 | **balanced — best demo disease** |
-| morbid obesity | 0 | **50** | 0.749 | sparse module — all hypothesis, lowest confidence |
+*Source: `raw_disease_disease`, `validation_auc_by_disease` · `nb5`. Rewritten 2026-08-19.*
 
-Aggregating to the family level lifts breast cancer's AUC 0.704 → 0.907 but degrades the candidate
-list from mechanism-specific (DNA-repair genes) to pan-cancer drivers present in 19 of the family's
-20 members.
+This section previously claimed that coarser terms are the safer choice: *"aggregation buys AUC and
+costs specificity."* **Tested across every parent–child pair where both terms are in validation, that
+is wrong.**
 
-> **Aggregation buys AUC and costs specificity. Split by family for leakage control; report and act
-> at the disease level.**
+| | n | mean AUC |
+|---|--:|--:|
+| parent (broader) terms | 259 pairs | 0.8064 |
+| **child (more specific) terms** | 259 pairs | **0.8355** |
+
+**The more specific term scores higher in 56.4% of pairs, and +0.029 on average** — 54.4% when
+restricted to the 158 pairs where the parent genuinely has more positives. And module size barely
+predicts ranking quality at all: **Spearman(module size, AUC) = +0.110**, Spearman(positives, AUC) =
++0.198.
+
+**Read the effect honestly: it is directionally opposite to the old claim but modest in aggregate.**
+56.4% is not far from a coin flip. What the measurement supports is *"specificity costs nothing"*, not
+*"specificity is better"*.
+
+**§8.10 supplies the strong instance.** In the breast family the generic `breast cancer` term scores
+**0.6929** — the worst of twelve — while `HER2 positive breast carcinoma` reaches **0.9338** and every
+subtype beats the parent. So the parent-term intuition can fail badly in a specific family even though
+the population effect is mild.
+
+> **The surviving guidance is narrower than before: split by family for leakage control (§5.3), then
+> report and act at the disease level.** Aggregating to the family is a leakage device, not a way to buy
+> a better number.
 
 ### 3.4 The model cannot resolve *morphological* subtype — but it does resolve *molecular* subtype
+
+*Source: `lung_granularity_check`, `breast_panel_overlap` · reproduced in `nb4`.*
 
 Across the **17 members of the lung-cancer family**, the top-50 candidate lists are **55% identical
 on average** (136 pairwise comparisons, mean 27.3 of 50 genes shared; reference: 63% over 10
@@ -135,7 +174,7 @@ The model does separate the genuinely distinct members: a pulmonary lymphoma sha
 lung cancer, and a mucoepidermoid carcinoma 6 of 50 — so the failure is specific to histologies that
 the underlying annotations do not distinguish, not general.
 
-**The breast panel narrows this claim further, and the narrowing matters** (§8.13, `breast_panel_*`,
+**The breast panel narrows this claim further, and the narrowing matters** (§8.10, `breast_panel_*`,
 2026-08-19). The lung result was generalised to "subtype", full stop. Measured on breast, **HER2-positive
 and triple-negative share only 2 of their top-50 novel candidates (4%)** — the cleanest separation
 anywhere in the project, against 47-of-50 for the lung pair.
@@ -154,7 +193,7 @@ actually treats on, is a case where the model performs at its best.
 
 > **⚠ This diagnostic had to be repointed during the rebuild.** It selected on the *split key*, and
 > the lung subtypes' split key changed from `respiratory system cancer` to `thoracic cancer` — which
-> also holds breast, so the comparison would have been breast-vs-lung (§10.2). It now selects the
+> also holds breast, so the comparison would have been breast-vs-lung. It now selects the
 > lung-cancer **family**, which is the stable expression of "lung cancer and its histological
 > subtypes" and matches the recipe's stated purpose.
 
@@ -164,6 +203,8 @@ actually treats on, is a case where the model performs at its best.
 standard degree-damping exponent (weight = ∏degree^−0.4), so paths through hubs are down-weighted.
 
 ### 4.1 The 12 features in the champion model
+
+*Source: ML task settings on analysis `I2csfIX2` — pull them live, never hand-list · `nb1`.*
 
 | Feature | Layer | Biological significance |
 |---|---|---|
@@ -186,6 +227,8 @@ which supports it.
 
 ### 4.2 Computed and rejected — and why
 
+*Source: `nb1` for the null gaps, collinearity and single-feature AUC. The rejection *rationale* is argument, not measurement.*
+
 The rejections are more informative than the inclusions, because most encode a leakage mechanism.
 
 | Feature | Reason rejected |
@@ -195,7 +238,7 @@ The rejections are more informative than the inclusions, because most encode a l
 | `gene_n_diseases` | **Label-derived** — built from the label relation itself; alone separates the test set at AUC 0.835. |
 | `disease_context` | Label-derived (counts module membership in neighbouring diseases) and 95% null. |
 | `module_size` | Per-disease constant → a pure base-rate encoder with zero within-disease ranking power. |
-| `dwpc_GCD` | 99.8% null, and **circular** for target identification: "an approved drug already targets this gene for this disease" nearly restates the label. Retained as a **post-hoc evidence annotation** (§8.7). |
+| `dwpc_GCD` | 99.8% null, and **circular** for target identification: "an approved drug already targets this gene for this disease" nearly restates the label. Retained as a **post-hoc evidence annotation** (§8.6). |
 | `prox_closest` | **Dropped after measurement**, not on suspicion. Removal cost nothing (per-disease 0.8207 → 0.8228; drug-target 0.6880 → 0.6836) — redundant with the neighbour-overlap features despite being a top SHAP driver. It is also **blind to therapeutic relevance**: drug-validated targets sit at background level on it. Kept as a diagnostic column. |
 | `ppi_common_neighbors` | Redundant — ρ +0.96 with `ppi_jaccard`, +0.93 with `ppi_adamic_adar`. |
 | `shared_pathway_count` | Redundant — ρ +0.90 with `gene_n_pathways`; the normalized form is better. |
@@ -210,19 +253,9 @@ The rejections are more informative than the inclusions, because most encode a l
 > 2. **Never build per-disease *count* features.** They are base-rate encoders or label-derived
 >    shortcuts. Stick to gene-to-module **relational** features.
 
-### 4.3 Not yet built
+### 4.3 Why the metapaths are matrix code, not graph queries
 
-| Feature | Rationale | Priority |
-|---|---|---|
-| ~~Tractability buckets + target class~~ | **SETTLED — rejected as a model input, shipped in the ranking layer instead** (§10.3). Under this label the gain-maximising split is "membrane receptor → lower score", so the feature is actively harmful, not merely neutral. Top-N *within* druggability class recovers the benefit without touching the model. | — |
-| `is_plasma_membrane` / `is_secreted` | Cheap druggability proxy, already in the graph; verified feasible. Splitting membrane from extracellular separates receptor from ligand. Superseded in practice by the class-grouped presentation (§10.3). | 4 |
-| **Essentiality + tissue-expression breadth** | The real safety axis. The free proxies were measured and **rejected as filters** (§10.3) — genetic constraint runs *with* druggability, liabilities mark precedent. A direct measurement is required, and that means a new source. | 1 |
-| gene-family / paralog (leave-one-out) | A paralog being a known target is evidence nothing else captures. **Blocked** — the gene vocabulary lacks family columns. **Must be leave-one-out** or it becomes a label-derived shortcut. | 3 |
-| `disease_phenotype_context` | Phenotype-similarity alternative to the hierarchy view of "related diseases". | 4 |
-| Cellular-component metapath | Co-localization is usually too broad to discriminate ("nucleus" spans thousands of genes). | 5 |
-| Phenotype metapath | Now unblocked — the phenotype–protein edge exists. | 5 |
-
-### 4.4 Why the metapaths are matrix code, not graph queries
+*Source: no artifact — engineering rationale.*
 
 The two functional-similarity metapaths exhausted the graph engine's buffer pool as Cypher **even
 with a fan-out guard**, because the engine materializes every intermediate path before aggregating.
@@ -252,11 +285,15 @@ and each needed a different control.** This is the most transferable section of 
 
 ### 5.1 Prediction unit and eligibility
 
+*Source: `enriched_graph_features_1_family`.*
+
 **Unit:** a `(gene, disease)` pair → P(true association).
 **Disease eligibility:** ≥ 20 protein seeds, so network features are estimable — 1,154 of 27,153
 diseases qualify.
 
 ### 5.2 The candidate pool is a leakage control, not a convenience filter
+
+*Source: `enriched_graph_features_candidate_psplit`, `enriched_dwpc_GGD` / `_GPGD` / `_GCD` · `nb2`.*
 
 Keep only pairs where **at least one typed metapath route exists**.
 
@@ -285,6 +322,8 @@ feature, pushing the filter back toward the no-op state that produced leak 2. A 
 > terms in the pool restriction.
 
 #### 5.2.1 `dwpc_GCD` is the drug route, and it selects the population on the outcome
+
+*Source: `pool_reachability`, `pool_selection_bias`, `pool_unreachable_targets` · `nb2`.*
 
 Investigated 2026-08-19 (`compute_pool_reachability`). **`C` is Compound.** The proof is an identity,
 not a correlation: **100.0% of approved-join drug pairs that sit in the pool carry a GCD route.**
@@ -343,6 +382,8 @@ diseases.
 
 ### 5.3 The family split — an external curated antichain
 
+*Source: `hetionet_disease_slim`, `mondo_references`, `disease_family_id`.*
+
 Since no clean partition of the ontology exists (§3.2), we borrow one. A curated reference network
 published **137 disease-ontology terms under an explicit antichain constraint** — *no term is a
 subtype of another* — exactly the property needed. We reuse that curation as a fixed **anchor set**,
@@ -371,6 +412,15 @@ best exactly where the personas live and worst in the long tail.
 
 ### 5.4 The split as implemented
 
+*Source: `split_audit_2` · `nb2`. **The recipe was broken 2026-08-17 → 2026-08-19** — see the warning below.*
+
+> **⚠ This section's guarantee was unverified between 2026-08-17 and 2026-08-19.** `compute_split_audit_2`
+> had its declared inputs migrated to the `psplit_*` datasets but its **code still read
+> `enriched_train_full_2`**, so every build failed and `split_audit_2` sat empty while this section
+> quoted a pre-migration run. Fixed and rebuilt 2026-08-19; the guarantee **holds** — all three
+> split-key overlaps are 0, zero keys straddle, and all 13 persona diseases land in validation. The
+> lesson is in [DECISIONS.md](DECISIONS.md): repointing a recipe's inputs does not repoint its code.
+
 The split key is the **elevated split key** — the anchor's most-specific parent under a fan-out cap —
 **never the disease index**. Persona families are forced into validation. Roughly 41% train / 50%
 validation / 9% test by row count.
@@ -387,73 +437,73 @@ if(arrayContains([0,1,2,3,4], mod(disease_split_key, 10))
 
 **⚠ The forced clause is the only guarantee — the modulo is not.** Of the four keys originally
 forced, three already fell in validation via the modulo, so only one was doing real work. That is a
-trap: when indices are renumbered, whichever keys were *incidentally* in validation can move. See
-§5.5.
+trap: when indices are renumbered, whichever keys were *incidentally* in validation can move — which
+is exactly what the 2026-08-17 rebuild did (see [DECISIONS.md](DECISIONS.md), 2026-08-17 entries, and
+`index_remap.json`).
 
 **As rebuilt, all five persona groups land in validation via the forced clause**, and the elevation
-step merged breast and lung under `thoracic cancer` (§10.2), so the `respiratory system cancer` entry
+step merged breast and lung under `thoracic cancer`, so the `respiratory system cancer` entry
 is now redundant — retained because it costs nothing and correctly expresses the intent. Only type 1
 diabetes, which is a watch-list disease rather than a persona, sits in train.
-
-### 5.5 The index remap (2026-08-17)
-
-Every hardcoded index in this project was resolved to `(node_id, node_type, node_source)` in the
-reference graph and looked up again in the rebuilt graph. The key is unique on both sides — 0
-duplicates in 113,544 / 113,391 rows — and **all 14 values resolved with identical node names**, so
-the mapping is unambiguous. Recorded in [index_remap.json](index_remap.json).
-
-| Disease | reference | rebuilt | Used in |
-|---|--:|--:|---|
-| obesity disorder | 16415 | **37143** | persona filter, staged benchmark, split audit |
-| thoracic cancer *(split key)* | 14786 | **45109** | split expression |
-| respiratory system cancer *(split key)* | 14654 | **45876** | granularity check, split expression |
-| overnutrition *(split key)* | 14442 | **46033** | split expression |
-| breast carcinoma | 16029 | **47415** | split audit |
-| diabetes mellitus *(split key)* | 16420 | **47437** | split expression, split audit |
-| lung adenocarcinoma | 14274 | **47469** | persona filter, staged benchmark |
-| morbid obesity | 61925 | **47530** | split audit |
-| type 2 diabetes mellitus | 16596 | **47537** | persona filter, staged benchmark, split audit |
-| non-small cell lung carcinoma | 15624 | **47604** | persona filter, staged benchmark |
-| chronic kidney disease | 14644 | **47654** | persona filter, staged benchmark, split expression |
-| breast cancer | 15347 | **49721** | split audit |
-| lung cancer | 15317 | **52236** | persona filter, staged benchmark |
-| type 1 diabetes mellitus | 19569 | **54058** | split audit |
-
-**One key had to be added, not just remapped.** `respiratory system cancer` was in validation only
-*incidentally* (14654 mod 10 = 4). Its new index lands in train (45876 mod 10 = 6), and it was **not**
-in the forced list — so the three lung personas would have moved to train, and because the persona
-filter reads the *validation* split it would have **returned zero rows rather than erroring**. It is
-now forced explicitly, which also removes the reliance on luck for the other three.
-
-**Two properties were verified rather than assumed:**
-
-- **Family integrity holds.** Zero split keys have members in more than one split role after
-  remapping — the leakage control survives, because the key is derived from the hierarchy and the
-  hierarchy is unchanged (129,606 edges in both graphs).
-- **58.8% of modelled diseases change split role** (4,008 of 6,821). This is inherent: the split rule
-  is a modulo over an arbitrary integer, so renumbering reshuffles it. It matters for the retrain
-  acceptance check — see §10.1.
-
-**The rebuild then found two more index-dependent behaviours that this remap did not anticipate** —
-family assignment and split-key elevation. Both are in §10.2; both are the same root cause as the
-split rule, which is why that section states the general lesson rather than the three instances.
 
 ## 6. Model configuration and selection
 
 ### 6.1 The audit that drove feature selection
 
-Three measurements on a 15-feature baseline:
+*Source: `psplit_train_set` (25% sample) · `nb1`. Re-measured 2026-08-19; two claims revised, one refuted.*
 
-1. **7 of 15 inputs were gene-only** — 0.0% of genes showed more than one distinct value across the
-   four persona diseases. They cannot answer "is this gene a target *for this disease*", only "is
-   this gene generally prominent".
-2. **The hub axis was over-represented** — degree correlated ρ +0.975 / +0.927 / +0.804 with three
-   other centrality features. Four near-duplicates against DWPC's two, so the hub *penalty* was
-   outnumbered.
-3. **The hub-penalised features are the ones that work** — within-disease single-feature AUC:
-   `dwpc_GPGD` 0.641, `dwpc_GGD` 0.601, versus ≈ 0.5 for every gene-only feature.
+Re-measured 2026-08-19 on a 547,242-row sample of `psplit_train_set` (notebook `nb1`). Two of the three
+original claims hold with larger effects than recorded; the third is **refuted**.
+
+**1. Gene-only features cannot answer disease-specificity — confirmed exactly.** Share of genes taking
+more than one distinct value across the diseases they appear in:
+
+| feature | varies across diseases | in champion model |
+|---|--:|:--|
+| `gene_ppi_degree` | **0.00%** | **yes** |
+| `gene_n_pathways` | **0.00%** | **yes** |
+| `gene_n_diseases` | 0.00% | no — rejected |
+| `dwpc_GGD` | 81.94% | yes |
+| `dwpc_GPGD` | 68.84% | yes |
+| `module_size` | 96.04% | no |
+
+⚠ **Two of the twelve champion features are gene-only.** The audit was described as having removed
+them; `gene_ppi_degree` and `gene_n_pathways` survived. They are defensible as hub-normalisation terms,
+but they answer *"is this gene generally prominent"*, never *"for this disease"*.
+
+**2. The hub axis is over-represented — and worse than recorded.** Spearman ρ against `degree`:
+
+| | ρ |
+|---|--:|
+| `gene_ppi_degree` | **+1.000** |
+| `pagerank` | +0.981 |
+| `triangles` | +0.934 |
+| `eigenvector_centrality` | +0.841 |
+
+**`gene_ppi_degree` and `degree` are the same variable.** Previously recorded as +0.975 / +0.927 /
++0.804 — every value was understated, and the perfect duplicate was not noted at all. The model keeps
+one of the pair, which is correct.
+
+**3. REFUTED — "≈0.5 for every gene-only feature" is wrong, and the exception is the important one.**
+Within-disease single-feature macro AUC:
+
+| feature | AUC | |
+|---|--:|---|
+| **`gene_n_diseases`** | **0.8567** | **rejected as label-derived — and it alone beats the 12-feature champion's 0.8197** |
+| `dwpc_GPGD` | 0.7182 | previously recorded 0.641 |
+| `dwpc_GGD` | 0.6694 | previously recorded 0.601 |
+| `gene_ppi_degree` | 0.5608 | |
+| `module_size` | 0.5000 | |
+
+> **The gene-popularity shortcut is not confined to the drug axis.** §7.5 found a "how many diseases is
+> this gene a drug target for" lookup scoring **0.9354** on the drug benchmark. The association axis has
+> the same hole: **"how many diseases is this gene associated with" scores 0.8567**, above the champion.
+> Rejecting `gene_n_diseases` (§4.2) was not conservatism — it was the difference between a model and a
+> popularity table.
 
 ### 6.2 Configuration
+
+*Source: `psplit_train_set` / `_test_set` / `_validation_set` row counts · `nb1`.*
 
 | Setting | Value | Note |
 |---|---|---|
@@ -463,7 +513,7 @@ Three measurements on a 15-feature baseline:
 | Class handling | class weights | positives are ~1.9% |
 | Seed | 1337 | also the split seed |
 | Evaluation metric | ROC AUC, macro | but **report per-disease AUC** (§7.1) |
-| Train/test policy | two explicit datasets | `psplit_train_set` / `psplit_test_set` (2,693,788 / 561,214) |
+| Train/test policy | two explicit datasets | `psplit_train_set` / `psplit_test_set` (**2,187,862 / 607,345**; validation 3,958,921 — the three sum to the pool exactly) |
 
 **Feature-handling standard (mandatory): every numeric input gets standard rescaling + mean
 imputation. No exceptions.**
@@ -474,7 +524,7 @@ imputation. No exceptions.**
   native sparsity handling never engages and the fill value is decisive. **Mean** puts nulls at the
   distribution centre, indistinguishable from average rows, so the tree **cannot** isolate "was
   missing". **Constant 0** puts them at a separable point, so it **can** — and with four features
-  carrying **−31.6 pp null gaps by label**, that reopens leak 2 outright. For a z-score, 0 is doubly
+  carrying **−31.7 pp null gaps by label** (measured, `nb1`), that reopens leak 2 outright. For a z-score, 0 is doubly
   wrong: it is the null-model expectation, mid-distribution (real median +2.55).
 - **Sentinel imputation was tested as a fix and rejected on the second metric.** A large negative
   constant gave the **best pooled AUC in the project (0.8808) and the worst drug-target AUC
@@ -486,13 +536,17 @@ imputation. No exceptions.**
 
 ### 6.3 The threshold is not the ranking
 
-The F1-optimised threshold lands at **≈0.875** against a ~2% base rate. Consequence: **590 of 762
-known obesity targets are predicted negative**, recall 22.6%.
+*Source: `scored_m3` · `nb1`.*
+
+The F1-optimised threshold lands at **0.860** against a ~1.9% base rate (F1 = 0.218). Consequence:
+**552 of 762 known obesity targets are predicted negative**, recall **27.6%**.
 
 > **The prediction column is near-meaningless for discovery. Rank by probability and take top-N** —
 > which is what the persona chain does.
 
 ### 6.4 The ablation ladder
+
+*Source: `docs/appendix/model_comparison.csv` — **the flow artifact was deleted 2026-08-19**; not re-derivable without re-scoring `m1-f7` and `m2-f10` over 7.9M rows.*
 
 All three runs share the split, hyperparameters, handling standard and row counts, and all exclude
 `prox_closest`, so they are directly comparable.
@@ -540,6 +594,8 @@ exclusively.**
 
 ### 7.1 Metric methodology
 
+*Source: `validation_auc_by_disease`, `validation_set_scored_grouped` · `nb3`.*
+
 **Report macro per-disease AUC, not pooled.** Pooled AUC gets credit for separating genes across
 *different* diseases (easy — a gene in a well-annotated disease outranks one in a sparse disease);
 the deliverable is ranking genes *within* one disease. **Pooled overstates by ~7 points** (0.8915 vs
@@ -571,6 +627,8 @@ reporting, the code one because it is the only source of per-split-key AUC.
 
 ### 7.2 Hub-bias meter — the second axis
 
+*Source: `scored_m3` · `nb3b_hub_bias_meter`. **No flow recipe exists** — the notebook is this section's only artifact.*
+
 Among **known targets only** — biology held constant, every gene a true positive — bin by degree and
 compare the lowest to the highest quintile. Baseline: Q1 (median degree 3) 6.8% predicted positive
 vs Q5 (median 104.5) **40.8%** — a **6× detection swing on network position alone.**
@@ -579,44 +637,55 @@ vs Q5 (median 104.5) **40.8%** — a **6× detection swing on network position a
 |---|--:|--:|--:|--:|
 | 15-feature predecessor | 0.5732 | 0.7611 | +0.1879 | +0.3304 |
 | pruned intermediate | 0.5662 | 0.7417 | +0.1755 | +0.2953 |
-| **metapath generation** | 0.6516 | 0.7615 | **+0.1099** | **+0.2424** |
+| 13-feature metapath generation *(retired)* | 0.6516 | 0.7615 | +0.1099 | +0.2424 |
+| **champion `m3-f12`** *(measured 2026-08-19)* | **0.5898** | **0.7852** | **+0.1954** | **+0.3276** |
 
-The metapath generation lifts Q1 — low-degree known targets — from 0.573 to **0.652** in absolute
-terms. Earlier rungs narrowed the spread only by pulling Q5 *down*. **This is the first model that
-improves under-studied targets outright rather than relatively.**
+**⚠ REFUTED for the champion.** This section previously read *"the first model that improves
+under-studied targets outright rather than relatively"* — and instructed the reader to recompute before
+quoting. Recomputed (`nb3`, 73,829 known-target rows across 670 validation diseases): **the champion is
+worse than the retired generation on every dimension of this axis.** Q1 fell **−0.062**, Q5 rose
++0.024, the spread nearly **doubled** (+0.110 → +0.195), and ρ(degree, probability) rose +0.085.
 
-> ⚠ This table is the retired 13-feature generation, which differs from the champion only by
-> including `prox_closest` (measured neutral on both headline metrics). Recompute before quoting
-> externally.
+**The likely cause, and it matters for feature selection.** The champion differs from the retired
+generation by **dropping `prox_closest`**, which was assessed as *"measured neutral on both headline
+metrics"*. It was neutral on association and drug-target AUC — and **not neutral here.** Removing it
+cost most of the hub-fairness the previous rung had won, for no gain on either headline.
+
+> **A feature judged on two axes was load-bearing on a third.** This is the same failure mode as
+> §5.2.1's pool change, costed on one surface and not the other. **Two candidate actions:** restore
+> `prox_closest` and re-measure all three axes, or accept the trade and stop claiming this model helps
+> under-studied targets. It cannot be both.
+
+**Caveat on the comparison.** The retired row was computed on the reference generation over 588
+validation diseases; this row is 670. Some of the delta may be population rather than model, so the
+first step is re-measuring the retired feature set on the current split — not restoring the feature
+outright.
+
+**Detection swing at the F1 threshold (0.860):** low-degree known targets are predicted positive
+**17.3%** of the time, high-degree **57.0%** — a **3.3× swing on network position alone**, with biology
+held constant.
 
 ### 7.3 Per-family validation
 
-Same chain grouped by family: **505 families, macro 0.7976, median 0.8116, recall@20 0.1145**
-(reference: 484 / 0.8060 / 0.8214 / 0.1208). Against the 15-feature predecessor's 0.7543 / 0.7607 /
-0.0982 that is **+0.043 macro** and recall@20 +17%, which matters more than AUC for a top-N
-deliverable.
+*Source: `family_auc_by_family` · `nb3`, figure 1 (distribution + ranked curve).*
 
-| Group | n | Macro AUC | *(reference)* | predecessor |
-|---|--:|--:|--:|--:|
-| **multi-disease families** (grouping actually applies) | 28 | **0.9023** | *0.9076* | 0.8615 |
-| single-disease families (grouping is a no-op) | 477 | **0.7914** | *0.8010* | 0.7487 |
+Same chain grouped by family: **505 families, macro 0.7976, median 0.8116, recall@20 0.1145.**
+Against the 15-feature predecessor that is **+0.043 macro** and **recall@20 +17%** — which matters more
+than AUC for a top-N deliverable. **`nb3` figure 1** plots the full distribution and the ranked curve,
+so the worst-case tail is visible rather than summarised.
 
-**The largest families are cancers plus two haematological groups:**
-
-| Family | members | positives | AUC |
+| Group | n | Macro AUC | predecessor |
 |---|--:|--:|--:|
-| haematopoietic & lymphoid neoplasm | 29 | 4,673 | 0.9184 |
-| breast cancer | 19 | 4,818 | 0.9253 |
-| lung cancer | 17 | 4,706 | 0.9301 |
-| sarcoma | 13 | 1,434 | 0.9334 |
-| salivary gland cancer | 11 | 709 | 0.9254 |
-| **anemia** | **9** | **622** | **0.8514** |
-| bone cancer | 9 | 819 | 0.9254 |
-| uterine cancer | 8 | 1,286 | 0.9338 |
+| **multi-disease families** (grouping actually applies) | 28 | **0.9023** | 0.8615 |
+| single-disease families (grouping is a no-op) | 477 | **0.7914** | 0.7487 |
+
+**Across the eight largest families the spread is narrow and one member is the outlier** — cancers run
+**0.918–0.934**, and `anemia` sits at **0.8514** on 9 members and 622 positives. Full per-family table in
+`family_auc_by_family`; the distribution is `nb3` figure 1.
 
 > **⚠ This table is not comparable to the reference's family table, and the reason is instructive.**
 > Family *structure* barely moved — 99.7% of diseases keep the same family, and the largest family is
-> 75 members in both builds (§10.2). What changed is **which families are in validation**, because
+> 75 members in both builds. What changed is **which families are in validation**, because
 > the split reshuffled. The reference's report was headed by breast cancer at 20 members; this one is
 > headed by a haematological family that was previously in train. **Family-level tables are a view of
 > the validation sample, not a property of the graph** — read them that way.
@@ -637,6 +706,8 @@ diseases, so anchored diseases are also the best-annotated. Annotation depth dom
 leakage signal; isolating leakage would need module-size-matched strata.
 
 ### 7.4 Second metric — drug-validated targets
+
+*Source: `drug_target_benchmark`, `pool_selection_bias` · `nb3`, figure 2 (the orthogonality scatter).*
 
 The label comes from **association** edges. That is not the same population as the proteins drugs
 actually hit, so association AUC alone cannot say whether the ranking is therapeutically meaningful.
@@ -696,7 +767,7 @@ adding but **not under this label** (`tractability_lift`, rebuilt):
 | `Secreted protein` class | 0.90 | 0.26 |
 
 Under the current label the gain-maximising split is **"membrane receptor → lower score"**, which is
-precisely backwards and is the mechanism behind the ligand-vs-receptor failure in §8.9. **Add
+precisely backwards and is the mechanism behind the ligand-vs-receptor failure in §8.8. **Add
 tractability together with a label change, not before.**
 
 The reference measured 0.76× / 3× for membrane receptors and 13× / 15.6× for ion channels and
@@ -708,62 +779,40 @@ magnitude, same conclusion.
 
 ### 7.5 The decisive experiment — training on the drug label (a negative result)
 
-Everything above pointed at the *objective* as the binding constraint, but that was an inference.
-`m7-drug-label` tests it directly: **identical features, split, hyperparameters and handling — only
-the label changes.** Train on a weak label (approved indication OR under investigation), evaluate on
-the strict approved-only label, so the model learns mechanistic plausibility and is scored on what
-got approved.
+*Source: **prose-only** — every artifact was deleted 2026-08-18. `docs/appendix/model_comparison.csv` retains the ablation side only.*
 
-Why weak-for-train / strict-for-eval: strict is too rare to train on — the test split holds **196
-positives over 18 diseases**, which cannot support model selection. Weak gives 13,573 train
-positives over 230 diseases. The cost is that weak labels include **failures**: a target trialled and
-abandoned still counts positive.
-
-> **⚠ The artifacts for this experiment were DELETED on 2026-08-18** — the saved model, its three
-> `psplit_*_drug` splits, and the six evaluation datasets. It was never rebuilt on the shared graph,
-> and a stale unreproducible chain sitting in the flow cost more in reviewer confusion than it bought.
-> **Every number below therefore lives only in this document.** They remain internally consistent —
-> each is a reference-graph number compared against another reference-graph number — and the finding
-> is about the *benchmark's structure*, which a graph rebuild does not change. To reproduce it, the
-> five recipes are in git at `97de713:dss_recipes/compute_drug_label_*.py`.
+`m7-drug-label` tested the objective directly: **identical features, split, hyperparameters and
+handling — only the label changes.** Train on a weak label (approved OR under investigation, 13,573
+positives over 230 diseases), evaluate on the strict approved-only label. Strict is too rare to train
+on — 196 positives over 18 diseases.
 
 | Metric (112 reference validation diseases with a strict drug target) | `m3-f12` | `m7-drug-label` |
 |---|--:|--:|
 | Mean per-disease **drug-target** AUC | 0.6836 | **0.9324** |
 | Validated targets in top 50 | 117 | **439** of 1,507 |
-| Diseases scoring below 0.5 | 26 | **3** |
 | Mean per-disease **association** AUC | **0.8228** | 0.6444 |
 
-**So the objectives are genuinely in tension, and that part of the inference held.** Changing the
-label moves drug-target AUC +0.2488 and association AUC −0.1784. There is no free lunch: which axis
-to optimise is a **product decision, not an optimisation problem**.
+**The objectives are genuinely in tension** — +0.2488 drug, −0.1784 association. Which axis to optimise
+is a product decision, not an optimisation problem.
 
-**But the +0.2488 is not a win, and this is the more important finding.** A no-graph,
-no-disease-information baseline — *"how many training diseases is this gene a drug target for"* —
-scores **0.9354** on the same benchmark. **It beats the trained model**, which wins on only **44 of
-112** diseases. The benchmark is dominated by **gene identity**, not disease-specific prediction: the
-split is by disease, so no evaluation *pair* was seen in training, but the ~800 recurring drugged
-**genes** were. This is the same structural failure that got `gene_n_diseases` rejected as
-label-derived (§4.2) — it reappeared on the *evaluation* side instead of the feature side.
+**But the +0.2488 is not a win, and that is the finding.** A no-graph, no-disease-information baseline
+— *"how many training diseases is this gene a drug target for"* — scores **0.9354** on the same
+benchmark and **beats the trained model**, which wins on only 44 of 112 diseases. Holding out *genes* as
+well as diseases leaves **57 positives across 19 diseases** at AUC 0.7266 — too thin to carry a
+headline either. The benchmark is dominated by **gene identity**: the split is by disease, so no
+evaluation *pair* was seen in training, but the ~800 recurring drugged **genes** were. Same structural
+failure that got `gene_n_diseases` rejected (§4.2), reappearing on the *evaluation* side — and §6.1 has
+since found it on the association axis too, at 0.8567.
 
-**Removing the shortcut leaves almost nothing to measure.** Holding out *genes* as well as diseases —
-scoring only strict pairs whose gene is a drug target in **no** training disease — leaves **57
-positives across 19 diseases**, down from 1,507 across 112, at AUC 0.7266. That is thin and
-high-variance (per-disease values run 0.036 to 1.000 on 1–8 positives each), so it cannot carry a
-headline either.
+**Recorded as a negative result and not deployed**, for two independent reasons: its advantage is a
+gene-popularity artifact, and the drug label encodes *historical development choices* (ion channels 13×
+enriched, structural proteins 15.6×), so a model trained on it is biased toward what industry has
+already drugged — the opposite of target identification.
 
-**Verdict — recorded as a negative result and not deployed.** Two independent reasons:
-
-1. **Measured:** its apparent advantage is a gene-popularity artifact, and it pays with a 0.18
-   collapse in association ranking.
-2. **On principle:** the drug label encodes *historical development choices* — ion channels 13×
-   enriched, structural proteins 15.6× — so a model trained on it is biased toward what the industry
-   has already drugged. That is the opposite of target identification.
-
-**Consequence for reporting.** Drug-target AUC stays a **mandatory second metric and a warning
-flag**, never a headline and never an optimisation target. The champion's drug-target AUC — 0.6836 on
-the reference, **0.6911 rebuilt** — should be read as *"this model deliberately declines a shortcut
-that scores 0.9354"*, not as a therapeutic failing.
+**Consequence for reporting.** Drug-target AUC is a **mandatory second metric and a warning flag**,
+never a headline and never an optimisation target. Read the champion's 0.6911 as *"this model
+deliberately declines a shortcut that scores 0.9354"* — and see §5.2.1, which shows ~0.04 of that gap
+is a pool-construction artifact rather than a modelling one.
 
 > **A benchmark that a lookup table wins is measuring the lookup, not the model. Before treating any
 > metric as a target, check what the dumbest possible predictor scores on it.**
@@ -771,6 +820,8 @@ that scores 0.9354"*, not as a therapeutic failing.
 ## 8. Results
 
 ### 8.1 Three axes, and two ground truths
+
+*Source: `known_drug_truth`, `drug_disease_edges`, `drug_protein_edges` · `nb4`.*
 
 A ranked list can be good or bad in three independent ways. Reporting one and inferring the others
 produced a wrong conclusion once already (§8.6), so all three are measured separately.
@@ -810,6 +861,8 @@ measures "someone judged this plausible", not "this works. **Report both columns
 favourable one.**
 
 ### 8.2 Per-persona performance — all three axes
+
+*Source: `persona_candidates`, `maturity_confound` · `nb4`.*
 
 Seven personas, rebuilt 2026-08-17. `diabetes mellitus` was added after this analysis identified it
 as the strongest approved-target discoverer in the entire validation set.
@@ -867,32 +920,34 @@ are weak on every axis; CKD is **below chance** on discovery.
 
 ### 8.3 Discovery capability — the central claim, tested
 
+*Source: `novel_discovery_eval` · `nb4`, figure 1 (lift vs K by ground truth).*
+
 Drop the known association targets, re-rank what remains, and ask how many of the top-K **novel**
 candidates are drug-linked. Lift is against the novel base rate, so >1 means the model ranks real,
 previously-unannotated targets above chance.
 
-| top-K novel | approved: lift / hits / diseases | investigational: lift / hits / diseases |
+| top-K novel | approved: lift / hits | investigational: lift / hits |
 |--:|---|---|
-| 10 | **11.4×** / 21 / 12 | 7.4× / 169 / — |
-| 20 | **12.6×** / 39 / 19 | 6.8× / 293 / — |
-| 50 | 7.5× / 76 / 24 | 5.1× / **611** / — |
-| 100 | 6.4× / 130 / 33 | 5.0× / 1,138 / — |
-| 200 | 4.5× / 206 / 43 | 4.0× / **1,802** / — |
+| 10 | **11.4×** / 21 | 7.4× / 169 |
+| 50 | 7.5× / 76 | 5.1× / 611 |
+| 200 | 4.5× / **206** | 4.0× / **1,802** |
 | *diseases measurable* | **122** | **298** |
+
+**The shape is the finding, and a table hides it:** lift decays monotonically toward a ~4× floor while
+absolute recovery keeps climbing. **`nb4` figure 1** plots both, all five K values, all three ground
+truths.
 
 **The label's construction needed testing before these numbers could be trusted, and it took two
 passes to get right.** The sensitivity analysis below is the result; the two intermediate readings are
 recorded in the decision log because both were wrong in instructive ways.
 
-| Ground truth | pairs | novel in val | diseases | pos/disease | expected@10 | **lift@10** | lift@50 | lift@200 |
-|---|--:|--:|--:|--:|--:|--:|--:|--:|
-| join, approved *(original)* | 4,110 | 1,359 | 122 | 11.1 | 1.36 | **11.40** | 7.46 | 4.53 |
-| join, drugs with ≤3 targets | 1,385 | 459 | 114 | 4.0 | 0.40 | *7.40* | 4.54 | 3.38 |
-| join, single-target drugs | 634 | 202 | 87 | 2.3 | **0.20** | *0.00 — unmeasurable* | *1.90* | 2.30 |
-| join, single-target & ≤3 ind. | 337 | 107 | 54 | 2.0 | **0.11** | *0.00 — unmeasurable* | *2.78* | 3.88 |
-| **`known_drug` ≥ 0.8 (curated)** | **3,253** | **1,173** | **114** | **10.3** | **1.17** | **17.65** | **8.86** | **4.70** |
-| `known_drug` ≥ 0.6 | 8,493 | 2,916 | 174 | 16.8 | 2.92 | 8.36 | 4.69 | 3.28 |
-| `known_drug`, all scores | 67,748 | 21,935 | 325 | 67.5 | 21.93 | 6.91 | 4.91 | 3.61 |
+Seven label variants were tested. Three carry the argument; the full grid is in **`nb4`**.
+
+| Ground truth | pairs | expected@10 | **lift@10** | lift@200 |
+|---|--:|--:|--:|--:|
+| join, approved *(original)* | 4,110 | 1.36 | **11.40** | 4.53 |
+| join, single-target drugs *(the cautionary row)* | 634 | **0.20** | *0.00 — unmeasurable* | 2.30 |
+| **`known_drug` ≥ 0.8 (curated, adopted)** | **3,253** | **1.17** | **17.65** | **4.70** |
 
 **`expected@10` is the number of hits chance alone would produce** (diseases × 10 slots × base rate).
 **Below ~1, an observed zero is uninformative** — it cannot separate "no enrichment" from "enrichment
@@ -943,6 +998,8 @@ hypotheses on both bars.
 
 ### 8.4 Tractability axis — are the candidates actionable?
 
+*Source: `tractability_axis` · `nb4`, figure 2 (naive vs degree-matched, both estimators).*
+
 The third axis, and the only one whose label carries **no inflation at all**. `drug_protein` is a
 direct assertion that a molecule engages a protein: gene-level, no join, 1,109 of 20,861 genes
 (5.3%). It had never been used to evaluate the model.
@@ -963,13 +1020,13 @@ contributes its *own quintile's* tractable rate to the expectation.
 diseases). Reported under **both estimators**, because they disagree at the very head and an earlier
 revision of this section mixed them:
 
-| top-K novel | observed | degree-matched expected | **pooled** naive → dm | **macro** naive → dm |
+The two endpoints carry the whole result; **`nb4` figure 2** plots all five K values for both
+estimators, with the crossover marked.
+
+| top-K novel | observed | dm expected | **pooled** naive → dm | **macro** naive → dm |
 |--:|--:|--:|---|---|
-| 10 | 2,094 | 684 | 3.31× → **3.06×** | 2.97× → **2.86×** |
-| 20 | 3,942 | 1,352 | 2.76× → **2.91×** | 2.78× → **2.77×** |
-| 50 | 9,207 | 3,293 | 2.48× → **2.80×** | 2.59× → **2.69×** |
-| 100 | 16,963 | 6,455 | 2.24× → **2.63×** | 2.39× → **2.57×** |
-| 200 | 30,075 | 12,643 | 1.98× → **2.38×** | 2.11× → **2.36×** |
+| **10** | 2,094 | 684 | 3.31× → **3.06×** *(dm lower)* | 2.97× → **2.86×** *(dm lower)* |
+| **200** | 30,075 | 12,643 | 1.98× → **2.38×** *(dm higher)* | 2.11× → **2.36×** *(dm higher)* |
 
 *Pooled = Σobserved / Σexpected. Macro = mean of the per-disease lift, consistent with the macro
 per-disease AUC used everywhere else in this document.*
@@ -999,8 +1056,10 @@ a blunt instrument. **Report `demonstrated`; keep `assessed` only as a coverage-
 
 ### 8.5 The ligand-vs-receptor failure is real but does NOT generalise
 
+*Source: `tractability_axis`, `enriched_gene_localization`.*
+
 The stated prediction for §8.4 was that the head would show a tractability **deficit** (≤1.0×),
-because §8.9's case study says the model ranks secreted ligands above membrane receptors. **That was
+because §8.8's case study says the model ranks secreted ligands above membrane receptors. **That was
 refuted**, and the follow-up measurement scopes the original claim properly.
 
 Secreted-protein share at top-50 minus its share of the candidate pool, across 668 diseases:
@@ -1011,7 +1070,7 @@ Secreted-protein share at top-50 minus its share of the candidate pool, across 6
 | median excess | **−3.78 pp** |
 | diseases where secreted is over-represented | **185 of 668** |
 
-**On average the model *under*-represents secreted proteins at the head** — the opposite of what §8.9
+**On average the model *under*-represents secreted proteins at the head** — the opposite of what §8.8
 implies in general.
 
 **Where the over-representation does occur, it tracks the disease's own biology, not a model defect.**
@@ -1036,31 +1095,17 @@ small-molecule tractable.**
 | lung cancer | **−6.40 pp** | **4.18×** |
 
 **Obesity — the source of the GLP1R case study — has essentially no secreted excess and the second
-best tractability enrichment in the panel.** So §8.9 describes a handful of genes in one pathway, not
+best tractability enrichment in the panel.** So §8.8 describes a handful of genes in one pathway, not
 obesity's ranking as a whole, and certainly not the model's general behaviour. The *mechanism* it
 identifies (membrane-protein assay bias sparsifies receptor neighbourhoods) is real; its *scope* was
 overstated by generalising from a single pathway.
 
-### 8.6 Candidate output — biological coherence
+### 8.6 The filter, validated on all three axes
 
-Each persona's list reads correctly for its biology, which is the qualitative half of validation:
-
-| Persona | Signature of the top candidates |
-|---|---|
-| **chronic kidney disease** | **12 of the top 20 novel are SLC solute carriers** (SLC13A2/A3, SLC22A3, SLC47A1, SLC7A2/A3/A6/A7, SLC3A1, SLC26A5, SLC2A6, SLC38A4) — proximal-tubule transport machinery, and SLC22A3/SLC47A1 are genuine renal drug-handling transporters. Plus DDR2 and FGFR2, both fibrosis-relevant with approved drugs. |
-| **lung cancer** | **7 of 20 are CHRN nicotinic-receptor subunits** (CHRNA6/A7/A9, CHRNB1/B3, CHRND, CHRNE) — 15q25 is the best-replicated lung-cancer GWAS locus. Alongside ERBB3/ERBB4, PIK3CB/CD, NRAS, HRAS, EP300, MSH2. |
-| **NSCLC / lung adenocarcinoma** | JAK-STAT and chromatin: STAT1, STAT5A/B, SMARCA2, BRD7, HDAC3; the PI3K axis (IRS1/2, PIK3R2, PDPK1, GSK3B); DDR (MRE11, TOPBP1); and CRKL, an amplified 22q11 driver. |
-| **obesity disorder** | GHSR (#8, ghrelin receptor), ADRB2 (#17, approved-validated), MCHR1 (#23), GRM1 (#24) — a coherent neuroendocrine receptor cluster, GHSR and MCHR1 both clinically pursued for obesity. |
-| **type 2 diabetes** | β-cell and insulin signalling: ADCY2/ADCY3, ITPR3, ATP2A2 (SERCA2), NOTCH1, RUNX1, CREBBP, PIK3CB. ADCY3 is an established T2D/obesity locus. |
-
-**Ranking quality falls monotonically with rank**, pooled over the personas: known-target density
-60.0% (ranks 1–10) → 55.0% → 46.7% → 46.7% → 43.3% (41–50), with mean score tracking it. **Read this
-as calibration evidence, not as a novelty ceiling** — see §8.6.
-
-### 8.7 The filter, validated on all three axes
+*Source: `filter_three_axes`.*
 
 The filter is **three clauses: novel → tractable → not-secreted.** A fourth, "exclude known
-liabilities", was measured and rejected (§10.3) and is still computed so the damage stays visible.
+liabilities", was measured and rejected (§10.2) and is still computed so the damage stays visible.
 
 **Which axes can legitimately score it — and one that cannot:**
 
@@ -1114,7 +1159,9 @@ correctly):
 0.0 is the single most demonstrable result in the deliverable.** Everywhere else the expectations are
 below 1, so those zeros are uninformative rather than negative — the §8.3 lesson applied.
 
-### 8.8 Persona selection — the criterion that was wrong, and the corrected panel
+### 8.7 Persona selection — the criterion that was wrong, and the corrected panel
+
+*Source: `persona_candidates`, `validation_auc_by_disease`, `drug_target_benchmark`, `novel_discovery_eval`.*
 
 **The error, recorded because it changed a recommendation.** "Share of the top 50 already known" was
 used as a novelty-balance criterion, treating a high share as "no novelty left". It is a *precision*
@@ -1160,7 +1207,9 @@ AUC 1.00).
    or psoriatic arthritis (40.7× approved). Both break an all-oncology-plus-metabolic panel.
 5. **Consider myelofibrosis** as the precision-oncology showcase, for the JAK1/JAK2 result.
 
-### 8.9 Case study — GLP1R, and the limits of an interactome-based model
+### 8.8 Case study — GLP1R, and the limits of an interactome-based model
+
+*Source: notebook-only — `scored_m3`, `graph_edges`.*
 
 GLP1R is the semaglutide target and a known association target for obesity disorder. It ranks
 **699 of 13,126** (5.33 percentile, score 0.889) and is predicted negative at the F1 threshold.
@@ -1204,8 +1253,8 @@ CALCR #1,113. For *this pathway* the model finds the right mechanism and not the
 GLP1R is the only one of seven that moved materially the wrong way; five improved. **Not a class-wide
 receptor regression** — GIPR and MCHR1 would show it too. GLP1R's score rests on three shared
 neighbours, so it is exactly the kind of thinly-supported prediction that swings when the training
-population changes (58.8% of diseases moved split, §5.5). One consequence for the demo: the
-ligand-vs-receptor gap **widened**, so the contrast in §8.8 is more striking than when it was written.
+population changes (58.8% of diseases moved split in the 2026-08-17 rebuild). One consequence for the demo: the
+ligand-vs-receptor gap **widened**, so the contrast in §8.7 is more striking than when it was written.
 
 **The evidence the model is not allowed to use.** The drug metapath for GLP1R traces to a single
 compound. It is rejected as circular (§4.2) — defensible, but it means the most decisive evidence is
@@ -1215,54 +1264,11 @@ computed and discarded. **Use it as a post-hoc annotation, not a feature.**
 sits behind GHSR (#8), MCHR1 (#23), MC4R (#47) and GIPR (#365) — all defensible obesity receptors.
 That reads better than a single gene's absolute rank without pretending 699 is good.
 
-### 8.10 On-graph explanation
+### 8.9 Druggability and safety annotation on the ranked list
 
-Anchor demo: the breast-cancer top-10 contained **RAD50, NBN, MRE11** — all three members of the MRN
-double-strand-break repair complex, two of them novel. **The prediction explains itself on the canvas.**
+*Source: `enriched_gene_druggability`, `enriched_gene_safety`, `safety_lift`, `tractability_lift`.*
 
-Conventions: undirected traversal; **relationship variables must be bound AND returned** or the canvas
-shows floating nodes; the graph engine's label for genes is `protein`. **Indices are
-snapshot-specific — re-derive before running** (§10.4).
-
-```cypher
-// 1. Why these genes? Top-10 predictions + interaction evidence to a KNOWN module gene.
-MATCH (D:disease {node_index: $disease})
-MATCH (g:protein) WHERE g.node_index IN $top10
-MATCH (g)-[ppi:protein_protein]-(m:protein)-[assoc:disease_protein]-(D)
-WHERE m.node_index <> g.node_index
-RETURN g, ppi, m, assoc, D LIMIT 300
-```
-
-```cypher
-// 2. THE CONTRAST SHOT — ligands (dense) vs receptors (sparse), same disease.
-//    Makes the assay bias visible: the druggable half is thin purely because
-//    membrane receptors resist the assays that built the interactome.
-MATCH (D:disease {node_index: $disease})
-MATCH (g:protein) WHERE g.node_index IN $ligands + $receptors
-MATCH (g)-[ppi:protein_protein]-(m:protein)-[assoc:disease_protein]-(D)
-WHERE m.node_index <> g.node_index
-RETURN g, ppi, m, assoc, D LIMIT 400
-```
-
-```cypher
-// 3. The evidence the model is NOT allowed to use: receptor <- compound -> disease.
-MATCH (D:disease {node_index: $disease})
-MATCH (g:protein {node_index: $receptor})
-MATCH (g)-[dt:drug_protein]-(C:drug)-[ind:indication|drug_investigated_for]-(D)
-RETURN g, dt, C, ind, D
-```
-
-**Run these in the interactive explorer, not the query recipe** — the recipe path is unreliable on
-this graph (opaque errors inside the plugin's generated script; buffer-pool exhaustion on
-variable-length expansion).
-
-**Improvement worth making:** the gene lists are pasted literals because the materialized graph
-carries no model output. Writing predicted score and rank as gene-node properties would turn these
-into `WHERE g.pred_rank <= 10`.
-
-### 8.11 Druggability and safety annotation on the ranked list
-
-Built to make the §8.9 failure *visible* without touching the model. Per-gene attribute tables joined
+Built to make the §8.8 failure *visible* without touching the model. Per-gene attribute tables joined
 on `gene_index` — **no nodes, no edges**, so the graph and its indices are untouched. This is the
 pattern for every future annotation layer: an attribute table costs one join, an edge forces a graph
 rebuild, a re-index and full feature recomputation.
@@ -1273,7 +1279,7 @@ rebuild, a re-index and full feature recomputation.
 | Target class (chemical-biology family) | `Membrane receptor`, `Enzyme`, `Ion channel`… | 28% | authoritative but sparse; **human-readable** |
 | Tractability buckets | small-molecule / antibody, has-approved-drug | 29% | modality routing |
 | Cellular-component annotation *(in graph)* | membrane / secreted | 36% | gap-fill; covers 343 genes the primary source misses |
-| **Curated safety liabilities** | adverse events, dose dependence | **4.5% flagged** | **display only** (§10.3) |
+| **Curated safety liabilities** | adverse events, dose dependence | **4.5% flagged** | **display only** (§10.2) |
 | **Genetic constraint** (LOEUF) | loss-of-function intolerance | 85% | **informational; not a filter** |
 
 The two independent localization sources agree 88.2% on membrane and 95.6% on secreted; where they
@@ -1292,37 +1298,20 @@ The repurposing filter returns **32 candidates** at top-50 across the panel, inc
 FGFR1/2/4, DDR2, ADRB2, GRIN2A and a cholinergic cluster.
 
 > **This annotates, it does not re-rank.** The model never sees these columns, so secreted ligands
-> still outrank receptors *globally*; the fix is class-grouped presentation (§10.3). And
+> still outrank receptors *globally*; the fix is class-grouped presentation (§10.2). And
 > has-approved-drug is **gene-level across all indications** — "chemical matter exists", not "this
 > drug works in this disease".
 >
 > **⚠ Two columns must not become filter controls.** Genetic constraint runs *with* druggability, and
-> liabilities mark drug precedent rather than risk (§10.3). Both are present in the deliverable —
+> liabilities mark drug precedent rather than risk (§10.2). Both are present in the deliverable —
 > the constraint columns unintentionally, via automatic column selection — and both would strip the
 > best candidates if filtered on. The liability `event` field also mixes real adverse events with
 > bare mechanism descriptors (`regulation of catalytic activity`) and risk-factor biology (lung
 > cancer's nicotinic candidates are flagged `nicotine dependence`, the disease's own risk mechanism).
 
-### 8.12 What it delivers, concretely
+### 8.10 The breast panel — built to be falsified by a clinician
 
-`target_candidates_2` — **129,253 rows over 13 personas**, every scored candidate ranked, carrying
-score, SHAP drivers, rank, known-target status, druggability class, tractability and safety
-annotation. The scientist filters; nothing is pre-cut.
-
-Progressive filtering, obesity disorder:
-
-| filter | candidates |
-|---|--:|
-| all | 13,126 |
-| novel only | 12,364 |
-| + tractable | 8,615 |
-| + not secreted | 7,877 |
-| + rank ≤ 200 | **~70** |
-
-A working shortlist — GHSR (#8), ADRB2 (#17), STAT3 (#18), MCHR1 (#23), GRM1 (#24) — reached by the
-scientist's own thresholds.
-
-### 8.13 The breast panel — built to be falsified by a clinician
+*Source: `breast_panel_metrics`, `breast_panel_overlap`, `breast_shortlist` · `nb4`.*
 
 Added 2026-08-19 (`compute_breast_panel`, `compute_breast_shortlist`). **The purpose is not another
 metric.** Two of the arms cannot be scored against our own labels at all, and a breast surgeon can
@@ -1375,7 +1364,7 @@ resistance sits in the top ten. The novel block is RAS/MAPK downstream of HER2.
    unreachable. They are not — they are reachable for **62%** and **53%** of all diseases respectively,
    so their absence is specific to this disease's known-gene set, and their curated score for
    triple-negative sits below the 0.8 threshold. `TACSTD2` is the genuine case: reachable for just
-   **1.04%** of diseases. See §5.2.1 and §10.5 for the corrected scope of this problem.
+   **1.04%** of diseases. See §5.2.1 and §10.4 for the corrected scope of this problem.
 
 Also: **TP53 ranks 2 for triple-negative but is labelled *novel*, while being a *known* target for
 HER2+ and for the umbrella term.** "Novel" here means *not annotated for this particular subtype*, not
@@ -1404,7 +1393,7 @@ without them the flow opened with `Annotations` and put `Results` before `Featur
 | `31 Model training` | 6 | *ladder not shown* | the three ladder models and their saved artifacts |
 | `40 Validation - ranking quality` | 18 | **Q5** | 3 scoring recipes, per-disease and per-split-key AUC, the ablation ladder |
 | `41 Validation - the three axes` | 22 | **Q2, Q3, Q4** + punch line | tractability axis + lift, drug-target benchmark (plain + staged), curated `known_drug` truth, novel-discovery eval, three-axis filter, maturity confound, safety lift, persona candidates, reachability |
-| `42 Validation - leakage & granularity` | 9 | **Q5, Q6** | split audit, disease-hierarchy annotation, lung granularity check, **breast subtype separability** (§8.13) |
+| `42 Validation - leakage & granularity` | 9 | **Q5, Q6** | split audit, disease-hierarchy annotation, lung granularity check, **breast subtype separability** (§8.10) |
 | `43 Validation - disease families` | 14 | **Q5** | per-family AUC and top genes per family |
 | `50 Results - target candidates` | 14 | **Q1** | persona filter → SHAP scoring → `rank_per_disease` (Window) → 2 decoration joins → `target_candidates_2`, plus the **clinician review form** `breast_shortlist` |
 | `60 Dashboard (serving)` | 10 | serves **Q1** | the flattened serving tables — `dashboard_candidates`, `dashboard_persona_trust`, `drug_evidence_pairs`, disease pool sizes |
@@ -1420,13 +1409,15 @@ and a presenter gets the running order, without either of these documents.
 called things like `compute_graph_features_sampled_2` (now `filter_has_path_evidence`).
 
 **Heavy graph math lives in code, not plugin recipes** — the metapaths, proximity, random walk and
-degree-corrected overlap. The query-recipe path repeatedly failed at this scale (§4.4).
+degree-corrected overlap. The query-recipe path repeatedly failed at this scale (§4.3).
 
 **Everything in zones 10–60 was rebuilt on 2026-08-17** against the shared graph, so every reported
 number comes from one generation. One exception, flagged where it appears: the hub-bias meter (§7.2)
 has no recipe and is still on the retired generation.
 
 ### 9.1 Why four validation zones — and which objection each one kills
+
+*Source: no artifact — cross-references only.*
 
 The previous layout had one `Results - model performance` zone and one `Diagnostics (optimisation)`
 zone that had swollen to **40 items** — it was where everything went that was not scoring, and by the
@@ -1441,18 +1432,20 @@ than our own metric taxonomy, because that is the order a sceptical scientist ac
 | **Q1** | *"Show me the list."* | `50`, `60` | 129,253 ranked rows; obesity → 65 candidates on the scientist's own thresholds |
 | **Q2** | *"These are just the famous genes."* | `41` | degree-matched tractability **2.4–2.9×**; strengthens below rank 20, weakens at rank 10 (§8.4) |
 | **Q3** | *"You already knew all of these."* | `41` | novel-discovery **11.4×** at top-10 approved; **MAPK3 novel #3 / list #61** for NSCLC (§8.3) |
-| **Q4** | *"Your ground truth is garbage."* | `41` | 82% inflation measured, then re-run on curated `known_drug` — result got *stronger* (§8.1, §8.7) |
+| **Q4** | *"Your ground truth is garbage."* | `41` | 82% inflation measured, then re-run on curated `known_drug` — result got *stronger* (§8.1, §8.6) |
 | **Q5** | *"Would this work on a disease you had not tuned?"* | `40`, `42`, `43`, and `30` | macro AUC **0.8197**/670 diseases; per-family **0.7976**/505; zero straddling split keys |
 | **Q6** | *"What can't it do?"* | `42`, `41` | subtype irresolvable (§3.4); ligand-vs-receptor scope (§8.5); no safety axis, and we say so |
-| **punch** | — | `41`, `20` | the three refuted gates: druggability inverted, LoF backwards, liability filter deletes ADRB2 (§10.3) |
+| **punch** | — | `41`, `20` | the three refuted gates: druggability inverted, LoF backwards, liability filter deletes ADRB2 (§10.2) |
 
 **Zone 41 is the one to open in a technical review** — it alone answers Q2, Q3, Q4 and carries the
 punch line, including both corrections. Zones `50`/`60` are the demo surface; `40`–`43` are the
 evidence for it. The old `Diagnostics (optimisation)` name was itself misleading: none of that work
 was optimisation, it was the evidence base — which is precisely why it must not be pruned to whatever
-a not-yet-designed dashboard happens to read (§10.4).
+a not-yet-designed dashboard happens to read (§10.3).
 
 ### 9.2 The candidate-decoration tail, collapsed 5 recipes → 2
+
+*Source: `target_candidates_2` — verified as a pure refactor at the time; see the note below.*
 
 The persona chain ends by attaching names and annotations. That had grown into alternating joins and
 prepares — gene-name join, rename/drop, disease-name join, druggability join, rename/drop/reorder —
@@ -1474,49 +1467,29 @@ round-trips then is ignored); dropping columns needs the **per-input `MANUAL`** 
 `selectedColumns` sets order only; and **the same lookup table cannot be joined twice** — accepted by
 the API, rejected at validation. The last is the only reason this is two recipes rather than one.
 
-## 10. Migration, and the decisions settled by measurement
+## 10. What is settled, and what is open
 
-### 10.1 Reconstruction confirmed
+### 10.1 The rebuild is verified
 
-Rebuilt end to end on the shared graph 2026-08-17. **Tolerance was set in advance at ±0.02 macro
-per-disease AUC; every metric came in inside ±0.01.**
+*Source: `reference_baseline.json`.*
 
-| Metric | Reference | Rebuilt | Δ |
-|---|--:|--:|--:|
-| **macro per-disease AUC** | 0.8228 *(n=588)* | **0.8197** *(n=670)* | **−0.0031** |
-| per-disease, positives ≥ 10 | 0.8278 | 0.8323 | +0.0045 |
-| per-split-key AUC | 0.8041 | 0.8007 | −0.0034 |
-| pooled AUC | 0.8968 | 0.8915 | −0.0053 |
-| per-family macro | 0.8060 *(484)* | 0.7976 *(505)* | −0.0084 |
-| drug-target AUC | 0.6836 *(112)* | 0.6911 *(130)* | +0.0075 |
+Rebuilt end to end on the shared graph 2026-08-17 against a **±0.02** tolerance set in advance.
+**Every one of six metrics landed inside ±0.01** — largest movement −0.0084 (per-family), headline
+macro per-disease AUC **0.8228 → 0.8197**. The full grid is in `reference_baseline.json`.
 
-**The candidate pool is bit-identical** (6,754,128 both sides), so only the split *allocation*
-changed — train shrank 18.8% and the champion held its accuracy. Two sources of movement were
-separated in advance: graph drift is 0.03% of edges, all functional-annotation; the split reshuffle
-moved 58.8% of diseases and was estimated at **+0.0049**. The observed −0.0031 is smaller than that
-estimate, i.e. the two partly cancel. **Metric cross-validation still holds** — visual chain and code
-recipe both give 0.8197, max difference 1.9×10⁻⁴.
+**The candidate pool is bit-identical** (6,754,128 both sides), so only the split *allocation* changed:
+train shrank 18.8% and the champion held its accuracy. Two movement sources were separated in advance —
+graph drift is 0.03% of edges, all functional-annotation; the split reshuffle moved 58.8% of diseases
+and was estimated at +0.0049. The observed −0.0031 is *smaller* than that estimate, so the two partly
+cancel. **Metric cross-validation holds:** visual chain and code recipe both give 0.8197, max
+difference 1.9×10⁻⁴.
 
-### 10.2 What the rebuild exposed — three index-dependent behaviours
+**The acceptance criterion is met.** This section is retained as the audit trail; nothing downstream
+depends on the reference generation any more.
 
-All three share one root cause: **a rule that breaks ties or selects by lowest `node_index` behaves
-differently when the graph is renumbered.** None is a defect; each changes results.
+### 10.2 Two design decisions, settled on measurement
 
-1. **The split rule** (anticipated) — a modulo over an arbitrary integer, so renumbering reshuffled
-   58.8% of diseases. Handled by forcing the persona split keys explicitly.
-2. **Family assignment** — 6,801 of 6,821 diseases (99.7%) keep the same family; **20 changed anchor**,
-   every one at *identical hop depth*, so the walk hit a tie and broke it on lowest index. Overall
-   family sizes barely move (largest 75 in both builds).
-3. **Split-key elevation** — the lung personas' key moved from `respiratory system cancer` to
-   `thoracic cancer`, because a disease with multiple parents picks among them by lowest index.
-   **Breast and lung now share one split key** — *more* conservative, and both already in validation,
-   so nothing leaked. But it silently broke a diagnostic that selected on that key (§3.4).
-
-> **The transferable lesson:** an arbitrary tie-break is stable only while the thing it keys on is
-> stable. When identifiers are reassigned, audit every rule that **ranks, mods or minimises** on
-> them — not just the literals.
-
-### 10.3 Target prioritisation — two design decisions, settled on measurement
+*Source: `tractability_lift`, `safety_lift`, `filter_three_axes`.*
 
 Both were answered by measuring rather than training: three recipes instead of three model runs.
 
@@ -1524,7 +1497,7 @@ Both were answered by measuring rather than training: three recipes instead of t
 **actively harmful under this label.** Against `is_target`, `Membrane receptor` has an association
 lift of **0.78 (depleted)** and a drug-target lift of **3.16×**; antibody-tractability's 0.98
 association lift is *no signal at all*. A loss-minimising tree therefore learns **"membrane receptor →
-lower score"**, reinforcing the §8.7 failure. The label route out is closed on evidence (§7.5).
+lower score"**, reinforcing the §8.6 failure. The label route out is closed on evidence (§7.5).
 
 | Attribute | Association lift | Drug-target lift |
 |---|--:|--:|
@@ -1567,7 +1540,9 @@ justification for that ingest cost.
 > anything filtering on blank filters on literature attention, the study bias the feature set exists
 > to control.
 
-### 10.4 Remaining
+### 10.3 Remaining
+
+*Source: forward-looking — no artifact.*
 
 - **Report drug-target AUC stratified by route support** (§5.2.1) — 0.6911 all positives / **0.7337**
   route-supported. Removes the 91.8× outcome-selection bias from the *metric* without touching the
@@ -1581,7 +1556,7 @@ justification for that ingest cost.
   [`docs/appendix/`](docs/appendix/) with a manifest; the saved models stay. **Plus a refactor, not a
   prune: zone `43` collapses 14 items → 2** (one Python recipe `scored_m3` → `family_auc_by_family`),
   keeping Q5's 505-family answer live and dropping a ~4M-row visual chain.
-- **Re-derive the Cypher literals in §8.8** — *gene* indices for the demo queries, regenerable from
+- **Re-derive the Cypher literals in §8.7** — *gene* indices for the demo queries, regenerable from
   the rebuilt ranking but not yet done. Presentation-layer only.
 - **§7.5's numbers are documentation-only.** The `m7-drug-label` chain was deleted 2026-08-18 —
   model, 3 splits, 6 evaluation datasets — so **0.9324 / 0.6444, 439-of-1,507 hits@50, the 0.9354
@@ -1589,18 +1564,27 @@ justification for that ingest cost.
   exist nowhere but this document.** The five recipes are recoverable from git
   (`97de713:dss_recipes/`). Re-run only if someone disputes the negative result.
 - **The hub-bias meter (§7.2) has no recipe** — computed ad hoc, still on the retired generation.
-- **A direct safety measurement** — now the top feature priority, because §10.3 established the free
+- **A direct safety measurement** — now the top feature priority, because §10.2 established the free
   proxies cannot do the job.
 - **The dashboard.** Data layer is ready: 129,253 ranked rows with tractability, class and safety
   annotation. What is missing is the UI with rank / class / safety controls.
-- **Act on the persona recommendations in §8.8** — retire type 2 diabetes and CKD as headline
+- **Act on the persona recommendations in §8.7** — retire type 2 diabetes and CKD as headline
   personas, keep one lung term, add an immunology or neurology disease.
 
-### 10.5 Still open
+### 10.4 Still open
 
-- ~~Druggability as a model input~~ — **settled, rejected** (§10.3); shipped as class-grouped
+*Source: forward-looking — no artifact.*
+
+- ~~Druggability as a model input~~ — **settled, rejected** (§10.2); shipped as class-grouped
   presentation.
-- ~~Safety as a filter~~ — **settled, rejected** (§10.3); liability annotation shipped display-only.
+- ~~Safety as a filter~~ — **settled, rejected** (§10.2); liability annotation shipped display-only.
+- **Feature ideas not yet built** *(folded in from the old §4.3)*: `is_plasma_membrane` /
+  `is_secreted` — cheap and verified feasible, but superseded in practice by the class-grouped
+  presentation (§10.2); **gene-family / paralog leave-one-out** — a paralog being a known target is
+  evidence nothing else captures, currently **blocked** because the gene vocabulary carries no family
+  column, and it *must* be leave-one-out or it becomes another label-derived shortcut;
+  `disease_phenotype_context`, and the cellular-component and phenotype metapaths — all low priority,
+  the first two because co-localization terms like "nucleus" span thousands of genes.
 - **Embedding features** — the one family that can score *pathless* pairs, reaching past the
   candidate-pool boundary (§5.2). ⚠ **I promoted this to "top modelling priority" on 2026-08-19 on the
   strength of one disease, and measurement does not support that.** Across all 207 evaluable diseases
@@ -1631,85 +1615,9 @@ justification for that ingest cost.
 
 ## Appendix — decision log
 
-| Date | Decision |
-|---|---|
-| 2026-07-08 | **Flagship = explainable target prioritizer** (visual ML + SHAP, mirroring the Open Targets L2G pattern). Discovery first; toxicity deferred. Network-topology features only; no embeddings. |
-| 2026-07-08 | Feature engineering pushed into graph-plugin recipes over the materialized graph rather than a monolithic graph library. *(Substantially reversed 2026-08 — see §4.4.)* |
-| 2026-07-08 | **Degree-corrected proximity dropped** on the reasoning that "the supervised model already sees degree and will absorb hubness". *(Falsified 2026-08-09 and reversed — it was the feature that recovered the failed pruning run.)* |
-| 2026-07-28 | **Leaks 1 & 2 diagnosed** (§5). Correct setup = disease-grouped split + the candidate-pool restriction on train AND test + reject label-derived features. A proximity threshold is insufficient — the test set is 87% at the threshold value, so the coverage skew survives. |
-| 2026-08-05 | **Feature candidates drafted** contingent on the new annotation layers. A binary inflammatory flag was ranked priority 1 and the functional metapaths priority 2. *(Priorities inverted by results — see 2026-08-10.)* |
-| 2026-08-08 | **Leak 3 found: ontology hierarchy** (§3.2). All four personas compromised. **Rejected:** graph-topological family construction — it collapses 83–96% of diseases, because broad classificatory terms are themselves eligible and 51% of diseases have >1 direct parent. **Adopted:** rollup to an external curated antichain of 137 terms. |
-| 2026-08-08 | **A candidate filter can leak even when the feature is rejected.** A filter on a random-walk feature's non-nullness scored AUC 0.946 and was withdrawn — the recipe records seeds unconditionally, so non-null is label-derived (null gap −75 pp vs +0.43 pp for the proximity feature). **Rule: disqualify a filter when its *missingness* is set by a label lookup, not when its values correlate with the label.** |
-| 2026-08-09 | **Report per-disease AUC, never pooled** — pooled overstates by ~7–9 points and hid a real regression in the first ablation run. |
-| 2026-08-09 | **Granularity: split by family, report by disease** (§3.3). Family aggregation lifts the weakest persona 0.704 → 0.907 but degrades candidates from mechanism-specific to pan-cancer. |
-| 2026-08-09 | **Case study accepted as a known limitation, not a bug** (§8.11): the model finds the right pathway but not the right druggable node, because membrane receptors resist the assays that built the interactome. The prediction column is near-useless for discovery (590/762 known targets are false negatives at the F1 threshold). |
-| 2026-08-09 | **Feature audit** (§6.1): 7 of 15 inputs were gene-only, the hub axis had 4 collinear encodings, every gene-only feature scored ≈0.5. Hub-bias meter established (6× detection swing across degree quintiles). |
-| 2026-08-10 | **Ablation ladder complete** (§6.4). Pruning alone **failed** on per-disease AUC despite flat pooled AUC; the provenance controls recovered it; the functional metapaths won decisively with every metric improving at once. Reverses the 2026-07-08 proximity decision. |
-| 2026-08-10 | **Metapaths implemented as matrix code, not graph queries** (§4.4) — the query engine exhausted its buffer pool even with a fan-out guard, and only 12 of 11,187 terms exceeded the cap, so no tuning would have helped. The factorized right-to-left form runs both in ~2 min. |
-| 2026-08-10 | **Feature-handling standard made mandatory** (§6.2): all numeric inputs standard-rescaled + mean-imputed. The platform's per-deploy guesses are inconsistent, so audit after every deploy. |
-| 2026-08-10 | **Priorities inverted by results**: the priority-1 binary flag scored exactly 0.5000 and was rejected; the priority-2 functional metapaths were the biggest win. **Graded relational features beat binary gene-level flags.** |
-| 2026-08-11 | **Druggability annotation added** (§8.5) — curated source primary, in-graph annotation as gap-fill, 92.2% coverage. Implemented as **per-gene attribute tables**: no nodes, no edges, indices untouched. **Annotates rather than re-ranks.** |
-| 2026-08-11 | **Candidate list extended to top-50.** Known-target density falls monotonically 65% → 32.5%, evidencing calibration across the range. Repurposing candidates 2 → **15**. **Recommended demo diseases: breast cancer and obesity disorder.** |
-| 2026-08-11 | **The candidate-pool restriction NOT expanded to the functional metapaths.** Measured: it would grow the pool to 15.8M at 1.04% positives and make coverage equalization *worse* on every original feature, pushing the filter toward the no-op state that produced leak 2. A stricter ≥2-of-3 variant is logged as a future experiment. |
-| 2026-08-13 | **Flow restructured into zones by function**, one at a time with a row-count anchor at each step (§9). Three staleness traps found: every diagnostic had been computed on deleted models; two reconnected chains held old row counts; and the persona chain rebuilt once on stale scores before job history was checked. **Lesson: verify by job history, not row count.** |
-| 2026-08-13 | **Drug-validated targets adopted as a mandatory second metric** (§7.4), not as a training objective. The two axes are decoupled (r = 0.097). Two preprocessing interventions and a tractability filter all failed to close the gap, while feature distributions show the signal *is* present — so the limit is the objective, not the features. |
-| 2026-08-13 | **`prox_closest` dropped on measurement** (§4.2): a top SHAP driver whose removal costs nothing on either metric and which cannot separate drug-validated targets from background. Kept as a diagnostic column. |
-| 2026-08-14 | **Training on the drug label tested and rejected — a documented negative result** (§7.5). Drug-target AUC 0.6836 → **0.9324**, association AUC 0.8228 → **0.6444**. The objectives are genuinely in tension, so the label is a **product decision, not an optimisation**. The model is kept in the flow precisely so nobody reruns the experiment and reads 0.9324 as a win. |
-| 2026-08-14 | **The drug-target benchmark is itself a gene-popularity shortcut** — the finding that reframes §7.4. A no-graph lookup scores **0.9354**, *beating* the drug-trained model, which wins on only 44 of 112 diseases. Holding out genes leaves 57 positives over 19 diseases — too thin for a headline. **Correction:** the earlier framing of 0.6836 as "mediocre therapeutically" was wrong; it is the score of a model declining a shortcut. **Rule: before treating a metric as a target, check what the dumbest possible predictor scores on it.** |
-| 2026-08-17 | **Migrated into a dedicated project** consuming the graph as 10 shared objects (PROJECT_CONTEXT §4.3). Branched rather than rebuilt, to preserve the three trained models, the persona chain and the diagnostic suite — which are the evidence base for every decision above. **Flow left unbuilt deliberately** until the hardcoded indices are re-derived (§10.1). |
-| 2026-08-17 | **The two source recipes that feed no graph edge stay on this side** — the split-control disease vocabulary and the druggability annotation. Neither contributes nodes or edges, so neither belongs in the graph project. |
-| 2026-08-17 | **All 14 hardcoded node indices remapped** to the rebuilt graph via `(node_id, node_type, node_source)` (§5.5, [index_remap.json](index_remap.json)). All resolved with identical node names; a sweep of all 67 recipes confirms zero stale values. **One key had to be *added*, not just remapped:** `respiratory system cancer` was in the validation split only incidentally, and its new index falls in train — the three lung personas would have silently returned **zero rows** rather than erroring, because the persona filter reads the validation split. **Rule: when a rule keys on an arbitrary integer, remapping the integer can change the rule's outcome — check the semantics, not just the substitution.** |
-| 2026-08-17 | **Retrain tolerance widened to ±0.02** on macro per-disease AUC. The remap reshuffles 58.8% of diseases across splits, because the split rule is a modulo over an arbitrary integer. Measured effect **+0.0049**, within one standard error — so the reconstruction is still checkable, but not to 3 decimal places. Family integrity verified intact: zero split keys span more than one split role. |
-| 2026-08-17 | **Rebuilt end to end on the shared graph — reconstruction CONFIRMED** (§10.1). Champion macro per-disease AUC **0.8197** vs 0.8228; every metric within **±0.01**, inside the tolerance set in advance. Ladder ordering preserved on both axes, and drug-target AUC became monotonic. The candidate pool total is **bit-identical** (6,754,128), so only the split allocation changed — and the champion held its accuracy on **18.8% less training data**. Three individual personas reproduced to within 0.002, which is stronger evidence than the macro average because nothing averages out. |
-| 2026-08-17 | **Three rules were found to depend on integer ordering, not one** (§10.2). The split modulo was anticipated; **family assignment** (20 diseases changed anchor at identical hop depth) and **split-key elevation** (lung moved from `respiratory system cancer` to `thoracic cancer`, merging with breast) were not. All three break ties or select by lowest `node_index`. **Rule: an arbitrary tie-break is stable only as long as the thing it keys on is stable — when identifiers are reassigned, audit every rule that ranks, mods or minimises on them, not just the literals.** |
-| 2026-08-17 | **Subtype-granularity diagnostic repointed from the split key to the disease family** (§3.4). The split-key elevation flip meant it had begun measuring larynx subtypes, and selecting on the new key would have compared breast lists to lung lists. The family is the stable expression of "lung cancer and its histological subtypes" and matches the recipe's own stated purpose. Finding survives: **55% of the top-50 identical on average** across 17 subtypes (reference 63%), with adenocarcinoma vs squamous cell at 47/50. |
-| 2026-08-17 | **Per-family tables reclassified as a view of the validation sample, not a property of the graph** (§7.3). Family structure barely moved (99.7% identical assignment, largest family 75 in both builds), but the report is headed by a different family because the split reshuffled. Stated explicitly to stop a future reader reading structural change into it. |
-| 2026-08-17 | **Druggability / target class REJECTED as a model input** (§10.3) — and not for the reason previously recorded. It is not merely orthogonal to the label, it is **inverted**: `Membrane receptor` has an association lift of **0.78** against a drug lift of 3.16, so the gain-maximising split is "membrane receptor → lower score". Adding it would reinforce the ligand-vs-receptor failure rather than fix it. Antibody-tractability's 0.98 association lift is literally no signal. |
-| 2026-08-17 | **Shipped the presentational fix instead: top-N within druggability class.** Obesity's `membrane / cell-surface` column now leads with GHSR (#8), ADRB2 (#17), MCHR1 (#23) — two of them clinically-pursued anti-obesity targets — while the secreted ligands still lead globally. **A grouping change recovered most of what a model change was meant to buy, at no risk to the model.** |
-| 2026-08-17 | **Safety/toxicity: the lift gate REFUTED the stated prediction and blocked the filter** (§10.3). Predicted drug targets would be depleted for loss-of-function intolerance; measured a **monotone gradient the other way** (1.37× → 0.62× across LOEUF bands). Constraint measures that a gene *matters*, which is a prerequisite for being drugged — and a drug is not a germline knockout. Separately, `has_safety_liability` is **4.62× enriched** for drug targets, because liabilities are discovered *by* drugging: attention artifact, not risk. **Neither free signal is a safety filter; used as one they would strip the shortlist of its best candidates.** Shipped the liability list as display-only annotation. |
-| 2026-08-17 | **A real safety axis requires a direct measurement**, not the free proxies — essentiality and tissue-expression breadth. The gate result is the justification for that ingest cost. Also recorded: Open Targets' liability field is **positive-only** (943 targets, no "assessed and clean" state), so blank means unknown and anything filtering on blank filters on literature attention. |
-| 2026-08-17 | **Deliverable changed from pre-cut to filterable** — the top-50 truncation replaced by a Window rank, so `target_candidates_2` is **63,020 ranked rows** *(reference generation; **76,465** after the 2026-08-17 rebuild)* carrying tractability, class and safety annotations. Progressive filtering on obesity reaches a 65-candidate shortlist from the scientist's own thresholds. The data layer for the dashboard is now complete. |
-| 2026-08-17 | **Filter validated per persona** (§8.7; measured in `filtered_shortlist_eval`, since deleted and superseded by `filter_three_axes`). Clauses 1–3 (novel → tractable → not-secreted) give **1.42–1.71× enrichment at 100% recall** in every disease that has validated targets — they cut the pool ~40% and lose nothing. **Clause 4 (exclude known liability) destroys 15–70% of them** and pushes obesity to **0.54× — worse than not filtering.** So the recommended filter is **three clauses**, with liabilities display-only. Outcome measured on *novel* drug-validated targets to avoid conflating the deliberate removal of known targets with filter damage. |
-| 2026-08-17 | **Clearest single piece of evidence for dropping clause 4:** obesity's **ADRB2** is itself a drug-validated obesity target at rank #17 *and* carries a liability flag — the clause would have deleted a confirmed hit. Also recorded: the liability `event` field mixes real adverse events, bare mechanism descriptors (`regulation of catalytic activity`) and risk-factor biology (lung cancer's nicotinic candidates are flagged `nicotine dependence`, the disease's own risk mechanism). **Present it; never present it as a safety verdict.** |
-| 2026-08-17 | **Filtering improves the ranking's usefulness but cannot fix its head.** With the 3-clause filter, top-N precision improves in five of seven personas and never degrades — **diabetes mellitus reaches 5 approved targets in a filtered top-20** — yet most personas find nothing at top-20 on the strict bar. §7.4's objective limitation reappearing downstream. |
-| 2026-08-17 | **DISCOVERY adopted as a third reported axis** (§8.1, §8.3, `novel_discovery_eval`). Ranking precision and therapeutic agreement say nothing about whether the model surfaces *unannotated* targets, which is the deliverable's actual claim. Measured by dropping known targets, re-ranking, and testing the novel head against the drug layer: **4–13× above chance on both ground truths**, 206 approved and 1,802 investigational targets recovered in top-200 novel. The strongest evidence in the document, and it was unmeasured for the whole project until now. |
-| 2026-08-17 | **Both ground truths reported, never one.** `indication` (4,110 pairs, approved) is strict; `drug_investigated_for` (52,734, in-trial) is 13× larger, includes failed programmes, and is the fairer bar for target *identification* since it rewards surfacing target classes still in development. The choice reverses conclusions: NSCLC scores 0/33 approved and **11/379 at 6.8× investigational**. Metabolic diseases are genuinely better on approved (41×), oncology on investigational — a real property, not a coverage artifact. |
-| 2026-08-17 | **CORRECTION — the persona criterion was inverted, and it changed a recommendation** (§8.8). "Share of the top 50 already known" was used as a novelty ceiling; it is a *precision* measure. Normalised by base rate, NSCLC's 96% is **19× enrichment (best in the panel)** and CKD's 2% is **2.9× (worst)**. The criterion rewarded the worst ranking, rejected the best, and briefly produced a recommendation to drop all three lung personas. **Replaced by ranking enrichment + measured discovery on either bar; 62 of 670 diseases now pass, and four of the seven current personas do.** |
-| 2026-08-17 | **MAPK3 verified as the worked example of the deliverable working** (§8.3). Ranked #61 for NSCLC, novel#3, with nothing in the training label pointing at it — and it is a **trial-stage drug target** for that disease (ERK1, terminal kinase of the KRAS→MEK→ERK cascade). Three more of the top-15 novel candidates are also trial-stage. Confirmed from project data, not recollection. PTPN6 and SMARCA2 remain unvalidated on both bars. |
-| 2026-08-17 | **The drug ground truth is an INFERRED pair, and it needed a sensitivity analysis** (§8.1, §8.3). Open Targets asserts *drug→disease* and *drug→target*, never *target→disease*; our truth set joins through the drug, so a 40-target drug approved for 13 indications manufactures **520 pairs**. Measured: **82.2% of triples come from multi-target drugs, 66.3% from drugs multi on both axes, only 8.0% survives a single-target restriction.** The limitation is real and is not eliminated by anything below. |
-| 2026-08-17 | **First reading — WRONG, and withdrawn the same day.** Restricting to single-target drugs dropped lift@10 from 11.40 to **0.00**, which I read as "the head-of-list claim is an artifact". It is not: that subset expects **0.20 hits at chance**, so an observed zero cannot distinguish absence of signal from absence of power. **Lesson: before reading a zero as a refutation, compute what chance alone would have produced.** A sparse high-precision subset can be too small to test the very thing it was built to test. |
-| 2026-08-18 | **Second reading — settled, using a curated label.** Extracted Open Targets' **`known_drug`** datatype (`extract_ot_known_drug` → `compute_known_drug_truth`, 107,593 pairs, 67,748 resolving onto the graph). It asserts the target–disease pair directly, and its score is a clean phase proxy: **0% of pairs below 0.6 are approved, 74.9% above 0.8.** At ≥0.8 it keeps 114 diseases and 1,173 novel positives — adequately powered where the single-target subset was not. **Result: lift@10 = 17.65×, ABOVE the original 11.40×.** Across every adequately-powered variant head-of-list lift is **6.9–17.7×**, and deep-list lift converges to **2.3–4.8×** across all seven. The discovery finding stands; the robust number to quote is the deep-list one. |
-| 2026-08-18 | **Validation overhaul COMPLETE — the filter re-evaluated on all three axes** (§8.7, `compute_filter_three_axes`). Two findings. (a) **The tractability axis cannot score this filter:** P(demonstrated \| assessed) = 0.1253 against P(demonstrated \| not assessed) = 0.0007, a **177× ratio** — clause 2 is effectively a superset of the outcome, so its 91% recall there is definitional. Reported in the appendix, never quoted. (b) **On the therapeutic axis the filter's conclusion is robust to the label problem:** the curated `known_drug ≥ 0.8` gives **1.60× lift at 99.5% recall**, statistically identical to the inflated join's 1.61×/100%. Expected, since the filter is judged on recall over the retained set rather than on the head of a ranking. **Clause 4's damage also reproduces on the curated label** (99.5% → 72.6%), so its rejection no longer rests on inflated evidence. |
-| 2026-08-18 | **CORRECTION — the metabolic/oncology split is not a class property** (§8.2, `compute_maturity_confound`). The suspected confound was exonerated: Spearman(maturity, axis-preference) = **+0.110**. But the check exposed sample size instead — of 60 diseases measurable on both labels only **4 are metabolic, and only 2 show the pattern** (diabetes mellitus 41.59×, obesity 41.21×; type 2 diabetes 0.00×, diabetic neuropathy 0.00×). The oncology direction holds 13-of-20, and the 36-disease majority shows no preference. **Claim narrowed from a class property to two named diseases.** |
-| 2026-08-18 | **A recurring error pattern in my own analysis, named so it stops repeating: over-generalising from a small favourable subset.** Three instances this week — the persona criterion inverted on one metric (§8.8), the ligand-vs-receptor failure generalised from one pathway (§8.5), the metabolic/oncology split generalised from two diseases (§8.2). **Mitigation now standing practice: state n, state what chance alone would produce, and stratify before calling anything a property.** |
-| 2026-08-18 | **TRACTABILITY adopted as a third evaluation axis, and it is now the most robust positive claim in the document** (§8.4, `compute_tractability_axis`). It is the only label with **no inflation**: `drug_protein` asserts directly that a molecule engages a gene — 1,109 of 20,861 genes, no join. Because demonstrated tractability rises ~6× across degree quintiles and the model favours hubs, every lift is reported against a **degree-matched null**. Result on novel candidates: **2.38–3.06× degree-matched**, and the degree-matched lift is *higher* than the naive one from rank 20 down — controlling for hub-ness strengthens the result rather than explaining it. Unlike the discovery lift, this survives its own confound control. **Amended 2026-08-19: the rank-10 cutoff is the exception, and the original unconditional claim came from an estimator mismatch — see §8.4.** |
-| 2026-08-18 | **CORRECTION — the ligand-vs-receptor failure does NOT generalise, and I had been repeating that it did** (§8.5). Prediction stated in advance: the head should show a tractability *deficit* because the model over-ranks secreted ligands. **Refuted.** Across 668 diseases secreted proteins are on average **under**-represented at the top-50 (mean −0.93 pp, median −3.78 pp; over-represented in only 185 of 668). **Obesity — the very disease the case study is drawn from — shows −0.16 pp excess and 3.53× tractability enrichment, second best in the panel.** Where secreted over-representation does occur it tracks structural and inflammatory diseases (collagen, cytokines) whose real biology *is* extracellular, so ranking them highly is arguably correct; their low tractability lift is a property of the disease, not a ranking error. §8.9's mechanism stands; its scope was overstated by generalising from one pathway. |
-| 2026-08-18 | **`known_drug` is a strict SUPERSET of our approved join** — all 4,110 join pairs appear in it — so OT builds from the same drug→target→indication chains and does **not** independently de-confound multi-target attribution. **The score threshold, not the change of source, is what does the work.** Adopted `known_drug ≥ 0.8` as the standard therapeutic evaluation label. Legitimate as an *evaluation* label though it was correctly rejected as a *feature* in 2026-08-05 (circular for training). |
-| 2026-08-17 | **Persona panel: keep one lung term, retire type 2 diabetes, drop CKD** (§8.8). T2D passes one of five criteria (4.3× ranking, 0.256 drug AUC, no discovery on either bar) while its **parent `diabetes mellitus` is the best approved-target discoverer of all 670 validation diseases** (41.6× lift, 8 found at top-50) — added to the panel. CKD is **below chance** on discovery. The three lung terms all pass but share ~63% of their lists, so keep NSCLC only. |
-| 2026-08-17 | **Candidate-decoration tail collapsed 5 recipes → 2** (§9.2), zone 18 items → 12. The chain was alternating joins and prepares doing nothing but left-joining lookups and then selecting, renaming and ordering columns — all of which a join recipe does itself. **Verified as a pure refactor:** same 63,020 rows *(the count at the time; 76,465 rebuilt)*, same key set, zero of 59 columns differing in value; only `disease_name`'s position moved, because DSS emits each input's columns as a block. |
-| 2026-08-17 | **Recorded three join mechanics that are not discoverable from the payload** (DSS_CHEATSHEET): renames work via input `computedColumns`, **not** `rename` in `selectedColumns` (which round-trips then is ignored); dropping columns needs the per-input `MANUAL` list, since top-level `selectedColumns` sets order only; and the same dataset cannot be joined twice — accepted by the API, rejected at validation. The last one is the sole reason this is 2 recipes rather than 1. |
-| 2026-08-17 | **Correction:** an earlier revision claimed the genetic-constraint columns had been kept off the shortlist. They had not — automatic column selection carried all five through. They are harmless as reference values but must **not** be surfaced as a dashboard filter, since that is precisely the filter the gate ruled out. |
-| 2026-08-17 | **Two decisions reached by measurement rather than training**, at a cost of three recipes instead of three model runs. That is the second and third time the lift-gate pattern has prevented shipping a change that would have degraded the therapeutic axis. **Keep the gate as standing practice: state a falsifiable prediction, measure both labels, and be willing to be wrong** — here the prediction was refuted and that was the useful outcome. |
-| 2026-08-18 | **Flow restructured to four validation zones, numerically prefixed** (§9, §9.1). The 40-item `Diagnostics (optimisation)` zone was deleted and its contents split by the *question each artifact answers*: `40` ranking quality, `41` the three axes, `42` leakage & granularity, `43` disease families. **The prefixes are functional, not cosmetic** — DSS sorts zones alphabetically, so the unprefixed flow put `Results` before `Features`. Also renamed `00 Shared` → `00 Imported … (synced)`, which is what it now holds: 12 foreign refs + folder, 11 Sync recipes, 9 local copies. 32 items moved, 0 failures; 178 items across 14 zones, `flow check` clean, no dangling inputs. |
-| 2026-08-18 | **The `m7-drug-label` experiment was DELETED rather than rebuilt** — model, 3 splits, 6 evaluation datasets, 8 recipes, 2 orphaned analyses. It had never been rebuilt on the shared graph, so it was an unreproducible chain occupying a fifth of the diagnostics zone. **Accepted cost, recorded deliberately: §7.5's numbers now live only in this document** (0.9324 drug AUC / 0.6444 association, 439 of 1,507 hits@50, the **0.9354 lookup-table baseline that beats the model**, 57 positives over 19 diseases on gene-holdout, 196 strict positives over 18 diseases). Recipes recoverable at `97de713:dss_recipes/`. **The lookup-table baseline is the single most reusable finding in the document and it now has no artifact — that is the reason this entry is verbose.** |
-| 2026-08-18 | **Zone naming rule adopted: a zone is named for the question it answers, not the tool it uses.** `Diagnostics (optimisation)` was wrong on both counts — none of that work was optimisation, and calling the evidence base "diagnostics" is what let it grow to 40 undifferentiated items. Applies to the presentation too: zones `40`–`43` are the evidence, `50`–`60` are the demo. |
-| 2026-08-19 | **The demo is an objection ladder, and the flow zones now say so** (§9, §9.1). Zone *names* unchanged; every zone description in DSS now leads with the demo question it answers (Q1–Q6, [DEMO_NARRATIVE.md](DEMO_NARRATIVE.md) §2), and the zones that are deliberately not demo material say so outright. A presenter gets the running order from the flow itself. |
-| 2026-08-19 | **A pruning plan derived from the dashboard was rejected as circular, and it was dangerous.** The criterion "does this feed `dashboard_persona_trust`?" cut **46 of 62** validation items — deleting the degree-matched tractability control (the answer to the single most common objection), the entire leakage audit, and the per-family generalisation evidence. The dashboard does not exist yet, so the criterion was derived from an artifact that would in turn have been derived from the survivors. **Replaced with: does a scientist ask this out loud in the room?** Same exercise, **16 items** instead of 46. |
-| 2026-08-19 | **CORRECTION to §8.4 — the degree-matched claim rested on an estimator mismatch.** The table put a **pooled** dm lift (3.06×) beside a **macro** naive lift (2.97×) in the same row, manufacturing the conclusion that hub-correction strengthens the result *unconditionally*. Recomputed consistently, both estimators agree that it strengthens from rank 20 down and **weakens at rank 10** (pooled 3.06 vs 3.31; macro 2.86 vs 2.97). The quotable range is unaffected. **Found by re-verifying every headline number against live data before writing a customer-facing document — one of six checks failed, which is the argument for doing it.** Fourth instance of the over-claiming pattern named in the 2026-08-18 entry; the mitigation now extends to *state which estimator*. |
-| 2026-08-19 | **Snapshot-before-delete adopted as standing practice.** Every artifact leaving the flow is first frozen to `docs/appendix/*.csv` with a manifest recording the graph generation, row counts and the live inputs it is re-derivable from. Direct response to the m7 deletion one day earlier, which left the 0.9354 lookup-table baseline with no artifact at all. Cost: ~4.3 MB in git. |
-| 2026-08-19 | **Breast cancer and its molecular subtypes added to the persona panel** (§8.13). Six terms joined the persona filter; `target_candidates_2` went 76,465 rows over 7 diseases → **129,253 over 13**. All twelve breast terms were already in the validation split under family 49721, so nothing needed re-splitting. New artifacts: `breast_panel_metrics`/`breast_panel_overlap` (zone 42, since subtype separability is a granularity question) and `breast_shortlist` (zone 50). |
-| 2026-08-19 | **§3.4 NARROWED — the model resolves molecular subtype, just not morphological subtype.** The lung finding (adeno vs squamous share 47/50) had been generalised to "subtype". HER2-positive vs triple-negative share **2 of 50** novel candidates — the cleanest separation in the project. The property that decides it is **how the subtype is defined**: molecular markers carry their own curated gene associations, morphology inherits a shared annotation set. Since oncology stratifies on molecular subtype, this moves a stated limitation into a strength. |
-| 2026-08-19 | **The parent-term intuition is backwards for breast.** §3.3 held that coarser terms are the safer choice. In the breast panel the generic `breast cancer` term has the **worst AUC in the panel (0.69)**, beaten by every one of its own subtypes, while HER2-positive reaches 0.93. PROJECT_CONTEXT §3 had recommended the generic term on no measurement; corrected to HER2-positive. |
-| 2026-08-19 | **A "power" verdict was replaced with an exact test, because the first version was wrong in the dangerous direction.** The draft labelled any arm with expected-hits < 1 "UNPOWERED", which would have discarded HER2-positive's **46 hits against 2.44 expected** — overwhelming regardless of how small the expectation is. Replaced with an exact Poisson upper tail plus a separate fragility flag for numerators under 3, and Hanley–McNeil intervals on AUC. Triple-negative's interval is **0.81–1.05**: crossing 1.0 is the approximation failing at 8 positives, and reporting that is the point. |
-| 2026-08-19 | **Four defects found in the triple-negative list before any clinician saw it** (§8.13): ESR1 at rank 14 in a disease defined as ER-negative; PARP1 at 331 while its substrate pathway holds the top 20; BRCA1 at 252 as a *known* association while BRCA2 sits at 5; and TROP2/PD-L1 absent from the candidate pool despite both having approved drugs in the disease. **Recorded as the reason to arrive at an expert review with your own defect list** — it is what makes the arms that do survive credible. |
-| 2026-08-19 | **Expert review adopted as a validation axis where labels cannot reach.** Two breast arms cannot be scored against our own labels (triple-negative has 8 known associations; luminal A has 101 in a pool of 8,157). `breast_shortlist` is therefore a **form, not a report** — known-target anchor block first, then novel candidates, then four blank clinician columns — so the output is a scoreable dataset (expert agreement rate per arm) rather than an anecdote. Stop rule: if the surgeon rejects an arm's anchor block, the novel block is not worth their time. |
-| 2026-08-19 | **`dwpc_GCD` identified as the DRUG route, and it selects the evaluation population on the outcome** (§5.2.1, `compute_pool_reachability`). **100.0%** of approved-join pairs in the pool carry a GCD route — an identity, so C is Compound. GCD-only pairs are **0.153%** of the pool but **25.4%** of approved positives: **91.8× enrichment**. No feature leak (`role=REJECT`), but those pairs have no GGD/GPGD route by construction, so the model is scored on pairs whose route features are absent — mean `proba_1` **0.265** vs **0.540**. **Drug-target AUC rises 0.6911 → 0.7337 when they are excluded** (+0.072 on the 69 affected diseases), so part of §7.4's "objectives in tension" is an artifact of pool construction. The fix is a one-line GREL edit costing 0.153% of the pool. |
-| 2026-08-19 | **CORRECTION — I over-promoted the reachability problem to "top modelling priority" on a single disease** (§10.5). Measured: the pool holds **98.5%** of curated target–disease pairs, so the ceiling costs 1.5%. Three supporting sub-claims also failed: it is **not** a sparse-disease effect (Spearman **+0.081**), family-pool borrowing rescues **2 of 34**, and `CD274`/`PDCD1` are reachable for 53%/62% of diseases rather than being structurally excluded. **Sixth instance of the named over-generalising pattern, and the first where I promoted a priority rather than a finding** — the mitigation now has to fire before a recommendation, not just before a claim. |
-| 2026-08-19 | **REFUTED — the "graph under-represents surface biology" hypothesis.** Stated in advance and tested on all 20,861 genes via reachability breadth. Antibody-tractable genes reach **more** diseases than non-antibody ones (median 23.3% vs 15.0%), `Secreted protein` (65.3%) and `Membrane receptor` (55.4%) sit near the **top**, and the narrowest classes are `Transporter` (18.5%), `Ion channel` (34.5%) and `Enzyme` (38.2%). The n=34 unreachable-target sample had pointed the opposite way. **A percentage on 34 rows is an anecdote; the same question on 20,861 reversed the sign.** |
-| 2026-08-19 | **What the reachability work did establish, net of the corrections:** **18.8% of genes (3,919 of 20,861) are reachable for no disease at all**; 94.1% of unreachable curated pairs involve genes reachable for *other* diseases, so the limit is the disease's known-gene set rather than graph coverage; **181 of 207 diseases are at 100% coverage** and only 2 below 50%, which makes a per-disease coverage warning cheap to ship and honest; and `TACSTD2` at **1.04%** breadth is a real, hard case worth naming. |
-| 2026-08-19 | **CORRECTION to §5.2.1's own recommendation, within the hour.** "Drop `dwpc_GCD` from the pool filter" was costed on pool rows (0.153%) and called close to free. Checked the evaluation side: **22 of 206 diseases lose every curated therapeutic positive** and 77 lose some, because the GCD-only pairs *are* those positives. **Superseded by a strictly better fix — exclude GCD-only pairs from the drug-based denominators and report both numbers.** Same bias removal, no disease lost, no re-fit. Lesson: a filter change has two cost surfaces, population and evaluation, and I costed only the first. |
-| 2026-08-19 | **Dropping GCD would NOT have helped the triple-negative/TACSTD2 case, and the two findings were never connected** — I made them look linked by narrating them together. The pool filter is a **union**, so removing a term can only shrink it; TACSTD2 for triple-negative has **no route at all** (GGD, GPGD, GCD all false), so the change is a no-op for it. Triple-negative's one reachable positive (TOP1) is GGD-supported and survives; its pool would shrink 2,563 → 2,463 with negligible effect on the head of the list. |
-| 2026-08-19 | **No route-set expansion reaches TACSTD2 either — the constraint is the graph.** All five metapaths fail for that pair, including GBGD (12.1M rows, 997 TACSTD2 pairs, 7,456 triple-negative pairs, empty intersection). Root cause measured: **84 edges total, PPI degree 10 at the 25.7th percentile**, predominantly annotation edges, and **zero shared edges with any of the disease's 8 known genes**. Two compounding sparsities. **This reclassifies the flagship reachability case from a modelling problem to a graph-ingestion problem**, owned by `DEMO_KG_LS`. |
+**Moved to [DECISIONS.md](DECISIONS.md)** on 2026-08-19 — 82 lines and 312 numbers of
+append-only reference, including every correction and reversal. It is the record of *why*;
+this document is the record of *what*.
 
 ## References
 
