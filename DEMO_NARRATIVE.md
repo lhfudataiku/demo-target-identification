@@ -102,8 +102,10 @@ the model still **under-scores under-studied true targets**.
 
 > **What to say:** *"We will find you targets adjacent to biology you already know. We will not fix your
 > neglected-gene problem — and we can hand you the number today instead of you discovering it in year
-> two."* Then the part that lands: this got **worse** in our latest model, we caught it, and we know
-> which feature caused it (TARGET_PRIORITIZER §7.2).
+> two."* Then the part that lands: **we went looking for the cause, tested the obvious candidate, and it
+> was not the cause** — so we are still carrying this as an open weakness rather than a fixed one
+> (TARGET_PRIORITIZER §7.2). Say that. A vendor who names an unsolved problem is worth more than one who
+> names only solved ones.
 
 > **The point to make out loud:** we can tell you exactly where the popularity effect explains our
 > ranking and where it does not, and what it costs. Nobody else in the room can do that for their own

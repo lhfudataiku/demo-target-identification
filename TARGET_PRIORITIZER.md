@@ -321,6 +321,55 @@ feature, pushing the filter back toward the no-op state that produced leak 2. A 
 > auto-rejects it for excessive nulls, and it holds only 42,227 rows — yet it is one of the three
 > terms in the pool restriction.
 
+#### 5.2.2 Adding `prox_closest` as a fourth route — tested and rejected
+
+*Source: `enriched_graph_features_1` (pre-filter, 21,308,566 rows) scored counterfactually with `m5-f13` · `nb2`.*
+
+The motivating case is §8.10's `TACSTD2`: a curated therapeutic pair at score 0.90 for triple-negative
+breast carcinoma that the model cannot see, because it has no GGD, GPGD or GCD route. `prox_closest`
+*does* reach it, so admitting pairs on a fourth route would close the gap. **Measured end to end, it
+should not be done.**
+
+| | |
+|---|--:|
+| pool | 6,754,128 → **18,283,793 (+170.7%)** |
+| **triple-negative's own pool** | 2,563 → **15,937 (6.2×)** |
+| positive rate | 1.887% → **≈0.70%** |
+| recall ceiling | 98.5% → **100.0%** (all 34 pairs) |
+
+The positive rate lands *below* the functional-metapath expansion §5.2 already measured and rejected
+(15.8M at 1.04%). But the decisive objection is not size — it is that **the admitted pairs cannot be
+scored.** On all 13,407 counterfactual rows:
+
+| input | null share |
+|---|--:|
+| `dwpc_GGD`, `dwpc_GPGD`, `ppi_adamic_adar`, `ppi_common_neighbors_z` | **100%** |
+| `dwpc_GBGD` / `dwpc_GFGD` | 64% / 69% |
+
+**Four of thirteen inputs are null on every admitted pair, by construction** — a pair reachable only by
+`prox_closest` has no GGD/GPGD route, and the shared-neighbour features require exactly that. Mean
+probability of admitted pairs is **0.1426 against 0.2738** across the existing pool — **52%**, which
+independently reproduces §5.2.1's GCD-only figure of 49% from a completely different direction.
+
+**Where they would actually rank:**
+
+| | |
+|---|---|
+| **`TACSTD2` for triple-negative** | **#845 of 2,564 — top 33%** |
+| the 23 scoreable unreachable curated pairs | median rank **1,119**, **0 in the top 50, 0 in the top 200** |
+| best case across all of them | FSHR / hypogonadism at #259 of 2,471 |
+| triple-negative's 13,374 admitted genes | **21 would take top-50 slots** |
+
+**Not one recovered pair would be findable**, in a deliverable that shows the top 20–200. And the last
+row is the reason to reject rather than merely decline: 21 of the top 50 slots would go to pairs scored
+on mostly-imputed inputs. **The change would contaminate the head of the list while adding nothing to
+the tail anyone reads.**
+
+> **The gate is not the problem; the feature family is.** Every topology feature here is built on local
+> neighbourhood overlap, so for a pair with no shared neighbours there is nothing to compute — widening
+> admission just produces unscoreable candidates. **No single feature fixes this**, `d_shortest`
+> included: it would be live where GGD and GPGD are dead, but three other inputs stay null.
+
 #### 5.2.1 `dwpc_GCD` is the drug route, and it selects the population on the outcome
 
 *Source: `pool_reachability`, `pool_selection_bias`, `pool_unreachable_targets` · `nb2`.*
@@ -544,12 +593,168 @@ The F1-optimised threshold lands at **0.860** against a ~1.9% base rate (F1 = 0.
 > **The prediction column is near-meaningless for discovery. Rank by probability and take top-N** —
 > which is what the persona chain does.
 
-### 6.4 The ablation ladder
+### 6.4 Model selection — four axes, and why AUROC alone would have chosen wrong
 
-*Source: `docs/appendix/model_comparison.csv` — **the flow artifact was deleted 2026-08-19**; not re-derivable without re-scoring `m1-f7` and `m2-f10` over 7.9M rows.*
+*Source: `scored_m3` / `scored_m4` / `scored_m5` for the f12/f13 rows · `docs/appendix/model_comparison.csv` for `m1`/`m2` (that flow artifact was deleted 2026-08-19 and is not re-derivable without re-scoring 7.9M rows) · notebook comparison in `nb3`.*
 
-All three runs share the split, hyperparameters, handling standard and row counts, and all exclude
-`prox_closest`, so they are directly comparable.
+#### The `prox_closest` question, settled on four axes
+
+`m4` and `m5` add exactly one feature to the champion — `prox_closest`, the only input that is
+degree-insensitive and able to see past two hops (§4.1). They differ only in how its NULL is handled:
+NULL means *"beyond 3 hops"*, so `m4` mean-imputes it to ≈2 (label-blind but semantically wrong) and
+`m5` imputes the constant 4 (semantically right, but §6.2 warns a separable constant can reopen leak 2).
+
+| Axis | `m3-f12` | `m4` (+prox, mean) | `m5` (+prox, const 4) |
+|---|--:|--:|--:|
+| association — macro AUROC | 0.8197 | **0.8200** | 0.8175 |
+| association — macro AUPRC | 0.1737 | **0.1762** | 0.1711 |
+| association — pooled AUPRC | 0.3161 | **0.3210** | 0.3089 |
+| hub-bias spread *(lower better)* | 0.1954 | 0.1932 | **0.1915** |
+| therapeutic — drug AUC, all positives | 0.6911 | **0.6949** | 0.6931 |
+| therapeutic — route-supported (§5.2.1) | 0.7337 | 0.7371 | **0.7384** |
+| tractability — pooled dm lift@10 | 3.057 | **3.241** | 3.129 |
+| tractability — pooled dm lift@50 | 2.794 | **2.841** | 2.774 |
+| tractability — pooled dm lift@200 | 2.376 | **2.381** | 2.380 |
+| **discovery — lift@10** | 11.40 | 13.81 | **16.09** |
+| **discovery — lift@50** | 7.46 | 7.09 | **9.08** |
+| **discovery — lift@200** *(the robust one)* | 4.53 | 4.83 | **5.52** |
+
+**No model dominates, and the split is coherent rather than noisy:**
+
+| | wins |
+|---|---|
+| **`m4`** | association (all three measures), therapeutic on all positives, **tractability at every K** |
+| **`m5`** | **discovery at every K**, hub spread, therapeutic on route-supported positives |
+
+**`m4` is better at ranking what is already validated** — known association targets, genes that already
+carry a drug. **`m5` is better at surfacing what is not yet validated for that disease.** That is the
+same tension §7.5 found when training on the drug label, appearing again from a one-feature change.
+
+**On magnitude the discovery gain wins.** `m5` beats `m4` by **+16% / +28% / +14%** at K = 10/50/200 on
+discovery; `m4` beats `m5` by **+3.6% / +2.4% / +0.04%** on tractability, converging to a dead tie by
+K=200 — and §8.4 says the deep-list number is the one to quote. The association cost is −2.9% macro
+AUPRC, on the metric §7.4 proved does not predict therapeutic relevance.
+
+> **Recommendation: `m5`.** It pays a modest, well-characterised price on axes that measure
+> re-identification, to buy the largest single movement anywhere in this table on the axis that measures
+> discovery — which is what the deliverable claims to do. **This is a product decision, not an
+> optimisation; §7.4 is the reason it cannot be settled by picking the biggest number.**
+
+**`m5` loses 2.9% of association AUPRC and gains 14–28% of discovery lift at every K.** Since §8.3's
+discovery measure *is* the deliverable's central claim and §7.4 proved association AUC does not predict
+therapeutic relevance, that is the trade to take. **On macro AUROC alone `m5` looks like a regression**
+(0.8197 → 0.8175) — which is exactly how a two-axis assessment would have thrown it out.
+
+#### The leak-2 test — the concern did not materialise
+
+§6.2 predicted a separable imputation constant would let the tree isolate *"was missing"*, and
+`prox_closest`'s nullness **is** label-informative (null in 1.64% of positives vs 6.56% of negatives).
+Tested by re-scoring every model on the prox-**present** rows only — if a model's advantage came from
+exploiting nullness, it would vanish there:
+
+| | gap on all rows | gap on prox-present rows only |
+|---|--:|--:|
+| `m4` − `m3` pooled AUPRC | +0.0049 | **+0.0049** |
+| `m5` − `m4` pooled AUPRC | −0.0121 | **−0.0123** |
+
+**Identical to four decimals.** No model's gain or deficit comes from missingness — the differences are
+entirely in how each uses the *observed* distances. Leak 2 did not reopen, presumably because this
+feature's −4.99 pp null gap is far below the −31.7 pp features that motivated the mean-imputation rule.
+
+> **`m5`'s association deficit is real ranking loss, not a leak — and its discovery gain is real too.**
+> The likely mechanism for both: injecting 4 for 6.5% of rows under `AVGSTD` rescaling stretches a
+> feature whose observed values are only 1, 2 and 3 (64% at 2), compressing the distinctions that carry
+> signal among *known* targets while sharpening far-vs-near among *novel* ones — which is where
+> discovery is measured.
+
+#### `MIN_SEEDS = 20` has no recorded justification, and the evidence argues for lowering it
+
+*Source: `enriched_prox_closest`, `enriched_graph_features_candidate_psplit`, `graph_edges` · `nb1`.*
+
+`compute_enriched_prox_closest` skips any disease with fewer than 20 PPI-mapped module genes, so every
+pair for it is NULL. **The constant carries no comment, no doc reference and no decision-log entry** —
+it is a bare literal. The likely provenance is the ≥20-gene threshold used in the disease-module
+literature (Menche et al., *Science* 2015) for testing whether a disease forms a *statistically
+significant module*. That is a different question from "can we measure a distance to these seeds",
+which needs seeds, not a significant module.
+
+**What it costs.** NULL `prox_closest` has two causes and only one is fixable here:
+
+| cause | share of pool | share of all NULLs |
+|---|--:|--:|
+| (a) disease below `MIN_SEEDS` | 1.23% | **18.7%** |
+| (b) gene beyond `MAX_HOPS = 3` | — | **81.3%** |
+
+Lowering the threshold addresses (a) only — about a fifth of the NULL population, taking the null rate
+6.57% → 5.34%. **And it is nearly free:** at `MIN_SEEDS = 10` only **one** disease is excluded and
+**0.00%** of pool rows, so 42 of the 43 currently-excluded diseases have modules in the narrow 10–19
+band.
+
+**What it protects — nothing.** The threshold's implicit rationale is that few seeds make an unstable
+estimate. That is true of a *mean*, and false of a *minimum*. Measured, the feature discriminates
+**best** exactly where the threshold cuts:
+
+| module size | diseases | single-feature AUC of `prox_closest` | hop 1 / 2 / 3 |
+|---|--:|--:|---|
+| **20–30** | 225 | **0.6459** | 37.8% / 52.8% / 9.4% |
+| 31–60 | 316 | 0.5978 | 40.2% / 52.5% / 7.3% |
+| 61–120 | 238 | 0.5950 | 46.5% / 48.7% / 4.8% |
+| 121–300 | 193 | 0.5876 | 56.0% / 41.1% / 3.0% |
+| **>300** | 139 | **0.5673** | **73.9%** / 24.7% / 1.3% |
+
+**Spearman(module size, prox AUC) = −0.328.** The mechanism is in the last column: with a large module,
+**74% of all pairs sit at hop 1** and the minimum is nearly constant. With a small module the mass
+spreads across all three hops and the feature has real dynamic range.
+
+> **`MIN_SEEDS` excludes the regime where this feature works best, to guard against instability a
+> minimum does not suffer.**
+
+**The same constant gates three recipes and four features — and only one of them needs it.**
+
+| recipe | constant | features produced | in the champion? |
+|---|---|---|:--|
+| `compute_enriched_prox_closest` | `MIN_SEEDS = 20` | `prox_closest` | `m4`/`m5` only |
+| `compute_dwpc_go_metapaths` | `MIN_MODULE = 20` | **`dwpc_GBGD`, `dwpc_GFGD`** | **yes, both** |
+| `compute_enriched_rwr_score_1` | `MIN_SEEDS = 20` | `rwr_score`, `rwr_norm` | no — rejected |
+| `compute_ppi_cn_zscore` | *(none)* | `ppi_common_neighbors_z` | yes |
+
+So lowering it converts the same 43 diseases and ~1.2% of pool rows from NULL to real **across three
+features at once**, two of which are current champion inputs — and `nb1` measured those two among the
+worst null gaps by label (`dwpc_GFGD` **−22.89 pp**, `dwpc_GBGD` **−17.75 pp**), which is the very
+missingness channel §6.2's imputation rule exists to suppress. **Shrinking their NULL population is
+worth more than arguing about how to impute it.**
+
+**Why not drop it to zero.** Three reasons, of which exactly one is a real constraint:
+
+1. **RWR genuinely needs a floor.** `KFOLD = 5` — the seed set is split into five held-out folds so a
+   seed never contributes to its own score. At 20 seeds that is 4 per fold; at 5 it is 1; below 5
+   `np.array_split` emits empty folds. **A floor near 10 is principled *for RWR*, and this is the only
+   place the number was ever earned.** The other two recipes inherited it.
+2. **`prox_closest` has a structural floor at k = 1, for a different reason.** The recipe sets each
+   seed's own distance to infinity. With a one-gene module that gene gets NULL while every other gene
+   gets a value — **NULL becomes a perfect positive indicator for that disease.** At k = 2 it degrades
+   to a bias (a positive takes the minimum over k−1 seeds, a negative over k, so positives look
+   systematically farther) which vanishes as k grows. **A floor of 2–3 is necessary; 20 is not.**
+3. **Below a few seeds a disease cannot be evaluated anyway** — no per-disease AUC, negligible training
+   contribution. That is a question of what is worth computing, not of correctness.
+
+> **Recommended: stop sharing one magic number across three different problems.** `prox_closest` and the
+> GO metapaths → **5**; `rwr_score` → **10** (or lower `KFOLD`). The GO-metapath change is the highest
+> value of the three because it improves the **current champion**, not a candidate.
+>
+> ⚠ **One thing to check before changing `compute_dwpc_go_metapaths`:** whether its `gene → GO → gene →
+> disease` walk excludes the *self* path (`m == g`). If it does not, a positive gene reaches its own
+> disease trivially and the feature is partly a label indicator — which would matter far more than the
+> threshold. Unverified.
+>
+> **This also sharpens the `d_shortest` case for `m6`:** min-distance is *already good* for sparse
+> diseases and saturates for dense ones — which are the majority of pool rows. A mean or kernel distance
+> does not saturate at 300 seeds, so it would fix precisely the regime min-distance cannot.
+
+#### The original ladder
+
+All three `m1`–`m3` runs share the split, hyperparameters, handling standard and row counts, and all
+exclude `prox_closest`, so they are directly comparable.
 
 Rebuilt on the shared graph, 670 validation diseases (130 with a drug-validated target). Reference
 values from the frozen project are shown alongside — **the ordering is preserved on both axes.**
@@ -625,6 +830,31 @@ reporting, the code one because it is the only source of per-split-key AUC.
 > filtering to `level == "disease"` mixes the two and manufactures a 0.16 maximum discrepancy out of
 > nothing — which is what happened on the first attempt at this comparison.
 
+**Why macro AUROC and not AUPRC, given a ~1.9% positive rate.** The standard advice under imbalance is
+to prefer AUPRC, and for *model selection* we now do (§6.4). For *per-disease reporting* it is the wrong
+choice, and the reason is measurable:
+
+| | correlation with a disease's own positive rate |
+|---|--:|
+| per-disease AUROC | **+0.27** |
+| per-disease AUPRC | **+0.63** |
+
+AUPRC's baseline *is* the prevalence, and our per-disease positive rates span **21×** (p5 0.218%, p95
+4.554%), so a macro-average of AUPRC largely measures **how well-annotated each disease is** rather than
+how well it is ranked. AUROC's baseline is fixed at 0.5 regardless of prevalence, which is what makes it
+survive macro-averaging over a heterogeneous population. Spearman(AUROC, AUPRC) across diseases is
++0.766 — correlated, not interchangeable.
+
+**Both are rank statistics** — AUROC is the Mann-Whitney U, and neither sees calibration — so the choice
+is not "ranking vs probability". It is **which part of the ranking gets weight**: AUROC weights the whole
+ordering uniformly, AUPRC weights the head.
+
+**What we therefore report:** macro AUROC as the cross-disease comparable headline; **pooled AUPRC
+0.3161 against a 1.865% base rate — 17× chance** — as the imbalance-aware second number, always with its
+baseline; and for anything per-disease, `AUPRC / base_rate` rather than raw AUPRC, which is the same
+family as the `lift@K` tables in §8.3 and §8.4. **`lift@K` is precision@K normalised by base rate — we
+were already reporting AUPRC's ingredient in its comparable form.**
+
 ### 7.2 Hub-bias meter — the second axis
 
 *Source: `scored_m3` · `nb3b_hub_bias_meter`. **No flow recipe exists** — the notebook is this section's only artifact.*
@@ -646,20 +876,29 @@ quoting. Recomputed (`nb3`, 73,829 known-target rows across 670 validation disea
 worse than the retired generation on every dimension of this axis.** Q1 fell **−0.062**, Q5 rose
 +0.024, the spread nearly **doubled** (+0.110 → +0.195), and ρ(degree, probability) rose +0.085.
 
-**The likely cause, and it matters for feature selection.** The champion differs from the retired
-generation by **dropping `prox_closest`**, which was assessed as *"measured neutral on both headline
-metrics"*. It was neutral on association and drug-target AUC — and **not neutral here.** Removing it
-cost most of the hub-fairness the previous rung had won, for no gain on either headline.
+**The hypothesised cause was tested and REFUTED.** The champion differs from the retired generation by
+dropping `prox_closest`, so the obvious explanation was that this feature had been carrying the
+hub-fairness — it was assessed as *"neutral on both headline metrics"*, and §4.1 shows it is the only
+feature in the set that is both degree-insensitive and able to see past 2 hops. **`m4-f13` restored it
+on the current split. The hub meter barely moved:**
 
-> **A feature judged on two axes was load-bearing on a third.** This is the same failure mode as
-> §5.2.1's pool change, costed on one surface and not the other. **Two candidate actions:** restore
-> `prox_closest` and re-measure all three axes, or accept the trade and stop claiming this model helps
-> under-studied targets. It cannot be both.
+| | `m3-f12` | `m4-f13` (+`prox_closest`) | Δ |
+|---|--:|--:|--:|
+| Q1 mean probability | 0.5911 | 0.5915 | +0.0004 |
+| Q5 mean probability | 0.7851 | 0.7833 | −0.0018 |
+| **spread** | **0.1941** | **0.1917** | **−0.0024** |
+| ρ(degree, probability) | 0.3276 | 0.3246 | −0.0030 |
 
-**Caveat on the comparison.** The retired row was computed on the reference generation over 588
-validation diseases; this row is 670. Some of the delta may be population rather than model, so the
-first step is re-measuring the retired feature set on the current split — not restoring the feature
-outright.
+**That recovers about 3% of the 0.0855 gap.** So the difference from the retired generation is
+**population, not the feature** — the retired row was computed over 588 validation diseases against
+today's 670, and the caveat that said so was right. `prox_closest` is worth keeping for other reasons
+(§6.4), but it is **not** the hub-fairness lever.
+
+> **The honest position: hub bias is an open weakness with no identified cause.** The absolute
+> 0.59-vs-0.79 gap is measured on current data and stands on its own. What does **not** stand is any
+> claim that this model improves under-studied targets, or that we know why it is worse than an earlier
+> one. Do not replace one unverified causal story with another — the next candidate explanation needs
+> the same controlled test this one got.
 
 **Detection swing at the F1 threshold (0.860):** low-degree known targets are predicted positive
 **17.3%** of the time, high-degree **57.0%** — a **3.3× swing on network position alone**, with biology
@@ -1597,6 +1836,12 @@ justification for that ingest cost.
   (**1.04%** of diseases), and **18.8% of all genes (3,919) are reachable for no disease at all** — that
   is the real scope, and it is a fair argument for embeddings, just a much smaller one than I claimed.
   **The pool problem worth fixing first is §5.2.1, not this.**
+  **§5.2.2 supplies a much stronger argument for embeddings than the ceiling ever did.** The
+  reachability ceiling is only 1.5%, so it was never a big number. But the counterfactual shows the
+  *whole topology feature family is undefined beyond two hops* — admit those pairs and 4 of 13 inputs
+  are null, they score at 52% of the pool mean, and `TACSTD2` lands at #845 of 2,564. **Embeddings are
+  the one family that produces a real value for a pathless pair**, so they are not a way to widen the
+  gate — they are the only way to make anything past the gate scoreable.
   ⚠ **And no route-set change rescues the flagship case.** Tested all five metapaths for
   (triple-negative, `TACSTD2`): GGD, GPGD, GCD, **GBGD and GFGD all fail**, including the 12.1M-row
   GBGD where TACSTD2 has 997 pairs and triple-negative has 7,456 — the intersection is still empty. The

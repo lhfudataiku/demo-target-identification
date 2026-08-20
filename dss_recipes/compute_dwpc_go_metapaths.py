@@ -1,3 +1,8 @@
+# THRESHOLD HELD AT 20 — a 20 -> 5 change was applied on 2026-08-20 and REVERTED the same day.
+# Measured: it added no pool pairs at all, because this recipe counts module size the same way the
+# Cypher pool routes do, so every disease with >=20 seeds already had these features. Worse, `assoc`
+# below is computed over the ELIGIBLE set, so widening eligibility silently changes dwpc values for
+# existing pairs — a different intervention, not a NULL fill. See docs/FEATURE_AUDIT.md.
 # dwpc_GFGD + dwpc_GBGD — GO molecular-function / biological-process metapaths (Python).
 #
 # Replaces the Execute Cypher route, which OOM'd Kuzu's buffer pool: GO fans out far harder
