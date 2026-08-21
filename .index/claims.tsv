@@ -1,10 +1,10 @@
 file	line	section	value	status	guarded_by	model_dep	hint	context
 .claude/skills/target-id/SKILL.md	36	-	0.8197	ORPHAN				`TARGET_PRIORITIZER.md` corrupts six of ten `0.8197`s. Classify each hit before touching it.
 .claude/skills/target-id/SKILL.md	39	-	4.4	ORPHAN				admitted rows were *denser* in positives; like-for-like they are 4.4× more dilute).
-.claude/skills/target-id/SKILL.md	63	-	2.38	ORPHAN				after. And an unescaped `.` in `grep 2.38` matches `0.2738`; use `-F`.
-.claude/skills/target-id/SKILL.md	63	-	0.2738	ORPHAN				after. And an unescaped `.` in `grep 2.38` matches `0.2738`; use `-F`.
-.claude/skills/target-id/SKILL.md	65	-	1,630	ORPHAN				is a `.md` file; the claims index grew 1,630 → 1,744 per run until excluded.
-.claude/skills/target-id/SKILL.md	65	-	1,744	ORPHAN				is a `.md` file; the claims index grew 1,630 → 1,744 per run until excluded.
+.claude/skills/target-id/SKILL.md	67	-	2.38	ORPHAN				after. And an unescaped `.` in `grep 2.38` matches `0.2738`; use `-F`.
+.claude/skills/target-id/SKILL.md	67	-	0.2738	ORPHAN				after. And an unescaped `.` in `grep 2.38` matches `0.2738`; use `-F`.
+.claude/skills/target-id/SKILL.md	69	-	1,630	ORPHAN				is a `.md` file; the claims index grew 1,630 → 1,744 per run until excluded.
+.claude/skills/target-id/SKILL.md	69	-	1,744	ORPHAN				is a `.md` file; the claims index grew 1,630 → 1,744 per run until excluded.
 .claude/skills/target-id/references/number-update.md	48	3	0.8197	ORPHAN				Of ten `0.8197`s in `TARGET_PRIORITIZER.md`, only four were current-state. A global replace corrupts
 .claude/skills/target-id/references/number-update.md	81	6	0.024	ORPHAN				- **Coincidental digit collisions** — §7.2's hub delta `+0.024` survived a grep for the orthogonality
 .claude/skills/target-id/references/number-update.md	82	6	0.024	ORPHAN				`r = +0.024`. Different quantity, same digits.
@@ -14,7 +14,12 @@ file	line	section	value	status	guarded_by	model_dep	hint	context
 CLAUDE.md	29	-	113,391	ORPHAN			hist	**Part 1 complete.** 113,391 nodes / 2,851,510 edges / 18 relations, accepted against the frozen
 CLAUDE.md	29	-	2,851,510	ORPHAN			hist	**Part 1 complete.** 113,391 nodes / 2,851,510 edges / 18 relations, accepted against the frozen
 CLAUDE.md	33	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		**Part 2 built and validated.** Champion `m7-f14` (`hJLGoYn4`), macro per-disease AUC 0.8230 over 670
-CLAUDE.md	91	-	0.9354	ORPHAN				popularity: a no-graph lookup scores 0.9354, beating a drug-trained model. Report it as a warning
+CLAUDE.md	44	-	1,100	ORPHAN				~1,100 lines) and the `60 Dashboard (serving)` flow zone with `dashboard_candidates`,
+CLAUDE.md	45	-	129,253	ORPHAN		y		`dashboard_persona_trust`, `drug_evidence_pairs` and `target_candidates_2` (129,253 ranked rows over
+CLAUDE.md	55	-	6.3	ORPHAN				Admitted diseases carry ~4.5 usable positives each and are 6.3× more dilute than current ones, so the
+CLAUDE.md	56	-	2,088	ORPHAN				honest claim if it succeeds is *"we cover 2,088 diseases instead of 1,157"*, never *"the model got
+CLAUDE.md	56	-	1,157	ORPHAN				honest claim if it succeeds is *"we cover 2,088 diseases instead of 1,157"*, never *"the model got
+CLAUDE.md	103	-	0.9354	ORPHAN				popularity: a no-graph lookup scores 0.9354, beating a drug-trained model. Report it as a warning
 DECISIONS.md	22	-	0.946	ORPHAN		y		| 2026-08-08 | **A candidate filter can leak even when the feature is rejected.** A filter on a random-walk fe
 DECISIONS.md	22	-	0.43	ORPHAN		y		| 2026-08-08 | **A candidate filter can leak even when the feature is rejected.** A filter on a random-walk fe
 DECISIONS.md	24	-	0.704	ORPHAN				| 2026-08-09 | **Granularity: split by family, report by disease** (§3.3). Family aggregation lifts the weakes
@@ -408,6 +413,24 @@ DECISIONS.md	159	-	1,744	ORPHAN				| 2026-08-21 | **The index was indexing its o
 DECISIONS.md	161	-	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| 2026-08-21 | **The champion-metric cross-check found a bug in my own indexer within a minute of existing.** 
 DECISIONS.md	161	-	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| 2026-08-21 | **The champion-metric cross-check found a bug in my own indexer within a minute of existing.** 
 DECISIONS.md	164	-	0.85	ORPHAN			hist	| 2026-06-30 | **RWR implemented with `scipy.sparse` + `ThreadPoolExecutor`, not `networkx`** — recorded retro
+DECISIONS.md	170	-	6.3	ORPHAN			hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
+DECISIONS.md	170	-	0.32	ORPHAN			hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
+DECISIONS.md	170	-	2.00	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 diseases below 50%		hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
+DECISIONS.md	170	-	4.4	ORPHAN			hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
+DECISIONS.md	170	-	1.72	ORPHAN			hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
+DECISIONS.md	170	-	1.86	ORPHAN			hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
+DECISIONS.md	170	-	19.6	ORPHAN			hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
+DECISIONS.md	170	-	1.63	ORPHAN			hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
+DECISIONS.md	170	-	0.3	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)		hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
+DECISIONS.md	172	-	1,157	ORPHAN				| 2026-08-21 | **Phase 3 verdict for the handoff: defensible as a COVERAGE play, weak as a quality play.** The
+DECISIONS.md	172	-	2,088	ORPHAN				| 2026-08-21 | **Phase 3 verdict for the handoff: defensible as a COVERAGE play, weak as a quality play.** The
+DECISIONS.md	172	-	6.3	ORPHAN				| 2026-08-21 | **Phase 3 verdict for the handoff: defensible as a COVERAGE play, weak as a quality play.** The
+DECISIONS.md	172	-	0.62	ORPHAN				| 2026-08-21 | **Phase 3 verdict for the handoff: defensible as a COVERAGE play, weak as a quality play.** The
+DECISIONS.md	172	-	0.75	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| 2026-08-21 | **Phase 3 verdict for the handoff: defensible as a COVERAGE play, weak as a quality play.** The
+DECISIONS.md	173	-	0.8197	ORPHAN		y		| 2026-08-21 | **Found a claim surface no index covers: DSS flow-zone descriptions.** They are demo-facing pro
+DECISIONS.md	173	-	0.7976	ORPHAN		y		| 2026-08-21 | **Found a claim surface no index covers: DSS flow-zone descriptions.** They are demo-facing pro
+DECISIONS.md	173	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| 2026-08-21 | **Found a claim surface no index covers: DSS flow-zone descriptions.** They are demo-facing pro
+DECISIONS.md	173	-	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		| 2026-08-21 | **Found a claim surface no index covers: DSS flow-zone descriptions.** They are demo-facing pro
 docs/appendix/README.md	8	-	0.9354	ORPHAN				without a snapshot, and its most reusable finding — a gene-popularity lookup table scoring 0.9354 and
 docs/appendix/README.md	14	-	2,010	ORPHAN		y		| `model_comparison.csv` | 2,010 | §6.4 ablation ladder, m1-f7 → m2-f10 → m3-f12 | saved models `Lx5Mz2hY`, `6
 docs/appendix/README.md	15	-	1,113	ORPHAN		y		| `validation_auc_by_disease_2.csv` | 1,113 | §7.1 per-split-key AUC (the second metric run) | `scored_m3` |
@@ -748,7 +771,20 @@ docs/prioritizer/FEATURE_AUDIT.md	256	5	0.23	ORPHAN				**The gap is 0.23× as de
 docs/prioritizer/FEATURE_AUDIT.md	256	5	4.4	ORPHAN				**The gap is 0.23× as dense — 4.4× more dilute.** Worse, **only 3,067 of the gap's 8,919 seeds are
 docs/prioritizer/FEATURE_AUDIT.md	256	5	3,067	ORPHAN				**The gap is 0.23× as dense — 4.4× more dilute.** Worse, **only 3,067 of the gap's 8,919 seeds are
 docs/prioritizer/FEATURE_AUDIT.md	256	5	8,919	ORPHAN				**The gap is 0.23× as dense — 4.4× more dilute.** Worse, **only 3,067 of the gap's 8,919 seeds are
-docs/prioritizer/FEATURE_AUDIT.md	281	5	0.0117	ORPHAN		y		**Headwind to state in the pre-registration.** `m7` made the <20-seed bucket *worse* (−0.0117, n = 22,
+docs/prioritizer/FEATURE_AUDIT.md	265	5	1,326,438	ORPHAN				| **5–19 (admitted)** | 1,326,438 | 4,229 | **47%** | **0.32%** |
+docs/prioritizer/FEATURE_AUDIT.md	265	5	4,229	ORPHAN				| **5–19 (admitted)** | 1,326,438 | 4,229 | **47%** | **0.32%** |
+docs/prioritizer/FEATURE_AUDIT.md	265	5	0.32	ORPHAN				| **5–19 (admitted)** | 1,326,438 | 4,229 | **47%** | **0.32%** |
+docs/prioritizer/FEATURE_AUDIT.md	266	5	702,407	ORPHAN				| **≥20 (current)** | 702,407 *(n=120 scaled)* | 14,025 | **73%** | **2.00%** |
+docs/prioritizer/FEATURE_AUDIT.md	266	5	14,025	ORPHAN				| **≥20 (current)** | 702,407 *(n=120 scaled)* | 14,025 | **73%** | **2.00%** |
+docs/prioritizer/FEATURE_AUDIT.md	266	5	2.00	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 diseases below 50%			| **≥20 (current)** | 702,407 *(n=120 scaled)* | 14,025 | **73%** | **2.00%** |
+docs/prioritizer/FEATURE_AUDIT.md	270	5	6.3	ORPHAN				a quarter for current ones, and on the union they are **6.3× more dilute** — worse than the 4.4× on GGD
+docs/prioritizer/FEATURE_AUDIT.md	270	5	4.4	ORPHAN				a quarter for current ones, and on the union they are **6.3× more dilute** — worse than the 4.4× on GGD
+docs/prioritizer/FEATURE_AUDIT.md	274	5	19.6	ORPHAN				> **+19.6%** (6,754,128 → 8,080,566) and the positive rate falls to **1.63%**. So the trade is
+docs/prioritizer/FEATURE_AUDIT.md	274	5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			> **+19.6%** (6,754,128 → 8,080,566) and the positive rate falls to **1.63%**. So the trade is
+docs/prioritizer/FEATURE_AUDIT.md	274	5	8,080,566	ORPHAN				> **+19.6%** (6,754,128 → 8,080,566) and the positive rate falls to **1.63%**. So the trade is
+docs/prioritizer/FEATURE_AUDIT.md	274	5	1.63	ORPHAN				> **+19.6%** (6,754,128 → 8,080,566) and the positive rate falls to **1.63%**. So the trade is
+docs/prioritizer/FEATURE_AUDIT.md	276	5	0.3	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)			> Method validated at **0.3%** error against the real pool size. See
+docs/prioritizer/FEATURE_AUDIT.md	295	5	0.0117	ORPHAN		y		**Headwind to state in the pre-registration.** `m7` made the <20-seed bucket *worse* (−0.0117, n = 22,
 docs/prioritizer/PHASE3_PREREGISTRATION.md	17	1	1,157	ORPHAN				and that admitting them does not degrade the 1,157 diseases already there.**
 docs/prioritizer/PHASE3_PREREGISTRATION.md	76	2	1,157	ORPHAN				on). That is the deliberate price of keeping the 1,157 existing diseases as a clean control — with
 docs/prioritizer/PHASE3_PREREGISTRATION.md	84	3	4,951	ORPHAN				- **No threshold below 5.** The 4,951 diseases with under five seeds stay out; 3,334 have a single seed
@@ -765,24 +801,55 @@ docs/prioritizer/PHASE3_PREREGISTRATION.md	112	5	0.80	VALUE_ONLY	nb3_validation_
 docs/prioritizer/PHASE3_PREREGISTRATION.md	112	5	0.55	ORPHAN		y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
 docs/prioritizer/PHASE3_PREREGISTRATION.md	114	5	0.1935	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion spread	y		| **P4** | **Hub bias worsens**: spread **> 0.1935**, ρ(degree, probability) **> 0.3273**. Thin modules mean t
 docs/prioritizer/PHASE3_PREREGISTRATION.md	114	5	0.3273	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)	y		| **P4** | **Hub bias worsens**: spread **> 0.1935**, ρ(degree, probability) **> 0.3273**. Thin modules mean t
-docs/prioritizer/PHASE3_PREREGISTRATION.md	115	5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| **P5** | Pool grows **+9% to +15%**: 6,754,128 → **7.35M–7.75M** rows | outside that range |
-docs/prioritizer/PHASE3_PREREGISTRATION.md	116	5	1.89	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilu
-docs/prioritizer/PHASE3_PREREGISTRATION.md	116	5	1.72	ORPHAN				| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilu
-docs/prioritizer/PHASE3_PREREGISTRATION.md	116	5	1.86	ORPHAN				| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilu
-docs/prioritizer/PHASE3_PREREGISTRATION.md	116	5	4.4	ORPHAN				| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilu
+docs/prioritizer/PHASE3_PREREGISTRATION.md	115	5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| **P5** ⚠ | ~~+9% to +15%~~ **REVISED 2026-08-21 pre-experiment: +18% to +22%**, 6,754,128 → **8.0M–8.25M** r
+docs/prioritizer/PHASE3_PREREGISTRATION.md	116	5	1.72	ORPHAN				| **P6** ⚠ | ~~1.72–1.86%~~ **REVISED 2026-08-21 pre-experiment: falls from 1.89% to 1.60–1.67%**, because adm
+docs/prioritizer/PHASE3_PREREGISTRATION.md	116	5	1.86	ORPHAN				| **P6** ⚠ | ~~1.72–1.86%~~ **REVISED 2026-08-21 pre-experiment: falls from 1.89% to 1.60–1.67%**, because adm
+docs/prioritizer/PHASE3_PREREGISTRATION.md	116	5	1.89	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			| **P6** ⚠ | ~~1.72–1.86%~~ **REVISED 2026-08-21 pre-experiment: falls from 1.89% to 1.60–1.67%**, because adm
+docs/prioritizer/PHASE3_PREREGISTRATION.md	116	5	1.60	ORPHAN				| **P6** ⚠ | ~~1.72–1.86%~~ **REVISED 2026-08-21 pre-experiment: falls from 1.89% to 1.60–1.67%**, because adm
+docs/prioritizer/PHASE3_PREREGISTRATION.md	116	5	1.67	ORPHAN				| **P6** ⚠ | ~~1.72–1.86%~~ **REVISED 2026-08-21 pre-experiment: falls from 1.89% to 1.60–1.67%**, because adm
+docs/prioritizer/PHASE3_PREREGISTRATION.md	116	5	6.3	ORPHAN				| **P6** ⚠ | ~~1.72–1.86%~~ **REVISED 2026-08-21 pre-experiment: falls from 1.89% to 1.60–1.67%**, because adm
 docs/prioritizer/PHASE3_PREREGISTRATION.md	117	5	0.000	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 	y		| **P7** | On the control stratum, retraining produces a **small positive** shift by `m6`'s mechanism — a bett
 docs/prioritizer/PHASE3_PREREGISTRATION.md	117	5	0.004	ORPHAN		y		| **P7** | On the control stratum, retraining produces a **small positive** shift by `m6`'s mechanism — a bett
-docs/prioritizer/PHASE3_PREREGISTRATION.md	120	5	0.0117	ORPHAN				**worse** (−0.0117, n = 22, not significant) while helping every larger bucket, and the 931 diseases
-docs/prioritizer/PHASE3_PREREGISTRATION.md	121	5	4.4	ORPHAN				this change admits are all in or near that regime. Measured on the GGD route, they are **4.4× more
-docs/prioritizer/PHASE3_PREREGISTRATION.md	122	5	0.72	VALUE_ONLY	nb1_features_and_config.py:6.1 dwpc_GPGD single-feature AUC			dilute** in positives (0.72% against 3.19%) and only **34%** of their seeds are reachable at all,
-docs/prioritizer/PHASE3_PREREGISTRATION.md	122	5	3.19	ORPHAN				dilute** in positives (0.72% against 3.19%) and only **34%** of their seeds are reachable at all,
-docs/prioritizer/PHASE3_PREREGISTRATION.md	129	5	2,088	ORPHAN				> defensible claim if P1 passes and P2 lands as predicted is "we now cover 2,088 diseases instead of
-docs/prioritizer/PHASE3_PREREGISTRATION.md	130	5	1,157	ORPHAN		y		> 1,157, and the new ones are ranked better than popularity though worse than the core" — not "the model
-docs/prioritizer/PHASE3_PREREGISTRATION.md	142	6	0.005	ORPHAN		y		- **A3** Hub spread does not worsen by more than **+0.005** (i.e. stays ≤ 0.1985). P4 predicts it
-docs/prioritizer/PHASE3_PREREGISTRATION.md	142	6	0.1985	ORPHAN		y		- **A3** Hub spread does not worsen by more than **+0.005** (i.e. stays ≤ 0.1985). P4 predicts it
-docs/prioritizer/PHASE3_PREREGISTRATION.md	160	7	1,157	ORPHAN		y		| **A — control** | 1,157 eligible before | yes, `m7` on identical features | paired per-disease, with tie cou
-docs/prioritizer/PHASE3_PREREGISTRATION.md	176	8	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		1. **Never compare the branch's macro AUC to 0.8230.** Different population, so the comparison is
-docs/prioritizer/PHASE3_PREREGISTRATION.md	177	8	1,157	ORPHAN				meaningless. Cross-project comparison is restricted to the shared 1,157 diseases.
+docs/prioritizer/PHASE3_PREREGISTRATION.md	122	5	19.6	ORPHAN				> answered) gives +19.6% rows and a 1.63% positive rate. **The revision is legitimate only because no
+docs/prioritizer/PHASE3_PREREGISTRATION.md	122	5	1.63	ORPHAN				> answered) gives +19.6% rows and a 1.63% positive rate. **The revision is legitimate only because no
+docs/prioritizer/PHASE3_PREREGISTRATION.md	129	5	0.0117	ORPHAN				**worse** (−0.0117, n = 22, not significant) while helping every larger bucket, and the 931 diseases
+docs/prioritizer/PHASE3_PREREGISTRATION.md	130	5	4.4	ORPHAN				this change admits are all in or near that regime. Measured on the GGD route, they are **4.4× more
+docs/prioritizer/PHASE3_PREREGISTRATION.md	131	5	0.72	VALUE_ONLY	nb1_features_and_config.py:6.1 dwpc_GPGD single-feature AUC			dilute** in positives (0.72% against 3.19%) and only **34%** of their seeds are reachable at all,
+docs/prioritizer/PHASE3_PREREGISTRATION.md	131	5	3.19	ORPHAN				dilute** in positives (0.72% against 3.19%) and only **34%** of their seeds are reachable at all,
+docs/prioritizer/PHASE3_PREREGISTRATION.md	138	5	2,088	ORPHAN				> defensible claim if P1 passes and P2 lands as predicted is "we now cover 2,088 diseases instead of
+docs/prioritizer/PHASE3_PREREGISTRATION.md	139	5	1,157	ORPHAN		y		> 1,157, and the new ones are ranked better than popularity though worse than the core" — not "the model
+docs/prioritizer/PHASE3_PREREGISTRATION.md	151	6	0.005	ORPHAN		y		- **A3** Hub spread does not worsen by more than **+0.005** (i.e. stays ≤ 0.1985). P4 predicts it
+docs/prioritizer/PHASE3_PREREGISTRATION.md	151	6	0.1985	ORPHAN		y		- **A3** Hub spread does not worsen by more than **+0.005** (i.e. stays ≤ 0.1985). P4 predicts it
+docs/prioritizer/PHASE3_PREREGISTRATION.md	169	7	1,157	ORPHAN		y		| **A — control** | 1,157 eligible before | yes, `m7` on identical features | paired per-disease, with tie cou
+docs/prioritizer/PHASE3_PREREGISTRATION.md	185	8	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		1. **Never compare the branch's macro AUC to 0.8230.** Different population, so the comparison is
+docs/prioritizer/PHASE3_PREREGISTRATION.md	186	8	1,157	ORPHAN				meaningless. Cross-project comparison is restricted to the shared 1,157 diseases.
+docs/prioritizer/PHASE3_PREREGISTRATION.md	204	9	424,523	ORPHAN				| **5–19 (admitted)** | GGD | 424,523 | 3,067 | 34% | 0.72% |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	204	9	3,067	ORPHAN				| **5–19 (admitted)** | GGD | 424,523 | 3,067 | 34% | 0.72% |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	204	9	0.72	VALUE_ONLY	nb1_features_and_config.py:6.1 dwpc_GPGD single-feature AUC			| **5–19 (admitted)** | GGD | 424,523 | 3,067 | 34% | 0.72% |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	205	9	1,094,712	ORPHAN				| | GPGD | 1,094,712 | 3,820 | 43% | 0.35% |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	205	9	3,820	ORPHAN				| | GPGD | 1,094,712 | 3,820 | 43% | 0.35% |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	205	9	0.35	ORPHAN				| | GPGD | 1,094,712 | 3,820 | 43% | 0.35% |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	206	9	1,326,438	ORPHAN				| | **union** | **1,326,438** | **4,229** | **47%** | **0.32%** |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	206	9	4,229	ORPHAN				| | **union** | **1,326,438** | **4,229** | **47%** | **0.32%** |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	206	9	0.32	ORPHAN				| | **union** | **1,326,438** | **4,229** | **47%** | **0.32%** |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	207	9	355,188	ORPHAN				| **≥20 (current)** | GGD | 355,188 *(n=120)* | 11,336 | 59% | 3.19% |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	207	9	11,336	ORPHAN				| **≥20 (current)** | GGD | 355,188 *(n=120)* | 11,336 | 59% | 3.19% |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	207	9	3.19	ORPHAN				| **≥20 (current)** | GGD | 355,188 *(n=120)* | 11,336 | 59% | 3.19% |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	208	9	557,818	ORPHAN				| | GPGD | 557,818 | 11,969 | 62% | 2.15% |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	208	9	11,969	ORPHAN				| | GPGD | 557,818 | 11,969 | 62% | 2.15% |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	208	9	2.15	ORPHAN				| | GPGD | 557,818 | 11,969 | 62% | 2.15% |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	209	9	702,407	ORPHAN				| | **union** | **702,407** | **14,025** | **73%** | **2.00%** |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	209	9	14,025	ORPHAN				| | **union** | **702,407** | **14,025** | **73%** | **2.00%** |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	209	9	2.00	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 diseases below 50%			| | **union** | **702,407** | **14,025** | **73%** | **2.00%** |
+docs/prioritizer/PHASE3_PREREGISTRATION.md	211	9	6,772,374	ORPHAN				*Method validated: the same computation predicts the current pool at 6,772,374 rows against an actual
+docs/prioritizer/PHASE3_PREREGISTRATION.md	212	9	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			6,754,128 — a **0.3%** error.*
+docs/prioritizer/PHASE3_PREREGISTRATION.md	212	9	0.3	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)			6,754,128 — a **0.3%** error.*
+docs/prioritizer/PHASE3_PREREGISTRATION.md	217	9	6.3	ORPHAN				**6.3× more dilute** (0.32% against 2.00%) — worse than the 4.4× measured on GGD alone, because pathway
+docs/prioritizer/PHASE3_PREREGISTRATION.md	217	9	0.32	ORPHAN				**6.3× more dilute** (0.32% against 2.00%) — worse than the 4.4× measured on GGD alone, because pathway
+docs/prioritizer/PHASE3_PREREGISTRATION.md	217	9	2.00	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 diseases below 50%			**6.3× more dilute** (0.32% against 2.00%) — worse than the 4.4× measured on GGD alone, because pathway
+docs/prioritizer/PHASE3_PREREGISTRATION.md	217	9	4.4	ORPHAN				**6.3× more dilute** (0.32% against 2.00%) — worse than the 4.4× measured on GGD alone, because pathway
+docs/prioritizer/PHASE3_PREREGISTRATION.md	222	9	0.62	ORPHAN				when this document was written, and P2's 0.62–0.75 band should now be read as optimistic rather than
+docs/prioritizer/PHASE3_PREREGISTRATION.md	222	9	0.75	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			when this document was written, and P2's 0.62–0.75 band should now be read as optimistic rather than
 docs/prioritizer/TARGET_PRIORITIZER.md	12	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		> **`m7-f14`** (14 features): macro per-disease AUC **0.8230** over 670 diseases, per-split-key
 docs/prioritizer/TARGET_PRIORITIZER.md	13	-	0.8046	ASSERTED	nb3_validation_and_plots.py:header per-split-key AUC	y		> 0.8046, pooled 0.8932, per-family 0.8009, drug-target 0.6886.
 docs/prioritizer/TARGET_PRIORITIZER.md	13	-	0.8932	ASSERTED	nb3_validation_and_plots.py:header pooled AUC	y		> 0.8046, pooled 0.8932, per-family 0.8009, drug-target 0.6886.

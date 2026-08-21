@@ -33,19 +33,31 @@ here, 0-based in the reference**.
 **Part 2 built and validated.** Champion `m7-f14` (`hJLGoYn4`), macro per-disease AUC 0.8230 over 670
 diseases. Query `.index/models.tsv` rather than trusting this line.
 
-## Where the work is
+## Where the work is — two independent tracks
 
-**Active experiment: Phase 3** — widening the pool-route seed gate from 20 to 5, which would admit 931
-diseases the model cannot see today. It is **pre-registered before the branch project exists**:
+**Track A — the dashboard. The next build, and the demo depends on it.**
+`docs/demo/DEMO_NARRATIVE.md` governs its form: **derive the dashboard from that document, not the
+reverse.** A pruning plan derived from a hypothetical dashboard once cut 46 of 62 validation items,
+including the answer to the most common objection.
+
+Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `style.css`,
+~1,100 lines) and the `60 Dashboard (serving)` flow zone with `dashboard_candidates`,
+`dashboard_persona_trust`, `drug_evidence_pairs` and `target_candidates_2` (129,253 ranked rows over
+13 personas). What is missing is the UI itself.
+
+**Track B — Phase 3. Preparation complete; the branch project is not built.**
+Widening the pool-route seed gate 20 → 5 would admit 931 diseases the model cannot see today.
 `docs/prioritizer/PHASE3_PREREGISTRATION.md` holds the intervention, five pre-flight gates, seven
-falsifiable predictions and the committed adopt/reject rule. Sizing is in
+falsifiable predictions and the committed adopt/reject rule; sizing is in
 `docs/prioritizer/FEATURE_AUDIT.md` §5.
 
-Two things to know before touching it: the gate must be changed in a **duplicated project**, because it
-rewrites the candidate population and every number in the docs stops being comparable; and **one of the
-ten gated recipes must be held at 20** (`compute_dwpc_go_metapaths` is Class 2 — it recomputes an
-aggregate over the eligible set, so widening it changes existing rows). `.index/recipes.tsv` has the
-per-recipe class.
+Measured verdict: **+80% more diseases for ~+20% more pool rows** — a coverage win, not a quality win.
+Admitted diseases carry ~4.5 usable positives each and are 6.3× more dilute than current ones, so the
+honest claim if it succeeds is *"we cover 2,088 diseases instead of 1,157"*, never *"the model got
+better"*. Two things to know before touching it: the gate must move in a **duplicated project**,
+because it rewrites the candidate population; and **one of the ten gated recipes must be held at 20**
+(`compute_dwpc_go_metapaths` is Class 2 — it recomputes an aggregate over the eligible set).
+`.index/recipes.tsv` has the per-recipe class.
 
 ## Start here — do not read the large docs to answer a question
 

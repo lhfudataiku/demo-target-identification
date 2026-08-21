@@ -17,29 +17,30 @@ flags them as historical dropped.
 |---|--:|--:|--:|--:|
 | `.claude/skills/target-id/SKILL.md` | 0 | 0 | 6 | 6 |
 | `.claude/skills/target-id/references/number-update.md` | 0 | 1 | 5 | 6 |
-| `CLAUDE.md` | 0 | 1 | 3 | 4 |
-| `DECISIONS.md` | 2 | 48 | 343 | 393 |
+| `CLAUDE.md` | 0 | 1 | 8 | 9 |
+| `DECISIONS.md` | 2 | 53 | 356 | 411 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 14 | 20 | 35 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
 | `docs/platform/DSS_CHEATSHEET.md` | 0 | 1 | 6 | 7 |
-| `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 15 | 94 | 109 |
-| `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 10 | 24 | 34 |
+| `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 18 | 104 | 122 |
+| `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 16 | 49 | 65 |
 | `docs/prioritizer/TARGET_PRIORITIZER.md` | 46 | 60 | 658 | 764 |
 | `docs/reference/DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
 | `docs/reference/RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
 | `notebooks/README.md` | 0 | 0 | 2 | 2 |
-| **total** | **49** | **167** | **1395** | **1611** |
+| **total** | **49** | **181** | **1448** | **1678** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**352 rows.** Of 1395 total orphans, these are the model-dependent ones: the numbers that move
+**353 rows.** Of 1448 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
 |---|---|--:|---|
+| `CLAUDE.md:45` | - | 129,253 | `dashboard_persona_trust`, `drug_evidence_pairs` and `target_candidates_2` (129,253 ranked |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:97` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:106` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:108` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
@@ -99,12 +100,11 @@ when the champion changes and that no notebook would catch.
 | `docs/prioritizer/FEATURE_AUDIT.md:178` | 4 | 0.7371 | \| therapeutic, route-supported \| 0.7337 \| 0.7371 \| 0.7384 \| 0.7418 \| **0.7471** \| b |
 | `docs/prioritizer/FEATURE_AUDIT.md:178` | 4 | 0.7384 | \| therapeutic, route-supported \| 0.7337 \| 0.7371 \| 0.7384 \| 0.7418 \| **0.7471** \| b |
 | `docs/prioritizer/FEATURE_AUDIT.md:178` | 4 | 0.7418 | \| therapeutic, route-supported \| 0.7337 \| 0.7371 \| 0.7384 \| 0.7418 \| **0.7471** \| b |
-| `docs/prioritizer/FEATURE_AUDIT.md:179` | 4 | 2.376 | \| tractability dm@200 \| 2.376 \| 2.381 \| 2.380 \| 2.391 \| **2.418** \| **t = +2.56, 0  |
 
-*292 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*293 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 
-154 entries, 83322 chars. Query `.index/decisions.tsv` rather than reading the file — it is
+158 entries, 85964 chars. Query `.index/decisions.tsv` rather than reading the file — it is
 the densest file in the repo (~146 tokens per line).
 

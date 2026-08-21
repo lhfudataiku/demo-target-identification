@@ -153,3 +153,7 @@ date	line	chars	topic
 2026-08-21	167	890	Markdown reorganised from scattered root + `docs/` into purpose-based directories
 2026-08-21	168	631	Tested the cold-start path for Phase 3 instead of assuming it worked, and it failed in one place: nothing auto-loaded said what the next step was
 2026-08-21	169	592	The link checker had a blind spot that the cold-start test exposed: a bare prose mention with a valid BASENAME but a stale PATH passed
+2026-08-21	170	948	Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions before the experiment ran
+2026-08-21	171	492	P5/P6 revised in place, with the originals struck through rather than deleted, and the reason stated: no experiment has run
+2026-08-21	172	618	Phase 3 verdict for the handoff: defensible as a COVERAGE play, weak as a quality play
+2026-08-21	173	584	Found a claim surface no index covers: DSS flow-zone descriptions

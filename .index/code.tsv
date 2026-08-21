@@ -69,4 +69,4 @@ tools/check_indexes.sh	tool	LIVE	4	.claude/skills/target-id/SKILL.md,.claude/ski
 tools/check_links.py	tool	LIVE	3	CLAUDE.md,DECISIONS.md,tools/check_indexes.sh
 tools/model_registry.json	tool	LIVE	3	.claude/skills/target-id/SKILL.md,DECISIONS.md,tools/build_recipe_index.py
 tools/recipe_classes.json	tool	LIVE	4	DECISIONS.md,docs/prioritizer/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py,tools/model_registry.json
-webapp/backend.py	webapp	LIVE (referenced)	1	tools/recipe_classes.json
+webapp/backend.py	webapp	LIVE (referenced)	2	CLAUDE.md,tools/recipe_classes.json

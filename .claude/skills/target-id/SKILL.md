@@ -41,6 +41,10 @@ the same answer.
   difference in this project traces to 9–15 high-leverage diseases.
 - Abstracts and preambles drift separately from the sections they summarise. `TARGET_PRIORITIZER.md`
   line ~43 kept a stale `r` for days after §7.4 was fixed.
+- **DSS flow-zone descriptions are demo-facing prose that no index covers** — they live in DSS, not the
+  repo. Three still quoted `m3-f12` numbers after the champion moved. Check them with
+  `dku flow zones` when a champion changes; the field is `shortDesc`, not `description`, and there is
+  no CLI verb — it needs a scenario using the python API.
 
 **DSS**
 - `dku ml settings <analysis> <mltask>` returns the **current mltask state, not a deployed model's

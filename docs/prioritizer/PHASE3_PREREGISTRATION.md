@@ -112,9 +112,18 @@ Directions and ranges, so each can fail in both directions.
 | **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 0.8230 | outside that band. ≥0.80 would be a genuine surprise; ≤0.55 makes the change worthless |
 | **P3** | **Per-disease positives are the binding constraint.** Median usable positives per admitted disease **≤ 5** | median > 5 |
 | **P4** | **Hub bias worsens**: spread **> 0.1935**, ρ(degree, probability) **> 0.3273**. Thin modules mean the disease-specific features carry little variance, so gene-level (hub) features dominate those rows | spread ≤ 0.1935 |
-| **P5** | Pool grows **+9% to +15%**: 6,754,128 → **7.35M–7.75M** rows | outside that range |
-| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilute | rate rises, or falls below 1.72% |
+| **P5** ⚠ | ~~+9% to +15%~~ **REVISED 2026-08-21 pre-experiment: +18% to +22%**, 6,754,128 → **8.0M–8.25M** rows | outside that range |
+| **P6** ⚠ | ~~1.72–1.86%~~ **REVISED 2026-08-21 pre-experiment: falls from 1.89% to 1.60–1.67%**, because admitted rows are 6.3× more dilute on the union of routes | outside that range |
 | **P7** | On the control stratum, retraining produces a **small positive** shift by `m6`'s mechanism — a better training set rather than better scoring — of **+0.000 to +0.004** macro AUC | a shift outside that range, in either direction |
+
+> **⚠ P5 and P6 were revised on 2026-08-21, BEFORE any Phase 3 run.** Both originals were sized on the
+> **GGD route alone** and then compared against the **whole pool** — the same route-only-numerator error
+> §8.4 had to be corrected for, made twice in one week. Measuring the union of GGD and GPGD (§9, now
+> answered) gives +19.6% rows and a 1.63% positive rate. **The revision is legitimate only because no
+> experiment has run**: these are better measurements of the *input*, not adjustments to fit a result.
+> The originals are struck through rather than deleted so the record shows what was predicted when.
+> **If a prediction needs revising after Phase 3 runs, it does not get revised — it gets reported as
+> failed.**
 
 **Basis for P2 and P4 — the headwind, stated before the fact.** `m7` made the under-20-seed bucket
 **worse** (−0.0117, n = 22, not significant) while helping every larger bucket, and the 931 diseases
@@ -186,10 +195,39 @@ A and B · state the estimator on every lift · flag any K where a count is too 
 5. **`compute_model_comparison` stays on `scored_m1/m2/m3`** — it is the ablation ladder, not a champion
    consumer.
 
-## 9. Open question worth measuring before the branch
+## 9. ANSWERED 2026-08-21 — `dwpc_GPGD` helps, but not enough to change the character
+
+**Measured, like-for-like, on the union of both pool routes:**
+
+| band | route | candidate rows | positives reached | of seeds | positive rate |
+|---|---|--:|--:|--:|--:|
+| **5–19 (admitted)** | GGD | 424,523 | 3,067 | 34% | 0.72% |
+| | GPGD | 1,094,712 | 3,820 | 43% | 0.35% |
+| | **union** | **1,326,438** | **4,229** | **47%** | **0.32%** |
+| **≥20 (current)** | GGD | 355,188 *(n=120)* | 11,336 | 59% | 3.19% |
+| | GPGD | 557,818 | 11,969 | 62% | 2.15% |
+| | **union** | **702,407** | **14,025** | **73%** | **2.00%** |
+
+*Method validated: the same computation predicts the current pool at 6,772,374 rows against an actual
+6,754,128 — a **0.3%** error.*
+
+**GPGD lifts admitted-disease reachability from 34% to 47%, and usable positives per disease from 3.3 to
+4.5.** That is real but it does not change the shape of the problem: admitted diseases still lose **more
+than half** their positives, where current diseases lose about a quarter, and on the union they are
+**6.3× more dilute** (0.32% against 2.00%) — worse than the 4.4× measured on GGD alone, because pathway
+co-membership is promiscuous and adds candidate rows faster than it adds positives.
+
+**Revised bottom line: +80% more diseases for ~+20% more pool rows.** Still a favourable coverage
+ratio, and the admitted terms are clinically real. But the evidence for a *ranking* win is weaker than
+when this document was written, and P2's 0.62–0.75 band should now be read as optimistic rather than
+central.
+
+<details><summary>The original open question, for the record</summary>
 
 **How much of the 34% seed-reachability does `dwpc_GPGD` recover?** It is pathway-mediated and does not
 need a direct seed–seed PPI edge, so it should reach more of the admitted diseases' positives than the
 GGD route does. **Not measured.** It is the single number most likely to change P1's prospects, and it
 is cheap — the same computation as §5 of `FEATURE_AUDIT.md` run against `pathway_protein` instead
 of `protein_protein`. Worth doing first if the branch is expensive to stand up.
+
+</details>

@@ -258,9 +258,23 @@ GGD-reachable at all (34%)**: in a nine-gene module most seeds have no PPI edge 
 they never enter the route. That leaves roughly **3.3 usable positives per admitted disease**, and a
 per-disease AUC on three positives is very noisy.
 
-*Measured on the GGD route only. `dwpc_GPGD` is pathway-mediated and does not require a direct
-seed–seed PPI edge, so it should reach more of these positives — **not measured**, and worth measuring
-before the branch, because it is the main thing that could lift the 34%.*
+**MEASURED 2026-08-21 — the union of both routes, which is what pool membership actually is:**
+
+| band | candidate rows | positives reached | of seeds | positive rate |
+|---|--:|--:|--:|--:|
+| **5–19 (admitted)** | 1,326,438 | 4,229 | **47%** | **0.32%** |
+| **≥20 (current)** | 702,407 *(n=120 scaled)* | 14,025 | **73%** | **2.00%** |
+
+`dwpc_GPGD` lifts admitted reachability 34% → **47%** and usable positives per disease 3.3 → **4.5**.
+Real, but not character-changing: admitted diseases still lose over half their positives against about
+a quarter for current ones, and on the union they are **6.3× more dilute** — worse than the 4.4× on GGD
+alone, because pathway co-membership adds candidate rows faster than positives.
+
+> **This corrects the +12% figure above.** That was GGD-only. On the union the pool grows
+> **+19.6%** (6,754,128 → 8,080,566) and the positive rate falls to **1.63%**. So the trade is
+> **+80% diseases for ~+20% rows** — still favourable on coverage, weaker on quality than first stated.
+> Method validated at **0.3%** error against the real pool size. See
+> `PHASE3_PREREGISTRATION.md` §9.
 
 > **⚠ CORRECTION to the rollout sequence.** The plan recorded earlier was "size the population, then run
 > a cheap train-narrow / score-wide probe with `m7`, and branch the project only if the probe clears".
