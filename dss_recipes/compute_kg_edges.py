@@ -7,34 +7,33 @@ import dataiku
 import networkx as nx
 import pandas as pd
 
-EDGE_DATASETS = ["ppi_edges", "mondo_edges", "gene_disease_edges",
-                 "reactome_gp_edges", "reactome_pp_edges",
-                 "drug_protein_edges", "drug_disease_edges",
-                 # Task 10 additions (2026-08-06): GO+gene2go, HPO (+HP<->MONDO
-                 # reclassification already applied upstream -- see PRIMEKG_MAPPING.md §4).
-                 "go_protein_edges", "go_hierarchy_edges",
-                 "phenotype_hierarchy_edges", "phenotype_protein_edges_distinct",
-                 "disease_phenotype_edges_distinct"]
 EDGE_COLS = ["x_id", "x_type", "x_source", "y_id", "y_type", "y_source",
              "relation", "display_relation"]
-# Provenance metadata (2026-08-06): datatypes on gene_disease_edges (genetic_association
-# vs somatic_mutation), ppi_sources on ppi_edges (menche/huri/string). Previously silently
-# dropped here (clean() selected only EDGE_COLS) -- carried through the whole pipeline now
-# as an extra column so it survives reverse-all/disease-grouping/node_index correctly, then
-# split into a separate edge_metadata side table at the end. kg/graph_edges stay
-# PrimeKG-exact (unaffected -- their write step already selects an explicit column list).
-METADATA_COLS = {"gene_disease_edges": "datatypes", "ppi_edges": "ppi_sources"}
 
+# ---- stacked edge sources (moved out 2026-08-14) ----------------------------
+# The per-source stack is now the `stack_edge_sources` Stack recipe: 12 inputs, mode=UNION,
+# a post-filter dropping self-loops, and distinct. Verified equivalent -- both the old
+# pd.concat path and the Stack produce exactly 1,474,753 rows.
+#
+# mode=UNION is load-bearing: `datatypes` (gene_disease_edges) and `ppi_sources` (ppi_edges)
+# exist on only 2 of the 12 inputs, and INTERSECT would silently drop both -- taking the
+# edge_metadata side table (844,166 rows) with them.
+#
+# The original also called .dropna(subset=EDGE_COLS), which was DEAD CODE: .astype(str) ran
+# first and turned any null into the literal string "nan", so dropna never matched. Those rows
+# survive the stack and are removed later by the name-grounding join instead. The Stack
+# therefore omits it deliberately -- adding isNonBlank() would drop rows the original kept.
+#
+# infer_with_pandas=False + explicit str cast on the 8 key columns only: with inference on,
+# get_dataframe() infers dtypes per 65,536-row chunk and digit-only id columns come back as
+# int64 in some chunks, which silently breaks every downstream key comparison. The metadata
+# columns are deliberately NOT cast -- their nulls must stay null or edge_metadata's
+# dropna(how="all") keeps everything.
+kg = dataiku.Dataset("kg_stacked").get_dataframe(infer_with_pandas=False)
+for c in EDGE_COLS:
+    kg[c] = kg[c].astype(str)
 
-def clean(df, extra_col=None):
-    cols = EDGE_COLS + ([extra_col] if extra_col else [])
-    df = df[cols].dropna(subset=EDGE_COLS).drop_duplicates()
-    return df[~((df.x_id == df.y_id) & (df.x_type == df.y_type) & (df.x_source == df.y_source))]
-
-
-# ---- stack per-source edges ------------------------------------------------
-kg = pd.concat([clean(dataiku.Dataset(d).get_dataframe().astype(str), METADATA_COLS.get(d))
-                for d in EDGE_DATASETS], ignore_index=True).drop_duplicates()
+print("STACKED (post-clean, pre-reverse):", len(kg))   # expected row count for the Stack recipe
 
 # ---- reverse ALL edges (undirected) ----------------------------------------
 # metadata columns are properties of the edge, not of x/y specifically -- carried through
@@ -90,31 +89,23 @@ G.add_edges_from(zip(kg.xk, kg.yk))
 giant = set(max(nx.connected_components(G), key=len))
 kg = kg[kg.xk.isin(giant) & kg.yk.isin(giant)].copy()
 
-# ---- emergent nodes + node_index -------------------------------------------
+
+# ---- SPLIT (2026-08-14): node_index assignment moved out of this recipe ------
+# `node_index` used to be assigned here by pandas `.reset_index()`, i.e. POSITIONALLY --
+# it depended on concat row order, so every rebuild silently renumbered every node and
+# broke every hardcoded index downstream (personas, disease_split_key, WATCH lists).
+# It is now assigned by the `assign_node_index` Window recipe over an explicit
+# ORDER BY node_type, node_source, node_id, node_name -- a total order on the node key,
+# so the mapping is a pure function of the node SET and reproducible across rebuilds.
+# This recipe therefore emits the node set WITHOUT indices, and the edges keyed by the
+# 4-part natural key; `attach_node_index` joins the indices back on afterwards.
 nodes = pd.concat([
     kg[["x_id", "x_type", "x_name", "x_source"]].rename(columns={
         "x_id": "node_id", "x_type": "node_type", "x_name": "node_name", "x_source": "node_source"}),
     kg[["y_id", "y_type", "y_name", "y_source"]].rename(columns={
         "y_id": "node_id", "y_type": "node_type", "y_name": "node_name", "y_source": "node_source"}),
-]).drop_duplicates().reset_index(drop=True).reset_index().rename(columns={"index": "node_index"})
+]).drop_duplicates()
 
-xi = nodes.rename(columns={"node_index": "x_index", "node_id": "x_id",
-                           "node_type": "x_type", "node_name": "x_name", "node_source": "x_source"})
-yi = nodes.rename(columns={"node_index": "y_index", "node_id": "y_id",
-                           "node_type": "y_type", "node_name": "y_name", "node_source": "y_source"})
-kg = kg.merge(xi, on=["x_id", "x_type", "x_name", "x_source"], how="left") \
-       .merge(yi, on=["y_id", "y_type", "y_name", "y_source"], how="left")
-
-dataiku.Dataset("graph_nodes").write_with_schema(
-    nodes[["node_index", "node_id", "node_type", "node_name", "node_source"]])
-dataiku.Dataset("kg").write_with_schema(
-    kg[["relation", "display_relation", "x_index", "x_id", "x_type", "x_name", "x_source",
-        "y_index", "y_id", "y_type", "y_name", "y_source"]])
-dataiku.Dataset("graph_edges").write_with_schema(
-    kg[["relation", "display_relation", "x_index", "y_index"]].drop_duplicates())
-
-# ---- provenance metadata side table (kept off kg/graph_edges, see METADATA_COLS) ------
-meta_present_cols = [c for c in METADATA_COLS.values() if c in kg.columns]
-edge_metadata = kg[["x_index", "y_index", "relation"] + meta_present_cols].dropna(
-    subset=meta_present_cols, how="all").drop_duplicates()
-dataiku.Dataset("edge_metadata").write_with_schema(edge_metadata)
+print("grounded edges:", len(kg), "| emergent nodes:", len(nodes))
+dataiku.Dataset("graph_nodes_unindexed").write_with_schema(nodes[["node_id", "node_type", "node_name", "node_source"]])
+dataiku.Dataset("kg_grounded").write_with_schema(kg.drop(columns=["xk", "yk"]))

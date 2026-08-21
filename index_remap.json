@@ -1,0 +1,192 @@
+{
+  "remapped_on": "2026-08-17",
+  "from_project": "KNOWLEDGE_GRAPH_PRIMEKG",
+  "from_graph_nodes": 113544,
+  "from_index_origin": 0,
+  "to_project": "DEMO_KG_LS",
+  "to_graph_nodes": 113391,
+  "to_index_origin": 1,
+  "applied_in_project": "DEMO_TARGET_IDENTIFICATION",
+  "method": "Resolved each old node_index to (node_id, node_type, node_source) in the reference graph_nodes, then looked the same key up in the rebuilt graph_nodes. That key is unique on both sides (0 duplicates in 113,544 / 113,391 rows) and node_name matched for all 14, so every mapping is unambiguous.",
+  "verification": {
+    "resolved": "14 of 14",
+    "name_mismatches": 0,
+    "unresolved": 0,
+    "family_integrity": "0 split keys have members in more than one split role after remapping",
+    "modelled_diseases_whose_split_role_changes": "4008 of 6821 (58.8%) -- inherent to renumbering, because the split rule is a modulo on an arbitrary integer",
+    "headline_metric_shift_from_the_split_change": "+0.0049 macro per-disease AUC, within one standard error (0.0053), estimated on the 583 of 1014 reference validation diseases that remain in validation"
+  },
+  "manual_addition": {
+    "new_index": 45876,
+    "disease": "respiratory system cancer",
+    "added_to": "split_by_disease_key",
+    "why": "The forced-validation clause is the only guarantee a persona family lands in validation. This split key was in validation only incidentally (14654 %% 10 == 4); its new index lands in train (45876 %% 10 == 6), which would have silently emptied the three lung personas -- filter_persona_diseases reads the validation split, so it would have returned zero rows rather than erroring."
+  },
+  "mapping": [
+    {
+      "old_index": 14274,
+      "new_index": 47469,
+      "node_id": "5061",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "lung adenocarcinoma",
+      "used_in": [
+        "filter_persona_diseases",
+        "compute_drug_target_benchmark_staged"
+      ]
+    },
+    {
+      "old_index": 14442,
+      "new_index": 46033,
+      "node_id": "3916",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "overnutrition",
+      "used_in": [
+        "split_by_disease_key"
+      ]
+    },
+    {
+      "old_index": 14644,
+      "new_index": 47654,
+      "node_id": "5300",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "chronic kidney disease",
+      "used_in": [
+        "filter_persona_diseases",
+        "compute_drug_target_benchmark_staged",
+        "split_by_disease_key"
+      ]
+    },
+    {
+      "old_index": 14654,
+      "new_index": 45876,
+      "node_id": "376",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "respiratory system cancer",
+      "used_in": [
+        "compute_lung_granularity_check",
+        "split_by_disease_key (ADDED)"
+      ]
+    },
+    {
+      "old_index": 14786,
+      "new_index": 45109,
+      "node_id": "3274",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "thoracic cancer",
+      "used_in": [
+        "split_by_disease_key"
+      ]
+    },
+    {
+      "old_index": 15317,
+      "new_index": 52236,
+      "node_id": "8903",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "lung cancer",
+      "used_in": [
+        "filter_persona_diseases",
+        "compute_drug_target_benchmark_staged"
+      ]
+    },
+    {
+      "old_index": 15347,
+      "new_index": 49721,
+      "node_id": "7254",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "breast cancer",
+      "used_in": [
+        "compute_split_audit_2"
+      ]
+    },
+    {
+      "old_index": 15624,
+      "new_index": 47604,
+      "node_id": "5233",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "non-small cell lung carcinoma",
+      "used_in": [
+        "filter_persona_diseases",
+        "compute_drug_target_benchmark_staged"
+      ]
+    },
+    {
+      "old_index": 16029,
+      "new_index": 47415,
+      "node_id": "4989",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "breast carcinoma",
+      "used_in": [
+        "compute_split_audit_2"
+      ]
+    },
+    {
+      "old_index": 16415,
+      "new_index": 37143,
+      "node_id": "11122",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "obesity disorder",
+      "used_in": [
+        "filter_persona_diseases",
+        "compute_drug_target_benchmark_staged",
+        "compute_split_audit_2"
+      ]
+    },
+    {
+      "old_index": 16420,
+      "new_index": 47437,
+      "node_id": "5015",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "diabetes mellitus",
+      "used_in": [
+        "split_by_disease_key",
+        "compute_split_audit_2"
+      ]
+    },
+    {
+      "old_index": 16596,
+      "new_index": 47537,
+      "node_id": "5148",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "type 2 diabetes mellitus",
+      "used_in": [
+        "filter_persona_diseases",
+        "compute_drug_target_benchmark_staged",
+        "compute_split_audit_2"
+      ]
+    },
+    {
+      "old_index": 19569,
+      "new_index": 54058,
+      "node_id": "11123_12919_7454_5147_10861_10862_10863_10864_10950_11016_11033_11068_11167_11168_11302_11572_12422_12920_12921_12961_13078",
+      "node_type": "disease",
+      "node_source": "MONDO_grouped",
+      "node_name": "type 1 diabetes mellitus",
+      "used_in": [
+        "compute_split_audit_2"
+      ]
+    },
+    {
+      "old_index": 61925,
+      "new_index": 47530,
+      "node_id": "5139",
+      "node_type": "disease",
+      "node_source": "MONDO",
+      "node_name": "morbid obesity",
+      "used_in": [
+        "compute_split_audit_2"
+      ]
+    }
+  ]
+}

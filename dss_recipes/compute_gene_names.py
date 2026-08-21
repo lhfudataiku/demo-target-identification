@@ -1,5 +1,16 @@
 # Gene/protein identity table from HGNC (genenames.org custom download).
 # Zero-input recipe: downloads + parses → gene_names dataset.
+# ----------------------------------------------------------------------------
+# SOURCE PROVENANCE  (recorded 2026-08-13)
+# Source        : HGNC custom download (live CGI query, not a versioned file)
+# URL in use    : https://www.genenames.org/cgi-bin/download/custom?...   <-- LIVE QUERY
+# Retrieved     : 2026-08-13 (verified HTTP 200, 3,152,612 bytes) -> 44,406 rows in `gene_names`
+# TO FREEZE     : HGNC publishes no dated archive for this endpoint. Download the response
+#                 ONCE, upload to raw_files, and read from the folder. Note the column order
+#                 is positional per the `col=` parameters -- if you re-issue the query with a
+#                 different col list, the downstream positional parsing breaks silently.
+# ----------------------------------------------------------------------------
+
 import io
 import dataiku
 import pandas as pd
@@ -35,3 +46,5 @@ out = (
 )
 
 dataiku.Dataset("gene_names").write_with_schema(out)
+
+
