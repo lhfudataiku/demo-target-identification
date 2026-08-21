@@ -1,0 +1,589 @@
+# Dashboard design — one webapp, six acts, one therapeutic area
+
+**Read [`DEMO_NARRATIVE.md`](DEMO_NARRATIVE.md) first.** This document is derived from it and has no
+independent authority. Where the two disagree the narrative wins — except on the three points in §10,
+where the narrative is measurably stale and the flow is right.
+
+**What this is.** The demo surface is a **single Vue SPA deployed as a DSS STANDARD webapp**, built from
+the `bs-blueprint` template. Six acts, six routes, one sidebar. This document specifies the acts, the
+data contract behind each one, the guardrails the code must enforce, and what has to be built in the
+flow first.
+
+**Status.** Mockup stage. [`DASHBOARD_MOCKUP.html`](DASHBOARD_MOCKUP.html) is a static, self-contained
+preview of all six acts with the verified numbers hard-coded — the artefact to iterate on before any Vue
+component is written. The native-DSS-dashboard attempt is superseded; see §3.1 for why, and §11 for what
+it left behind.
+
+---
+
+## 1. The derivation rule
+
+Two constraints, and the second is the one that shaped this document.
+
+**The narrative is an interrogation, in the order a sceptical scientist asks.** So the acts run in that
+order, each number traces to the dataset that produced it, and the narrative's §5 *"what not to show"*
+becomes a per-act exclusion list. Not stylistic — each exclusion names a specific way the act would
+mislead.
+
+**An R&D department owns one therapeutic area, not 670 diseases.** So **one disease is the spine of the
+whole deck** and every act returns to it. An earlier draft gave each question its own best example —
+obesity for the filtering, non-small cell lung for MAPK3, HER2+ for clinical sanity. That hands a sceptic
+a free shot: *"you picked a different disease every time you needed a win."* Holding one constant closes
+it, and it is also how the audience is organised.
+
+The general-to-specific act order (the graph, then coverage, then the area, then the disease) departs
+from the narrative's page order deliberately: a team that has already scoped a POC to their own area
+needs to know what evidence the model can see and how far it can be trusted **before** they will spend
+attention on one gene list. The narrative's rule that survives intact is the *form* the aggregate takes —
+see act 2.
+
+---
+
+## 2. The spine: breast oncology, HER2-positive lead
+
+The only candidate area where the **entire** deck survives without leaving it. Every figure below was
+computed from `dashboard_candidates` while writing this document.
+
+**The clinical sanity check, unprompted.** HER2+ breast carcinoma scores 12,272 candidates. Top 15:
+
+| rank | gene | | rank | gene |
+|--:|---|---|--:|---|
+| 1 | TP53 *known* | | 9 | **HRAS** — **novel** |
+| 2 | EP300 | | 10 | KRAS |
+| 3 | PIK3R1 | | 11 | EGFR |
+| 4 | CREBBP | | 12 | BRCA1 |
+| 5 | PIK3CA | | 13 | SMAD3 |
+| 6 | CTNNB1 | | **14** | **ERBB2** — the only *approved-for-this-disease* gene in the top 15 |
+| 7 | JAK2 | | 15 | MAPK1 |
+| 8 | PTPN11 | | | |
+
+The model was never told which gene this disease is named after. **ERBB2 lands at 14 of 12,272**, and the
+surrounding list is the PI3K/AKT and RAS–MAPK axis — the biology that drives trastuzumab resistance. AUC
+**0.9365** on 599 known targets, **19.7×** enrichment at 50. A breast oncologist validates this in about
+ten seconds, which is the point of leading with it.
+
+**The punch line gets stronger.** The narrative's thirty-second check is obesity's ADRB2 — one approved
+target carrying a liability flag. On HER2+:
+
+- **9 of the top 15 carry a documented liability flag (60%).** 23 of the top 50 (46%).
+- **ERBB2 itself (#14) carries one**, with TP53, PIK3R1, PIK3CA, CTNNB1, JAK2, PTPN11, EGFR and MAPK1.
+
+*"Exclude targets with known safety liabilities"* would delete the target this disease is named after,
+and the target of its standard-of-care antibody.
+
+**The hard case is in the same panel.** Triple-negative breast carcinoma ranks RAD50 #1, ATM #2, TP53 #3,
+BRCA2 #4, NBN #5 — the homologous-recombination panel, all novel — with only **8** known associations, so
+we cannot score it. `breast_panel_overlap` shows HER2+ and TNBC share **2 of 50**, so subtype resolution
+becomes an argument *for* the platform to a subtype-organised team.
+
+**What the spine costs.** Obesity's funnel and the GHSR/ADRB2/MCHR1 coherence beat leave the deck (HER2+
+has its own funnel, act 4). NSCLC's *"MAPK3 at novel #3"* headline goes — on HER2+, MAPK3 is novel at
+**#61** and the head-of-list novel candidate is **HRAS at #9**; enrichment is equivalent (19.7× vs 19×),
+the single dramatic beat is not. The MRN complex on-graph shot is **not** a HER2+ story (RAD50 #55, NBN
+#99, MRE11 #401) and moves to act 6 with TNBC; act 4's mechanism shot is the PI3K/AKT axis instead. Act
+5's degree-matched and hub-bias evidence is pool-wide by construction and stays global — correct, because
+those are claims about the *model*, not the disease.
+
+**Retargeting.** Each act names its disease filter, so the deck retargets by changing the spine disease
+and re-deriving four numbers: the funnel, the landing count, the liability share of the head, and the
+top-15 table.
+
+---
+
+## 3. Architecture — one Vue SPA, deployed as a DSS webapp
+
+### 3.1 Why not the native DSS dashboard
+
+The native attempt was built (dashboard `Cn8oSQC`, nine tiles, acts 1–2, pre-flight clean) and is being
+retired. Not on taste — on five findings from building it:
+
+| finding | consequence |
+|---|---|
+| **A `web_app` insight cannot be bound over the API.** DSS accepts the save and silently drops every params key — `webAppId`, `webAppSmartName`, `webapp`, `webAppName`, `smartName` all round-trip to `{}`, on both `insight create -d` and `insight set-definition`. No `webapp publish` verb, no raw-API passthrough | every webapp tile is a manual UI step, so the deck cannot be built or rebuilt reproducibly |
+| **No `TEXT` tiles via the API.** `dashboard add-tile` writes only `INSIGHT` tiles, and DSS drops unknown tile fields on save | *"the point to make out loud"* had to be crammed into tile titles. A narrative deck whose narration lives in chart titles is not a narrative deck |
+| **Chart sampling defaults to `maxRecords: 10000`.** On `graph_edges` (2,851,510 rows) that misreports relation counts by two orders of magnitude while looking entirely plausible | every chart needs a manual sampling patch and an independent verification, forever |
+| **Filter semantics are ambiguous by default.** A filter written as `{selectedValues: {x: true}}` returns with `includeEmptyValues: true`, `excludeOtherValues: false` — configured-looking and non-filtering | act 2's `level` filter is worth 73 basis points of AUC. A silent filter failure ships a wrong number |
+| **No row-level drill, and no display-only columns.** A `dataset_table` hands the viewer sort and filter over every column it exposes | the three guardrails in §6 are *unimplementable* natively. That is the disqualifying one |
+
+That last row is the argument. Three columns must be **visible and not actionable**:
+
+- `approved_for_disease` / `investigational_for_disease` — the labels act 5's discovery lift is measured
+  against. A viewer who filters by them has made the headline circular.
+- `has_safety_liability` — act 6's point is that filtering on it deletes ERBB2.
+- `prediction` — at the F1-optimised threshold, 590 of 762 known obesity targets score negative.
+
+Native DSS offers exactly one guardrail — *don't expose the column* — which also removes it from
+display. In our own code, display-only is three lines.
+
+### 3.2 The stack
+
+Copied from `~/Documents/GitHub/bs-blueprint` via `make copy DEST=…`. Vue 3 + Vite + Tailwind 4 +
+ECharts + Pinia + vue-router, with a FastAPI backend and `dss_webapp/deploy.sh`, which builds the bundle,
+uploads `backend/` and `frontend_dist/` into the project library under `python/<LIB_NS>/`, and patches a
+STANDARD webapp definition to serve it.
+
+**What we get for free that the native route could not give us:** routed acts with a sidebar that builds
+itself from route `meta`; real prose beside real charts; display-only columns; row-level drill; a single
+deploy command; and a design system already themed to the Dataiku brand.
+
+### 3.3 The lineage rule — non-negotiable
+
+A custom app is opaque to lineage, and act 6 closes on *"the record of why is in the flow, not someone's
+inbox."* A screenshot-grade SPA would undercut the pitch it exists to deliver. So:
+
+> **Every card that states a number names its source dataset in a footer, and every act carries a link
+> into the flow zone that produced it.**
+
+Provenance moves *into* the UI rather than being borrowed from native tiles. This is a first-class design
+requirement, not a nice-to-have: it is what lets us claim the platform while shipping custom code. The
+mockup implements it as a `dataset · recipe` footer on every card.
+
+### 3.4 Route → view → data map
+
+Sidebar order is act order. `menu: 'primary'`, `order` = act number.
+
+| act | route | view | data module | backing datasets |
+|---|---|---|---|---|
+| 1 | `/evidence-base` | `EvidenceBaseView` | `mock/graph-inventory.ts` | `graph_nodes`, `graph_edges`, `edge_metadata` |
+| 2 | `/calibration` | `CalibrationView` | `mock/calibration.ts` | `validation_auc_by_disease_2` **(filter `level='disease'`)**, `family_auc_by_family`, `split_audit_2`, `persona_candidates` |
+| 3 | `/therapeutic-area` | `AreaPanelView` | `mock/breast-panel.ts` | `breast_panel_metrics`, `breast_panel_overlap` |
+| 4 | `/shortlist` | `ShortlistView` | `mock/her2-candidates.ts` | `dashboard_candidates` (spine disease) |
+| 5 | `/interrogation` | `InterrogationView` | `mock/interrogation.ts` | `novel_discovery_eval`, `tractability_axis`, `drug_target_benchmark`, + §9 gaps |
+| 6 | `/limits` | `LimitsView` | `mock/limits.ts` | `tractability_lift`, `safety_lift`, `filter_three_axes`, `breast_panel_overlap` |
+
+Act 4 absorbs the existing hand-written webapp (`V2ZpfdV`, 1,086 lines): the disease picker, the
+three-clause filter with its live count, the class lanes and the detail drawer are all ported to Vue
+components rather than rewritten. Its `SECRETED` rule, its `TIPS` copy and its refusal to fetch
+`prediction` are **validated behaviour** — carry them across verbatim and re-read the comments before
+changing any of them.
+
+### 3.5 Mock first, then swap
+
+Every view reads from a module in `frontend/src/data/mock/`, following the blueprint's own idiom
+(`data/mock/medical-info-tickets.ts`). Numbers are the verified ones, hard-coded.
+
+This is deliberate and it is the point of starting with the mockup:
+
+1. **The layout argument is settled before any DSS call exists.** Iterating on a chart's form should not
+   require a built dataset or a running backend.
+2. **Four of six acts are blocked on flow work anyway** (§9). Mock data lets acts 3, 4 and 6 be finished
+   while acts 1, 2 and 5 wait on recipes.
+3. **A wrong number is visible in a diff.** A hard-coded `0.8230` in a reviewed file is safer than a
+   chart tile whose filter silently stopped applying.
+
+The swap path per view is one function: replace the mock import with `fetch(apiUrl('/api/<act>/…'))`
+against a backend route that reads the dataset. **The mock module and the backend route must return the
+same shape** — define the shape in `types/` first, and have both conform to it.
+
+⚠ **Do not let mock numbers outlive the swap.** Every mock module carries a header comment naming the
+dataset and the notebook assertion each figure came from, so a stale value is traceable. When a view
+swaps to live data, its mock module is deleted, not commented out.
+
+### 3.6 Conventions that are not negotiable
+
+From the blueprint's agent instructions (`AGENTS` at its repo root); violating them means the app stops looking like a Dataiku product.
+
+- **Never hardcode colors.** Tailwind utilities over the tokens in `styles/tokens.css` —
+  `bg-background`, `text-muted-foreground`, `border-border`, `bg-primary`, `text-destructive`. No hex, no
+  `text-[#…]`. Chart series use `--chart-1..5`.
+- **Let the sidebar build itself.** Add an act by adding a route with `meta: { title, icon, menu:
+  'primary', order }`. Never hand-build a menu array.
+- **`apiUrl()` for every call.** A bare `fetch('/api/…')` breaks inside the DSS iframe.
+- **`Ea*` primitives first** (`EaSelect`, `EaButton`, `EaEmpty`, the `table/` and `scroll-area/` sets)
+  before custom markup. Icons from `lucide-vue-next`.
+- **No binary assets.** DSS libraries are text-only — no `.png`, no logo files.
+- **One view + one route + one backend route file + one service file.** Replace the example view; do not
+  accrete beside it.
+- Python: `from __future__ import annotations`, type hints, `routes/` parses and returns JSON while
+  `services/` does the Dataiku calls, DSS access via `get_project()` from `dss_client.py`.
+
+### 3.7 Build and deploy
+
+```bash
+make copy DEST=~/Documents/GitHub/target-prioritizer-app   # seed from the blueprint
+make dev                                                    # vite + backend, local
+make deploy                                                 # build, upload libs, patch the webapp
+```
+
+`PROJECT_KEY=DEMO_TARGET_IDENTIFICATION` in `app.env`, plus `LIB_NS` / `APP_PREFIX` /
+`VITE_APP_NAME`. First deploy creates the webapp and writes its id back to `app.env`.
+
+---
+
+## 4. The six acts
+
+| act | what it establishes | why it must precede the next |
+|---|---|---|
+| **1** | **The evidence base** — the graph, and that every edge knows where it came from | the model can only see what is in here; act 4's mechanism shot pays this off |
+| **2** | **Scope and calibration** — 670 diseases, the *spread*, where HER2+ sits in it | *"can I trust this for my disease"* is answered before any gene is shown |
+| **3** | **The therapeutic area** — the 12-term breast panel, and that the subtypes separate | the team sees itself; act 4's single disease stops looking cherry-picked |
+| **4** | **The shortlist** — the list, the filter, the SHAP, the pathway | the deliverable |
+| **5** | **The interrogation** — famous genes, novel discovery, the ground truth | every objection, answered on the spine disease *and* across 670 |
+| **6** | **The limits and the punch line** — TNBC, then three refuted ideas | what makes acts 1–5 believable, and the platform close |
+
+---
+
+### Act 1 — The evidence base
+
+| card | form | asserts |
+|---|---|---|
+| Node inventory | treemap | **113,391** nodes over 8 types: disease 27,153 · biological_process 23,974 · gene/protein 20,861 · phenotype 19,120 · molecular_function 10,041 · drug 5,282 · cellular_component 4,077 · pathway 2,883 |
+| Relation inventory | horizontal bars | **2,851,510** edges over **18** relations. Verified live against `GRAPH_BUILDING.md` §7.1 — protein_protein 520,380 · phenotype_protein 487,054 · disease_phenotype_positive 380,280 · disease_protein 378,888 · bioprocess_protein 251,808 · cellcomp_protein 186,806 · molfunc_protein 156,246, **all seven match exactly** |
+| **Every edge knows where it came from** | stacked bars | of 520,380 protein interactions: menche 189,982 · string 151,254 · huri 92,536 · menche+string 54,554 · huri+menche 28,478 · all three 2,714 · huri+string 862. **86,608 (16.6%) are corroborated by more than one independent interactome, and the graph records which** |
+| **What "known target" actually means** | donut | of 323,786 annotated disease–gene edges: genetic_association **171,810** · somatic_mutation **150,266** · both **1,710**. These edges *are* the training label |
+| Accepted against a frozen reference | stat row | nodes −0.13%, edges −0.03%, **14 of 18 relations reproduce exactly**, identical relation inventory |
+| Explore the graph | link out | the `graph search` explorer (`wBcApLN`), which act 4 returns to |
+
+**The provenance data is two disjoint stories.** `edge_metadata`'s 844,166 rows split cleanly: 520,380
+protein_protein rows carry `ppi_sources` with blank `datatypes`; 323,786 disease_protein rows carry the
+reverse. Two cards, two filters, and **both filters are load-bearing** — unfiltered, each chart shows the
+other block as one blank category three times the size of any real one.
+
+The second card was not in the original design and is the more valuable. *"Known target"* is the phrase
+the whole deck rests on, and this says what it means: 53% genetic association, 46% somatic mutation. It
+defuses part of act 5's ground-truth objection four acts early.
+
+⚠ **`disease_protein` has 378,888 edges but only 323,786 metadata rows** — 55,102 (14.5%) carry no
+evidence-type annotation. Do not describe the donut as covering all disease–gene edges.
+
+> **Must not appear:** the build pipeline, recipe counts, how long it took. No model, no score — the model
+> has not been mentioned yet.
+
+---
+
+### Act 2 — Scope and calibration
+
+| card | form | asserts |
+|---|---|---|
+| **Zero straddling keys — read this first** | table | 3 rows; all four overlap/straddling columns at **zero** across train (2,187,862 rows / 383 diseases), validation (3,958,921 / 670), test (607,345 / 104) |
+| The spread across 670 diseases | histogram, 20 bins | macro **0.8230**, median 0.8623, range 0.1045–0.9962 over the **668** that score |
+| It holds across 505 families | histogram, 20 bins | macro **0.8009** over the **503** that score |
+| **Usefulness is not uniform** | box plot | rank enrichment median **19.2×**, quartiles **9.1–28.2×**, range **0–59.2×** across 670 diseases |
+| Where your disease sits | marker on the histogram | HER2+ at **0.9365** — upper tail, stated as a *position in a spread* |
+
+**The framing rule.** The distribution leads; the macro number is its summary. The narrative forbids raw
+AUC as an opening number — *"it is the answer to a question they did not ask"* — and the TxGNN result is
+why: showing experts *why* raised their accuracy 46% and confidence 49%; accuracy alone moved neither. A
+scoped-POC team's real question is **can I trust this for my disease**, which is about spread and
+position, not a mean.
+
+The audit card is placed first, full width, ahead of every AUC. The AUCs mean nothing until the straddling
+count is zero, and the layout enforces the reading order.
+
+⚠ **Two corrections the build forced.**
+
+1. **The `level` filter is load-bearing.** `validation_auc_by_disease_2` holds two populations in one
+   table — 670 `disease` rows and 443 `split_key` rows. Filtered: **0.8230**, the documented champion
+   figure. Unfiltered: **0.8157**. A view without the filter is off by 73 basis points and looks fine.
+2. **19× is the median, not a ceiling.** The narrative and the old webapp both say *"19× on non-small
+   cell lung carcinoma and 2.9× on chronic kidney disease"* — true **of the 13-persona panel**. Across
+   all 670 diseases the median `rank_enrichment` is **19.2×** and the max is **59.2×**. NSCLC is the
+   panel's best and the population's *typical*. Presenting 19× as the high end understates the model and
+   invites correction by anyone who opens the dataset.
+
+Also: `family_auc_by_family` carries two literal `NaN` AUCs — families `51843` and `42581`, zero positives
+each, so AUC is undefined. `nb3` uses pandas, which skips them, so the documented **0.8009 is a mean over
+503 families presented as 505**.
+
+> **Must not appear:** pooled AUC anywhere near the macro one (pooled overstates by ~7 points). The
+> ablation ladder. Any hyperparameter. A single number in large type with no distribution beside it.
+
+---
+
+### Act 3 — The therapeutic area
+
+| card | form | asserts |
+|---|---|---|
+| The panel | table | 12 breast terms: pool, known targets, AUC, hits@50, enrichment, verdict. HER2+ 0.9365 / 599 · lobular 0.9337 / 513 · TNBC 0.8949 / **8** |
+| **The subtypes actually separate** | paired stat | HER2+ vs triple-negative share **2 of 50**; lung adenocarcinoma vs squamous share **47 of 50** |
+| Where the panel is trustworthy | scatter | `n_known_targets` × `auc` — AUC is meaningless below ~50 known targets, and TNBC is the visible outlier |
+| Signature of each subtype's head | small multiples | luminal A → EP300, ATM, MSH2, FGFR1 · luminal B → EP300, MSH6, PIK3R1, FGFR1 · TNBC → RAD50, ATM, TP53, BRCA2, NBN |
+
+This act is why a single-disease deck does not read as cherry-picking: same model, twelve terms of the
+same area, lists that differ in a way a breast oncologist recognises. The trustworthiness scatter puts
+TNBC's 8 known targets on screen *before* act 6 claims anything about it.
+
+> **Must not appear:** TNBC as a win. Any subtype's list called *"validated"* — this act shows coherence,
+> which is what a scientist checks before they check a metric, and is not validation.
+
+---
+
+### Act 4 — The shortlist
+
+| card | form | asserts |
+|---|---|---|
+| The contract | prose | the deliverable in one sentence, and **the three things it does not do** |
+| The ranked list | virtualised table | 12,272 rows, rank + percentile + score + SHAP drivers + status badges |
+| The validated filter | three checkboxes + live count | **12,272 → novel 11,673 → tractable 7,951 → not secreted 7,274 → rank ≤ 200 → 38** |
+| Candidate detail | drawer | rank against pool, SHAP drivers, each feature against **this disease's own distribution**, generated Cypher |
+| The mechanism, on the graph | query + link | the PI3K/AKT + RAS–MAPK axis behind the head of the list |
+
+The three *does not do* clauses — no safety axis, no morphological subtype resolution, association
+ranking does not predict therapeutic relevance — go **here, on the page that carries the deliverable**,
+not held to act 6. A vendor who leads with its limits has bought the right to be believed.
+
+**Thirty-eight is a shortlist a team clears in a week.** State the rank cut-off as part of the definition
+— the count is meaningless without it, which is how the obesity version acquired two conflicting values
+(§10.3).
+
+**The on-graph shot.** Interactive explorer, never a query recipe. Traversal is **undirected**,
+relationship variables must be **bound and returned** or the canvas shows floating nodes, and the engine's
+label for genes is `protein`. Node indices are snapshot-specific — the drawer generates them live, so
+prefer its copy button to any literal.
+
+```cypher
+// Why the head of the HER2+ list? The PI3K/AKT + RAS-MAPK axis, and its
+// interaction evidence to genes already annotated for this disease.
+MATCH (D:disease {node_index: 48537})
+MATCH (g:protein) WHERE g.node_index IN [91764, 91759, 88097, 89095, 84123, 84431, 93120]
+MATCH (g)-[ppi:protein_protein]-(m:protein)-[assoc:disease_protein]-(D)
+WHERE m.node_index <> g.node_index
+RETURN g, ppi, m, assoc, D LIMIT 300
+```
+
+`91764` PIK3R1 #3 · `91759` PIK3CA #5 · `88097` **HRAS #9, novel** · `89095` KRAS #10 · `84123` EGFR #11
+· `84431` **ERBB2 #14** · `93120` MAPK1 #15.
+
+One connected module, the disease's own annotated genes in the middle of it, and a novel candidate (HRAS)
+inside the same mechanism as the approved target. That is the second of the deliverable's two
+explanations, and the shot the deck exists to reach.
+
+⚠ If you also show the drug path (`gene ← drug → disease`): no model consumes it as a feature, but it
+**is** one of three routes admitting pairs to the candidate pool, so it shapes the scored population. Say
+*"not a feature"*, never *"not used"*.
+
+> **Must not appear:** any AUC. The `prediction` column. Any filter control on the drug badges or the
+> liability flag. The feature column list — show the *paths*.
+
+---
+
+### Act 5 — The interrogation
+
+Every card carries the HER2+ number **and** the across-670 number. That pairing is what stops a
+single-disease deck from being a single-disease anecdote.
+
+**"These are just the famous genes."**
+
+| card | asserts |
+|---|---|
+| Fair fight, not a rigged one | **2.9× / 2.7× / 2.4×** at K=10/50/200 against **equally-connected** genes |
+| The direction nobody volunteers | below rank 20 the degree control makes us look **better**; at rank 10 **worse** — and we say so |
+| The harder version | known targets only, by connectivity quintile: score 0.59 → 0.79, detection 17.3% → 57.0%. **3.3× swing, biology held constant** |
+| What it costs you | *"we will find you targets adjacent to biology you already know; we will not fix your neglected-gene problem"* — and that we tested the obvious cause and it was **not** the cause |
+
+Two findings, opposite directions, both true: the *ranking* is not explained by popularity, **and** the
+model still under-scores under-studied true targets. Never merge them into one number.
+
+**"You already knew all of these."**
+
+| card | asserts |
+|---|---|
+| Delete the answer key | 12,272 scored → 599 known → **11,673** re-ranked |
+| The novel head | **HRAS at #9**, MAPK3 at #61 — nothing in the training label pointed at either |
+| Lift vs K, by ground truth | approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, decaying to a ~4× floor |
+| Where the mean comes from | the per-disease distribution behind 16.9× |
+
+**The distribution card is not optional.** 16.9× is a *mean of per-disease lifts on a heavy-tailed
+distribution* — Sjögren syndrome alone is **252.4×** at top-10, and the notebook drops infinities before
+averaging. A scientist who asks *"is that a median?"* and gets an evasive answer has ended the demo.
+
+**"Your ground truth is garbage."**
+
+| card | asserts |
+|---|---|
+| How the pairs are manufactured | the data says *drug treats disease* and *drug hits targets*, never *target treats disease*. A drug hitting 40 proteins approved for 13 diseases manufactures 520 "validated" pairs |
+| How bad it is | **82%** of validated pairs come from multi-target drugs; **8%** survive a single-target demand |
+| Re-run on a curated source | **21.3×** vs 16.9× — the finding got **stronger** |
+| Association ≠ therapeutic relevance | one point per disease, association AUC × therapeutic AUC. **r = +0.002** |
+
+The scatter is the best single visual in the deck: two axes, a visibly flat cloud, the fit line on the
+horizontal. It turns an abstract caveat into something the room sees in one second. **Ship the picture,
+not the *r*.**
+
+> **Must not appear:** the two ground truths merged into one "enrichment" series. The drug-target
+> benchmark as a score — it belongs in act 6.
+
+---
+
+### Act 6 — The limits, and the punch line
+
+**Part one: the limits.**
+
+| card | asserts |
+|---|---|
+| Molecular subtype: **resolvable** | HER2+ vs TNBC share **2 of 50** |
+| Morphological subtype: **not** | lung adenocarcinoma vs squamous share **47 of 50** |
+| The hard case | TNBC: RAD50 #1, ATM #2, TP53 #3, BRCA2 #4, NBN #5 — coherent HR panel, **all novel**, **8** known associations, so unscoreable |
+| The secreted lean | `pct_secreted_top50` vs `pct_secreted_all` — where it happens and where it does not |
+| No safety axis | we do not have one and are not pretending to |
+
+The two overlap cards must sit **side by side**. Separated, the act reads *"it cannot tell subtypes
+apart"*; adjacent, *"we know which kind of subtype it resolves and which it does not"* — a stronger
+statement and the true one.
+
+TNBC is also where the MRN complex lands (RAD50 #1, NBN #5). A graph shot here is the double-strand-break
+repair module, framed as *"a coherent list we cannot validate"*, never as a second success.
+
+> **Must not appear:** TNBC as a success story. **Read [`BREAST_SURGEON_BRIEFING.md`](BREAST_SURGEON_BRIEFING.md)
+> before this act goes in front of a clinician.** Any safety or toxicity claim of any kind.
+
+**Part two: the punch line.** Every value read off the live dataset.
+
+| card | asserts |
+|---|---|
+| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `drug_lift` **3.16**, `assoc_lift` **0.78** — 3.2× more likely to be a real drug target, 1.3× *less* likely to be disease-linked. The model would have learned *"membrane receptor → score lower"* |
+| "Filter out genes the body cannot live without" | intolerant genes: `assoc_lift` **2.07**, `drug_lift` **1.37** — **both above 1**. We predicted drug targets would avoid them; the measurement went cleanly the other way |
+| "Exclude known safety liabilities" | flagged genes carry `drug_lift` **4.62** — liabilities are discovered *by* drugging something, so the flag marks the best-studied targets |
+| **The ten-second check** | **9 of the HER2+ top 15 carry a liability flag — including ERBB2 at #14.** That filter deletes the target this disease is named after |
+| What it costs across the funnel | `filter_three_axes`, stage by stage, per disease |
+| The slide no vendor shows you | a lookup table — *"how many diseases is this gene already a drug target for"* — scores **0.9354** and **beats our trained model**, so we refused to headline that benchmark |
+
+The lookup-table card is **deliberately prose, not a chart**. We decline to compete on that benchmark;
+giving it an axis promotes it to a scoreboard.
+
+**The close.** Three ideas every biologist would have approved, each killed by one recipe, each still in
+the flow with its verdict attached. *"You do not need a better algorithm. You need somewhere your
+biologists' hypotheses get tested in an afternoon instead of argued about for a quarter."* Then where
+their own knowledge enters: failed internal programmes (trial-stage evidence is **13×** larger than
+approved-drug evidence and is the fairer test — and nobody publishes their failures), internal assay
+data, their own disease definitions, expert thresholds. The public data buys the genetic-evidence effect —
+genetically supported targets are 2.6× more likely to survive the clinic *(Minikel et al., Nature 2024)*.
+**Their own graph is the only place the rest of their institutional knowledge can enter the ranking.**
+
+> **Must not appear:** any of the three framed as a modelling subtlety. Each is *"a plausible idea,
+> measured, refuted, recorded"* — that shape is the argument. No roadmap implying the four plug-ins are
+> built.
+
+---
+
+## 5. Where the customer's own knowledge already enters
+
+The strongest thing in the deck that is not a number: **the train/test divide comes from a curated
+medical ontology, not an algorithm.** A biologist's judgment — *"type 2 diabetes and diabetes mellitus are
+the same programme, do not let them straddle"* — became a rule in the pipeline and **lowered** the honest
+score. Domain expertise compiled into a control, already built, and the template for everything the
+customer would plug in. It belongs in act 2 beside the split audit, and is called back in act 6's close.
+
+---
+
+## 6. Guardrails the code must enforce
+
+Native DSS could implement none of the first three. In our own components they are trivial — which is why
+the pivot matters more than it looks.
+
+| the default move | why it breaks | what the app does |
+|---|---|---|
+| Expose `prediction` beside `score` | 590 of 762 known obesity targets are negative at the F1 threshold | never fetched; not in the API response |
+| Let the drug badges be filterable | the discovery lift is measured *against those labels* — filtering makes it circular | rendered as badges; no filter control, and a tooltip saying why |
+| Let the liability flag be filterable | it would delete ERBB2 from its own disease's list | same, plus act 6 shows the cost |
+| `AVG(lift_top10)` in a chart | Sjögren is 252.4× and the notebook drops infinities first | the aggregate carries mean, **median** and **n**, inf-drop explicit, distribution shown beside it |
+| Open with the AUC | answers a question they did not ask | act 2 leads with the distribution; no single number stands alone |
+| One "enrichment" series | approved and investigational mean different things | never OR'd, never merged, separately labelled |
+| Report pooled AUC because it is bigger | pooled overstates by ~7 points | macro only, never adjacent to a pooled figure |
+| Quote a filtered count without its rank cut-off | how the obesity landing count acquired two values (§10.3) | every funnel count renders its cut-off in the same component |
+| A number with no provenance | undercuts the platform claim the deck closes on | §3.3 — every card footers its source dataset |
+| A tooltip-free "novel" or "no liability" label | *"novel"* reads as *undiscovered*, *"no liability"* reads as *safe* — both wrong | the old webapp's `TIPS` copy ports across verbatim |
+
+---
+
+## 7. What is deliberately absent
+
+- **The ablation ladder** (7 → 10 → 12 → 14 features). No card. A modelling decision that invites a
+  hyperparameter conversation.
+- **Feature engineering internals.** No feature-list card anywhere. Show the *paths*.
+- **The drug-target benchmark as a score.** Act 6 prose only.
+- **Any safety or toxicity claim.** Saying we have none is worth more than faking one.
+- **Retired diseases.** Type 2 diabetes and two of the three lung terms never appear in a default
+  selection. Chronic kidney disease appears **once**, as act 2's honest low end.
+
+---
+
+## 8. Chrome, and what the app is not
+
+- **No login, no user management, no persistence.** This is a demo surface over read-only flow output.
+- **No writes to DSS.** The one exception worth considering later is act 3's clinician review form
+  (`breast_shortlist`), and it is out of scope until someone asks.
+- **No LLM anything.** The blueprint ships a chat block; leave `ENABLE_CHATBOT=0`. A chatbot over a
+  ranked gene list is the kind of thing that makes a careful audience stop trusting the careful parts.
+- Blocks to enable: none of the blueprint's five. All six acts are new views.
+
+---
+
+## 9. Serving-layer gaps — what must be built first
+
+Acts 1, 3, 4 and 6 can be built against real data today. Acts 2 and 5 have gaps; §9.1 and §9.6 block
+demo-critical claims. Each is one recipe, landing in zone 60.
+
+| # | needed for | build | where the number lives today |
+|---|---|---|---|
+| **9.1** | act 5 — hub-bias meter | Group over `scored_champion`: known targets only, degree quintile → mean score, predicted-positive rate, median degree | `nb3b_hub_bias_meter.py` only. The notebook says so: *"it has no recipe, so this notebook IS its artifact"* |
+| **9.2** | act 5 — degree-matched enrichment | reshape `tractability_axis` (48 wide columns) to long: `disease, scope, k, control ∈ {obs, naive, dm, exp}, value` | `tractability_axis`, unusable in wide form |
+| **9.3** | acts 5, 6 — discovery lift vs K | aggregate `novel_discovery_eval` to long: `ground_truth, k → mean, median, n`, **infinities dropped explicitly**; add the curated `known_drug ≥ 0.8` variant | `nb4` §8.3. The curated row has no recipe at all |
+| **9.4** | act 5 — the novel head | filter `dashboard_candidates` to `is_target = 0`, `rank ≤ 15`, per panel disease | derivable, not materialised |
+| **9.5** | act 5 — pair provenance | aggregate `raw_ot_known_drug` / `drug_protein_edges`: targets per drug, share of validated pairs from multi-target drugs | `nb4` computes it from raw at run time |
+| **9.6** | act 5 — orthogonality scatter | **visual Join**, `validation_auc_by_disease` × `drug_target_benchmark` on `disease_index` | `nb3` §7.4, in-notebook merge |
+| **9.7** | act 6 — lung overlap | the `breast_panel_overlap` shape, applied to `lung_granularity_check` | row-level; the overlap count is not materialised |
+| **9.8** | act 1 — acceptance table | materialise the reference comparison (nodes, edges, per-relation exact matches) | `GRAPH_BUILDING.md` §7.2 prose and `reference_baseline.json` |
+
+House rules: joins go in visual Join recipes (9.6), new datasets on the S3 connection.
+
+---
+
+## 10. Discrepancies — resolve before the demo
+
+1. **`DEMO_NARRATIVE.md` §7's HER2+ row is stale.** It reads *"ERBB2 itself at #13, TP53 #2, PIK3CA #7,
+   AKT1 #10."* Live: **ERBB2 #14, TP53 #1, PIK3CA #5, AKT1 #29.** §6 of the same document says *"ERBB2 at
+   rank 14, PIK3CA at rank 5"* — which matches. §6 is current, §7 drifted, AKT1 is wrong by 19 places.
+2. **§8's MRN anchor shot is not a HER2+ story.** *"The breast-cancer top-10 contained RAD50, NBN and
+   MRE11"* — on HER2+ those rank **55, 99, 401**; on TNBC **1, 5, 702**. So the anchor belongs to TNBC,
+   which §6 forbids showing as a success. This design routes around it; the narrative still needs the
+   correction, because as written the two sections contradict.
+3. **The obesity landing count is unpinned.** Q1 says *"lands at 65"*; the one-pager says *"rank ≤ 200 ≈
+   70"*. `filter_three_axes` gives `top200 PLAIN → 65` and `top200 FILTERED → 83`; `nb4` asserts none of
+   them. The HER2+ equivalent is now defined and computed (**38** at rank ≤ 200) — define obesity's the
+   same way and assert both.
+4. **Zone `41 Validation - the three axes` says novel discovery is "11.4x at top-10".** The guarded value
+   is **16.88** (`nb4` §8.3); `11.4` appears nowhere in `.index/claims.tsv`. Flow-zone prose is
+   demo-facing and no index covers it, and this is the zone a technical reviewer opens first.
+5. **`CLAUDE.md` Track A is stale.** *"What is missing is the UI itself"* — the old webapp is 1,086 lines,
+   complete, and running. What is missing is this app and §9.
+6. **`breast_shortlist` and `dashboard_candidates` disagree on rank** because the shortlist is a curated
+   review form with its own block ranking. Act 6's liability card must bind to **`dashboard_candidates`**
+   (9 of 15); the shortlist gives 7 of 11 for a different ranking, and the two must not be quoted
+   interchangeably.
+
+---
+
+## 11. What the native-dashboard attempt left behind
+
+Retired, not deleted — the datasets and the verification stand, and the numbers in acts 1 and 2 above
+came out of it.
+
+- **Dashboard `Cn8oSQC`** (*Explainable Target Prioritizer*), 2 pages, 9 tiles, pre-flight clean.
+  Superseded by this app. Delete when the app's acts 1–2 are live.
+- **Nine insights** — `5HO2siE` `4K3ZaXc` `yCeHFL5` `qbcUIFV` `KlU30Ds` `0geL7DP` `j5uQM0m` `hgUGndf`
+  `Otf6C9B`. Same.
+- **`ZZ_TMP_probe_webapp` (`lH0d8eC`)** — the probe that established §3.1's first row. Delete.
+- **Nine column descriptions across four datasets, which should stay.** `split_audit_2`'s overlap and
+  straddling columns, `validation_auc_by_disease_2.level` and `.pooled_auc`,
+  `family_auc_by_family.auc_family`, `persona_candidates.rank_enrichment` now carry the traps in §4 act 2
+  as schema documentation. They are independent of the presentation layer and are where the next person
+  will hit these problems.
+
+**DSS traps worth keeping** (they apply to any presentation layer): chart sampling defaults to 10,000
+records; `dku dataset set-column-description` takes alternating positional column/description arguments;
+serving datasets are S3/parquet so `dku dataset query` does not apply — use `dataset head`;
+`dashboard_candidates` pulls all 129,253 rows in one `head` call, which is how every HER2+ figure here was
+derived.
+
+---
+
+**Sources.** [`DEMO_NARRATIVE.md`](DEMO_NARRATIVE.md) governs, with the corrections in §10. Method and
+provenance: [`TARGET_PRIORITIZER.md`](../prioritizer/TARGET_PRIORITIZER.md). Graph statistics:
+[`GRAPH_BUILDING.md`](../graph/GRAPH_BUILDING.md) §7. Platform behaviours:
+[`DSS_CHEATSHEET.md`](../platform/DSS_CHEATSHEET.md). Clinician constraints:
+[`BREAST_SURGEON_BRIEFING.md`](BREAST_SURGEON_BRIEFING.md). App conventions: the `AGENTS` file at the root of
+`~/Documents/GitHub/bs-blueprint`.
+
+Every HER2+ and TNBC figure in §2, §4 and §10, and every graph and calibration figure in act 1 and act 2,
+was computed from the live datasets on 2026-08-21, not copied from prose.

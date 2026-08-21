@@ -21,6 +21,7 @@ flags them as historical dropped.
 | `DECISIONS.md` | 2 | 53 | 356 | 411 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
+| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 20 | 87 | 107 |
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 14 | 20 | 35 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
@@ -31,11 +32,11 @@ flags them as historical dropped.
 | `docs/reference/DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
 | `docs/reference/RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
 | `notebooks/README.md` | 0 | 0 | 2 | 2 |
-| **total** | **49** | **181** | **1448** | **1678** |
+| **total** | **49** | **201** | **1535** | **1785** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**353 rows.** Of 1448 total orphans, these are the model-dependent ones: the numbers that move
+**372 rows.** Of 1535 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -44,6 +45,25 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:97` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:106` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:108` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
+| `docs/demo/DASHBOARD_DESIGN.md:259` | 4 | 0.8623 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
+| `docs/demo/DASHBOARD_DESIGN.md:259` | 4 | 0.1045 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
+| `docs/demo/DASHBOARD_DESIGN.md:259` | 4 | 0.9962 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
+| `docs/demo/DASHBOARD_DESIGN.md:261` | 4 | 19.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
+| `docs/demo/DASHBOARD_DESIGN.md:261` | 4 | 28.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
+| `docs/demo/DASHBOARD_DESIGN.md:261` | 4 | 59.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
+| `docs/demo/DASHBOARD_DESIGN.md:297` | 4 | 0.9337 | \| The panel \| table \| 12 breast terms: pool, known targets, AUC, hits@50, enrichment, v |
+| `docs/demo/DASHBOARD_DESIGN.md:297` | 4 | 0.8949 | \| The panel \| table \| 12 breast terms: pool, known targets, AUC, hits@50, enrichment, v |
+| `docs/demo/DASHBOARD_DESIGN.md:316` | 4 | 12,272 | \| The ranked list \| virtualised table \| 12,272 rows, rank + percentile + score + SHAP d |
+| `docs/demo/DASHBOARD_DESIGN.md:317` | 4 | 12,272 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
+| `docs/demo/DASHBOARD_DESIGN.md:317` | 4 | 11,673 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
+| `docs/demo/DASHBOARD_DESIGN.md:317` | 4 | 7,951 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
+| `docs/demo/DASHBOARD_DESIGN.md:317` | 4 | 7,274 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
+| `docs/demo/DASHBOARD_DESIGN.md:371` | 4 | 17.3 | \| The harder version \| known targets only, by connectivity quintile: score 0.59 → 0.79,  |
+| `docs/demo/DASHBOARD_DESIGN.md:371` | 4 | 57.0 | \| The harder version \| known targets only, by connectivity quintile: score 0.59 → 0.79,  |
+| `docs/demo/DASHBOARD_DESIGN.md:381` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/DASHBOARD_DESIGN.md:381` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/DASHBOARD_DESIGN.md:383` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
+| `docs/demo/DASHBOARD_DESIGN.md:383` | 4 | 4.0 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
 | `docs/demo/DEMO_NARRATIVE.md:32` | - | 13,126 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
 | `docs/demo/DEMO_NARRATIVE.md:32` | - | 12,364 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
 | `docs/demo/DEMO_NARRATIVE.md:32` | - | 8,615 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
@@ -81,27 +101,8 @@ when the champion changes and that no notebook would catch.
 | `docs/prioritizer/FEATURE_AUDIT.md:154` | 4 | 0.982 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
 | `docs/prioritizer/FEATURE_AUDIT.md:165` | 4 | 0.567 | saturates at 74% hop-1 and scores AUC 0.567. If the gain is uniform across module sizes, t |
 | `docs/prioritizer/FEATURE_AUDIT.md:174` | 4 | 0.8197 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:174` | 4 | 0.8200 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:174` | 4 | 0.8175 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:175` | 4 | 0.1737 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:175` | 4 | 0.1762 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:175` | 4 | 0.1711 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:175` | 4 | 0.1749 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:175` | 4 | 0.1778 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:175` | 4 | 3.18 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:176` | 4 | 0.1954 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
-| `docs/prioritizer/FEATURE_AUDIT.md:176` | 4 | 0.1932 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
-| `docs/prioritizer/FEATURE_AUDIT.md:176` | 4 | 0.1915 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
-| `docs/prioritizer/FEATURE_AUDIT.md:176` | 4 | 0.1900 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
-| `docs/prioritizer/FEATURE_AUDIT.md:177` | 4 | 0.6911 | \| therapeutic, all \| 0.6911 \| 0.6949 \| 0.6931 \| 0.6949 \| 0.6886 \| worst of five \| |
-| `docs/prioritizer/FEATURE_AUDIT.md:177` | 4 | 0.6949 | \| therapeutic, all \| 0.6911 \| 0.6949 \| 0.6931 \| 0.6949 \| 0.6886 \| worst of five \| |
-| `docs/prioritizer/FEATURE_AUDIT.md:177` | 4 | 0.6931 | \| therapeutic, all \| 0.6911 \| 0.6949 \| 0.6931 \| 0.6949 \| 0.6886 \| worst of five \| |
-| `docs/prioritizer/FEATURE_AUDIT.md:178` | 4 | 0.7337 | \| therapeutic, route-supported \| 0.7337 \| 0.7371 \| 0.7384 \| 0.7418 \| **0.7471** \| b |
-| `docs/prioritizer/FEATURE_AUDIT.md:178` | 4 | 0.7371 | \| therapeutic, route-supported \| 0.7337 \| 0.7371 \| 0.7384 \| 0.7418 \| **0.7471** \| b |
-| `docs/prioritizer/FEATURE_AUDIT.md:178` | 4 | 0.7384 | \| therapeutic, route-supported \| 0.7337 \| 0.7371 \| 0.7384 \| 0.7418 \| **0.7471** \| b |
-| `docs/prioritizer/FEATURE_AUDIT.md:178` | 4 | 0.7418 | \| therapeutic, route-supported \| 0.7337 \| 0.7371 \| 0.7384 \| 0.7418 \| **0.7471** \| b |
 
-*293 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*312 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 

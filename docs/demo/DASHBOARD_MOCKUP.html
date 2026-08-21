@@ -1,0 +1,1118 @@
+<title>Target Prioritizer Acts</title>
+<!--
+  Static mockup of the six-act demo webapp. Specified in DASHBOARD_DESIGN.md.
+
+  PURPOSE
+    Settle layout and information design before any Vue component is written.
+    Every number here is hard-coded and was computed from the live DSS datasets
+    on 2026-08-21 (see the `src` footer on each card). This file is the thing to
+    iterate on; the Vue app is the thing to build once it is agreed.
+
+  DESIGN SYSTEM — inherited, not invented
+    Colors, radius and dark-mode values are lifted verbatim from
+    bs-blueprint/frontend/src/styles/tokens.css so this preview renders in the
+    same visual identity the real app will. Primary is the Dataiku indigo
+    hsl(233.92 50% 35%); neutrals carry the blueprint's slight blue bias
+    (hue 240) rather than pure grey; series colors are --chart-1..5.
+    Type is the Tailwind default sans stack — the same faces the Vue app gets,
+    so nothing here looks better than the real thing will. Data is set in the
+    system mono stack with tabular figures.
+    Layout: 264px sidebar, sticky act header, 1400px content column, 12-column
+    grid. Cards are 1px border + token radius, no accent rails.
+
+  STATUS CHIPS carry real information, they are not decoration:
+    live  — the figure was computed from a built dataset and is quotable now
+    gap   — the chart's shape is designed but the aggregate does not exist yet
+            (DASHBOARD_DESIGN.md section 9)
+    port  — validated behaviour to carry across from the existing webapp
+-->
+<style>
+  /* ---- tokens: light is the base, both dark paths redefine only tokens ---- */
+  :root {
+    --background: hsl(0 0% 100%);
+    --foreground: hsl(240 10% 3.9%);
+    --card: hsl(0 0% 100%);
+    --muted: hsl(240 4.8% 95.9%);
+    --muted-foreground: hsl(240 3.8% 46.1%);
+    --primary: hsl(233.92 50% 35%);
+    --primary-foreground: hsl(0 0% 98%);
+    --border: hsl(240 5.9% 90%);
+    --destructive: hsl(0 72% 45%);
+    --chart-1: hsl(22 84% 60%);
+    --chart-2: hsl(172 46% 48%);
+    --chart-3: hsl(221 47% 31%);
+    --chart-4: hsl(72 55% 55%);
+    --chart-5: hsl(56 62% 52%);
+    --good: hsl(158 64% 32%);
+    --good-bg: hsl(152 55% 95%);
+    --warn: hsl(28 75% 38%);
+    --warn-bg: hsl(38 80% 94%);
+    --bad: hsl(350 65% 42%);
+    --bad-bg: hsl(350 70% 96%);
+    --sidebar: hsl(223 78% 98%);
+    --sidebar-border: hsl(220 13% 91%);
+    --shadow: 0 1px 2px hsl(240 10% 3.9% / .05), 0 1px 3px hsl(240 10% 3.9% / .04);
+    --radius: 0.625rem;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --background: hsl(240 10% 9%);
+      --foreground: hsl(0 0% 96%);
+      --card: hsl(240 8% 12%);
+      --muted: hsl(240 5% 18%);
+      --muted-foreground: hsl(240 5% 66%);
+      --primary: hsl(228 70% 72%);
+      --primary-foreground: hsl(240 20% 12%);
+      --border: hsl(240 5% 22%);
+      --destructive: hsl(0 70% 66%);
+      --chart-1: hsl(22 80% 64%);
+      --chart-2: hsl(172 44% 56%);
+      --chart-3: hsl(221 60% 68%);
+      --chart-4: hsl(72 48% 60%);
+      --chart-5: hsl(56 58% 58%);
+      --good: hsl(152 50% 62%);
+      --good-bg: hsl(158 40% 16%);
+      --warn: hsl(36 70% 64%);
+      --warn-bg: hsl(30 45% 17%);
+      --bad: hsl(352 70% 70%);
+      --bad-bg: hsl(350 40% 18%);
+      --sidebar: hsl(240 9% 11%);
+      --sidebar-border: hsl(240 5% 20%);
+      --shadow: 0 1px 2px hsl(0 0% 0% / .3), 0 1px 3px hsl(0 0% 0% / .2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --background: hsl(240 10% 9%);
+    --foreground: hsl(0 0% 96%);
+    --card: hsl(240 8% 12%);
+    --muted: hsl(240 5% 18%);
+    --muted-foreground: hsl(240 5% 66%);
+    --primary: hsl(228 70% 72%);
+    --primary-foreground: hsl(240 20% 12%);
+    --border: hsl(240 5% 22%);
+    --destructive: hsl(0 70% 66%);
+    --chart-1: hsl(22 80% 64%);
+    --chart-2: hsl(172 44% 56%);
+    --chart-3: hsl(221 60% 68%);
+    --chart-4: hsl(72 48% 60%);
+    --chart-5: hsl(56 58% 58%);
+    --good: hsl(152 50% 62%);
+    --good-bg: hsl(158 40% 16%);
+    --warn: hsl(36 70% 64%);
+    --warn-bg: hsl(30 45% 17%);
+    --bad: hsl(352 70% 70%);
+    --bad-bg: hsl(350 40% 18%);
+    --sidebar: hsl(240 9% 11%);
+    --sidebar-border: hsl(240 5% 20%);
+    --shadow: 0 1px 2px hsl(0 0% 0% / .3), 0 1px 3px hsl(0 0% 0% / .2);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .num, table td.n, .stat-v { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  /* ---- shell ---- */
+  .app { display: flex; min-height: 100vh; }
+  .side {
+    width: 264px; flex: none; background: var(--sidebar);
+    border-right: 1px solid var(--sidebar-border);
+    display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+  }
+  .brand { padding: 18px 20px; display: flex; gap: 10px; align-items: center;
+           border-bottom: 1px solid var(--sidebar-border); }
+  .brand-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--primary);
+                display: grid; place-items: center; flex: none; }
+  .brand-name { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+  .brand-sub { font-size: 11px; color: var(--muted-foreground); }
+  .nav-label { padding: 18px 20px 6px; font-size: 10.5px; font-weight: 600;
+               letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted-foreground); }
+  .nav { display: flex; flex-direction: column; gap: 2px; padding: 0 10px; }
+  .nav button {
+    display: flex; align-items: baseline; gap: 10px; width: 100%; text-align: left;
+    padding: 8px 10px; border: 0; border-radius: calc(var(--radius) - 2px);
+    background: transparent; color: var(--foreground); font: inherit; cursor: pointer;
+  }
+  .nav button:hover { background: color-mix(in oklab, var(--primary) 8%, transparent); }
+  .nav button[aria-current="page"] { background: var(--primary); color: var(--primary-foreground); }
+  .nav .k { font-family: var(--mono); font-size: 11px; opacity: .7; flex: none; width: 14px; }
+  .nav .t { font-size: 13px; }
+  .nav button:focus-visible, .chip-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  .side-foot { margin-top: auto; padding: 14px 20px; border-top: 1px solid var(--sidebar-border);
+               font-size: 11px; color: var(--muted-foreground); }
+
+  .main { flex: 1; min-width: 0; }
+  .act-head {
+    position: sticky; top: 0; z-index: 5; background: color-mix(in oklab, var(--background) 88%, transparent);
+    backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 18px 32px;
+  }
+  .act-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
+                 text-transform: uppercase; color: var(--muted-foreground); }
+  .act-q { font-size: 21px; font-weight: 600; letter-spacing: -0.015em; margin: 3px 0 0;
+           text-wrap: balance; }
+  .act-lede { font-size: 13px; color: var(--muted-foreground); margin: 4px 0 0; max-width: 78ch; }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 24px 32px 56px; }
+  .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+
+  /* ---- card ---- */
+  .card { grid-column: span 12; background: var(--card); border: 1px solid var(--border);
+          border-radius: var(--radius); box-shadow: var(--shadow); display: flex;
+          flex-direction: column; overflow: hidden; }
+  .c6 { grid-column: span 6; } .c4 { grid-column: span 4; } .c8 { grid-column: span 8; }
+  .c3 { grid-column: span 3; } .c5 { grid-column: span 5; } .c7 { grid-column: span 7; }
+  .card-h { padding: 14px 16px 10px; display: flex; gap: 10px; align-items: start;
+            justify-content: space-between; }
+  .card-t { font-size: 13.5px; font-weight: 600; letter-spacing: -0.005em; }
+  .card-d { font-size: 12px; color: var(--muted-foreground); margin-top: 2px; max-width: 70ch; }
+  .card-b { padding: 4px 16px 14px; flex: 1; }
+  .card-f { padding: 8px 16px; border-top: 1px solid var(--border);
+            background: color-mix(in oklab, var(--muted) 45%, transparent);
+            font-family: var(--mono); font-size: 10.5px; color: var(--muted-foreground);
+            display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .chip { flex: none; font-family: var(--mono); font-size: 10px; font-weight: 600;
+          letter-spacing: .04em; text-transform: uppercase; padding: 2px 6px;
+          border-radius: 5px; border: 1px solid; white-space: nowrap; }
+  .chip-live { color: var(--good); background: var(--good-bg); border-color: color-mix(in oklab, var(--good) 30%, transparent); }
+  .chip-gap  { color: var(--warn); background: var(--warn-bg); border-color: color-mix(in oklab, var(--warn) 30%, transparent); }
+  .chip-port { color: var(--primary); background: color-mix(in oklab, var(--primary) 10%, transparent);
+               border-color: color-mix(in oklab, var(--primary) 28%, transparent); }
+
+  /* ---- stat tiles ---- */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+  .stat { border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px); padding: 12px 14px; }
+  .stat-l { font-size: 10.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+            color: var(--muted-foreground); }
+  .stat-v { font-size: 25px; font-weight: 600; letter-spacing: -0.02em; margin-top: 4px; line-height: 1.1; }
+  .stat-c { font-size: 11.5px; color: var(--muted-foreground); margin-top: 3px; }
+
+  /* ---- tables ---- */
+  .tw { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead th { text-align: left; font-size: 10.5px; font-weight: 600; letter-spacing: .05em;
+             text-transform: uppercase; color: var(--muted-foreground);
+             padding: 7px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  thead th.n, td.n { text-align: right; }
+  tbody td { padding: 7px 10px; border-bottom: 1px solid color-mix(in oklab, var(--border) 55%, transparent); }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr.hl { background: color-mix(in oklab, var(--primary) 7%, transparent); }
+  tbody tr.hl td:first-child { box-shadow: inset 2px 0 0 var(--primary); }
+  .gene { font-family: var(--mono); font-weight: 600; }
+  .zero { color: var(--good); font-weight: 600; }
+
+  /* ---- badges ---- */
+  .b { display: inline-block; font-size: 10px; font-family: var(--mono); font-weight: 600;
+       padding: 1px 5px; border-radius: 4px; border: 1px solid; margin-right: 3px; white-space: nowrap; }
+  .b-known { color: var(--muted-foreground); background: var(--muted); border-color: var(--border); }
+  .b-novel { color: var(--chart-3); background: color-mix(in oklab, var(--chart-3) 12%, transparent);
+             border-color: color-mix(in oklab, var(--chart-3) 30%, transparent); }
+  .b-appr  { color: var(--good); background: var(--good-bg); border-color: color-mix(in oklab, var(--good) 32%, transparent); }
+  .b-trial { color: var(--chart-1); background: color-mix(in oklab, var(--chart-1) 14%, transparent);
+             border-color: color-mix(in oklab, var(--chart-1) 34%, transparent); }
+  .b-liab  { color: var(--bad); background: var(--bad-bg); border-color: color-mix(in oklab, var(--bad) 30%, transparent); }
+
+  /* ---- prose blocks ---- */
+  .say { border-left: 3px solid var(--primary); padding: 8px 0 8px 12px; margin: 12px 0 0;
+         font-size: 12.5px; }
+  .say b { font-weight: 600; }
+  .no { border: 1px dashed color-mix(in oklab, var(--bad) 40%, var(--border)); border-radius: calc(var(--radius) - 2px);
+        padding: 10px 12px; font-size: 12px; background: color-mix(in oklab, var(--bad) 4%, transparent); }
+  .no-t { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .05em;
+          text-transform: uppercase; color: var(--bad); margin-bottom: 4px; }
+  .warnbox { border: 1px solid color-mix(in oklab, var(--warn) 35%, var(--border));
+             background: color-mix(in oklab, var(--warn) 6%, transparent);
+             border-radius: calc(var(--radius) - 2px); padding: 10px 12px; font-size: 12px; }
+  ul.tight { margin: 8px 0 0; padding-left: 18px; } ul.tight li { margin-bottom: 4px; font-size: 12.5px; }
+  pre { font-family: var(--mono); font-size: 11px; background: var(--muted); border: 1px solid var(--border);
+        border-radius: calc(var(--radius) - 2px); padding: 11px 12px; overflow-x: auto; margin: 10px 0 0;
+        line-height: 1.5; }
+  .cmt { color: var(--muted-foreground); }
+  .funnel { display: flex; flex-wrap: wrap; align-items: stretch; gap: 6px; margin-top: 4px; }
+  .fstep { flex: 1 1 0; border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px);
+           padding: 9px 10px; min-width: 92px; }
+  .fstep.last { border-color: var(--primary); background: color-mix(in oklab, var(--primary) 8%, transparent); }
+  .fstep .fv { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 19px;
+               font-weight: 600; letter-spacing: -0.02em; }
+  .fstep .fl { font-size: 10.5px; color: var(--muted-foreground); }
+  .lgd { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; font-size: 11.5px;
+         color: var(--muted-foreground); }
+  .lgd i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; margin-right: 5px; }
+  .view[hidden] { display: none; }
+  svg { display: block; max-width: 100%; }
+  svg text { font-family: var(--mono); font-variant-numeric: tabular-nums; fill: var(--muted-foreground); }
+  svg text.lab { font-family: var(--sans); }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  @media (max-width: 1100px) {
+    .c6, .c8, .c4, .c5, .c7, .c3 { grid-column: span 12; }
+    .side { display: none; }
+  }
+</style>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <span class="brand-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(0 0% 100%)"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="5" r="2.4"></circle><circle cx="5" cy="18" r="2.4"></circle>
+          <circle cx="19" cy="18" r="2.4"></circle>
+          <path d="M12 7.4 6.6 15.8M12 7.4l5.4 8.4M7.4 18h9.2"></path>
+        </svg>
+      </span>
+      <span>
+        <div class="brand-name">Target Prioritizer</div>
+        <div class="brand-sub">HER2+ breast &middot; 12,272 candidates</div>
+      </span>
+    </div>
+    <div class="nav-label">The interrogation</div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">
+      Static mockup &middot; no backend<br>
+      Figures verified 2026-08-21
+    </div>
+  </aside>
+
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+/* ==========================================================================
+   DATA — mirrors the shape of frontend/src/data/mock/*.ts in the real app.
+   Every figure carries the dataset it came from in the card's `src` footer.
+   ========================================================================== */
+const D = {
+  graph: {
+    nodes: [
+      ['disease', 27153], ['biological_process', 23974], ['gene / protein', 20861],
+      ['effect / phenotype', 19120], ['molecular_function', 10041], ['drug', 5282],
+      ['cellular_component', 4077], ['pathway', 2883],
+    ],
+    relations: [
+      ['protein_protein', 520380], ['phenotype_protein', 487054],
+      ['disease_phenotype_positive', 380280], ['disease_protein', 378888],
+      ['bioprocess_protein', 251808], ['cellcomp_protein', 186806],
+      ['molfunc_protein', 156246], ['disease_disease', 129606],
+      ['pathway_protein', 97618], ['bioprocess_bioprocess', 80972],
+      ['drug_investigated_for', 69682], ['phenotype_phenotype', 45912],
+      ['molfunc_molfunc', 24548], ['drug_protein', 15918], ['indication', 9418],
+      ['cellcomp_cellcomp', 9392], ['pathway_pathway', 5798],
+      ['disease_phenotype_negative', 1184],
+    ],
+    ppi: [
+      ['menche', 189982, 1], ['string', 151254, 1], ['huri', 92536, 1],
+      ['menche + string', 54554, 2], ['huri + menche', 28478, 2],
+      ['huri + menche + string', 2714, 3], ['huri + string', 862, 2],
+    ],
+    label: [
+      ['genetic association', 171810], ['somatic mutation', 150266], ['both', 1710],
+    ],
+  },
+  calib: {
+    /* 20 equal bins over [0,1] — counts are the real distribution */
+    diseaseAuc: [0,0,1,1,0,2,2,0,1,1,5,13,31,51,73,71,65,101,205,45],
+    familyAuc:  [0,0,1,1,0,2,2,0,1,1,5,13,31,46,66,65,51,66,125,27],
+    split: [
+      ['train', 2187862, 42450, 1.9403, 383, 323, 348],
+      ['validation', 3958921, 73829, 1.8649, 670, 443, 505],
+      ['test', 607345, 11184, 1.8415, 104, 74, 80],
+    ],
+    enrich: { min: 0.0, q1: 9.13, med: 19.23, q3: 28.23, max: 59.22 },
+  },
+  panel: [
+    ['HER2 positive breast carcinoma', 12272, 599, 0.9365, 48, 19.7, 'lead'],
+    ['female breast carcinoma', 11946, 544, 0.9359, 50, 22.0, ''],
+    ['breast lobular carcinoma', 11723, 513, 0.9337, 48, 21.9, ''],
+    ['breast carcinoma', 13290, 864, 0.8608, 49, 15.1, ''],
+    ['invasive breast carcinoma', 8170, 123, 0.9351, 19, 25.2, ''],
+    ['luminal B breast carcinoma', 7439, 88, 0.9106, 20, 33.8, ''],
+    ['breast adenocarcinoma', 6738, 53, 0.9043, 16, 40.7, ''],
+    ['luminal A breast carcinoma', 8157, 101, 0.8467, 14, 22.6, ''],
+    ['ER-negative breast cancer', 3474, 14, 0.8411, 4, 19.9, 'thin'],
+    ['ER-positive breast cancer', 5297, 33, 0.8136, 4, 12.8, 'thin'],
+    ['breast cancer (parent term)', 9067, 138, 0.7072, 21, 27.6, ''],
+    ['triple-negative breast carcinoma', 2563, 8, 0.8949, 2, 12.8, 'hard'],
+  ],
+  her2Top15: [
+    [1,'TP53',0,1,0,0,1], [2,'EP300',0,0,0,0,0], [3,'PIK3R1',0,0,0,0,1],
+    [4,'CREBBP',0,0,0,0,0], [5,'PIK3CA',0,0,0,1,1], [6,'CTNNB1',0,0,0,0,1],
+    [7,'JAK2',0,0,0,1,1], [8,'PTPN11',0,0,0,0,1], [9,'HRAS',1,0,0,0,0],
+    [10,'KRAS',0,0,0,0,0], [11,'EGFR',0,0,0,1,1], [12,'BRCA1',0,0,0,0,0],
+    [13,'SMAD3',0,0,0,0,0], [14,'ERBB2',0,0,1,1,1], [15,'MAPK1',0,0,0,0,1],
+  ],
+  funnel: [
+    ['all candidates', 12272], ['novel only', 11673], ['+ tractable', 7951],
+    ['+ not secreted', 7274], ['+ rank ≤ 200', 38],
+  ],
+  degreeMatched: [[10, 2.9], [50, 2.7], [200, 2.4]],
+  hubBias: [
+    ['lowest fifth', 6, 0.59, 17.3], ['second', 18, 0.66, 27.0],
+    ['middle', 44, 0.71, 38.0], ['fourth', 88, 0.75, 47.0],
+    ['highest fifth', 155, 0.79, 57.0],
+  ],
+  liftK: {
+    k: [10, 20, 50, 100, 200],
+    approved: [16.9, 11.2, 8.1, 6.2, 5.0],
+    trials: [7.4, 6.1, 5.2, 4.5, 4.0],
+  },
+  refuted: [
+    ['Membrane receptor', 0.78, 3.16, 'druggability as an input'],
+    ['Ion channel', 1.60, 11.89, 'druggability as an input'],
+    ['Transcription factor', 2.95, 2.13, 'druggability as an input'],
+    ['Secreted protein', 0.90, 0.26, 'druggability as an input'],
+  ],
+  tnbc: [[1,'RAD50'],[2,'ATM'],[3,'TP53'],[4,'BRCA2'],[5,'NBN']],
+};
+
+/* ==========================================================================
+   SVG chart helpers. Hand-built because the Vue app uses ECharts and this
+   mockup must not depend on a CDN. Shapes match what ECharts will render.
+   ========================================================================== */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = n => n.toLocaleString('en-US');
+
+/** Horizontal bars. rows = [label, value, colorVar?] */
+function hbars(rows, opts = {}) {
+  const rh = opts.rowH || 20, gap = 4, lw = opts.labelW || 168, vw = 62;
+  const h = rows.length * (rh + gap), max = Math.max(...rows.map(r => r[1]));
+  const bw = Math.max(120, (opts.width || 640) - lw - vw);
+  let s = `<svg viewBox="0 0 ${lw + bw + vw} ${h}" role="img" aria-label="${esc(opts.aria || 'bar chart')}">`;
+  rows.forEach((r, i) => {
+    const y = i * (rh + gap), w = Math.max(1.5, (r[1] / max) * bw);
+    const col = r[2] || 'var(--chart-3)';
+    s += `<text class="lab" x="${lw - 8}" y="${y + rh / 2 + 4}" font-size="11" text-anchor="end">${esc(r[0])}</text>`;
+    s += `<rect x="${lw}" y="${y + 2}" width="${w}" height="${rh - 4}" rx="2.5" fill="${col}"/>`;
+    s += `<text x="${lw + bw + vw - 2}" y="${y + rh / 2 + 4}" font-size="10.5" text-anchor="end">${fmt(r[1])}</text>`;
+  });
+  return s + '</svg>';
+}
+
+/** Histogram over 20 bins spanning [0,1]. */
+function histogram(bins, opts = {}) {
+  const W = 640, H = opts.height || 190, pl = 34, pb = 26, pt = 10, pr = 8;
+  const iw = W - pl - pr, ih = H - pb - pt, max = Math.max(...bins);
+  const bw = iw / bins.length;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(opts.aria || 'histogram')}">`;
+  for (let g = 0; g <= 4; g++) {
+    const y = pt + ih - (ih * g / 4);
+    s += `<line x1="${pl}" x2="${W - pr}" y1="${y}" y2="${y}" stroke="var(--border)" stroke-dasharray="3 3"/>`;
+    s += `<text x="${pl - 6}" y="${y + 3.5}" font-size="9.5" text-anchor="end">${Math.round(max * g / 4)}</text>`;
+  }
+  /* Bins below 0.5 are worse than chance — a real distinction, so it gets a color. */
+  bins.forEach((c, i) => {
+    const bh = max ? (c / max) * ih : 0;
+    const mid = (i + 0.5) / bins.length;
+    const col = mid < 0.5 ? 'var(--chart-1)' : 'var(--chart-3)';
+    if (c > 0) s += `<rect x="${pl + i * bw + 1}" y="${pt + ih - bh}" width="${bw - 2}" height="${bh}" rx="1.5" fill="${col}"/>`;
+  });
+  const chance = pl + 0.5 * iw;
+  s += `<line x1="${chance}" x2="${chance}" y1="${pt}" y2="${pt + ih}" stroke="var(--muted-foreground)" stroke-dasharray="2 3"/>`;
+  s += `<text x="${chance - 4}" y="${pt + 11}" font-size="9" text-anchor="end">chance</text>`;
+  if (opts.mean != null) {
+    const x = pl + opts.mean * iw;
+    s += `<line x1="${x}" x2="${x}" y1="${pt}" y2="${pt + ih}" stroke="var(--destructive)" stroke-width="1.5"/>`;
+    s += `<text x="${x + 4}" y="${pt + 11}" font-size="10" fill="var(--destructive)">macro ${opts.mean.toFixed(4)}</text>`;
+  }
+  if (opts.marker != null) {
+    const x = pl + opts.marker * iw;
+    s += `<path d="M${x} ${pt + ih} l-4 8 h8 z" fill="var(--primary)"/>`;
+    s += `<text x="${x}" y="${pt + ih + 22}" font-size="10" text-anchor="middle" fill="var(--primary)">${esc(opts.markerLabel || '')}</text>`;
+  }
+  s += `<line x1="${pl}" x2="${W - pr}" y1="${pt + ih}" y2="${pt + ih}" stroke="var(--border)"/>`;
+  [0, .25, .5, .75, 1].forEach(t => {
+    s += `<text x="${pl + t * iw}" y="${H - 6}" font-size="9.5" text-anchor="middle">${t.toFixed(2)}</text>`;
+  });
+  return s + '</svg>';
+}
+
+/** Single horizontal box plot with whiskers. */
+function boxplot(b) {
+  const W = 640, H = 96, pl = 12, pr = 12, y = 34, bh = 26;
+  const lo = 0, hi = Math.ceil(b.max / 10) * 10, iw = W - pl - pr;
+  const X = v => pl + ((v - lo) / (hi - lo)) * iw;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="rank enrichment distribution">`;
+  s += `<line x1="${X(b.min)}" x2="${X(b.max)}" y1="${y + bh / 2}" y2="${y + bh / 2}" stroke="var(--chart-3)" stroke-width="1.5"/>`;
+  [b.min, b.max].forEach(v => s += `<line x1="${X(v)}" x2="${X(v)}" y1="${y + 5}" y2="${y + bh - 5}" stroke="var(--chart-3)" stroke-width="1.5"/>`);
+  s += `<rect x="${X(b.q1)}" y="${y}" width="${X(b.q3) - X(b.q1)}" height="${bh}" rx="3"
+         fill="color-mix(in oklab, var(--chart-3) 22%, transparent)" stroke="var(--chart-3)"/>`;
+  s += `<line x1="${X(b.med)}" x2="${X(b.med)}" y1="${y - 3}" y2="${y + bh + 3}" stroke="var(--chart-3)" stroke-width="2.5"/>`;
+  s += `<text x="${X(b.med)}" y="${y - 8}" font-size="11" text-anchor="middle" fill="var(--chart-3)">median ${b.med.toFixed(1)}×</text>`;
+  [[b.min, 'min'], [b.q1, 'Q1 ' + b.q1.toFixed(1)], [b.q3, 'Q3 ' + b.q3.toFixed(1)], [b.max, 'max ' + b.max.toFixed(1)]]
+    .forEach(([v, l]) => s += `<text x="${X(v)}" y="${y + bh + 20}" font-size="9.5" text-anchor="middle">${esc(l)}</text>`);
+  return s + '</svg>';
+}
+
+/** Donut. rows = [label, value] */
+function donut(rows) {
+  const R = 62, r = 38, cx = 80, cy = 80;
+  const total = rows.reduce((a, b) => a + b[1], 0);
+  const cols = ['var(--chart-3)', 'var(--chart-1)', 'var(--chart-2)', 'var(--chart-4)'];
+  let a0 = -Math.PI / 2, s = `<svg viewBox="0 0 160 160" width="160" height="160" role="img" aria-label="composition">`;
+  rows.forEach((row, i) => {
+    const a1 = a0 + (row[1] / total) * Math.PI * 2;
+    const big = a1 - a0 > Math.PI ? 1 : 0;
+    const p = (rad, ang) => `${(cx + rad * Math.cos(ang)).toFixed(2)} ${(cy + rad * Math.sin(ang)).toFixed(2)}`;
+    s += `<path d="M ${p(R, a0)} A ${R} ${R} 0 ${big} 1 ${p(R, a1)} L ${p(r, a1)} A ${r} ${r} 0 ${big} 0 ${p(r, a0)} Z" fill="${cols[i % 4]}"/>`;
+    a0 = a1;
+  });
+  s += `<text x="${cx}" y="${cy - 2}" font-size="15" text-anchor="middle" fill="var(--foreground)">${fmt(total)}</text>`;
+  s += `<text x="${cx}" y="${cy + 13}" font-size="9" text-anchor="middle">edges</text>`;
+  return s + '</svg>';
+}
+
+/** Grouped two-series bars around a 1.0 = no-effect line.
+ *  Scale is capped so one outlier (ion channel at 11.89x) cannot compress the
+ *  comparison the card is actually about. Capped bars get a notch and keep
+ *  their true value in the label — clipped, never silently rescaled. */
+function diverge(rows, cap = 4) {
+  const W = 640, rh = 34, pl = 158, pr = 52;
+  const H = rows.length * rh + 24, iw = W - pl - pr;
+  const X = v => (Math.min(v, cap) / cap) * iw;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="association versus drug enrichment by target class">`;
+  const one = pl + X(1);
+  s += `<line x1="${one}" x2="${one}" y1="8" y2="${H - 16}" stroke="var(--muted-foreground)" stroke-dasharray="3 3"/>`;
+  s += `<text x="${one}" y="${H - 4}" font-size="9.5" text-anchor="middle">1.0× = no effect</text>`;
+  rows.forEach((r, i) => {
+    const y = 8 + i * rh;
+    s += `<text class="lab" x="${pl - 8}" y="${y + 15}" font-size="11" text-anchor="end">${esc(r[0])}</text>`;
+    [[r[1], 'var(--chart-1)', 0], [r[2], 'var(--chart-3)', 12]].forEach(([v, c, dy]) => {
+      const w = Math.max(1.5, X(v)), yy = y + dy + 1, over = v > cap;
+      s += over
+        ? `<path d="M${pl} ${yy} H${pl + w - 6} l6 5 -6 5 H${pl} Z" fill="${c}"/>`
+        : `<rect x="${pl}" y="${yy}" width="${w}" height="10" rx="2" fill="${c}"/>`;
+      s += `<text x="${pl + w + 5}" y="${yy + 8.5}" font-size="9.5"${over ? ' font-weight="600"' : ''}>${v.toFixed(2)}×</text>`;
+    });
+  });
+  return s + '</svg>';
+}
+
+/** Two-series line over K. */
+function lines(o) {
+  const W = 640, H = 200, pl = 34, pb = 28, pt = 12, pr = 40;
+  const iw = W - pl - pr, ih = H - pb - pt;
+  const max = Math.ceil(Math.max(...o.approved) / 5) * 5;
+  const X = i => pl + (i / (o.k.length - 1)) * iw, Y = v => pt + ih - (v / max) * ih;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="discovery lift against K by ground truth">`;
+  for (let g = 0; g <= 4; g++) {
+    const y = pt + ih - ih * g / 4;
+    s += `<line x1="${pl}" x2="${W - pr}" y1="${y}" y2="${y}" stroke="var(--border)" stroke-dasharray="3 3"/>`;
+    s += `<text x="${pl - 6}" y="${y + 3.5}" font-size="9.5" text-anchor="end">${Math.round(max * g / 4)}×</text>`;
+  }
+  [['approved', 'var(--chart-3)'], ['trials', 'var(--chart-1)']].forEach(([key, col]) => {
+    const pts = o[key].map((v, i) => `${X(i)},${Y(v)}`).join(' ');
+    s += `<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    o[key].forEach((v, i) => s += `<circle cx="${X(i)}" cy="${Y(v)}" r="3.2" fill="${col}"/>`);
+    const last = o[key].length - 1;
+    s += `<text x="${X(last) + 6}" y="${Y(o[key][last]) + 3.5}" font-size="10" fill="${col}">${o[key][last].toFixed(1)}×</text>`;
+  });
+  s += `<text x="${X(0) + 6}" y="${Y(o.approved[0]) - 8}" font-size="10" fill="var(--chart-3)">16.9×</text>`;
+  o.k.forEach((k, i) => s += `<text x="${X(i)}" y="${H - 8}" font-size="9.5" text-anchor="middle">top ${k}</text>`);
+  return s + '</svg>';
+}
+
+/** Scatter of two 0..1 axes. pts = [x, y, label, flag] */
+function scatter(pts, o) {
+  const W = 560, H = 300, pl = 42, pb = 40, pt = 12, pr = 12;
+  const iw = W - pl - pr, ih = H - pb - pt;
+  const X = v => pl + (v - o.x0) / (o.x1 - o.x0) * iw, Y = v => pt + ih - (v - o.y0) / (o.y1 - o.y0) * ih;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.aria)}">`;
+  s += `<rect x="${pl}" y="${pt}" width="${iw}" height="${ih}" fill="none" stroke="var(--border)"/>`;
+  if (o.vline != null) {
+    s += `<line x1="${X(o.vline)}" x2="${X(o.vline)}" y1="${pt}" y2="${pt + ih}" stroke="var(--destructive)" stroke-dasharray="4 3"/>`;
+    s += `<text x="${X(o.vline) + 5}" y="${pt + 12}" font-size="9.5" fill="var(--destructive)">${esc(o.vlabel)}</text>`;
+  }
+  pts.forEach(p => {
+    const col = p[3] === 'hard' ? 'var(--destructive)' : p[3] === 'lead' ? 'var(--primary)' : 'var(--chart-2)';
+    s += `<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="${p[3] ? 6 : 4.5}" fill="${col}"
+           fill-opacity="${p[3] ? 1 : .6}" stroke="var(--card)"/>`;
+    if (p[2]) s += `<text class="lab" x="${X(p[0]) + 9}" y="${Y(p[1]) + 3.5}" font-size="10" fill="${col}">${esc(p[2])}</text>`;
+  });
+  s += `<text class="lab" x="${pl + iw / 2}" y="${H - 6}" font-size="10.5" text-anchor="middle">${esc(o.xl)}</text>`;
+  s += `<text class="lab" x="12" y="${pt + ih / 2}" font-size="10.5" text-anchor="middle"
+         transform="rotate(-90 12 ${pt + ih / 2})">${esc(o.yl)}</text>`;
+  return s + '</svg>';
+}
+
+/* ==========================================================================
+   Card + view scaffolding
+   ========================================================================== */
+function card(o) {
+  const chips = (o.chips || []).map(c =>
+    `<span class="chip chip-${c[0]}">${esc(c[1])}</span>`).join('');
+  return `<section class="card ${o.span || ''}">
+    <div class="card-h">
+      <div><div class="card-t">${o.title}</div>${o.desc ? `<div class="card-d">${o.desc}</div>` : ''}</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${chips}</div>
+    </div>
+    <div class="card-b">${o.body}</div>
+    ${o.src ? `<div class="card-f"><span>src</span><span>${esc(o.src)}</span></div>` : ''}
+  </section>`;
+}
+const stat = (l, v, c) => `<div class="stat"><div class="stat-l">${l}</div><div class="stat-v">${v}</div>${c ? `<div class="stat-c">${c}</div>` : ''}</div>`;
+const legend = items => `<div class="lgd">${items.map(([c, l]) => `<span><i style="background:${c}"></i>${esc(l)}</span>`).join('')}</div>`;
+const never = items => `<div class="no"><div class="no-t">Must not appear</div>${items}</div>`;
+
+/* ==========================================================================
+   ACTS
+   ========================================================================== */
+const ACTS = [];
+
+/* ---------- Act 1 ---------- */
+ACTS.push({
+  id: 'evidence-base', n: 1, title: 'The evidence base',
+  q: 'What can the model actually see?',
+  lede: 'A biomedical knowledge graph built from source and accepted against a frozen reference. No model yet — this act is about the evidence, and about the fact that every edge in it carries its provenance.',
+  render: () => `
+  ${card({ span: 'card', title: 'The graph, in four numbers', chips: [['live', 'live']],
+    body: `<div class="stats">
+      ${stat('Nodes', '113,391', '8 types, one source of record each')}
+      ${stat('Edges', '2,851,510', '18 relations')}
+      ${stat('With provenance', '844,166', 'edges carrying an explicit source')}
+      ${stat('Accepted vs reference', '−0.03%', '14 of 18 relations reproduce exactly')}
+    </div>`,
+    src: 'graph_nodes · graph_edges · edge_metadata · zone 00' })}
+
+  ${card({ span: 'c7', title: '18 relations', desc: 'Every relation and its count. The seven largest match <code>GRAPH_BUILDING.md</code> §7.1 exactly.',
+    chips: [['live', 'live']],
+    body: hbars(D.graph.relations.map(r => [r[0], r[1], 'var(--chart-3)']), { aria: 'edge counts by relation', labelW: 176 }),
+    src: 'graph_edges · group by relation' })}
+
+  ${card({ span: 'c5', title: '8 node types', desc: 'What kinds of thing the graph knows about.',
+    chips: [['live', 'live']],
+    body: hbars(D.graph.nodes.map(r => [r[0], r[1], 'var(--chart-2)']), { aria: 'node counts by type', labelW: 150, width: 470 }),
+    src: 'graph_nodes · group by node_type' })}
+
+  ${card({ span: 'c7', title: 'Every edge knows where it came from',
+    desc: 'The 520,380 protein interactions, by which interactome asserted them. <b>86,608 (16.6%) are corroborated by more than one independent source, and the graph records which.</b>',
+    chips: [['live', 'live']],
+    body: hbars(D.graph.ppi.map(r => [r[0], r[1], r[2] > 1 ? 'var(--chart-2)' : 'var(--chart-1)']),
+      { aria: 'protein interaction edges by source', labelW: 158 })
+      + legend([['var(--chart-1)', 'single source'], ['var(--chart-2)', 'corroborated by 2+ interactomes']])
+      + `<div class="say">This is the lineage claim, shown rather than asserted. It is also what earns the
+         right to run a live graph query in act 4.</div>`,
+    src: 'edge_metadata · filter relation = protein_protein' })}
+
+  ${card({ span: 'c5', title: 'What &ldquo;known target&rdquo; actually means',
+    desc: 'The 323,786 annotated disease–gene edges are the training label. This is what the model was taught.',
+    chips: [['live', 'live']],
+    body: `<div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        ${donut(D.graph.label)}
+        <div style="min-width:170px">
+          ${D.graph.label.map((r, i) => `<div style="display:flex;justify-content:space-between;gap:12px;font-size:12px;padding:3px 0">
+            <span><i class="lgd" style="display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;background:${['var(--chart-3)', 'var(--chart-1)', 'var(--chart-2)'][i]}"></i>${esc(r[0])}</span>
+            <span class="num">${fmt(r[1])}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="warnbox" style="margin-top:12px"><b>Do not call this all disease–gene edges.</b>
+        There are 378,888 <code>disease_protein</code> edges but only 323,786 metadata rows —
+        55,102 (14.5%) carry no evidence-type annotation.</div>`,
+    src: 'edge_metadata · filter relation = disease_protein' })}
+
+  ${card({ span: 'c8', title: 'Accepted against a frozen reference',
+    desc: 'The build was compared to a reference we did not write, before anything was modelled.',
+    chips: [['gap', 'gap §9.8']],
+    body: `<div class="tw"><table>
+      <thead><tr><th>Surface</th><th class="n">Reference</th><th class="n">This build</th><th class="n">Delta</th></tr></thead>
+      <tbody>
+        <tr><td><code>graph_nodes</code></td><td class="n">113,544</td><td class="n">113,391</td><td class="n">−153 (−0.13%)</td></tr>
+        <tr><td><code>graph_edges</code></td><td class="n">2,852,298</td><td class="n">2,851,510</td><td class="n">−788 (−0.03%)</td></tr>
+        <tr><td><code>edge_metadata</code></td><td class="n">844,166</td><td class="n">844,166</td><td class="n zero">0</td></tr>
+        <tr><td>Relation inventory</td><td class="n">18</td><td class="n">18</td><td class="n zero">identical</td></tr>
+      </tbody></table></div>`,
+    src: 'GRAPH_BUILDING.md §7.2 · needs materialising as a dataset' })}
+
+  ${card({ span: 'c4', title: 'Explore it yourself',
+    desc: 'The interactive explorer over the same graph. Act 4 comes back here to show a prediction explaining itself.',
+    chips: [['port', 'existing webapp']],
+    body: `<div style="font-size:12.5px">
+        <p style="margin:0 0 10px">The <code>graph search</code> explorer is already built and running in
+        the project. In the app it opens in a new tab rather than an iframe — the canvas needs the room.</p>
+        ${never('Do not open the explorer cold in front of an audience. It is the payoff for act 4, not a tour of the data model.')}
+      </div>`,
+    src: 'webapp wBcApLN · Kuzu folder' })}
+  `,
+});
+
+/* ---------- Act 2 ---------- */
+ACTS.push({
+  id: 'calibration', n: 2, title: 'Scope and calibration',
+  q: 'How far can this be trusted, and for which disease?',
+  lede: 'The distribution leads and the summary follows. A single accuracy number answers a question nobody asked; where your disease sits in the spread is the question a therapeutic-area team actually has.',
+  render: () => `
+  ${card({ span: 'card', title: 'Read this first: zero straddling keys',
+    desc: 'Related diseases are never allowed on both sides of a train/test divide. Until this table reads zero, every number below it is meaningless.',
+    chips: [['live', 'live']],
+    body: `<div class="tw"><table>
+      <thead><tr><th>Split</th><th class="n">Rows</th><th class="n">Positives</th><th class="n">Rate %</th>
+        <th class="n">Diseases</th><th class="n">Split keys</th><th class="n">Families</th>
+        <th class="n">Train–test overlap</th><th class="n">Straddling</th></tr></thead>
+      <tbody>${D.calib.split.map(r => `<tr>
+        <td>${esc(r[0])}</td><td class="n">${fmt(r[1])}</td><td class="n">${fmt(r[2])}</td>
+        <td class="n">${r[3].toFixed(2)}</td><td class="n">${r[4]}</td><td class="n">${r[5]}</td>
+        <td class="n">${r[6]}</td><td class="n zero">0</td><td class="n zero">0</td></tr>`).join('')}
+      </tbody></table></div>
+      <div class="say">The split key came from a curated medical ontology, not an algorithm.
+        A biologist's judgment — <b>&ldquo;type 2 diabetes and diabetes mellitus are the same
+        programme, do not let them straddle&rdquo;</b> — became a rule in the pipeline and
+        <b>lowered</b> the honest score. That is domain expertise compiled into a control, and it is
+        the template for everything you would plug in.</div>`,
+    src: 'split_audit_2 · zone 42' })}
+
+  ${card({ span: 'c6', title: 'The spread across 670 held-out diseases',
+    desc: 'Per-disease AUC. Macro <b>0.8230</b> over the 668 that score. HER2+ breast sits in the upper tail.',
+    chips: [['live', 'live']],
+    body: histogram(D.calib.diseaseAuc, { mean: 0.8230, marker: 0.9365, markerLabel: 'HER2+ 0.9365', aria: 'per-disease AUC distribution' })
+      + legend([['var(--chart-3)', 'at or above chance'], ['var(--chart-1)', 'below chance — 8 diseases, and we show them']])
+      + `<div class="warnbox" style="margin-top:10px"><b>The <code>level</code> filter is load-bearing.</b>
+         This dataset holds two populations — 670 <code>disease</code> rows and 443
+         <code>split_key</code> rows. Filtered: <b>0.8230</b>. Unfiltered: <b>0.8157</b>. A view
+         missing the filter is off by 73 basis points and looks perfectly fine.</div>`,
+    src: 'validation_auc_by_disease_2 · filter level = disease' })}
+
+  ${card({ span: 'c6', title: 'It holds across 505 disease families',
+    desc: 'Grouping diseases into programmes and scoring the group. Macro <b>0.8009</b> over the 503 that score.',
+    chips: [['live', 'live']],
+    body: histogram(D.calib.familyAuc, { mean: 0.8009, aria: 'per-family AUC distribution' })
+      + `<div class="warnbox" style="margin-top:10px">Two of the 505 families carry a literal
+         <code>NaN</code> — zero positives, so AUC is undefined. The documented 0.8009 is a
+         NaN-skipping mean over <b>503</b> families presented as 505.</div>`,
+    src: 'family_auc_by_family · zone 43' })}
+
+  ${card({ span: 'card', title: 'Usefulness is not uniform — and this is the honest slide',
+    desc: 'Rank enrichment across all 670 diseases. One number would hide a range this wide.',
+    chips: [['live', 'live']],
+    body: boxplot(D.calib.enrich)
+      + `<div class="say"><b>19× is the median, not the ceiling.</b> The narrative quotes
+         &ldquo;19× on non-small cell lung carcinoma and 2.9× on chronic kidney disease&rdquo;
+         — true <i>of the 13-disease demo panel</i>. Across all 670, the median is
+         <b>19.2×</b> and the maximum is <b>59.2×</b>. Presenting 19× as the high end
+         understates the model and invites correction by anyone who opens the dataset.</div>`,
+    src: 'persona_candidates.rank_enrichment · 670 diseases' })}
+
+  ${card({ span: 'card', title: 'What this act must not do', chips: [],
+    body: never(`<ul class="tight">
+      <li><b>No pooled AUC anywhere near the macro one.</b> Pooled overstates by roughly 7 points.</li>
+      <li><b>No single number in large type with no distribution beside it.</b> That is the opening slide the narrative explicitly forbids.</li>
+      <li><b>No ablation ladder, no hyperparameters.</b> A modelling decision nobody asked about.</li>
+    </ul>`) })}
+  `,
+});
+
+/* ---------- Act 3 ---------- */
+ACTS.push({
+  id: 'therapeutic-area', n: 3, title: 'The therapeutic area',
+  q: 'Does it work across my area, or just on one cherry-picked term?',
+  lede: 'Twelve breast terms, the same model, and lists that differ in ways a breast oncologist recognises. This is also where the limits of scoring become visible — before anything is claimed.',
+  render: () => `
+  ${card({ span: 'c7', title: 'The breast panel', desc: 'Every breast term the model scores, ordered by how much known biology there is to check it against.',
+    chips: [['live', 'live']],
+    body: `<div class="tw"><table>
+      <thead><tr><th>Disease term</th><th class="n">Pool</th><th class="n">Known targets</th>
+        <th class="n">AUC</th><th class="n">Hits@50</th><th class="n">Enrichment@50</th></tr></thead>
+      <tbody>${D.panel.map(r => `<tr class="${r[6] === 'lead' ? 'hl' : ''}">
+        <td>${esc(r[0])}${r[6] === 'lead' ? ' <span class="b b-appr">LEAD</span>' : ''}${r[6] === 'hard' ? ' <span class="b b-liab">HARD CASE</span>' : ''}${r[6] === 'thin' ? ' <span class="b b-known">THIN</span>' : ''}</td>
+        <td class="n">${fmt(r[1])}</td><td class="n">${r[2]}</td><td class="n">${r[3].toFixed(4)}</td>
+        <td class="n">${r[4]}</td><td class="n">${r[5].toFixed(1)}×</td></tr>`).join('')}
+      </tbody></table></div>`,
+    src: 'breast_panel_metrics · zone 42' })}
+
+  ${card({ span: 'c5', title: 'Where the panel is trustworthy',
+    desc: 'AUC becomes meaningless below roughly 50 known targets. Triple-negative is the visible outlier and we say so here, not later.',
+    chips: [['live', 'live']],
+    body: scatter(
+      D.panel.map(r => [Math.min(r[2], 900), r[3], r[6] ? r[0].split(' ')[0] : '', r[6]]),
+      { x0: 0, x1: 900, y0: 0.65, y1: 1.0, vline: 50, vlabel: '≈ 50 known targets',
+        xl: 'known targets available to check against', yl: 'AUC', aria: 'AUC against known-target count' })
+      + legend([['var(--primary)', 'HER2+ (lead)'], ['var(--destructive)', 'triple-negative (unscoreable)'], ['var(--chart-2)', 'other breast terms']]),
+    src: 'breast_panel_metrics' })}
+
+  ${card({ span: 'c6', title: 'The subtypes actually separate',
+    desc: 'These two rows must sit side by side. Apart, they read as a weakness; together, they say we know which kind of subtype resolves and which does not.',
+    chips: [['live', 'live'], ['gap', 'gap §9.7']],
+    body: `<div class="tw"><table>
+        <thead><tr><th>Pair</th><th>Kind of distinction</th><th class="n">Shared in top 50</th><th>Reads as</th></tr></thead>
+        <tbody>
+          <tr class="hl"><td>HER2+ vs triple-negative</td><td>molecular subtype</td><td class="n">2 / 50</td>
+            <td><span class="b b-appr">RESOLVES</span></td></tr>
+          <tr><td>lung adeno vs squamous</td><td>morphological subtype</td><td class="n">47 / 50</td>
+            <td><span class="b b-liab">DOES NOT</span></td></tr>
+        </tbody></table></div>
+      <div class="say">For a team organised by subtype this is a selling point, not a caveat:
+        <b>the distinction it can make is the one your clinic makes.</b></div>`,
+    src: 'breast_panel_overlap · lung overlap not yet materialised' })}
+
+  ${card({ span: 'c6', title: 'The signature of each subtype’s head',
+    desc: 'A scientist checks coherence before they check any metric. These lists are different in the right ways.',
+    chips: [['live', 'live']],
+    body: `<div style="display:grid;gap:10px">
+      ${[['HER2-positive', 'TP53, EP300, PIK3R1, CREBBP, PIK3CA — the PI3K/AKT axis that drives trastuzumab resistance', 'hl'],
+         ['Luminal A', 'EP300, ATM, MSH2, WRN, FGFR1 — repair and growth-factor signalling', ''],
+         ['Luminal B', 'EP300, MSH6, PIK3R1, CTNNB1, FGFR1 — overlapping, with a PI3K tilt', ''],
+         ['Triple-negative', 'RAD50, ATM, TP53, BRCA2, NBN — the homologous-recombination panel', 'hard']]
+        .map(([n, s, k]) => `<div style="border:1px solid ${k === 'hard' ? 'color-mix(in oklab, var(--destructive) 35%, var(--border))' : 'var(--border)'};
+          border-radius:calc(var(--radius) - 2px);padding:9px 11px;${k === 'hl' ? 'background:color-mix(in oklab, var(--primary) 6%, transparent)' : ''}">
+          <div style="font-weight:600;font-size:12.5px">${esc(n)}</div>
+          <div style="font-size:12px;color:var(--muted-foreground);margin-top:2px">${s}</div></div>`).join('')}
+      </div>`,
+    src: 'dashboard_candidates · top of each subtype list' })}
+
+  ${card({ span: 'card', title: 'What this act must not do', chips: [],
+    body: never(`<ul class="tight">
+      <li><b>Never present triple-negative as a win.</b> Eight known associations means we cannot score it. Read <code>BREAST_SURGEON_BRIEFING.md</code> before this goes in front of a clinician.</li>
+      <li><b>Never call a subtype list &ldquo;validated&rdquo;.</b> This act shows coherence. Coherence is not validation.</li>
+    </ul>`) })}
+  `,
+});
+
+/* ---------- Act 4 ---------- */
+ACTS.push({
+  id: 'shortlist', n: 4, title: 'The shortlist',
+  q: 'Show me the list.',
+  lede: 'One disease, all the way down. The point is not that the model is right — it is that you can argue with it, on your own thresholds, and then see the mechanism on the graph.',
+  render: () => `
+  ${card({ span: 'card', title: 'The contract',
+    desc: 'For HER2-positive breast carcinoma: a ranked shortlist of candidate targets, each carrying two independent explanations — a SHAP attribution and a graph path to the disease module.',
+    chips: [['live', 'live']],
+    body: `<div class="stats">
+        ${stat('Candidates scored', '12,272', 'nothing pre-cut; you filter')}
+        ${stat('Known targets', '599', 'the answer key, available to delete')}
+        ${stat('AUC on this disease', '0.9365', '19.7× enrichment at 50')}
+        ${stat('ERBB2 lands at', '#14', 'never told the disease’s name')}
+      </div>
+      ${never(`<div style="font-size:12px"><b>Three things this does not do, stated here rather than saved for the end:</b>
+        no safety axis of any kind; no <i>morphological</i> subtype resolution; and association ranking
+        does <b>not</b> predict therapeutic relevance (r = +0.002, act 5).</div>`)}`,
+    src: 'dashboard_candidates · disease_index 48537' })}
+
+  ${card({ span: 'c5', title: 'The top 15',
+    desc: 'The model was never told which gene this disease is named after. <b>ERBB2 is the only approved-for-this-disease gene in the top 15</b>, and it is at 14 of 12,272.',
+    chips: [['live', 'live']],
+    body: `<div class="tw"><table>
+      <thead><tr><th class="n">Rank</th><th>Gene</th><th>Status</th></tr></thead>
+      <tbody>${D.her2Top15.map(r => `<tr class="${r[1] === 'ERBB2' || r[1] === 'HRAS' ? 'hl' : ''}">
+        <td class="n">${r[0]}</td><td class="gene">${r[1]}</td><td>
+        ${r[2] ? '<span class="b b-novel">NOVEL</span>' : '<span class="b b-known">known</span>'}
+        ${r[4] ? '<span class="b b-appr">APPROVED</span>' : ''}
+        ${r[5] ? '<span class="b b-trial">trial</span>' : ''}
+        ${r[6] ? '<span class="b b-liab">liability</span>' : ''}</td></tr>`).join('')}
+      </tbody></table></div>
+      <div class="say">The surrounding list is the PI3K/AKT and RAS–MAPK axis — the biology
+        that actually drives trastuzumab resistance. <b>HRAS at #9 is novel</b>: nothing in the
+        training label pointed at it.</div>`,
+    src: 'dashboard_candidates · rank_in_disease ≤ 15' })}
+
+  ${card({ span: 'c7', title: 'Your thresholds, not ours',
+    desc: 'Three clauses, each measured at 1.42–1.71× enrichment with 98–100% recall. The count moves as you set them.',
+    chips: [['live', 'live'], ['port', 'existing webapp']],
+    body: `<div class="funnel">${D.funnel.map((f, i) => `
+        <div class="fstep ${i === D.funnel.length - 1 ? 'last' : ''}">
+          <div class="fv">${fmt(f[1])}</div><div class="fl">${esc(f[0])}</div>
+        </div>`).join('')}</div>
+      <div class="say"><b>Thirty-eight is a shortlist a team clears in a week.</b> Always say the
+        rank cut-off in the same breath as the count — the number is meaningless without it,
+        which is exactly how the obesity version of this figure ended up with two conflicting
+        values in our own documents.</div>
+      ${never(`<div style="font-size:12px"><b>Not filterable, deliberately.</b> Liability flags and
+        drug badges are shown but cannot be filtered on. Both run <i>with</i> efficacy, not against it,
+        and the drug badges are the ground truth the discovery result is measured against —
+        filtering on them would make the headline circular.</div>`)}`,
+    src: 'dashboard_candidates · three validated clauses' })}
+
+  ${card({ span: 'c6', title: 'Why this gene? — the detail drawer',
+    desc: 'Click any row. Each feature is placed against <i>this disease’s</i> own distribution, not a global one.',
+    chips: [['port', 'existing webapp']],
+    body: `<div style="border:1px solid var(--border);border-radius:calc(var(--radius) - 2px);padding:12px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <span class="gene" style="font-size:17px">HRAS</span>
+          <span><span class="b b-novel">NOVEL</span></span>
+        </div>
+        <div style="font-size:11.5px;color:var(--muted-foreground);margin-bottom:9px">rank #9 of 12,272 &middot; 99.93 pct &middot; score 0.9945</div>
+        ${[['Gene–gene–disease path weight', 96], ['Random-walk proximity to the module', 91],
+           ['Shared interaction partners', 88], ['Closest hop to a module gene', 74],
+           ['Shared pathways with the module', 62]].map(([l, p]) => `
+          <div style="margin-bottom:7px">
+            <div style="display:flex;justify-content:space-between;font-size:11px"><span>${esc(l)}</span>
+              <span class="num">${p} pct</span></div>
+            <div style="height:5px;background:var(--muted);border-radius:3px;margin-top:2px">
+              <i style="display:block;height:100%;width:${p}%;background:var(--chart-3);border-radius:3px"></i></div>
+          </div>`).join('')}
+        <div style="font-size:11px;color:var(--muted-foreground);margin-top:8px">
+          &ldquo;Higher than 96% of candidates <b>for this disease</b>&rdquo; — not a global percentile.
+        </div>
+      </div>`,
+    src: 'dashboard_candidates · percentile computed per disease' })}
+
+  ${card({ span: 'c6', title: 'The mechanism, on the graph',
+    desc: 'The prediction explains itself on the canvas: one connected module, the disease’s own annotated genes in the middle, and a novel candidate inside the same mechanism as the approved target.',
+    chips: [['live', 'live']],
+    body: `<pre><span class="cmt">// Why the head of the HER2+ list? The PI3K/AKT + RAS-MAPK axis,
+// and its interaction evidence to genes already annotated here.</span>
+MATCH (D:disease {node_index: 48537})
+MATCH (g:protein) WHERE g.node_index IN
+      [91764, 91759, 88097, 89095, 84123, 84431, 93120]
+MATCH (g)-[ppi:protein_protein]-(m:protein)-[assoc:disease_protein]-(D)
+WHERE m.node_index &lt;&gt; g.node_index
+RETURN g, ppi, m, assoc, D LIMIT 300</pre>
+      <div style="font-size:11.5px;color:var(--muted-foreground);margin-top:8px" class="num">
+        91764 PIK3R1 #3 &middot; 91759 PIK3CA #5 &middot; <b>88097 HRAS #9 novel</b> &middot;
+        89095 KRAS #10 &middot; 84123 EGFR #11 &middot; <b>84431 ERBB2 #14</b> &middot; 93120 MAPK1 #15
+      </div>
+      <div class="warnbox" style="margin-top:10px">Three conventions that will bite you: traversal is
+        <b>undirected</b>; relationship variables must be <b>bound and returned</b> or the canvas shows
+        floating nodes; the engine’s label for genes is <code>protein</code>. Node indices are
+        snapshot-specific — use the drawer’s copy button, which generates them live.</div>`,
+    src: 'Kuzu folder · interactive explorer, never a query recipe' })}
+  `,
+});
+
+/* ---------- Act 5 ---------- */
+ACTS.push({
+  id: 'interrogation', n: 5, title: 'The interrogation',
+  q: 'Three objections, in the order they get asked.',
+  lede: 'They have seen a ranked gene list before. They will not evaluate our accuracy — they will run an interrogation, and surviving it is the demo. Every card here pairs the HER2+ number with the across-670 number.',
+  render: () => `
+  ${card({ span: 'card', title: '&ldquo;These are just the famous genes.&rdquo;',
+    desc: 'Usually correct about other people’s tools. So we measured it against genes with the <i>same number of connections</i> — a fair fight instead of a rigged one.',
+    chips: [['gap', 'gap §9.2']],
+    body: `<div class="grid" style="gap:16px">
+        <div style="grid-column:span 5">
+          <div class="stats">
+            ${D.degreeMatched.map(([k, v]) => stat('Top ' + k, v.toFixed(1) + '×', 'vs equally-connected genes')).join('')}
+          </div>
+          <div class="say">And the detail that makes it credible: <b>from rank 20 downwards,
+            controlling for connectivity makes our result look better, not worse.</b> In the top 10
+            it goes the other way — so the very head of the list does carry a popularity effect,
+            and we say so.</div>
+        </div>
+        <div style="grid-column:span 7">
+          <div class="card-t" style="font-size:12.5px;margin-bottom:6px">The harder version of the same question</div>
+          <div class="card-d" style="margin-bottom:8px">Hold biology constant: take only genes we
+            <i>already know</i> are targets, and ask whether the model scores poorly-connected ones
+            as highly as hubs.</div>
+          ${hbars(D.hubBias.map(r => [r[0] + ' (med ' + r[1] + ' conn.)', Math.round(r[3]), 'var(--chart-1)']),
+            { aria: 'detection rate of known targets by connectivity quintile', labelW: 190, rowH: 22 })}
+          <div style="font-size:11.5px;color:var(--muted-foreground);margin-top:4px">
+            % of known targets detected. Mean score rises <span class="num">0.59 → 0.79</span>
+            across the same quintiles.</div>
+          <div class="warnbox" style="margin-top:10px"><b>A 3.3× detection swing on network
+            position alone, with biology held constant.</b> Both things are true and they answer
+            different questions: the ranking is not explained by popularity, <b>and</b> the model
+            still under-scores under-studied true targets. We went looking for the cause, tested the
+            obvious candidate, and it was not the cause — so this is carried as an open weakness,
+            not a fixed one.</div>
+        </div>
+      </div>`,
+    src: 'tractability_axis (needs long form) · hub-bias meter has no recipe yet' })}
+
+  ${card({ span: 'c6', title: '&ldquo;You already knew all of these.&rdquo;',
+    desc: 'The strongest question, and what the deliverable stands on. So we delete the answer key, re-rank what is left, and ask whether real targets come back.',
+    chips: [['live', 'live']],
+    body: `<div class="funnel">
+        <div class="fstep"><div class="fv">12,272</div><div class="fl">candidates scored</div></div>
+        <div class="fstep"><div class="fv">599</div><div class="fl">known targets deleted</div></div>
+        <div class="fstep last"><div class="fv">11,673</div><div class="fl">re-ranked from scratch</div></div>
+      </div>
+      <div class="say">On HER2+, the head of that re-ranked list is <b>HRAS at #9</b>, with MAPK3 at
+        #61. Nothing in the training data pointed at either.</div>
+      <div class="warnbox" style="margin-top:10px"><b>Do not reuse the lung headline here.</b>
+        &ldquo;MAPK3 at novel #3&rdquo; is a non-small-cell-lung story. On this spine it is #61, and
+        the honest head-of-list novel candidate is HRAS. The enrichment is equivalent
+        (19.7× vs 19×); the single dramatic beat is not.</div>`,
+    src: 'novel_discovery_eval · dashboard_candidates' })}
+
+  ${card({ span: 'c6', title: 'Novel candidates are enriched for real drug targets',
+    desc: 'Measured on the novel sub-list only. No model feature traverses a drug node, so this is independent of the training label.',
+    chips: [['gap', 'gap §9.3']],
+    body: lines(D.liftK)
+      + legend([['var(--chart-3)', 'against approved drugs (the strict bar)'], ['var(--chart-1)', 'against drugs in trials (the fairer bar)']])
+      + `<div class="warnbox" style="margin-top:10px"><b>The distribution must ship beside this.</b>
+         16.9× is a <i>mean of per-disease lifts on a heavy-tailed distribution</i> —
+         Sjögren syndrome alone is 252.4× at top-10, and the notebook drops infinities
+         before averaging. A scientist who asks &ldquo;is that a median?&rdquo; and gets an evasive
+         answer has ended the demo.</div>`,
+    src: 'novel_discovery_eval · needs an inf-cleaned long aggregate' })}
+
+  ${card({ span: 'c7', title: '&ldquo;Your ground truth is garbage.&rdquo;',
+    desc: 'Also usually correct, and we agree. The flaw in one sentence: the public data says <i>this drug treats this disease</i> and <i>this drug hits these targets</i>, but never <i>this target treats this disease</i>.',
+    chips: [['gap', 'gap §9.5']],
+    body: `<div class="stats">
+        ${stat('From multi-target drugs', '82%', 'of our "validated" pairs')}
+        ${stat('Survive single-target', '8%', 'if we demand one target per drug')}
+        ${stat('On a curated source', '21.3×', 'vs 16.9× — the finding got stronger')}
+      </div>
+      <div class="say">A drug that hits 40 proteins and is approved for 13 diseases manufactures
+        <b>520</b> &ldquo;validated&rdquo; pairs. We found the flaw in our own evidence, quantified
+        it, and re-tested against a source that asserts the target–disease link directly.
+        <b>The discovery result got stronger.</b> That is what due diligence looks like.</div>`,
+    src: 'raw_ot_known_drug · drug_protein_edges · aggregate not materialised' })}
+
+  ${card({ span: 'c5', title: 'Association ≠ therapeutic relevance',
+    desc: 'One point per disease. Does ranking known biology well predict agreeing with drugs? <b>r = +0.002.</b>',
+    chips: [['gap', 'gap §9.6']],
+    body: scatter(
+      [[.62,.66],[.71,.55],[.78,.72],[.83,.61],[.86,.70],[.88,.58],[.91,.75],[.74,.79],[.80,.52],
+       [.68,.71],[.93,.63],[.85,.81],[.77,.60],[.89,.68],[.72,.64],[.95,.72],[.81,.69],[.66,.58],
+       [.87,.55],[.92,.79],[.75,.73],[.84,.66],[.79,.57],[.90,.71]].map(p => [p[0], p[1], '', '']),
+      { x0: .55, x1: 1.0, y0: .45, y1: .9, xl: 'association AUC — does it rank known biology?',
+        yl: 'therapeutic AUC — does it agree with drugs?', aria: 'orthogonality of the two axes' })
+      + `<div class="warnbox" style="margin-top:8px"><b>Shape only — the join does not exist yet
+         (§9.6).</b> The real cloud is flat and the fit line lies on the horizontal.
+         <b>Ship the picture, not the r.</b> It turns an abstract caveat into something the room sees
+         in one second.</div>`,
+    src: 'validation_auc_by_disease × drug_target_benchmark · needs a visual Join' })}
+  `,
+});
+
+/* ---------- Act 6 ---------- */
+ACTS.push({
+  id: 'limits', n: 6, title: 'The limits, and the close',
+  q: 'What can’t it do — and what is the platform actually for?',
+  lede: 'The limits are what make the previous five acts believable. Then the close, which is not about the model at all.',
+  render: () => `
+  ${card({ span: 'c5', title: 'The deliberate hard case',
+    desc: 'Triple-negative breast is the one genuinely subtype-specific list in the panel, and the one we cannot score.',
+    chips: [['live', 'live']],
+    body: `<div class="tw"><table>
+        <thead><tr><th class="n">Rank</th><th>Gene</th><th>Status</th></tr></thead>
+        <tbody>${D.tnbc.map(r => `<tr><td class="n">${r[0]}</td><td class="gene">${r[1]}</td>
+          <td><span class="b b-novel">NOVEL</span></td></tr>`).join('')}</tbody></table></div>
+      <div class="say">A coherent homologous-recombination panel, <b>every one of them novel</b> —
+        with only <b>8</b> known associations, so there is nothing to score it against. We use this to
+        say &ldquo;here are four things we already think are wrong with this list&rdquo;, never as a
+        success story.</div>`,
+    src: 'dashboard_candidates · disease_index 47807' })}
+
+  ${card({ span: 'c7', title: 'Three ideas a measurement killed',
+    desc: 'Every biologist in the room would have approved all three. Each was killed by one recipe, and the record of why is in the flow.',
+    chips: [['live', 'live']],
+    body: `<div class="card-t" style="font-size:12.5px;margin-bottom:2px">&ldquo;Use druggability as a model input.&rdquo;</div>
+      <div class="card-d" style="margin-bottom:6px">It points the <b>wrong way</b>. The bars cross.</div>
+      ${diverge(D.refuted)}
+      ${legend([['var(--chart-1)', 'enrichment for being disease-linked (what the model learns)'],
+                ['var(--chart-3)', 'enrichment for being a real drug target (what we want)']])}
+      <div style="font-size:11px;color:var(--muted-foreground);margin-top:2px">
+        Scale capped at 4× so one outlier cannot flatten the comparison; arrowheads mark bars that
+        run past it and keep their true value.</div>
+      <div class="say">Membrane receptors are <b>3.16×</b> more likely to be a real drug target
+        and <b>1.3× less</b> likely to be disease-linked in our data. Feed druggability in and the
+        model learns <b>&ldquo;membrane receptor → score lower&rdquo;</b>. Rejected; we grouped
+        the <i>display</i> by class instead, which recovered most of the benefit at no risk.</div>
+      <div style="display:grid;gap:10px;margin-top:14px">
+        <div style="border:1px solid var(--border);border-radius:calc(var(--radius) - 2px);padding:10px 12px">
+          <div style="font-weight:600;font-size:12.5px">&ldquo;Filter out genes the body cannot live without.&rdquo;</div>
+          <div style="font-size:12px;color:var(--muted-foreground);margin-top:3px">
+            We predicted drug targets would avoid them. Intolerant genes score
+            <span class="num">2.07×</span> for disease association and
+            <span class="num">1.37×</span> for being a drug target — <b>both above 1</b>.
+            The measurement went cleanly the other way. A gene that matters enough to be lethal is a
+            gene worth drugging, and a drug is not a genetic deletion. Rejected.</div>
+        </div>
+        <div style="border:1px solid color-mix(in oklab, var(--destructive) 32%, var(--border));
+             border-radius:calc(var(--radius) - 2px);padding:10px 12px;
+             background:color-mix(in oklab, var(--destructive) 5%, transparent)">
+          <div style="font-weight:600;font-size:12.5px">&ldquo;Exclude targets with known safety liabilities.&rdquo; — the most obviously right of the three</div>
+          <div style="font-size:12px;color:var(--muted-foreground);margin-top:3px">
+            Flagged genes carry <span class="num">4.62×</span> enrichment among drug-validated
+            targets, because liabilities are discovered <i>by</i> drugging something. The flag marks
+            the best-studied targets.</div>
+        </div>
+      </div>`,
+    src: 'tractability_lift · safety_lift · zone 41' })}
+
+  ${card({ span: 'card', title: 'The ten-second check',
+    desc: 'The HER2-positive top 15, with the liability filter applied. This is the whole argument in one table.',
+    chips: [['live', 'live']],
+    body: `<div class="tw"><table>
+      <thead><tr><th class="n">Rank</th><th>Gene</th><th>Liability flag</th><th>Survives the filter?</th></tr></thead>
+      <tbody>${D.her2Top15.map(r => `<tr class="${r[1] === 'ERBB2' ? 'hl' : ''}">
+        <td class="n">${r[0]}</td><td class="gene">${r[1]}${r[1] === 'ERBB2' ? ' &larr; the gene this disease is named after' : ''}</td>
+        <td>${r[6] ? '<span class="b b-liab">flagged</span>' : '<span class="b b-known">none recorded</span>'}</td>
+        <td>${r[6] ? '<span style="color:var(--bad);font-weight:600">deleted</span>' : '<span style="color:var(--good)">kept</span>'}</td>
+      </tr>`).join('')}</tbody></table></div>
+      <div class="say"><b>Nine of fifteen deleted — including ERBB2, the target of this
+        disease’s standard-of-care antibody.</b> 23 of the top 50 go the same way. The filter
+        every biologist would have approved removes the one target nobody would argue about.</div>`,
+    src: 'dashboard_candidates · has_safety_liability' })}
+
+  ${card({ span: 'c6', title: 'The slide no vendor shows you',
+    desc: 'Deliberately prose and not a chart. Giving this benchmark an axis would promote it to a scoreboard.',
+    chips: [['live', 'live']],
+    body: `<div style="font-size:13px">
+        <p style="margin:0 0 8px">On one benchmark a dumb lookup table —
+        <i>&ldquo;how many diseases is this gene already a drug target for&rdquo;</i> — scores
+        <b class="num">0.9354</b> and <b>beats our trained model</b>.</p>
+        <p style="margin:0">So we refused to headline that benchmark.
+        <b>A benchmark a lookup table wins is measuring the lookup.</b></p>
+      </div>`,
+    src: 'drug_target_benchmark · TARGET_PRIORITIZER §7.5' })}
+
+  ${card({ span: 'c6', title: 'The close — and it is not about the model',
+    chips: [],
+    body: `<div class="say" style="border-left-width:4px"><b>Three times in this project, an idea every
+        biologist in the room would have approved was killed by a measurement that took one afternoon.
+        Each would have made the product worse.</b></div>
+      <p style="font-size:13px;margin:12px 0 0">You do not need a better algorithm. You need somewhere
+        your biologists’ hypotheses get tested in an afternoon instead of argued about for a
+        quarter. <b>Three plausible ideas died here at one recipe each — and the record of why is
+        in the flow, not someone’s inbox.</b></p>
+      <div class="card-t" style="font-size:12.5px;margin:16px 0 4px">Where your own knowledge enters</div>
+      <ul class="tight">
+        <li><b>Your failed programmes.</b> Trial-stage evidence is 13× larger than approved-drug
+          evidence and is the fairer test. Nobody publishes their failures — this is the
+          highest-value private asset in the pipeline.</li>
+        <li><b>Your assay data</b>, replacing our public druggability proxy with a measured one.</li>
+        <li><b>Your disease definitions.</b> Your indication strategy replaces the public ontology as
+          the grouping rule — exactly the mechanism already demonstrated in act 2.</li>
+        <li><b>Your thresholds.</b> The biologist tunes the shortlist without touching the model.
+          Already built — it is the filter in act 4.</li>
+      </ul>
+      <div class="say">The public data buys you the genetic-evidence effect: genetically supported
+        targets are 2.6× more likely to survive the clinic <i>(Minikel et al., Nature 2024)</i>.
+        <b>Your own graph is the only place the rest of your institutional knowledge can enter the
+        ranking at all.</b></div>`,
+    src: 'DEMO_NARRATIVE.md §3–§4' })}
+  `,
+});
+
+/* ==========================================================================
+   Shell wiring
+   ========================================================================== */
+const nav = document.getElementById('nav'), main = document.getElementById('main');
+
+nav.innerHTML = ACTS.map(a =>
+  `<button type="button" data-id="${a.id}"><span class="k">${a.n}</span><span class="t">${esc(a.title)}</span></button>`
+).join('');
+
+main.innerHTML = ACTS.map(a => `
+  <div class="view" id="v-${a.id}" hidden>
+    <header class="act-head">
+      <div class="act-eyebrow">Act ${a.n} of 6 &middot; ${esc(a.title)}</div>
+      <h1 class="act-q">${a.q}</h1>
+      <p class="act-lede">${a.lede}</p>
+    </header>
+    <div class="wrap"><div class="grid">${a.render()}</div></div>
+  </div>`).join('');
+
+function show(id) {
+  ACTS.forEach(a => {
+    document.getElementById('v-' + a.id).hidden = a.id !== id;
+    const b = nav.querySelector(`[data-id="${a.id}"]`);
+    if (a.id === id) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  if (location.hash.slice(1) !== id) history.replaceState(null, '', '#' + id);
+}
+nav.addEventListener('click', e => {
+  const b = e.target.closest('button[data-id]');
+  if (b) show(b.dataset.id);
+});
+show(ACTS.some(a => a.id === location.hash.slice(1)) ? location.hash.slice(1) : ACTS[0].id);
+</script>

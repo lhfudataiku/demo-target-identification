@@ -57,10 +57,10 @@ index_remap.json	root-script	LIVE (referenced)	3	DECISIONS.md,docs/prioritizer/T
 notebooks/nb1_features_and_config.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb2_splitting_and_pool.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb3_validation_and_plots.py	notebook	LIVE (tripwire)	0	-
-notebooks/nb3b_hub_bias_meter.py	notebook	LIVE (tripwire)	0	-
+notebooks/nb3b_hub_bias_meter.py	notebook	LIVE (tripwire)	1	docs/demo/DASHBOARD_DESIGN.md
 notebooks/nb4_results_three_axes.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb5_data_exploration.py	notebook	LIVE (tripwire)	0	-
-reference_baseline.json	root-script	LIVE (referenced)	3	DECISIONS.md,docs/graph/GRAPH_BUILDING.md,docs/prioritizer/TARGET_PRIORITIZER.md
+reference_baseline.json	root-script	LIVE (referenced)	4	DECISIONS.md,docs/demo/DASHBOARD_DESIGN.md,docs/graph/GRAPH_BUILDING.md,docs/prioritizer/TARGET_PRIORITIZER.md
 scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 tools/build_index.py	tool	LIVE	3	CLAUDE.md,DECISIONS.md,tools/check_indexes.sh

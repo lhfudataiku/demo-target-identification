@@ -28,6 +28,8 @@ Grouped by purpose. **Read one section, not a whole file** — several are 20–
 | | |
 |---|---|
 | [`demo/DEMO_NARRATIVE.md`](demo/DEMO_NARRATIVE.md) | The demo as a six-question interrogation (Q1 *"show me the list"* → Q6 *"what can't it do?"*), because that is the order a sceptical scientist asks in. **Derive the dashboard from this, not the reverse** |
+| [`demo/DASHBOARD_DESIGN.md`](demo/DASHBOARD_DESIGN.md) | The demo surface **as one Vue webapp** built from `bs-blueprint`: six acts on a single therapeutic-area spine (breast, HER2+ lead), the route/view/data map, the guardrails the code must enforce, nine serving-layer gaps, and **six places the narrative is measurably stale** |
+| [`demo/DASHBOARD_MOCKUP.html`](demo/DASHBOARD_MOCKUP.html) | Static, self-contained preview of all six acts with the verified numbers hard-coded. **Iterate here before writing a Vue component** — chips mark which figures are live and which need a recipe |
 | [`demo/BREAST_SURGEON_BRIEFING.md`](demo/BREAST_SURGEON_BRIEFING.md) | Clinician-facing validation set for the breast panel, including the defects a surgeon finds immediately |
 
 ## Platform and reference
