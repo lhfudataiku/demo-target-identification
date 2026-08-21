@@ -26,7 +26,7 @@ annotation. Nothing is pre-cut: the scientist filters.
 | **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 families |
 | **Discovery** | novel candidates enriched **16.9×** for approved drug targets at top-10 |
 | **Actionability** | **2.4–2.9×** enrichment for druggable targets vs equally-connected genes |
-| **What it does not do** | no safety axis, no *morphological* subtype resolution, and association ranking does **not** predict therapeutic relevance (r = +0.024) |
+| **What it does not do** | no safety axis, no *morphological* subtype resolution, and association ranking does **not** predict therapeutic relevance (r = +0.002) |
 
 **Progressive filtering is the demo moment** — obesity disorder, on the scientist's own thresholds:
 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200 **≈ 70**.
@@ -237,7 +237,7 @@ Chosen by measurement, not familiarity — TARGET_PRIORITIZER §8.7 and §8.10.
 | Disease | Why it earns its slot |
 |---|---|
 | **Non-small cell lung carcinoma** | the MAPK3 story; best ranking precision in the panel (19× enrichment) |
-| **HER2-positive breast carcinoma** | passes clinical sanity outright — ERBB2 at rank 13, PI3K/AKT in the top 10, AUC 0.93 on 599 known targets. **Lead with this one in front of a clinician** |
+| **HER2-positive breast carcinoma** | passes clinical sanity outright — ERBB2 at rank 14, PIK3CA at rank 5, AUC 0.94 on 599 known targets. **Lead with this one in front of a clinician** |
 | **Diabetes mellitus** | best discoverer of *approved* targets across all 670 validation diseases |
 | **Obesity disorder** | the filtering story and the ADRB2 counterexample |
 
@@ -261,8 +261,12 @@ before they check any metric.
 | **triple-negative breast** | the homologous-recombination panel: RAD50, NBN, ATM, BRCA2, BRIP1, BARD1, RAD51C. **Read the briefing before showing this one** |
 | **obesity disorder** | GHSR (#8, ghrelin receptor), ADRB2 (#17, approved-validated), MCHR1 (#23) — a coherent neuroendocrine receptor cluster |
 
-**Ranking quality falls monotonically with rank**, pooled over personas: known-target density 60.0%
-(ranks 1–10) → 43.3% (41–50). **That is calibration evidence, not a novelty ceiling.**
+**Ranking quality declines across the range**, pooled over the five personas: known-target density
+**66.0%** (ranks 1–10) → **48.0%** (41–50). **That is calibration evidence, not a novelty ceiling.**
+
+*Do not claim the decline is monotonic — it is not. Band by band it runs 66.0 → 54.0 → 62.0 → 48.0 →
+48.0, and with only 50 observations per band that wobble is what you would expect from noise. The
+supportable claim is the trend across the range, not the shape within it.*
 
 ## 8. The on-graph shot
 

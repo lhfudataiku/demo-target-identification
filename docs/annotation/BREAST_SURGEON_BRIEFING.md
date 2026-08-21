@@ -159,5 +159,5 @@ ADRB2 case in TARGET_PRIORITIZER §10.2.
   present this as a systemic failure — present it as the specific reason TACSTD2 is missing here.
 - **A separate and larger pool problem was found while checking this** (TARGET_PRIORITIZER §5.2.1): the
   third route in the pool filter is drug-mediated, which admits 25% of approved drug-target pairs to the
-  evaluation *because of the relationship being evaluated*. Fixing it raises drug-target AUC from 0.691
-  to 0.734. Not clinician-facing, but it changes numbers that are.
+  evaluation *because of the relationship being evaluated*. Fixing it raises drug-target AUC from 0.689
+  to 0.747. Not clinician-facing, but it changes numbers that are.

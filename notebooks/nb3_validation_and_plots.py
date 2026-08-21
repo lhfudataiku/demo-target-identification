@@ -71,7 +71,8 @@ check("7.4 drug-target macro AUC",0.6886,round(float(db.auc_drug_targets.mean())
 
 # ==== 7.2  hub-bias meter -- it has no recipe, so this notebook IS its artifact ====
 sc3=dataiku.Dataset("scored_champion").get_dataframe(
-    columns=["disease_index","gene_index","is_target","proba_1","gene_ppi_degree"])
+    columns=["disease_index","gene_index","is_target","proba_1","gene_ppi_degree",
+             "disease_split_key"])
 sc3["dq"]=pd.qcut(sc3.gene_ppi_degree.rank(method="first"),5,labels=False)
 top=sc3.sort_values("proba_1",ascending=False).groupby("disease_index").head(50)
 print("HUBHDR|degree_quintile|pool_share_%|top50_share_%|over_rep")
@@ -80,5 +81,27 @@ for q in range(5):
     print(f"HUB|Q{q+1}|{ps:6.2f}|{ts:6.2f}|{ts/ps:5.2f}x")
 q5=100*(top.dq==4).mean()/(100*(sc3.dq==4).mean())
 print(f"HUBTOP|highest-degree quintile over-representation at top-50: {q5:.2f}x")
+# ==== header block: POOLED and PER-SPLIT-KEY, the two metrics the header quotes and nothing
+# ==== asserted. Their absence is why the status line once mixed m7's macro with m3's pooled.
+def _auc(y,s_):
+    npos=int(y.sum()); nneg=len(y)-npos
+    if npos==0 or nneg==0: return float("nan")
+    r=pd.Series(s_).rank(method="average").to_numpy()   # ties -> average ranks
+    return (r[y==1].sum()-npos*(npos+1)/2)/(npos*nneg)
+
+_pooled=_auc(sc3.is_target.to_numpy(), sc3.proba_1.to_numpy())
+def _macro(key):
+    d=sc3[["is_target","proba_1",key]].copy()
+    d["r"]=d.groupby(key)["proba_1"].rank(method="average")
+    g=d.groupby(key).agg(npos=("is_target","sum"), n=("is_target","size"))
+    g["rsum"]=d[d.is_target==1].groupby(key)["r"].sum().reindex(g.index).fillna(0.0)
+    g["nneg"]=g.n-g.npos
+    g=g[(g.npos>0)&(g.nneg>0)]
+    return ((g.rsum-g.npos*(g.npos+1)/2)/(g.npos*g.nneg)).mean(), len(g)
+_sk,_nsk=_macro("disease_split_key")
+print(f"HEADER|pooled={_pooled:.4f}|per_split_key={_sk:.4f}|split_keys={_nsk}")
+check("header pooled AUC",0.8932,round(float(_pooled),4),tol=0.0006,fmt="{:.4f}")
+check("header per-split-key AUC",0.8046,round(float(_sk),4),tol=0.0006,fmt="{:.4f}")
+
 print(f"\nSUMMARY|{len(FAIL)} STALE")
 for nm,d,l in FAIL: print(f"FAILED|{nm}|doc={d}|live={l}")

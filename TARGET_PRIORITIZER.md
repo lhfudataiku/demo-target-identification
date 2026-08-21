@@ -40,7 +40,7 @@ quoted aggregate against live data, so drift fails loudly — see [notebooks/REA
 **If a number here has no source line, treat it as unverified.**
 
 **One thing to know before reading any number here:** the headline metric is *association* AUC, and it
-is **statistically orthogonal** to therapeutic relevance — r = +0.024, R² = 0.0006 over 130 diseases
+is **statistically orthogonal** to therapeutic relevance — r = +0.002, R² = 0.0000 over 130 diseases
 (§7.4). Every claim in §8 is scoped to one axis. Which axis is never optional.
 
 ## 2. Scientific basis
@@ -974,8 +974,8 @@ vs Q5 (median 104.5) **40.8%** — a **6× detection swing on network position a
 **⚠ REFUTED for the champion.** This section previously read *"the first model that improves
 under-studied targets outright rather than relatively"* — and instructed the reader to recompute before
 quoting. Recomputed (`nb3`, 73,829 known-target rows across 670 validation diseases): **the champion is
-worse than the retired generation on every dimension of this axis.** Q1 fell **−0.062**, Q5 rose
-+0.024, the spread nearly **doubled** (+0.110 → +0.195), and ρ(degree, probability) rose +0.085.
+worse than the retired generation on every dimension of this axis.** Q1 fell **−0.058**, Q5 rose
++0.026, the spread nearly **doubled** (+0.110 → +0.194), and ρ(degree, probability) rose +0.085.
 
 **The hypothesised cause was tested and REFUTED.** The champion differs from the retired generation by
 dropping `prox_closest`, so the obvious explanation was that this feature had been carrying the
