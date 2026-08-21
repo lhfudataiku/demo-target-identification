@@ -20,8 +20,15 @@ Two claims, tested separately. The second is a safety condition, not a benefit.
 
 ## 2. The intervention
 
-The gate is on distinct `disease_protein` seeds per disease. Nine recipes carry a threshold; they fall
-into two classes, and **the distinction decides the whole design**.
+The gate is on distinct `disease_protein` seeds per disease. **Ten** recipes carry a threshold; they
+fall into two classes, and **the distinction decides the whole design**.
+
+> *Source: generated — `.index/recipes.tsv` and `.index/features.tsv` (`tools/build_recipe_index.py`).
+> The class field is hand-recorded in `tools/recipe_classes.json` with its evidence, because it is a
+> judgement about aggregate scope that a regex would get plausibly wrong; the generator **exits
+> non-zero if a gated recipe has no class**, so a new gate cannot reach this experiment unclassified.
+> The inventory was nine recipes when this document was first written — `compute_enriched_rwr_score_1`
+> was missing because it was **not under version control** and therefore invisible to the scan.*
 
 ### Class 1 — pure NULL-fill: widening adds rows, existing values unchanged
 
@@ -35,7 +42,7 @@ enter them. **Change all of these 20 → 5:**
 | `compute_enriched_dwpc_GCD` | `dwpc_GCD` — **pool route** |
 | `compute_enriched_guilt_by_association_1` | `ppi_adamic_adar`, `ppi_jaccard` (`deg_m`, `ppi_deg_g` are global) |
 | `compute_enriched_shared_pathway_count_1` | `shared_pathway_frac` (`n_pathways_g` is global) |
-| `compute_enriched_disease_context_1` | `disease_context` — **verify empirically**, see §4 |
+| `compute_enriched_disease_context_1` | `disease_context` — **settled Class 1** from the mirrored Cypher: the gate filters the anchor `D`, but `D2` is matched via `(D)-[:disease_disease]-(D2)` with no module_size filter |
 | `compute_enriched_module_size_1` | `module_size` (trivially per-disease) |
 | `compute_enriched_rwr_score_1` | `rwr_score` — `MIN_SEEDS = 20 → 5`; per-disease loop, global adjacency |
 | `compute_enriched_prox_closest` | already `MIN_SEEDS = 5`; raise `POOL_MIN` 20 → 5 |
@@ -62,8 +69,11 @@ for existing pairs** — a different intervention, not a NULL fill.
 > the Cypher routes do, so every disease that passed already had the features. The lesson recorded in
 > its header is the reason it is held here.
 
-**Decision: hold `MIN_MODULE = 20`.** The 931 admitted diseases will carry NULL for two of fourteen
-features. That is the deliberate price of keeping the 1,157 existing diseases as a clean control — with
+**Decision: hold `MIN_MODULE = 20`.** The 931 admitted diseases will carry NULL for **exactly two of
+the fourteen champion features — `dwpc_GBGD` and `dwpc_GFGD`** (confirmed against
+`.index/features.tsv`: 7 of 14 are gated Class 1, 2 are gated Class 2, and 5 are ungated — that last
+count independently matches the documented "five gene-level features" an excluded disease falls back
+on). That is the deliberate price of keeping the 1,157 existing diseases as a clean control — with
 `assoc` frozen, their features are byte-identical, so any change in their scores is attributable to the
 training set alone and nothing else. Lowering both at once confounds two interventions in one rebuild,
 and this project has already paid for that mistake once.

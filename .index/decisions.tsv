@@ -139,3 +139,7 @@ date	line	chars	topic
 2026-08-21	153	654	The first index build was useless and the reason is worth recording: 1,444 orphans of 1,630 claims
 2026-08-21	154	806	The index found four stale numbers the manual sweep had missed, two of them in external-audience documents
 2026-08-21	155	675	A client-facing monotonicity claim is now false and was caught the same way
+2026-08-21	156	700	The Cypher recipes were NOT under version control, and neither were two Python ones
+2026-08-21	157	516	`compute_enriched_disease_context_1` classified Class 1 — settled by reading the newly mirrored Cypher
+2026-08-21	158	871	TRAP: `dku ml settings <analysis> <mltask>` returns the CURRENT mltask state, not a deployed model's config
+2026-08-21	159	495	The index was indexing its own output

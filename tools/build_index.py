@@ -77,9 +77,15 @@ HIST = re.compile(
 
 
 def tracked(pattern):
+    """Tracked files matching pattern, EXCLUDING .index/ itself.
+
+    .index/SUMMARY.md is a .md file. Once committed it becomes tracked, so without this filter the
+    generator re-indexes the numbers it printed in its own summary and the claim count grows on
+    every run (observed: 1,630 -> 1,744). Self-referential and compounding.
+    """
     out = subprocess.run(["git", "ls-files", pattern], cwd=ROOT,
                          capture_output=True, text=True).stdout.split("\n")
-    return [f for f in out if f.strip()]
+    return [f for f in out if f.strip() and not f.startswith(".index/")]
 
 
 def scrub(line):

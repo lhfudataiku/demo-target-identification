@@ -15,7 +15,7 @@ flags them as historical dropped.
 
 | file | asserted | value-only | orphan | total |
 |---|--:|--:|--:|--:|
-| `DECISIONS.md` | 2 | 43 | 343 | 388 |
+| `DECISIONS.md` | 2 | 43 | 345 | 390 |
 | `DEMO_NARRATIVE.md` | 1 | 14 | 20 | 35 |
 | `DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
 | `DSS_CHEATSHEET.md` | 0 | 1 | 6 | 7 |
@@ -30,11 +30,11 @@ flags them as historical dropped.
 | `docs/annotation/BREAST_SURGEON_BRIEFING.md` | 0 | 9 | 17 | 26 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
 | `notebooks/README.md` | 0 | 0 | 2 | 2 |
-| **total** | **45** | **160** | **1441** | **1646** |
+| **total** | **45** | **160** | **1443** | **1648** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**366 rows.** Of 1441 total orphans, these are the model-dependent ones: the numbers that move
+**366 rows.** Of 1443 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -104,6 +104,6 @@ when the champion changes and that no notebook would catch.
 
 ## DECISIONS.md jump table
 
-140 entries, 72776 chars. Query `.index/decisions.tsv` rather than reading the file — it is
+144 entries, 75358 chars. Query `.index/decisions.tsv` rather than reading the file — it is
 the densest file in the repo (~146 tokens per line).
 

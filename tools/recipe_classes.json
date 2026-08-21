@@ -1,0 +1,96 @@
+{
+  "_README": [
+    "Hand-recorded annotations that tools/build_recipe_index.py cannot derive. Everything else in",
+    ".index/recipes.tsv and .index/features.tsv is generated -- do not hand-edit those.",
+    "",
+    "build_recipe_index.py EXITS NON-ZERO if a gated recipe is missing from `recipes` below, so a",
+    "newly added gate cannot reach Phase 3 unclassified."
+  ],
+
+  "_class_meaning": {
+    "1": "Pure NULL-fill. Widening the seed gate only ADDS rows; every existing value is unchanged, because the recipe's normalisers are global (whole-graph COUNT{} or a per-disease loop over a global adjacency). Safe to widen: the pre-change population stays a clean control.",
+    "2": "Recomputes an aggregate over the ELIGIBLE set. Widening the gate CHANGES existing rows -- a different intervention, not a NULL fill. Widening this together with Class 1 recipes confounds two interventions in one rebuild."
+  },
+
+  "_champion_features": [
+    "dwpc_GBGD",
+    "dwpc_GFGD",
+    "dwpc_GGD",
+    "dwpc_GPGD",
+    "gene_n_pathways",
+    "gene_ppi_degree",
+    "ppi_adamic_adar",
+    "ppi_common_neighbors_z",
+    "ppi_evidence_depth",
+    "ppi_jaccard",
+    "ppi_multi_source_frac",
+    "prox_closest",
+    "prox_kernel",
+    "shared_pathway_frac"
+  ],
+
+  "_champion_features_provenance": [
+    "m7-f14, saved model hJLGoYn4. RECONSTRUCTED, not read directly -- read the warning below.",
+    "",
+    "TRAP: `dku ml settings I2csfIX2 krJwswcb` returns the CURRENT state of the mltask, NOT the",
+    "config of any deployed model version. m8-f14-pm was trained in that same mltask by swapping",
+    "prox_kernel -> prox_mean, so the task now reports prox_mean as INPUT and prox_kernel as",
+    "REJECTED. The feature COUNT still reads 14, which matches the name m7-f14 and makes the wrong",
+    "list look correct. Do not source champion features from `ml settings` without checking which",
+    "model was trained last.",
+    "",
+    "This list is that output with prox_mean -> prox_kernel, per the documented m7 decision",
+    "(DECISIONS.md 2026-08-21, TARGET_PRIORITIZER 6.4). Two independent corroborations:",
+    "  - exactly 7 of these 14 carry `module_size >= 20`, matching the documented",
+    "    'seven of the twelve champion features' (dwpc_GBGD, dwpc_GFGD, dwpc_GGD, dwpc_GPGD,",
+    "    ppi_adamic_adar, ppi_jaccard, shared_pathway_frac)",
+    "  - m8 is documented as m7 with exactly this one feature swapped, which is self-consistent",
+    "",
+    "NOTE: dwpc_GCD is REJECTED as a model feature. It is a POOL ROUTE only -- it decides which",
+    "rows exist (filter_has_path_evidence) but the model never sees it. Section 5.2.1's selection",
+    "bias is therefore about evaluability, not about a feature the model reads."
+  ],
+
+  "recipes": {
+    "compute_enriched_dwpc_GGD": {
+      "class": "1",
+      "note": "POOL ROUTE. Degrees come from whole-graph COUNT{} subqueries; module_size is per-disease with LOO. Verified in dss_recipes/cypher/."
+    },
+    "compute_enriched_dwpc_GPGD": {
+      "class": "1",
+      "note": "POOL ROUTE. Same structure as GGD, pathway-mediated middle node."
+    },
+    "compute_enriched_dwpc_GCD": {
+      "class": "1",
+      "note": "POOL ROUTE, compound-mediated. Not a model feature -- pool membership only (see _champion_features_provenance). Source of the 5.2.1 selection bias."
+    },
+    "compute_enriched_guilt_by_association_1": {
+      "class": "1",
+      "note": "deg_m and ppi_deg_g are whole-graph COUNT{} over protein_protein, halved for the both-directions Kuzu build. Emits ppi_adamic_adar, ppi_jaccard."
+    },
+    "compute_enriched_shared_pathway_count_1": {
+      "class": "1",
+      "note": "n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility."
+    },
+    "compute_enriched_disease_context_1": {
+      "class": "1",
+      "note": "Settled 2026-08-21 from the newly mirrored Cypher. The gate filters the ANCHOR D only; D2 is matched fresh via (D)-[:disease_disease]-(D2) with NO module_size filter, so an existing (g,D) pair's disease_context cannot change. Was flagged unresolved before the mirror existed."
+    },
+    "compute_enriched_module_size_1": {
+      "class": "1",
+      "note": "Trivially per-disease. WARNING: this dataset is itself gated, so its minimum IS 20 -- it cannot be used to size the sub-20 population. Use graph_edges disease_protein directly (FEATURE_AUDIT section 5)."
+    },
+    "compute_enriched_rwr_score_1": {
+      "class": "1",
+      "note": "MIN_SEEDS gate inside a per-disease loop; adjacency and degrees are global. Was UNVERSIONED until 2026-08-21 -- a gated recipe with no diff history."
+    },
+    "compute_enriched_prox_closest": {
+      "class": "1",
+      "note": "Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach."
+    },
+    "compute_dwpc_go_metapaths": {
+      "class": "2",
+      "note": "THE ONLY CLASS 2. `assoc` (per-gene disease degree) is computed over the ELIGIBLE disease set and feeds the DWPC weight, so widening eligibility changes dwpc_GBGD/dwpc_GFGD for EXISTING pairs. A 20->5 change was applied and REVERTED on 2026-08-20 for this reason. Phase 3 HOLDS this at 20 to keep the pre-change population byte-identical."
+    }
+  }
+}

@@ -387,6 +387,8 @@ DECISIONS.md	155	-	60.0	ORPHAN		y		| 2026-08-21 | **A client-facing monotonicity
 DECISIONS.md	155	-	43.3	ORPHAN		y		| 2026-08-21 | **A client-facing monotonicity claim is now false and was caught the same way.** `DEMO_NARRATIV
 DECISIONS.md	155	-	66.0	ORPHAN		y		| 2026-08-21 | **A client-facing monotonicity claim is now false and was caught the same way.** `DEMO_NARRATIV
 DECISIONS.md	155	-	48.0	ORPHAN		y		| 2026-08-21 | **A client-facing monotonicity claim is now false and was caught the same way.** `DEMO_NARRATIV
+DECISIONS.md	159	-	1,630	ORPHAN				| 2026-08-21 | **The index was indexing its own output.** `.index/SUMMARY.md` is a `.md` file, so once committ
+DECISIONS.md	159	-	1,744	ORPHAN				| 2026-08-21 | **The index was indexing its own output.** `.index/SUMMARY.md` is a `.md` file, so once committ
 DEMO_NARRATIVE.md	18	-	129,253	ORPHAN				**The artifact.** `target_candidates_2` — **129,253 scored candidates across 13 diseases**, each row
 DEMO_NARRATIVE.md	26	-	0.82	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie
 DEMO_NARRATIVE.md	26	-	0.80	ASSERTED	nb3_validation_and_plots.py:header per-split-key AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie
@@ -1579,39 +1581,39 @@ docs/FEATURE_AUDIT.md	256	5	3,067	ORPHAN				**The gap is 0.23× as dense — 4.4
 docs/FEATURE_AUDIT.md	256	5	8,919	ORPHAN				**The gap is 0.23× as dense — 4.4× more dilute.** Worse, **only 3,067 of the gap's 8,919 seeds are
 docs/FEATURE_AUDIT.md	281	5	0.0117	ORPHAN		y		**Headwind to state in the pre-registration.** `m7` made the <20-seed bucket *worse* (−0.0117, n = 22,
 docs/PHASE3_PREREGISTRATION.md	17	1	1,157	ORPHAN				and that admitting them does not degrade the 1,157 diseases already there.**
-docs/PHASE3_PREREGISTRATION.md	66	2	1,157	ORPHAN				features. That is the deliberate price of keeping the 1,157 existing diseases as a clean control — with
-docs/PHASE3_PREREGISTRATION.md	74	3	4,951	ORPHAN				- **No threshold below 5.** The 4,951 diseases with under five seeds stay out; 3,334 have a single seed
-docs/PHASE3_PREREGISTRATION.md	74	3	3,334	ORPHAN				- **No threshold below 5.** The 4,951 diseases with under five seeds stay out; 3,334 have a single seed
-docs/PHASE3_PREREGISTRATION.md	87	4	1,157	ORPHAN				| **G1** | **Bit-identity of the control stratum.** For the 1,157 diseases eligible before the change, every f
-docs/PHASE3_PREREGISTRATION.md	89	4	1,157	ORPHAN				| **G3** | Disease count | eligible 1,157 → **2,088** exactly |
-docs/PHASE3_PREREGISTRATION.md	89	4	2,088	ORPHAN				| **G3** | Disease count | eligible 1,157 → **2,088** exactly |
-docs/PHASE3_PREREGISTRATION.md	91	4	1,157	ORPHAN		y		| **G5** | Existing diseases' scores under un-retrained `m7` | **bit-identical** to `scored_champion` on the s
-docs/PHASE3_PREREGISTRATION.md	101	5	0.05	ORPHAN		y		| **P1** | **The premise.** Admitted diseases beat a gene-popularity baseline (rank by `gene_n_diseases`) by *
-docs/PHASE3_PREREGISTRATION.md	102	5	0.62	ORPHAN		y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
-docs/PHASE3_PREREGISTRATION.md	102	5	0.75	ORPHAN		y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
-docs/PHASE3_PREREGISTRATION.md	102	5	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
-docs/PHASE3_PREREGISTRATION.md	102	5	0.80	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
-docs/PHASE3_PREREGISTRATION.md	102	5	0.55	ORPHAN		y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
-docs/PHASE3_PREREGISTRATION.md	104	5	0.1935	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion spread	y		| **P4** | **Hub bias worsens**: spread **> 0.1935**, ρ(degree, probability) **> 0.3273**. Thin modules mean t
-docs/PHASE3_PREREGISTRATION.md	104	5	0.3273	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)	y		| **P4** | **Hub bias worsens**: spread **> 0.1935**, ρ(degree, probability) **> 0.3273**. Thin modules mean t
-docs/PHASE3_PREREGISTRATION.md	105	5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| **P5** | Pool grows **+9% to +15%**: 6,754,128 → **7.35M–7.75M** rows | outside that range |
-docs/PHASE3_PREREGISTRATION.md	106	5	1.89	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilu
-docs/PHASE3_PREREGISTRATION.md	106	5	1.72	ORPHAN				| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilu
-docs/PHASE3_PREREGISTRATION.md	106	5	1.86	ORPHAN				| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilu
-docs/PHASE3_PREREGISTRATION.md	106	5	4.4	ORPHAN				| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilu
-docs/PHASE3_PREREGISTRATION.md	107	5	0.000	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 	y		| **P7** | On the control stratum, retraining produces a **small positive** shift by `m6`'s mechanism — a bett
-docs/PHASE3_PREREGISTRATION.md	107	5	0.004	ORPHAN		y		| **P7** | On the control stratum, retraining produces a **small positive** shift by `m6`'s mechanism — a bett
-docs/PHASE3_PREREGISTRATION.md	110	5	0.0117	ORPHAN				**worse** (−0.0117, n = 22, not significant) while helping every larger bucket, and the 931 diseases
-docs/PHASE3_PREREGISTRATION.md	111	5	4.4	ORPHAN				this change admits are all in or near that regime. Measured on the GGD route, they are **4.4× more
-docs/PHASE3_PREREGISTRATION.md	112	5	0.72	VALUE_ONLY	nb1_features_and_config.py:6.1 dwpc_GPGD single-feature AUC			dilute** in positives (0.72% against 3.19%) and only **34%** of their seeds are reachable at all,
-docs/PHASE3_PREREGISTRATION.md	112	5	3.19	ORPHAN				dilute** in positives (0.72% against 3.19%) and only **34%** of their seeds are reachable at all,
-docs/PHASE3_PREREGISTRATION.md	119	5	2,088	ORPHAN				> defensible claim if P1 passes and P2 lands as predicted is "we now cover 2,088 diseases instead of
-docs/PHASE3_PREREGISTRATION.md	120	5	1,157	ORPHAN		y		> 1,157, and the new ones are ranked better than popularity though worse than the core" — not "the model
-docs/PHASE3_PREREGISTRATION.md	132	6	0.005	ORPHAN		y		- **A3** Hub spread does not worsen by more than **+0.005** (i.e. stays ≤ 0.1985). P4 predicts it
-docs/PHASE3_PREREGISTRATION.md	132	6	0.1985	ORPHAN		y		- **A3** Hub spread does not worsen by more than **+0.005** (i.e. stays ≤ 0.1985). P4 predicts it
-docs/PHASE3_PREREGISTRATION.md	150	7	1,157	ORPHAN		y		| **A — control** | 1,157 eligible before | yes, `m7` on identical features | paired per-disease, with tie cou
-docs/PHASE3_PREREGISTRATION.md	166	8	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		1. **Never compare the branch's macro AUC to 0.8230.** Different population, so the comparison is
-docs/PHASE3_PREREGISTRATION.md	167	8	1,157	ORPHAN				meaningless. Cross-project comparison is restricted to the shared 1,157 diseases.
+docs/PHASE3_PREREGISTRATION.md	76	2	1,157	ORPHAN				on). That is the deliberate price of keeping the 1,157 existing diseases as a clean control — with
+docs/PHASE3_PREREGISTRATION.md	84	3	4,951	ORPHAN				- **No threshold below 5.** The 4,951 diseases with under five seeds stay out; 3,334 have a single seed
+docs/PHASE3_PREREGISTRATION.md	84	3	3,334	ORPHAN				- **No threshold below 5.** The 4,951 diseases with under five seeds stay out; 3,334 have a single seed
+docs/PHASE3_PREREGISTRATION.md	97	4	1,157	ORPHAN				| **G1** | **Bit-identity of the control stratum.** For the 1,157 diseases eligible before the change, every f
+docs/PHASE3_PREREGISTRATION.md	99	4	1,157	ORPHAN				| **G3** | Disease count | eligible 1,157 → **2,088** exactly |
+docs/PHASE3_PREREGISTRATION.md	99	4	2,088	ORPHAN				| **G3** | Disease count | eligible 1,157 → **2,088** exactly |
+docs/PHASE3_PREREGISTRATION.md	101	4	1,157	ORPHAN		y		| **G5** | Existing diseases' scores under un-retrained `m7` | **bit-identical** to `scored_champion` on the s
+docs/PHASE3_PREREGISTRATION.md	111	5	0.05	ORPHAN		y		| **P1** | **The premise.** Admitted diseases beat a gene-popularity baseline (rank by `gene_n_diseases`) by *
+docs/PHASE3_PREREGISTRATION.md	112	5	0.62	ORPHAN		y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
+docs/PHASE3_PREREGISTRATION.md	112	5	0.75	ORPHAN		y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
+docs/PHASE3_PREREGISTRATION.md	112	5	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
+docs/PHASE3_PREREGISTRATION.md	112	5	0.80	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
+docs/PHASE3_PREREGISTRATION.md	112	5	0.55	ORPHAN		y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
+docs/PHASE3_PREREGISTRATION.md	114	5	0.1935	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion spread	y		| **P4** | **Hub bias worsens**: spread **> 0.1935**, ρ(degree, probability) **> 0.3273**. Thin modules mean t
+docs/PHASE3_PREREGISTRATION.md	114	5	0.3273	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)	y		| **P4** | **Hub bias worsens**: spread **> 0.1935**, ρ(degree, probability) **> 0.3273**. Thin modules mean t
+docs/PHASE3_PREREGISTRATION.md	115	5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| **P5** | Pool grows **+9% to +15%**: 6,754,128 → **7.35M–7.75M** rows | outside that range |
+docs/PHASE3_PREREGISTRATION.md	116	5	1.89	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilu
+docs/PHASE3_PREREGISTRATION.md	116	5	1.72	ORPHAN				| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilu
+docs/PHASE3_PREREGISTRATION.md	116	5	1.86	ORPHAN				| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilu
+docs/PHASE3_PREREGISTRATION.md	116	5	4.4	ORPHAN				| **P6** | Pool positive rate **falls** from 1.89% to **1.72–1.86%**, because admitted rows are 4.4× more dilu
+docs/PHASE3_PREREGISTRATION.md	117	5	0.000	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 	y		| **P7** | On the control stratum, retraining produces a **small positive** shift by `m6`'s mechanism — a bett
+docs/PHASE3_PREREGISTRATION.md	117	5	0.004	ORPHAN		y		| **P7** | On the control stratum, retraining produces a **small positive** shift by `m6`'s mechanism — a bett
+docs/PHASE3_PREREGISTRATION.md	120	5	0.0117	ORPHAN				**worse** (−0.0117, n = 22, not significant) while helping every larger bucket, and the 931 diseases
+docs/PHASE3_PREREGISTRATION.md	121	5	4.4	ORPHAN				this change admits are all in or near that regime. Measured on the GGD route, they are **4.4× more
+docs/PHASE3_PREREGISTRATION.md	122	5	0.72	VALUE_ONLY	nb1_features_and_config.py:6.1 dwpc_GPGD single-feature AUC			dilute** in positives (0.72% against 3.19%) and only **34%** of their seeds are reachable at all,
+docs/PHASE3_PREREGISTRATION.md	122	5	3.19	ORPHAN				dilute** in positives (0.72% against 3.19%) and only **34%** of their seeds are reachable at all,
+docs/PHASE3_PREREGISTRATION.md	129	5	2,088	ORPHAN				> defensible claim if P1 passes and P2 lands as predicted is "we now cover 2,088 diseases instead of
+docs/PHASE3_PREREGISTRATION.md	130	5	1,157	ORPHAN		y		> 1,157, and the new ones are ranked better than popularity though worse than the core" — not "the model
+docs/PHASE3_PREREGISTRATION.md	142	6	0.005	ORPHAN		y		- **A3** Hub spread does not worsen by more than **+0.005** (i.e. stays ≤ 0.1985). P4 predicts it
+docs/PHASE3_PREREGISTRATION.md	142	6	0.1985	ORPHAN		y		- **A3** Hub spread does not worsen by more than **+0.005** (i.e. stays ≤ 0.1985). P4 predicts it
+docs/PHASE3_PREREGISTRATION.md	160	7	1,157	ORPHAN		y		| **A — control** | 1,157 eligible before | yes, `m7` on identical features | paired per-disease, with tie cou
+docs/PHASE3_PREREGISTRATION.md	176	8	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		1. **Never compare the branch's macro AUC to 0.8230.** Different population, so the comparison is
+docs/PHASE3_PREREGISTRATION.md	177	8	1,157	ORPHAN				meaningless. Cross-project comparison is restricted to the shared 1,157 diseases.
 docs/annotation/BREAST_SURGEON_BRIEFING.md	15	1	76,465	ORPHAN				`target_candidates_2` from 76,465 rows over 7 diseases to **129,253 over 13**.
 docs/annotation/BREAST_SURGEON_BRIEFING.md	15	1	129,253	ORPHAN				`target_candidates_2` from 76,465 rows over 7 diseases to **129,253 over 13**.
 docs/annotation/BREAST_SURGEON_BRIEFING.md	21	1	8,157	ORPHAN				| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
