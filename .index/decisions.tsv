@@ -143,3 +143,5 @@ date	line	chars	topic
 2026-08-21	157	516	`compute_enriched_disease_context_1` classified Class 1 — settled by reading the newly mirrored Cypher
 2026-08-21	158	871	TRAP: `dku ml settings <analysis> <mltask>` returns the CURRENT mltask state, not a deployed model's config
 2026-08-21	159	495	The index was indexing its own output
+2026-08-21	160	754	`.index/models.tsv` built, and made PROTECTIVE rather than merely convenient
+2026-08-21	161	834	The champion-metric cross-check found a bug in my own indexer within a minute of existing

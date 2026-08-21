@@ -42,6 +42,7 @@ INDEX = os.path.join(ROOT, ".index")
 SNAP = os.path.join(INDEX, "dss_snapshot.json")
 CYPHER_DIR = os.path.join(ROOT, "dss_recipes", "cypher")
 CLASSES = os.path.join(ROOT, "tools", "recipe_classes.json")
+REGISTRY = os.path.join(ROOT, "tools", "model_registry.json")
 PROJECT = os.environ.get("DKU_PROJECT", "DEMO_TARGET_IDENTIFICATION")
 
 GATES = [
@@ -127,6 +128,13 @@ def refresh():
         if cols:
             schemas[nm] = cols
     print("schemas: %d datasets" % len(schemas))
+    models = {}
+    for ln in sh(["dku", "model", "list", "-P", PROJECT]).split("\n"):
+        parts = ln.split("\t")
+        if len(parts) >= 3 and parts[0] not in ("id",) and not ln.startswith("Saved Models"):
+            models[parts[0].strip()] = {"name": parts[1].strip(), "type": parts[2].strip()}
+    print("models: %d saved" % len(models))
+    snap["_models"] = models
     snap["_schemas"] = schemas
     os.makedirs(INDEX, exist_ok=True)
     json.dump(snap, open(SNAP, "w"), indent=1, sort_keys=True)
@@ -265,11 +273,90 @@ def main():
                 "note": recmeta.get(name, {}).get("note", ""),
             })
 
+    # ---- model index: identity + consumers + decision refs generated; metrics hand-recorded ----
+    reg = json.load(open(REGISTRY)) if os.path.exists(REGISTRY) else {}
+    models = snap.pop("_models", None) or {}
+    champion = reg.get("champion", "")
+    ladder = set(reg.get("ablation_ladder") or [])
+    ok_consumers = set(reg.get("ablation_consumers") or [])
+    mreg = reg.get("models", {})
+
+    blob = {n: json.dumps(r) for n, r in snap.items() if not n.startswith("_")}
+    dec_lines = {}
+    dpath = os.path.join(ROOT, "DECISIONS.md")
+    dec_txt = open(dpath).read().split("\n") if os.path.exists(dpath) else []
+
+    # Cross-check the champion's hand-recorded metrics against .index/assertions.tsv. Without this
+    # the registry becomes another unguarded number surface -- the very thing the indexes exist to
+    # prevent. Only the champion is checked: retired models have no live assertions.
+    asserted = []
+    apath = os.path.join(INDEX, "assertions.tsv")
+    if os.path.exists(apath):
+        for ln in open(apath).read().split("\n")[1:]:
+            f = ln.split("\t")
+            if len(f) == 4:
+                try:
+                    asserted.append(float(f[3]))
+                except ValueError:
+                    pass
+    drift = []
+    if champion and asserted:
+        for key in ("assoc_auroc", "drug_all", "drug_supported", "tract_dm200"):
+            v = (mreg.get(champion) or {}).get(key)
+            if v is None:
+                continue
+            # match at the recorded precision: the registry may hold 2.418 where nb4 asserts 2.42
+            if not any(round(a, len(str(v).split(".")[1])) == v or round(v, 2) == round(a, 2)
+                       for a in asserted):
+                drift.append("%s=%s" % (key, v))
+
+    mrows, strays, unrecorded = [], [], []
+    for mid, meta in sorted(models.items(), key=lambda kv: kv[1]["name"]):
+        name = meta["name"]
+        consumers = sorted(n for n, b in blob.items() if mid in b)
+        # a consumer is "expected" if it is this model's own train/score recipe or a declared
+        # ablation consumer; anything else is a live entry point on a retired model
+        own = re.compile(r"^(train|score)_.*" + re.escape(name.split("-")[0]) + r"\b|^train_"
+                         + re.escape(name) + r"$")
+        stray = [c for c in consumers
+                 if mid != champion and c not in ok_consumers and not own.search(c)]
+        if stray:
+            strays.append((name, stray))
+        rec = mreg.get(mid)
+        if rec is None:
+            unrecorded.append("%s (%s)" % (name, mid))
+            rec = {}
+        refs = [str(i + 1) for i, ln in enumerate(dec_txt) if name in ln]
+        dec_lines[mid] = refs
+
+        def g(k):
+            v = rec.get(k)
+            return "?" if v is None else v
+        mrows.append({
+            "model": name, "id": mid,
+            "role": (("CHAMPION" if mid == champion else
+                      "ablation" if mid in ladder else "-")),
+            "n_feat": g("n_features"),
+            "assoc_auroc": g("assoc_auroc"), "assoc_auprc": g("assoc_auprc"),
+            "hub_spread": g("hub_spread"),
+            "drug_all": g("drug_all"), "drug_supported": g("drug_supported"),
+            "tract_dm200": g("tract_dm200"),
+            "disc_lift50": g("disc_lift50"), "disc_lift200": g("disc_lift200"),
+            "delta": rec.get("delta", "?"),
+            "verdict": rec.get("verdict", "NOT RECORDED"),
+            "consumers": ",".join(consumers) or "-",
+            "decisions_lines": ",".join(refs) or "-",
+        })
+
     def tsv(rr, cols):
         return "\n".join(["\t".join(cols)] +
                          ["\t".join(str(r[c]).replace("\t", " ") for c in cols) for r in rr]) + "\n"
 
     files = {
+        "models.tsv": tsv(mrows, ["model", "id", "role", "n_feat", "assoc_auroc", "assoc_auprc",
+                                  "hub_spread", "drug_all", "drug_supported", "tract_dm200",
+                                  "disc_lift50", "disc_lift200", "delta", "verdict",
+                                  "consumers", "decisions_lines"]),
         "recipes.tsv": tsv(sorted(rows, key=lambda r: (r["gate"] == "-", r["recipe"])),
                            ["recipe", "type", "gate", "class", "auto_hint", "source",
                             "inputs", "outputs"]),
@@ -281,7 +368,15 @@ def main():
         bad = [n for n, b in files.items()
                if not os.path.exists(os.path.join(INDEX, n))
                or open(os.path.join(INDEX, n)).read() != b]
-        if bad or unclassified:
+        if drift:
+            print("CHAMPION METRIC NOT ASSERTED ANYWHERE: %s — either the registry drifted or the "
+                  "notebooks stopped guarding it" % ", ".join(drift))
+        if strays:
+            for nm, ss in strays:
+                print("STRAY CONSUMER: %s (non-champion) is referenced by %s" % (nm, ", ".join(ss)))
+        if unrecorded:
+            print("MODELS NOT IN tools/model_registry.json: %s" % ", ".join(unrecorded))
+        if bad or unclassified or strays or unrecorded or drift:
             if bad:
                 print("STALE: %s" % ", ".join(bad))
             if unclassified:
@@ -296,8 +391,19 @@ def main():
     for n, b in files.items():
         open(os.path.join(INDEX, n), "w").write(b)
     gated = [r for r in rows if r["gate"] != "-"]
-    print("wrote .index/recipes.tsv (%d recipes, %d gated) and features.tsv (%d columns)"
-          % (len(rows), len(gated), len(feats)))
+    print("wrote .index/recipes.tsv (%d recipes, %d gated), features.tsv (%d columns), "
+          "models.tsv (%d models)" % (len(rows), len(gated), len(feats), len(mrows)))
+    if drift:
+        print("\n!! CHAMPION METRICS WITH NO MATCHING NOTEBOOK ASSERTION: %s\n"
+              "   The registry is hand-transcribed; an unguarded metric there can drift exactly the\n"
+              "   way the docs did." % ", ".join(drift))
+    for nm, ss in strays:
+        print("\n!! STRAY CONSUMER: %s is not the champion yet is referenced by %s\n"
+              "   A retired model with a live scoring entry point is how score_persona_candidates\n"
+              "   stayed on m3-f12 after the champion moved." % (nm, ", ".join(ss)))
+    if unrecorded:
+        print("\n!! %d saved models missing from tools/model_registry.json: %s"
+              % (len(unrecorded), ", ".join(unrecorded)))
     if unclassified:
         print("\n!! %d GATED RECIPES HAVE NO CLASS RECORDED — Phase 3 must not proceed without\n"
               "   classifying these, because Class 2 changes existing rows:\n     %s"

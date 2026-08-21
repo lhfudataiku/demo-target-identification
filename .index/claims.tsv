@@ -90,7 +90,7 @@ DECISIONS.md	78	-	2.86	ORPHAN		y		| 2026-08-19 | **CORRECTION to §8.4 — the d
 DECISIONS.md	79	-	0.9354	ORPHAN		y	hist	| 2026-08-19 | **Snapshot-before-delete adopted as standing practice.** Every artifact leaving the flow is fir
 DECISIONS.md	80	-	76,465	ORPHAN				| 2026-08-19 | **Breast cancer and its molecular subtypes added to the persona panel** (§8.10). Six terms join
 DECISIONS.md	80	-	129,253	ORPHAN				| 2026-08-19 | **Breast cancer and its molecular subtypes added to the persona panel** (§8.10). Six terms join
-DECISIONS.md	82	-	0.69	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y	hist	| 2026-08-19 | **The parent-term intuition is backwards for breast.** §3.3 held that coarser terms are the saf
+DECISIONS.md	82	-	0.69	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y	hist	| 2026-08-19 | **The parent-term intuition is backwards for breast.** §3.3 held that coarser terms are the saf
 DECISIONS.md	82	-	0.93	ORPHAN		y	hist	| 2026-08-19 | **The parent-term intuition is backwards for breast.** §3.3 held that coarser terms are the saf
 DECISIONS.md	83	-	2.44	ORPHAN		y		| 2026-08-19 | **A "power" verdict was replaced with an exact test, because the first version was wrong in the
 DECISIONS.md	83	-	0.81	ORPHAN		y		| 2026-08-19 | **A "power" verdict was replaced with an exact test, because the first version was wrong in the
@@ -297,8 +297,8 @@ DECISIONS.md	134	-	0.3273	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(deg
 DECISIONS.md	134	-	0.0011	ORPHAN		y		| 2026-08-21 | **m7's costs, stated alongside the gains:** hub spread **worsens** 0.1900 → 0.1935 and ρ(degree
 DECISIONS.md	134	-	0.0046	ORPHAN		y		| 2026-08-21 | **m7's costs, stated alongside the gains:** hub spread **worsens** 0.1900 → 0.1935 and ρ(degree
 DECISIONS.md	134	-	0.216	ORPHAN		y		| 2026-08-21 | **m7's costs, stated alongside the gains:** hub spread **worsens** 0.1900 → 0.1935 and ρ(degree
-DECISIONS.md	134	-	0.6886	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y		| 2026-08-21 | **m7's costs, stated alongside the gains:** hub spread **worsens** 0.1900 → 0.1935 and ρ(degree
-DECISIONS.md	134	-	0.7471	ORPHAN		y		| 2026-08-21 | **m7's costs, stated alongside the gains:** hub spread **worsens** 0.1900 → 0.1935 and ρ(degree
+DECISIONS.md	134	-	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| 2026-08-21 | **m7's costs, stated alongside the gains:** hub spread **worsens** 0.1900 → 0.1935 and ρ(degree
+DECISIONS.md	134	-	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| 2026-08-21 | **m7's costs, stated alongside the gains:** hub spread **worsens** 0.1900 → 0.1935 and ρ(degree
 DECISIONS.md	134	-	0.0585	ORPHAN		y		| 2026-08-21 | **m7's costs, stated alongside the gains:** hub spread **worsens** 0.1900 → 0.1935 and ρ(degree
 DECISIONS.md	135	-	0.697	ORPHAN		y		| 2026-08-21 | **`m8-f14-pm` (`prox_mean` swapped in for `prox_kernel`) tested and REJECTED — the pre-register
 DECISIONS.md	135	-	0.216	ORPHAN		y		| 2026-08-21 | **`m8-f14-pm` (`prox_mean` swapped in for `prox_kernel`) tested and REJECTED — the pre-register
@@ -328,7 +328,7 @@ DECISIONS.md	139	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-
 DECISIONS.md	139	-	0.8046	ASSERTED	nb3_validation_and_plots.py:header per-split-key AUC	y		| 2026-08-21 | **`m7-f14` adopted as champion and every headline number re-measured on it.** Header now reads 
 DECISIONS.md	139	-	0.8932	ASSERTED	nb3_validation_and_plots.py:header pooled AUC	y		| 2026-08-21 | **`m7-f14` adopted as champion and every headline number re-measured on it.** Header now reads 
 DECISIONS.md	139	-	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		| 2026-08-21 | **`m7-f14` adopted as champion and every headline number re-measured on it.** Header now reads 
-DECISIONS.md	139	-	0.6886	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y		| 2026-08-21 | **`m7-f14` adopted as champion and every headline number re-measured on it.** Header now reads 
+DECISIONS.md	139	-	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| 2026-08-21 | **`m7-f14` adopted as champion and every headline number re-measured on it.** Header now reads 
 DECISIONS.md	140	-	0.7182	ORPHAN		y	hist	| 2026-08-21 | **Three nb1 assertions had been firing STALE against a document that was already correct.** §6.
 DECISIONS.md	140	-	0.6694	ORPHAN		y	hist	| 2026-08-21 | **Three nb1 assertions had been firing STALE against a document that was already correct.** §6.
 DECISIONS.md	140	-	0.641	ORPHAN		y	hist	| 2026-08-21 | **Three nb1 assertions had been firing STALE against a document that was already correct.** §6.
@@ -378,9 +378,9 @@ DECISIONS.md	153	-	1,630	ORPHAN			hist	| 2026-08-21 | **The first index build wa
 DECISIONS.md	154	-	0.024	ORPHAN		y	hist	| 2026-08-21 | **The index found four stale numbers the manual sweep had missed, two of them in external-audie
 DECISIONS.md	154	-	0.0006	ORPHAN		y	hist	| 2026-08-21 | **The index found four stale numbers the manual sweep had missed, two of them in external-audie
 DECISIONS.md	154	-	0.691	ORPHAN		y	hist	| 2026-08-21 | **The index found four stale numbers the manual sweep had missed, two of them in external-audie
-DECISIONS.md	154	-	0.734	ORPHAN		y	hist	| 2026-08-21 | **The index found four stale numbers the manual sweep had missed, two of them in external-audie
-DECISIONS.md	154	-	0.689	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y	hist	| 2026-08-21 | **The index found four stale numbers the manual sweep had missed, two of them in external-audie
-DECISIONS.md	154	-	0.747	ORPHAN		y	hist	| 2026-08-21 | **The index found four stale numbers the manual sweep had missed, two of them in external-audie
+DECISIONS.md	154	-	0.734	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y	hist	| 2026-08-21 | **The index found four stale numbers the manual sweep had missed, two of them in external-audie
+DECISIONS.md	154	-	0.689	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y	hist	| 2026-08-21 | **The index found four stale numbers the manual sweep had missed, two of them in external-audie
+DECISIONS.md	154	-	0.747	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y	hist	| 2026-08-21 | **The index found four stale numbers the manual sweep had missed, two of them in external-audie
 DECISIONS.md	154	-	0.93	ORPHAN		y	hist	| 2026-08-21 | **The index found four stale numbers the manual sweep had missed, two of them in external-audie
 DECISIONS.md	154	-	0.94	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y	hist	| 2026-08-21 | **The index found four stale numbers the manual sweep had missed, two of them in external-audie
 DECISIONS.md	155	-	60.0	ORPHAN		y		| 2026-08-21 | **A client-facing monotonicity claim is now false and was caught the same way.** `DEMO_NARRATIV
@@ -389,6 +389,8 @@ DECISIONS.md	155	-	66.0	ORPHAN		y		| 2026-08-21 | **A client-facing monotonicity
 DECISIONS.md	155	-	48.0	ORPHAN		y		| 2026-08-21 | **A client-facing monotonicity claim is now false and was caught the same way.** `DEMO_NARRATIV
 DECISIONS.md	159	-	1,630	ORPHAN				| 2026-08-21 | **The index was indexing its own output.** `.index/SUMMARY.md` is a `.md` file, so once committ
 DECISIONS.md	159	-	1,744	ORPHAN				| 2026-08-21 | **The index was indexing its own output.** `.index/SUMMARY.md` is a `.md` file, so once committ
+DECISIONS.md	161	-	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| 2026-08-21 | **The champion-metric cross-check found a bug in my own indexer within a minute of existing.** 
+DECISIONS.md	161	-	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| 2026-08-21 | **The champion-metric cross-check found a bug in my own indexer within a minute of existing.** 
 DEMO_NARRATIVE.md	18	-	129,253	ORPHAN				**The artifact.** `target_candidates_2` — **129,253 scored candidates across 13 diseases**, each row
 DEMO_NARRATIVE.md	26	-	0.82	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie
 DEMO_NARRATIVE.md	26	-	0.80	ASSERTED	nb3_validation_and_plots.py:header per-split-key AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie
@@ -621,7 +623,7 @@ PROJECT_CONTEXT.md	62	2.1	2.6	ORPHAN				| **Genetic evidence works** | Target–
 PROJECT_CONTEXT.md	62	2.1	4.8	ORPHAN				| **Genetic evidence works** | Target–disease pairs with human genetic support have **2.6× relative clinical s
 PROJECT_CONTEXT.md	106	2.3	0.81	ORPHAN		y		disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche et al.,
 PROJECT_CONTEXT.md	126	3	0.93	ORPHAN				0.93 on 599 known targets), **diabetes mellitus** and **obesity disorder**.
-PROJECT_CONTEXT.md	129	3	0.69	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y		measurement.** It is the *worst* term in the breast panel — AUC **0.69**, beaten by its own subtypes.
+PROJECT_CONTEXT.md	129	3	0.69	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		measurement.** It is the *worst* term in the breast panel — AUC **0.69**, beaten by its own subtypes.
 PROJECT_CONTEXT.md	160	4.1	113,391	ORPHAN				**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
 PROJECT_CONTEXT.md	160	4.1	2,851,510	ORPHAN				**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
 PROJECT_CONTEXT.md	174	4.2	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		`m7-f14` (14 features): macro per-disease AUC **0.8230** over 670 diseases. Three-rung ablation
@@ -655,7 +657,7 @@ TARGET_PRIORITIZER.md	12	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 ma
 TARGET_PRIORITIZER.md	13	-	0.8046	ASSERTED	nb3_validation_and_plots.py:header per-split-key AUC	y		> 0.8046, pooled 0.8932, per-family 0.8009, drug-target 0.6886.
 TARGET_PRIORITIZER.md	13	-	0.8932	ASSERTED	nb3_validation_and_plots.py:header pooled AUC	y		> 0.8046, pooled 0.8932, per-family 0.8009, drug-target 0.6886.
 TARGET_PRIORITIZER.md	13	-	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		> 0.8046, pooled 0.8932, per-family 0.8009, drug-target 0.6886.
-TARGET_PRIORITIZER.md	13	-	0.6886	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y		> 0.8046, pooled 0.8932, per-family 0.8009, drug-target 0.6886.
+TARGET_PRIORITIZER.md	13	-	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		> 0.8046, pooled 0.8932, per-family 0.8009, drug-target 0.6886.
 TARGET_PRIORITIZER.md	16	-	0.01	ORPHAN			hist	> **±0.01** of the frozen reference — inside the ±0.02 tolerance set in advance — and the ablation
 TARGET_PRIORITIZER.md	16	-	0.02	ORPHAN			hist	> **±0.01** of the frozen reference — inside the ±0.02 tolerance set in advance — and the ablation
 TARGET_PRIORITIZER.md	43	1	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		is **statistically orthogonal** to therapeutic relevance — r = +0.002, R² = 0.0000 over 130 diseases
@@ -740,8 +742,8 @@ TARGET_PRIORITIZER.md	385	5.2.1	0.153	ASSERTED	nb2_splitting_and_pool.py:5.2.1 G
 TARGET_PRIORITIZER.md	385	5.2.1	10,337	ASSERTED	nb2_splitting_and_pool.py:5.2.1 GCD-only pairs			| admitted **only** by the GCD route | **0.153%** (10,337) | **25.4%** (344) |
 TARGET_PRIORITIZER.md	385	5.2.1	25.4	ORPHAN				| admitted **only** by the GCD route | **0.153%** (10,337) | **25.4%** (344) |
 TARGET_PRIORITIZER.md	387	5.2.1	91.8	ORPHAN				**A 91.8× enrichment.** One in four approved drug-target positives is in the evaluation population
-TARGET_PRIORITIZER.md	400	5.2.1	0.6886	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC			| all positives *(the documented number)* | 0.6886 |
-TARGET_PRIORITIZER.md	401	5.2.1	0.7471	ORPHAN				| positives the model has route features for | **0.7471** *(+0.0585)* |
+TARGET_PRIORITIZER.md	400	5.2.1	0.6886	ASSERTED	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| all positives *(the documented number)* | 0.6886 |
+TARGET_PRIORITIZER.md	401	5.2.1	0.7471	ASSERTED	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| positives the model has route features for | **0.7471** *(+0.0585)* |
 TARGET_PRIORITIZER.md	401	5.2.1	0.0585	ORPHAN				| positives the model has route features for | **0.7471** *(+0.0585)* |
 TARGET_PRIORITIZER.md	402	5.2.1	0.6041	ORPHAN				| on the 69 affected diseases only | 0.6041 → **0.7060** *(+0.1019)* |
 TARGET_PRIORITIZER.md	402	5.2.1	0.7060	ORPHAN				| on the 69 affected diseases only | 0.6041 → **0.7060** *(+0.1019)* |
@@ -752,10 +754,10 @@ TARGET_PRIORITIZER.md	405	5.2.1	1,194	ORPHAN				**0.543** for route-supported po
 TARGET_PRIORITIZER.md	411	5.2.1	10,337	ASSERTED	nb2_splitting_and_pool.py:5.2.1 GCD-only pairs			was wrong on cost. The pool cost is genuinely trivial (10,337 rows, 0.153%; ~64 association positives),
 TARGET_PRIORITIZER.md	411	5.2.1	0.153	ASSERTED	nb2_splitting_and_pool.py:5.2.1 GCD-only pct of pool			was wrong on cost. The pool cost is genuinely trivial (10,337 rows, 0.153%; ~64 association positives),
 TARGET_PRIORITIZER.md	414	5.2.1	10.7	ORPHAN		y		population makes 10.7% of the evaluable diseases go dark on the therapeutic axis.
-TARGET_PRIORITIZER.md	422	5.2.1	0.6886	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y		| all positives | 0.6886 | how the model ranks approved targets among everything in its population |
-TARGET_PRIORITIZER.md	423	5.2.1	0.7471	ORPHAN		y		| route-supported positives only | **0.7471** | how it ranks the approved targets it can actually see |
-TARGET_PRIORITIZER.md	428	5.2.1	0.6886	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC			> **The reported 0.6886 is not wrong, but it answers a worse question than 0.7471 does.** Report both:
-TARGET_PRIORITIZER.md	428	5.2.1	0.7471	ORPHAN				> **The reported 0.6886 is not wrong, but it answers a worse question than 0.7471 does.** Report both:
+TARGET_PRIORITIZER.md	422	5.2.1	0.6886	ASSERTED	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| all positives | 0.6886 | how the model ranks approved targets among everything in its population |
+TARGET_PRIORITIZER.md	423	5.2.1	0.7471	ASSERTED	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| route-supported positives only | **0.7471** | how it ranks the approved targets it can actually see |
+TARGET_PRIORITIZER.md	428	5.2.1	0.6886	ASSERTED	nb2_splitting_and_pool.py:5.2.1  [loop-table]			> **The reported 0.6886 is not wrong, but it answers a worse question than 0.7471 does.** Report both:
+TARGET_PRIORITIZER.md	428	5.2.1	0.7471	ASSERTED	nb2_splitting_and_pool.py:5.2.1  [loop-table]			> **The reported 0.6886 is not wrong, but it answers a worse question than 0.7471 does.** Report both:
 TARGET_PRIORITIZER.md	445	5.3	7.4	ORPHAN				stays **local** (7.4% of diseases reach >1 anchor) instead of cascading.
 TARGET_PRIORITIZER.md	451	5.3	1,157	ORPHAN				| Diseases resolving to an anchor | 317 / 1,157 (27.4%) |
 TARGET_PRIORITIZER.md	451	5.3	27.4	ORPHAN				| Diseases resolving to an anchor | 317 / 1,157 (27.4%) |
@@ -899,12 +901,12 @@ TARGET_PRIORITIZER.md	787	6.4	0.1935	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champ
 TARGET_PRIORITIZER.md	788	6.4	0.6911	ORPHAN		y		| therapeutic — all positives | 0.6911 | 0.6949 | 0.6931 | 0.6949 | 0.6886 | worst of five |
 TARGET_PRIORITIZER.md	788	6.4	0.6949	ORPHAN		y		| therapeutic — all positives | 0.6911 | 0.6949 | 0.6931 | 0.6949 | 0.6886 | worst of five |
 TARGET_PRIORITIZER.md	788	6.4	0.6931	ORPHAN		y		| therapeutic — all positives | 0.6911 | 0.6949 | 0.6931 | 0.6949 | 0.6886 | worst of five |
-TARGET_PRIORITIZER.md	788	6.4	0.6886	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y		| therapeutic — all positives | 0.6911 | 0.6949 | 0.6931 | 0.6949 | 0.6886 | worst of five |
+TARGET_PRIORITIZER.md	788	6.4	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| therapeutic — all positives | 0.6911 | 0.6949 | 0.6931 | 0.6949 | 0.6886 | worst of five |
 TARGET_PRIORITIZER.md	789	6.4	0.7337	ORPHAN		y		| therapeutic — route-supported (§5.2.1) | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best of five |
 TARGET_PRIORITIZER.md	789	6.4	0.7371	ORPHAN		y		| therapeutic — route-supported (§5.2.1) | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best of five |
 TARGET_PRIORITIZER.md	789	6.4	0.7384	ORPHAN		y		| therapeutic — route-supported (§5.2.1) | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best of five |
 TARGET_PRIORITIZER.md	789	6.4	0.7418	ORPHAN		y		| therapeutic — route-supported (§5.2.1) | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best of five |
-TARGET_PRIORITIZER.md	789	6.4	0.7471	ORPHAN		y		| therapeutic — route-supported (§5.2.1) | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best of five |
+TARGET_PRIORITIZER.md	789	6.4	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| therapeutic — route-supported (§5.2.1) | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best of five |
 TARGET_PRIORITIZER.md	790	6.4	2.376	ORPHAN		y		| tractability — dm lift@200 | 2.376 | 2.381 | 2.380 | 2.391 | **2.418** | **t = +2.56, 0 ties** |
 TARGET_PRIORITIZER.md	790	6.4	2.381	ORPHAN		y		| tractability — dm lift@200 | 2.376 | 2.381 | 2.380 | 2.391 | **2.418** | **t = +2.56, 0 ties** |
 TARGET_PRIORITIZER.md	790	6.4	2.380	ORPHAN		y		| tractability — dm lift@200 | 2.376 | 2.381 | 2.380 | 2.391 | **2.418** | **t = +2.56, 0 ties** |
@@ -949,8 +951,8 @@ TARGET_PRIORITIZER.md	841	6.4	0.1900	ORPHAN		y		> **`m7`'s costs are logged, not
 TARGET_PRIORITIZER.md	841	6.4	0.1935	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion spread	y		> **`m7`'s costs are logged, not hidden.** Hub spread worsens against `m6` (0.1900 → 0.1935), though it
 TARGET_PRIORITIZER.md	842	6.4	0.1954	ORPHAN		y		> still improves on the `m3-f12` it replaced (0.1954); §7.2's refutation stands regardless, since both
 TARGET_PRIORITIZER.md	843	6.4	0.1099	ORPHAN		y	hist	> are far worse than the retired 13-feature generation's 0.1099. Therapeutic-on-all-positives is the
-TARGET_PRIORITIZER.md	844	6.4	0.6886	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC			> **worst of the five** (0.6886) while route-supported is the **best** (0.7471) — the largest gap in the
-TARGET_PRIORITIZER.md	844	6.4	0.7471	ORPHAN				> **worst of the five** (0.6886) while route-supported is the **best** (0.7471) — the largest gap in the
+TARGET_PRIORITIZER.md	844	6.4	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			> **worst of the five** (0.6886) while route-supported is the **best** (0.7471) — the largest gap in the
+TARGET_PRIORITIZER.md	844	6.4	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			> **worst of the five** (0.6886) while route-supported is the **best** (0.7471) — the largest gap in the
 TARGET_PRIORITIZER.md	845	6.4	0.0585	ORPHAN				> sequence (**0.0585**), which under §5.2.1 reads as the gain concentrating where features actually
 TARGET_PRIORITIZER.md	849	6.4	0.003	ORPHAN		y		> **Spearman(module size, per-disease delta) = −0.003**; the gain is flat above size 20 and *largest in
 TARGET_PRIORITIZER.md	850	6.4	0.0055	ORPHAN				> the smallest* modules (20–60: +0.0055; >300: +0.0025), while the <20 bucket got **worse** (−0.0117,
@@ -1092,7 +1094,7 @@ TARGET_PRIORITIZER.md	1084	7.4	1,019	ORPHAN				| **druggable protein family** | 
 TARGET_PRIORITIZER.md	1084	7.4	16.5	ORPHAN				| **druggable protein family** | **1,829** | **1,019** | **168** | **16.5%** |
 TARGET_PRIORITIZER.md	1085	7.4	3,791	ORPHAN				| either of the two | 3,791 | 1,244 | 124 | 10.0% |
 TARGET_PRIORITIZER.md	1085	7.4	1,244	ORPHAN				| either of the two | 3,791 | 1,244 | 124 | 10.0% |
-TARGET_PRIORITIZER.md	1085	7.4	10.0	ORPHAN				| either of the two | 3,791 | 1,244 | 124 | 10.0% |
+TARGET_PRIORITIZER.md	1085	7.4	10.0	VALUE_ONLY	nb4_results_three_axes.py:8.4 dm>naive pooled @ [loop-table]			| either of the two | 3,791 | 1,244 | 124 | 10.0% |
 TARGET_PRIORITIZER.md	1088	7.4	83.5	ORPHAN			hist	key's own universe — leaves **83.5% of validated targets outside the top 50** (reference: 19.5% hit
 TARGET_PRIORITIZER.md	1088	7.4	19.5	ORPHAN			hist	key's own universe — leaves **83.5% of validated targets outside the top 50** (reference: 19.5% hit
 TARGET_PRIORITIZER.md	1093	7.4	0.674	ORPHAN				(within-disease percentile 0.674 vs 0.672; background 0.495) and at 90% on neighbour overlap, with
@@ -1131,7 +1133,7 @@ TARGET_PRIORITIZER.md	1144	7.5	0.9354	ORPHAN				— *"how many training diseases
 TARGET_PRIORITIZER.md	1146	7.5	0.7266	ORPHAN		y		well as diseases leaves **57 positives across 19 diseases** at AUC 0.7266 — too thin to carry a
 TARGET_PRIORITIZER.md	1150	7.5	0.8567	ORPHAN				since found it on the association axis too, at 0.8567.
 TARGET_PRIORITIZER.md	1154	7.5	15.6	ORPHAN				enriched, structural proteins 15.6×), so a model trained on it is biased toward what industry has
-TARGET_PRIORITIZER.md	1158	7.5	0.6886	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y		never a headline and never an optimisation target. Read the champion's 0.6886 as *"this model
+TARGET_PRIORITIZER.md	1158	7.5	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		never a headline and never an optimisation target. Read the champion's 0.6886 as *"this model
 TARGET_PRIORITIZER.md	1159	7.5	0.9354	ORPHAN				deliberately declines a shortcut that scores 0.9354"* — and see §5.2.1, which shows ~0.04 of that gap
 TARGET_PRIORITIZER.md	1159	7.5	0.04	ORPHAN				deliberately declines a shortcut that scores 0.9354"* — and see §5.2.1, which shows ~0.04 of that gap
 TARGET_PRIORITIZER.md	1188	8.1	82.2	ORPHAN				> Measured on our own data: **82.2% of the joined triples come from drugs with more than one target,
@@ -1283,7 +1285,7 @@ TARGET_PRIORITIZER.md	1494	8.6	1.61	ORPHAN		y		the inflated join's 1.61% / 100%.
 TARGET_PRIORITIZER.md	1496	8.6	99.5	ORPHAN		y		§8.3's lift. Second, **clause 4's damage reproduces on the curated label** (recall 99.5% → 72.6%), so
 TARGET_PRIORITIZER.md	1496	8.6	72.6	ORPHAN		y		§8.3's lift. Second, **clause 4's damage reproduces on the curated label** (recall 99.5% → 72.6%), so
 TARGET_PRIORITIZER.md	1522	8.7	2.9	ORPHAN		y		— and CKD's 2% is **2.9×**, the worst. The criterion rewarded the worst ranking, rejected the best,
-TARGET_PRIORITIZER.md	1530	8.7	0.75	ORPHAN		y		| association AUC ≥ 0.75 | 483 |
+TARGET_PRIORITIZER.md	1530	8.7	0.75	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| association AUC ≥ 0.75 | 483 |
 TARGET_PRIORITIZER.md	1544	8.7	41.6	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
 TARGET_PRIORITIZER.md	1544	8.7	41.2	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
 TARGET_PRIORITIZER.md	1544	8.7	40.7	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
@@ -1343,7 +1345,7 @@ TARGET_PRIORITIZER.md	1687	8.10	0.81	ORPHAN				| triple-negative breast carcinom
 TARGET_PRIORITIZER.md	1687	8.10	1.05	ORPHAN				| triple-negative breast carcinoma | 2,563 | **8** | 0.93 (0.81–**1.05**) | 2 vs 0.16 | **significant but frag
 TARGET_PRIORITIZER.md	1687	8.10	0.16	ORPHAN				| triple-negative breast carcinoma | 2,563 | **8** | 0.93 (0.81–**1.05**) | 2 vs 0.16 | **significant but frag
 TARGET_PRIORITIZER.md	1688	8.10	9,067	ORPHAN				| breast cancer *(parent term)* | 9,067 | 138 | **0.69** (0.64–0.74) | 20 vs 0.76 | significant |
-TARGET_PRIORITIZER.md	1688	8.10	0.69	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC			| breast cancer *(parent term)* | 9,067 | 138 | **0.69** (0.64–0.74) | 20 vs 0.76 | significant |
+TARGET_PRIORITIZER.md	1688	8.10	0.69	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| breast cancer *(parent term)* | 9,067 | 138 | **0.69** (0.64–0.74) | 20 vs 0.76 | significant |
 TARGET_PRIORITIZER.md	1688	8.10	0.64	ORPHAN				| breast cancer *(parent term)* | 9,067 | 138 | **0.69** (0.64–0.74) | 20 vs 0.76 | significant |
 TARGET_PRIORITIZER.md	1688	8.10	0.74	ORPHAN				| breast cancer *(parent term)* | 9,067 | 138 | **0.69** (0.64–0.74) | 20 vs 0.76 | significant |
 TARGET_PRIORITIZER.md	1688	8.10	0.76	ORPHAN				| breast cancer *(parent term)* | 9,067 | 138 | **0.69** (0.64–0.74) | 20 vs 0.76 | significant |
@@ -1397,8 +1399,8 @@ TARGET_PRIORITIZER.md	1878	10.2	0.60	ORPHAN				| 1.0 – 1.5 | 0.80× | 0.60× |
 TARGET_PRIORITIZER.md	1879	10.2	0.62	ORPHAN				| > 1.5 *(tolerant)* | **0.62×** | 0.40× |
 TARGET_PRIORITIZER.md	1879	10.2	0.40	ORPHAN				| > 1.5 *(tolerant)* | **0.62×** | 0.40× |
 TARGET_PRIORITIZER.md	1882	10.2	4.62	ORPHAN				drugging — and a drug is not a germline knockout. Separately, **`has_safety_liability` is 4.62×
-TARGET_PRIORITIZER.md	1900	10.3	0.6886	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y		- **Report drug-target AUC stratified by route support** (§5.2.1) — 0.6886 all positives / **0.7471**
-TARGET_PRIORITIZER.md	1900	10.3	0.7471	ORPHAN		y		- **Report drug-target AUC stratified by route support** (§5.2.1) — 0.6886 all positives / **0.7471**
+TARGET_PRIORITIZER.md	1900	10.3	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		- **Report drug-target AUC stratified by route support** (§5.2.1) — 0.6886 all positives / **0.7471**
+TARGET_PRIORITIZER.md	1900	10.3	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		- **Report drug-target AUC stratified by route support** (§5.2.1) — 0.6886 all positives / **0.7471**
 TARGET_PRIORITIZER.md	1901	10.3	91.8	ORPHAN				route-supported. Removes the 91.8× outcome-selection bias from the *metric* without touching the
 TARGET_PRIORITIZER.md	1906	10.3	2,010	ORPHAN		y		(`scored_m1`/`scored_m2`, 7.9M rows serving a 2,010-row table), `validation_auc_by_disease_2`,
 TARGET_PRIORITIZER.md	1915	10.3	0.9324	ORPHAN		y		model, 3 splits, 6 evaluation datasets — so **0.9324 / 0.6444, 439-of-1,507 hits@50, the 0.9354
@@ -1421,7 +1423,7 @@ chat_starter.md	49	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro pe
 chat_starter.md	49	-	0.8046	ASSERTED	nb3_validation_and_plots.py:header per-split-key AUC	y		features): macro per-disease AUC **0.8230** over 670 diseases, per-split-key 0.8046, pooled 0.8932,
 chat_starter.md	49	-	0.8932	ASSERTED	nb3_validation_and_plots.py:header pooled AUC	y		features): macro per-disease AUC **0.8230** over 670 diseases, per-split-key 0.8046, pooled 0.8932,
 chat_starter.md	50	-	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		per-family 0.8009, drug-target 0.6886. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12` 0.8197
-chat_starter.md	50	-	0.6886	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y		per-family 0.8009, drug-target 0.6886. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12` 0.8197
+chat_starter.md	50	-	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		per-family 0.8009, drug-target 0.6886. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12` 0.8197
 chat_starter.md	50	-	0.7593	ORPHAN		y		per-family 0.8009, drug-target 0.6886. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12` 0.8197
 chat_starter.md	50	-	0.7882	ORPHAN		y		per-family 0.8009, drug-target 0.6886. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12` 0.8197
 chat_starter.md	50	-	0.8197	ORPHAN		y		per-family 0.8009, drug-target 0.6886. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12` 0.8197
@@ -1448,7 +1450,7 @@ docs/DOC_OVERHAUL_PLAN.md	27	1	2,187,862	ORPHAN				(2,187,862 + 607,345 + 3,958,
 docs/DOC_OVERHAUL_PLAN.md	27	1	607,345	ORPHAN				(2,187,862 + 607,345 + 3,958,921 = 6,754,128); the documented ones do not sum to anything.
 docs/DOC_OVERHAUL_PLAN.md	27	1	3,958,921	ORPHAN				(2,187,862 + 607,345 + 3,958,921 = 6,754,128); the documented ones do not sum to anything.
 docs/DOC_OVERHAUL_PLAN.md	27	1	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			(2,187,862 + 607,345 + 3,958,921 = 6,754,128); the documented ones do not sum to anything.
-docs/DOC_OVERHAUL_PLAN.md	30	1	0.69	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y		panel measured `breast cancer` as the **worst** term in its family (AUC 0.69, beaten by every
+docs/DOC_OVERHAUL_PLAN.md	30	1	0.69	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		panel measured `breast cancer` as the **worst** term in its family (AUC 0.69, beaten by every
 docs/DOC_OVERHAUL_PLAN.md	39	1	0.024	ORPHAN		y		| Pearson r | **+0.024** |
 docs/DOC_OVERHAUL_PLAN.md	40	1	0.0006	ORPHAN		y		| R² | **0.0006** |
 docs/DOC_OVERHAUL_PLAN.md	41	1	0.036	ORPHAN		y		| Spearman | +0.036 |
@@ -1532,12 +1534,12 @@ docs/FEATURE_AUDIT.md	176	4	0.1935	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champio
 docs/FEATURE_AUDIT.md	177	4	0.6911	ORPHAN		y		| therapeutic, all | 0.6911 | 0.6949 | 0.6931 | 0.6949 | 0.6886 | worst of five |
 docs/FEATURE_AUDIT.md	177	4	0.6949	ORPHAN		y		| therapeutic, all | 0.6911 | 0.6949 | 0.6931 | 0.6949 | 0.6886 | worst of five |
 docs/FEATURE_AUDIT.md	177	4	0.6931	ORPHAN		y		| therapeutic, all | 0.6911 | 0.6949 | 0.6931 | 0.6949 | 0.6886 | worst of five |
-docs/FEATURE_AUDIT.md	177	4	0.6886	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y		| therapeutic, all | 0.6911 | 0.6949 | 0.6931 | 0.6949 | 0.6886 | worst of five |
+docs/FEATURE_AUDIT.md	177	4	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| therapeutic, all | 0.6911 | 0.6949 | 0.6931 | 0.6949 | 0.6886 | worst of five |
 docs/FEATURE_AUDIT.md	178	4	0.7337	ORPHAN		y		| therapeutic, route-supported | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best |
 docs/FEATURE_AUDIT.md	178	4	0.7371	ORPHAN		y		| therapeutic, route-supported | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best |
 docs/FEATURE_AUDIT.md	178	4	0.7384	ORPHAN		y		| therapeutic, route-supported | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best |
 docs/FEATURE_AUDIT.md	178	4	0.7418	ORPHAN		y		| therapeutic, route-supported | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best |
-docs/FEATURE_AUDIT.md	178	4	0.7471	ORPHAN		y		| therapeutic, route-supported | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best |
+docs/FEATURE_AUDIT.md	178	4	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| therapeutic, route-supported | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best |
 docs/FEATURE_AUDIT.md	179	4	2.376	ORPHAN		y		| tractability dm@200 | 2.376 | 2.381 | 2.380 | 2.391 | **2.418** | **t = +2.56, 0 ties** |
 docs/FEATURE_AUDIT.md	179	4	2.381	ORPHAN		y		| tractability dm@200 | 2.376 | 2.381 | 2.380 | 2.391 | **2.418** | **t = +2.56, 0 ties** |
 docs/FEATURE_AUDIT.md	179	4	2.380	ORPHAN		y		| tractability dm@200 | 2.376 | 2.381 | 2.380 | 2.391 | **2.418** | **t = +2.56, 0 ties** |
@@ -1590,7 +1592,7 @@ docs/PHASE3_PREREGISTRATION.md	99	4	2,088	ORPHAN				| **G3** | Disease count | e
 docs/PHASE3_PREREGISTRATION.md	101	4	1,157	ORPHAN		y		| **G5** | Existing diseases' scores under un-retrained `m7` | **bit-identical** to `scored_champion` on the s
 docs/PHASE3_PREREGISTRATION.md	111	5	0.05	ORPHAN		y		| **P1** | **The premise.** Admitted diseases beat a gene-popularity baseline (rank by `gene_n_diseases`) by *
 docs/PHASE3_PREREGISTRATION.md	112	5	0.62	ORPHAN		y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
-docs/PHASE3_PREREGISTRATION.md	112	5	0.75	ORPHAN		y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
+docs/PHASE3_PREREGISTRATION.md	112	5	0.75	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
 docs/PHASE3_PREREGISTRATION.md	112	5	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
 docs/PHASE3_PREREGISTRATION.md	112	5	0.80	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
 docs/PHASE3_PREREGISTRATION.md	112	5	0.55	ORPHAN		y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against 
@@ -1626,7 +1628,7 @@ docs/annotation/BREAST_SURGEON_BRIEFING.md	22	1	0.92	ORPHAN				| HER2+ | HER2 po
 docs/annotation/BREAST_SURGEON_BRIEFING.md	22	1	0.95	ORPHAN				| HER2+ | HER2 positive breast carcinoma | 12,272 | 599 | **0.94 (0.92–0.95)** |
 docs/annotation/BREAST_SURGEON_BRIEFING.md	23	1	2,563	ORPHAN				| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
 docs/annotation/BREAST_SURGEON_BRIEFING.md	23	1	0.89	VALUE_ONLY	nb3_validation_and_plots.py:header pooled AUC			| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
-docs/annotation/BREAST_SURGEON_BRIEFING.md	23	1	0.75	ORPHAN				| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
+docs/annotation/BREAST_SURGEON_BRIEFING.md	23	1	0.75	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
 docs/annotation/BREAST_SURGEON_BRIEFING.md	23	1	1.04	ORPHAN				| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
 docs/annotation/BREAST_SURGEON_BRIEFING.md	24	1	13,290	ORPHAN			hist	| *reference* | breast carcinoma (umbrella) | 13,290 | 864 | 0.86 (0.84–0.88) |
 docs/annotation/BREAST_SURGEON_BRIEFING.md	24	1	0.86	ORPHAN			hist	| *reference* | breast carcinoma (umbrella) | 13,290 | 864 | 0.86 (0.84–0.88) |
@@ -1635,11 +1637,11 @@ docs/annotation/BREAST_SURGEON_BRIEFING.md	24	1	0.88	VALUE_ONLY	nb1_features_and
 docs/annotation/BREAST_SURGEON_BRIEFING.md	97	3	2,563	ORPHAN		y		2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 360 of 2,563
 docs/annotation/BREAST_SURGEON_BRIEFING.md	106	3	0.90	ORPHAN		y		target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90). So the
 docs/annotation/BREAST_SURGEON_BRIEFING.md	108	3	1,157	ORPHAN		y		ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1,157
-docs/annotation/BREAST_SURGEON_BRIEFING.md	147	5	0.69	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC			(0.69) — the parent term is beaten by its own children.
+docs/annotation/BREAST_SURGEON_BRIEFING.md	147	5	0.69	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			(0.69) — the parent term is beaten by its own children.
 docs/annotation/BREAST_SURGEON_BRIEFING.md	157	5	98.5	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 reachability ceiling %			pool contains **98.5%** of curated target–disease pairs, and coverage does **not** track how sparsely
 docs/annotation/BREAST_SURGEON_BRIEFING.md	158	5	0.081	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 Spearman pool_size vs coverage	y		a disease is annotated (Spearman +0.081). TNBC is one of only two diseases below 50% coverage. Do not
-docs/annotation/BREAST_SURGEON_BRIEFING.md	162	5	0.689	VALUE_ONLY	nb3_validation_and_plots.py:7.4 drug-target macro AUC	y		evaluation *because of the relationship being evaluated*. Fixing it raises drug-target AUC from 0.689
-docs/annotation/BREAST_SURGEON_BRIEFING.md	163	5	0.747	ORPHAN				to 0.747. Not clinician-facing, but it changes numbers that are.
+docs/annotation/BREAST_SURGEON_BRIEFING.md	162	5	0.689	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		evaluation *because of the relationship being evaluated*. Fixing it raises drug-target AUC from 0.689
+docs/annotation/BREAST_SURGEON_BRIEFING.md	163	5	0.747	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			to 0.747. Not clinician-facing, but it changes numbers that are.
 docs/appendix/README.md	8	-	0.9354	ORPHAN				without a snapshot, and its most reusable finding — a gene-popularity lookup table scoring 0.9354 and
 docs/appendix/README.md	14	-	2,010	ORPHAN		y		| `model_comparison.csv` | 2,010 | §6.4 ablation ladder, m1-f7 → m2-f10 → m3-f12 | saved models `Lx5Mz2hY`, `6
 docs/appendix/README.md	15	-	1,113	ORPHAN		y		| `validation_auc_by_disease_2.csv` | 1,113 | §7.1 per-split-key AUC (the second metric run) | `scored_m3` |

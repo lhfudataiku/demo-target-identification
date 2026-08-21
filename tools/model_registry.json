@@ -1,0 +1,125 @@
+{
+  "_README": [
+    "Hand-recorded model facts that cannot be derived from DSS. Identity, consumer edges and",
+    "DECISIONS.md cross-references are GENERATED into .index/models.tsv -- do not hand-edit that.",
+    "",
+    "Metrics are transcribed from docs/FEATURE_AUDIT.md section 4 (m3-m7), TARGET_PRIORITIZER 6.4",
+    "(the m1-m3 ladder) and DECISIONS.md (m8). A blank means NOT MEASURED or not recoverable --",
+    "never a guess. `?` in the rendered table means exactly that.",
+    "",
+    "DO NOT source feature lists from `dku ml settings`: it returns the CURRENT mltask state, not a",
+    "deployed version's config. m8 was trained in m7's mltask, so that call reports m8's features",
+    "under a feature count that still matches the name m7-f14. See tools/recipe_classes.json."
+  ],
+  "champion": "hJLGoYn4",
+  "ablation_ladder": [
+    "Lx5Mz2hY",
+    "6hEivCx0",
+    "cGPhBOGC"
+  ],
+  "ablation_consumers": [
+    "compute_model_comparison",
+    "score_psplit_validation_set",
+    "score_psplit_validation_set_1",
+    "score_psplit_validation_set_2"
+  ],
+  "_consumer_rule": [
+    "A non-champion model should only be referenced by its own train_* / score_psplit_validation_m*",
+    "recipes, or by a recipe listed in ablation_consumers. Anything else is a live entry point left",
+    "behind on a retired model -- which is exactly what happened to score_persona_candidates, found",
+    "still on m3-f12 (cGPhBOGC) after the champion had moved to m7-f14.",
+    "The m1/m2/m3 scoring recipes predate the score_psplit_validation_m<N> naming and are declared above rather than pattern-matched. Declaring them keeps the detector sharp: a NEW consumer on a retired model still fires, because it will be neither declared nor name-matched."
+  ],
+  "models": {
+    "Lx5Mz2hY": {
+      "n_features": 7,
+      "delta": "baseline rung",
+      "verdict": "ablation rung",
+      "assoc_auroc": 0.7593,
+      "drug_all": 0.6787,
+      "hits50": 128
+    },
+    "6hEivCx0": {
+      "n_features": 10,
+      "delta": "+3 (metapath rung)",
+      "verdict": "ablation rung",
+      "assoc_auroc": 0.7882,
+      "drug_all": 0.688,
+      "hits50": 113
+    },
+    "cGPhBOGC": {
+      "n_features": 12,
+      "delta": "+2",
+      "verdict": "former champion, superseded by m7-f14 on 2026-08-21",
+      "assoc_auroc": 0.8197,
+      "assoc_auprc": 0.1737,
+      "hub_spread": 0.1954,
+      "drug_all": 0.6911,
+      "drug_supported": 0.7337,
+      "tract_dm200": 2.376,
+      "disc_lift50": 7.46,
+      "disc_lift200": 4.53,
+      "hits50": 122
+    },
+    "79JOklWN": {
+      "n_features": 13,
+      "delta": "+prox_closest, mean-imputed (~2, semantically wrong)",
+      "verdict": "rejected -- better at re-identification, lost to m5 on discovery at every K",
+      "assoc_auroc": 0.82,
+      "assoc_auprc": 0.1762,
+      "hub_spread": 0.1932,
+      "drug_all": 0.6949,
+      "drug_supported": 0.7371,
+      "tract_dm200": 2.381,
+      "disc_lift50": 7.09,
+      "disc_lift200": 4.83
+    },
+    "r2oXoTEw": {
+      "n_features": 13,
+      "delta": "+prox_closest, constant-4 imputed (semantically right)",
+      "verdict": "recommended at the time, NEVER ADOPTED -- its discovery lead did not survive a paired test (115 of 122 exact ties vs m6)",
+      "assoc_auroc": 0.8175,
+      "assoc_auprc": 0.1711,
+      "hub_spread": 0.1915,
+      "drug_all": 0.6931,
+      "drug_supported": 0.7384,
+      "tract_dm200": 2.38,
+      "disc_lift50": 9.08,
+      "disc_lift200": 5.52
+    },
+    "DWtdaTje": {
+      "n_features": 13,
+      "delta": "MIN_SEEDS 20->5 on prox_closest, capped to the pool; feature set unchanged from m5",
+      "verdict": "intermediate, carried into the m7 line -- its pre-registered prediction was REFUTED (rescued diseases did not improve; the gain came from a better training set, t=3.42 on 646 byte-identical controls)",
+      "assoc_auroc": 0.8197,
+      "assoc_auprc": 0.1749,
+      "hub_spread": 0.19,
+      "drug_all": 0.6949,
+      "drug_supported": 0.7418,
+      "tract_dm200": 2.391,
+      "disc_lift50": 7.43,
+      "disc_lift200": 4.78
+    },
+    "hJLGoYn4": {
+      "n_features": 14,
+      "delta": "+prox_kernel (chosen over prox_mean to avoid feeding the hub axis)",
+      "verdict": "CHAMPION -- first model whose gain survives a paired test: association t=+3.29 and tractability t=+2.56, both with ZERO ties over 668 diseases. Mechanism REFUTED (Spearman(module size, delta) = -0.003): it works and we cannot say why",
+      "assoc_auroc": 0.823,
+      "assoc_auprc": 0.1778,
+      "hub_spread": 0.1935,
+      "drug_all": 0.6886,
+      "drug_supported": 0.7471,
+      "tract_dm200": 2.418,
+      "disc_lift50": 9.43,
+      "disc_lift200": 5.04
+    },
+    "3RZ9a9kN": {
+      "n_features": 14,
+      "delta": "prox_kernel -> prox_mean (rho -0.697 with gene_ppi_degree vs +0.216)",
+      "verdict": "REJECTED despite scoring better -- AUPRC up (t=+3.42) but AUROC flat (t=-0.42), tractability flat-to-declining (@200 t=-1.34) and hub spread worse. An association gain not corroborated on the degree-matched axis is the signature of exploiting label bias. This is the case the adoption rule was written for",
+      "assoc_auroc": 0.8225,
+      "assoc_auprc": 0.1816,
+      "hub_spread": 0.1968
+    }
+  }
+}

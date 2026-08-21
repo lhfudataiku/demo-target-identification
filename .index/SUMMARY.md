@@ -15,26 +15,26 @@ flags them as historical dropped.
 
 | file | asserted | value-only | orphan | total |
 |---|--:|--:|--:|--:|
-| `DECISIONS.md` | 2 | 43 | 345 | 390 |
+| `DECISIONS.md` | 2 | 48 | 342 | 392 |
 | `DEMO_NARRATIVE.md` | 1 | 14 | 20 | 35 |
 | `DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
 | `DSS_CHEATSHEET.md` | 0 | 1 | 6 | 7 |
 | `GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
 | `PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
 | `RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
-| `TARGET_PRIORITIZER.md` | 40 | 58 | 666 | 764 |
+| `TARGET_PRIORITIZER.md` | 46 | 60 | 658 | 764 |
 | `chat_starter.md` | 2 | 4 | 18 | 24 |
 | `docs/DOC_OVERHAUL_PLAN.md` | 0 | 2 | 30 | 32 |
-| `docs/FEATURE_AUDIT.md` | 0 | 14 | 95 | 109 |
-| `docs/PHASE3_PREREGISTRATION.md` | 0 | 9 | 25 | 34 |
-| `docs/annotation/BREAST_SURGEON_BRIEFING.md` | 0 | 9 | 17 | 26 |
+| `docs/FEATURE_AUDIT.md` | 0 | 15 | 94 | 109 |
+| `docs/PHASE3_PREREGISTRATION.md` | 0 | 10 | 24 | 34 |
+| `docs/annotation/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
 | `notebooks/README.md` | 0 | 0 | 2 | 2 |
-| **total** | **45** | **160** | **1443** | **1648** |
+| **total** | **51** | **171** | **1428** | **1650** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**366 rows.** Of 1443 total orphans, these are the model-dependent ones: the numbers that move
+**360 rows.** Of 1428 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -84,7 +84,6 @@ when the champion changes and that no notebook would catch.
 | `TARGET_PRIORITIZER.md:359` | 5.2.2 | 1,119 | \| the 23 scoreable unreachable curated pairs \| median rank **1,119**, **0 in the top 50, |
 | `TARGET_PRIORITIZER.md:404` | 5.2.1 | 0.217 | Direct confirmation of the mechanism: GCD-only positives receive mean `proba_1` of **0.217 |
 | `TARGET_PRIORITIZER.md:414` | 5.2.1 | 10.7 | population makes 10.7% of the evaluable diseases go dark on the therapeutic axis. |
-| `TARGET_PRIORITIZER.md:423` | 5.2.1 | 0.7471 | \| route-supported positives only \| **0.7471** \| how it ranks the approved targets it ca |
 | `TARGET_PRIORITIZER.md:528` | 6.1 | 0.981 | \| `pagerank` \| +0.981 \| |
 | `TARGET_PRIORITIZER.md:541` | 6.1 | 0.8567 | \| **`gene_n_diseases`** \| **0.8567** \| **rejected as label-derived — and it alone beats |
 | `TARGET_PRIORITIZER.md:549` | 6.1 | 0.8567 | > the same hole: **"how many diseases is this gene associated with" scores 0.8567**, above |
@@ -99,11 +98,12 @@ when the champion changes and that no notebook would catch.
 | `TARGET_PRIORITIZER.md:610` | 6.4 | 0.1737 | \| association — macro AUPRC \| 0.1737 \| **0.1762** \| 0.1711 \| |
 | `TARGET_PRIORITIZER.md:610` | 6.4 | 0.1762 | \| association — macro AUPRC \| 0.1737 \| **0.1762** \| 0.1711 \| |
 | `TARGET_PRIORITIZER.md:610` | 6.4 | 0.1711 | \| association — macro AUPRC \| 0.1737 \| **0.1762** \| 0.1711 \| |
+| `TARGET_PRIORITIZER.md:611` | 6.4 | 0.3161 | \| association — pooled AUPRC \| 0.3161 \| **0.3210** \| 0.3089 \| |
 
-*306 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*300 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 
-144 entries, 75358 chars. Query `.index/decisions.tsv` rather than reading the file — it is
+146 entries, 76946 chars. Query `.index/decisions.tsv` rather than reading the file — it is
 the densest file in the repo (~146 tokens per line).
 

@@ -130,6 +130,29 @@ def parse_assertions():
                 continue
             m = re.match(r"^(\d+(?:\.\d+)*)", name)
             rows.append((m.group(1) if m else "", val, os.path.basename(path), name))
+
+        # Loop-table assertions: the expected value is a loop variable, not a literal argument.
+        #     for lab, docA, docS in [("approved join", 0.6886, 0.7471), ...]:
+        #         check(f"5.2.1 {lab} auc_supported", docS, ...)
+        # Without this the numbers in that table are invisible and the doc lines they guard get
+        # reported as ORPHAN. Found by the champion-metric cross-check failing on 0.7471.
+        for node in ast.walk(tree):
+            if not (isinstance(node, ast.For) and isinstance(node.iter, (ast.List, ast.Tuple))):
+                continue
+            checks = [c for c in ast.walk(node)
+                      if isinstance(c, ast.Call) and isinstance(c.func, ast.Name)
+                      and c.func.id == "check"]
+            if not checks:
+                continue
+            vals = [literal(n) for n in ast.walk(node.iter)
+                    if isinstance(n, (ast.Constant, ast.UnaryOp))]
+            vals = [v for v in vals if v is not None]
+            for c in checks:
+                nm = static_prefix(c.args[0]) or ""
+                m = re.match(r"^(\d+(?:\.\d+)*)", nm)
+                sec = m.group(1) if m else ""
+                for v in vals:
+                    rows.append((sec, v, os.path.basename(path), nm + " [loop-table]"))
     return rows
 
 
@@ -285,6 +308,10 @@ def main():
     decisions = build_decisions()
 
     files = {
+        "assertions.tsv": tsv(
+            [{"notebook": nb, "section": sec or "-", "check": nm, "expected": val}
+             for sec, val, nb, nm in sorted(assertions, key=lambda a: (a[2], a[3]))],
+            ["notebook", "section", "check", "expected"]),
         "claims.tsv": tsv(claims, ["file", "line", "section", "value", "status",
                                    "guarded_by", "model_dep", "hint", "context"]),
         "decisions.tsv": tsv(decisions, ["date", "line", "chars", "topic"]),
