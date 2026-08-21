@@ -44,6 +44,9 @@ CYPHER_DIR = os.path.join(ROOT, "dss_recipes", "cypher")
 CLASSES = os.path.join(ROOT, "tools", "recipe_classes.json")
 REGISTRY = os.path.join(ROOT, "tools", "model_registry.json")
 PROJECT = os.environ.get("DKU_PROJECT", "DEMO_TARGET_IDENTIFICATION")
+# dss_recipes/ mirrors recipes from the graph-building projects too. Names only (one cheap list call
+# each) so a mirror is called stale only when NO project owns it.
+SIBLING_PROJECTS = ["DEMO_KG_LS", "KNOWLEDGE_GRAPH_PRIMEKG", "PRIMEKG"]
 
 GATES = [
     (re.compile(r"module_size\s*>=\s*(\d+)"), "module_size >="),
@@ -134,6 +137,14 @@ def refresh():
         if len(parts) >= 3 and parts[0] not in ("id",) and not ln.startswith("Saved Models"):
             models[parts[0].strip()] = {"name": parts[1].strip(), "type": parts[2].strip()}
     print("models: %d saved" % len(models))
+    sibling = set()
+    for proj in SIBLING_PROJECTS:
+        for ln in sh(["dku", "recipe", "list", "-P", proj]).split("\n"):
+            nm = (ln.split("\t") or [""])[0].strip()
+            if nm and nm not in ("name", "Recipe"):
+                sibling.add(nm)
+    print("sibling-project recipes: %d (for the mirror check)" % len(sibling))
+    snap["_sibling_recipes"] = sorted(sibling)
     snap["_models"] = models
     snap["_schemas"] = schemas
     os.makedirs(INDEX, exist_ok=True)
@@ -178,6 +189,14 @@ def source_for(name, rec):
     if rec.get("code"):
         return rec["code"], "DSS-only (python, not mirrored)"
     return "", ""
+
+
+def mirror_status(stem, own, sibling):
+    if stem in own:
+        return "MIRROR"
+    if stem in sibling:
+        return "MIRROR (graph-build project)"
+    return "STALE MIRROR (no DSS recipe in any known project)"
 
 
 def find_gates(text):
@@ -243,6 +262,7 @@ def main():
         snap = json.load(open(SNAP))
 
     schemas = snap.pop("_schemas", None) if isinstance(snap, dict) else None
+    sibling_recipes = set(snap.pop("_sibling_recipes", None) or [])
     classes = json.load(open(CLASSES)) if os.path.exists(CLASSES) else {}
     champion = set(classes.get("_champion_features", []))
     recmeta = classes.get("recipes", {})
@@ -348,11 +368,66 @@ def main():
             "decisions_lines": ",".join(refs) or "-",
         })
 
+    # ---- code index: every tracked .py/.json, and whether anything references it ----
+    # Answers "is this file orphaned or stale?" mechanically. Root-level scripts, scripts/ and
+    # webapp/ were invisible to every index until 2026-08-21; four dead prototypes had been sitting
+    # in the repo root since 11 August, one of them carrying a MIN_SEEDS constant in dead code.
+    code_files = [f for f in (sh(["git", "ls-files"]).split("\n")) if f.strip()
+                  and (f.endswith(".py") or f.endswith(".json") or f.endswith(".cypher")
+                       or f.endswith(".sh"))
+                  and not f.startswith(".index/") and not f.startswith("__pycache__")]
+    recipe_names = {n for n in snap if not n.startswith("_")}
+    entry_points = set(classes.get("entry_points") or [])
+    haystack = {}
+    for f in (sh(["git", "ls-files"]).split("\n")):
+        f = f.strip()
+        if not f or f.startswith(".index/") or "__pycache__" in f:
+            continue
+        fp = os.path.join(ROOT, f)
+        if os.path.isfile(fp) and os.path.getsize(fp) < 4_000_000:
+            try:
+                haystack[f] = open(fp, errors="ignore").read()
+            except OSError:
+                pass
+
+    crows = []
+    for f in sorted(code_files):
+        base = os.path.basename(f)
+        stem = base.rsplit(".", 1)[0]
+        refs = sorted(o for o, txt in haystack.items()
+                      if o != f and (base in txt or ("/" in f and f in txt)))
+        if f.startswith("dss_recipes/cypher/"):
+            kind = "cypher-mirror"
+            status = mirror_status(stem, recipe_names, sibling_recipes)
+        elif f.startswith("dss_recipes/"):
+            kind = "recipe-mirror"
+            status = mirror_status(stem, recipe_names, sibling_recipes)
+        elif f.startswith("notebooks/"):
+            kind, status = "notebook", "LIVE (tripwire)"
+        elif f.startswith("tools/"):
+            kind, status = "tool", "LIVE"
+        elif f.startswith("archive/"):
+            kind, status = "archive", "ARCHIVED"
+        else:
+            kind = "root-script" if "/" not in f else f.split("/")[0]
+            if refs:
+                status = "LIVE (referenced)"
+            elif f in entry_points:
+                status = "LIVE (external entry point)"
+            else:
+                status = "ORPHAN (referenced by nothing)"
+        crows.append({"path": f, "kind": kind, "status": status,
+                      "n_refs": len(refs), "referenced_by": ",".join(refs[:4]) or "-"})
+
     def tsv(rr, cols):
         return "\n".join(["\t".join(cols)] +
                          ["\t".join(str(r[c]).replace("\t", " ") for c in cols) for r in rr]) + "\n"
 
     files = {
+        "code.tsv": tsv(sorted(crows, key=lambda r: (not r["status"].startswith("ORPHAN"),
+                                                     not r["status"].startswith("STALE"),
+                                                     r["path"])),
+                        ["path", "kind", "status", "n_refs", "referenced_by"]),
         "models.tsv": tsv(mrows, ["model", "id", "role", "n_feat", "assoc_auroc", "assoc_auprc",
                                   "hub_spread", "drug_all", "drug_supported", "tract_dm200",
                                   "disc_lift50", "disc_lift200", "delta", "verdict",
@@ -391,8 +466,11 @@ def main():
     for n, b in files.items():
         open(os.path.join(INDEX, n), "w").write(b)
     gated = [r for r in rows if r["gate"] != "-"]
+    orph = [r for r in crows if r["status"].startswith("ORPHAN")]
+    stale = [r for r in crows if r["status"].startswith("STALE")]
     print("wrote .index/recipes.tsv (%d recipes, %d gated), features.tsv (%d columns), "
-          "models.tsv (%d models)" % (len(rows), len(gated), len(feats), len(mrows)))
+          "models.tsv (%d models), code.tsv (%d files: %d orphan, %d stale mirror)"
+          % (len(rows), len(gated), len(feats), len(mrows), len(crows), len(orph), len(stale)))
     if drift:
         print("\n!! CHAMPION METRICS WITH NO MATCHING NOTEBOOK ASSERTION: %s\n"
               "   The registry is hand-transcribed; an unguarded metric there can drift exactly the\n"

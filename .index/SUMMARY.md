@@ -15,7 +15,9 @@ flags them as historical dropped.
 
 | file | asserted | value-only | orphan | total |
 |---|--:|--:|--:|--:|
-| `DECISIONS.md` | 2 | 48 | 342 | 392 |
+| `.claude/skills/target-id/SKILL.md` | 0 | 0 | 6 | 6 |
+| `.claude/skills/target-id/references/number-update.md` | 0 | 1 | 5 | 6 |
+| `DECISIONS.md` | 2 | 48 | 343 | 393 |
 | `DEMO_NARRATIVE.md` | 1 | 14 | 20 | 35 |
 | `DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
 | `DSS_CHEATSHEET.md` | 0 | 1 | 6 | 7 |
@@ -23,18 +25,16 @@ flags them as historical dropped.
 | `PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
 | `RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
 | `TARGET_PRIORITIZER.md` | 46 | 60 | 658 | 764 |
-| `chat_starter.md` | 2 | 4 | 18 | 24 |
-| `docs/DOC_OVERHAUL_PLAN.md` | 0 | 2 | 30 | 32 |
 | `docs/FEATURE_AUDIT.md` | 0 | 15 | 94 | 109 |
 | `docs/PHASE3_PREREGISTRATION.md` | 0 | 10 | 24 | 34 |
 | `docs/annotation/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
 | `notebooks/README.md` | 0 | 0 | 2 | 2 |
-| **total** | **51** | **171** | **1428** | **1650** |
+| **total** | **49** | **166** | **1392** | **1607** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**360 rows.** Of 1428 total orphans, these are the model-dependent ones: the numbers that move
+**352 rows.** Of 1392 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -100,10 +100,10 @@ when the champion changes and that no notebook would catch.
 | `TARGET_PRIORITIZER.md:610` | 6.4 | 0.1711 | \| association — macro AUPRC \| 0.1737 \| **0.1762** \| 0.1711 \| |
 | `TARGET_PRIORITIZER.md:611` | 6.4 | 0.3161 | \| association — pooled AUPRC \| 0.3161 \| **0.3210** \| 0.3089 \| |
 
-*300 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*292 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 
-148 entries, 78553 chars. Query `.index/decisions.tsv` rather than reading the file — it is
+150 entries, 80206 chars. Query `.index/decisions.tsv` rather than reading the file — it is
 the densest file in the repo (~146 tokens per line).
 

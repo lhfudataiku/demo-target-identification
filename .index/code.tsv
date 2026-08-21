@@ -1,0 +1,71 @@
+path	kind	status	n_refs	referenced_by
+docs/appendix/manifest.json	docs	LIVE (referenced)	1	docs/appendix/README.md
+dss_recipes/attach_node_index.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/compute_breast_panel.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_breast_shortlist.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_disease_family_id.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_disease_group_map.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/compute_disease_hierarchy_annotation.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_drug_evidence_pairs.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_drug_target_benchmark.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_drug_target_benchmark_staged.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_dwpc_go_metapaths.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_enriched_prox_closest.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_enriched_rwr_score_1.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_filter_three_axes.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_gene_druggability.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_gene_localization.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_gene_names.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/compute_gene_safety.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_kg.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/compute_kg_edges.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/compute_known_drug_truth.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_lung_granularity_check.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_maturity_confound.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_model_comparison.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_novel_discovery_eval.py	recipe-mirror	MIRROR	1	dss_recipes/compute_drug_evidence_pairs.py
+dss_recipes/compute_persona_candidates.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_pool_reachability.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_pool_selection_bias.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_ppi_cn_zscore.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_ppi_evidence_depth.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_safety_lift.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_split_audit_2.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_target_reachability.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_top_shap_drivers_1.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_tractability_axis.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_tractability_lift.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_validation_auc_by_disease_2.py	recipe-mirror	MIRROR	0	-
+dss_recipes/cypher/compute_enriched_degree_controls_1.cypher	cypher-mirror	MIRROR	0	-
+dss_recipes/cypher/compute_enriched_disease_context_1.cypher	cypher-mirror	MIRROR	0	-
+dss_recipes/cypher/compute_enriched_dwpc_GCD.cypher	cypher-mirror	MIRROR	0	-
+dss_recipes/cypher/compute_enriched_dwpc_GGD.cypher	cypher-mirror	MIRROR	0	-
+dss_recipes/cypher/compute_enriched_dwpc_GPGD.cypher	cypher-mirror	MIRROR	0	-
+dss_recipes/cypher/compute_enriched_guilt_by_association_1.cypher	cypher-mirror	MIRROR	0	-
+dss_recipes/cypher/compute_enriched_inflammatory_go.cypher	cypher-mirror	MIRROR	0	-
+dss_recipes/cypher/compute_enriched_module_size_1.cypher	cypher-mirror	MIRROR	0	-
+dss_recipes/cypher/compute_enriched_shared_pathway_count_1.cypher	cypher-mirror	MIRROR	0	-
+dss_recipes/extract_drug_ot.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/extract_hetionet_disease_slim.py	recipe-mirror	MIRROR	0	-
+dss_recipes/extract_mondo.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/extract_ot_assoc.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/extract_ot_druggability.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/extract_ot_maps.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/extract_ppi.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/extract_reactome.py	recipe-mirror	MIRROR (graph-build project)	0	-
+index_remap.json	root-script	LIVE (referenced)	3	DECISIONS.md,TARGET_PRIORITIZER.md,dss_recipes/compute_split_audit_2.py
+notebooks/nb1_features_and_config.py	notebook	LIVE (tripwire)	0	-
+notebooks/nb2_splitting_and_pool.py	notebook	LIVE (tripwire)	0	-
+notebooks/nb3_validation_and_plots.py	notebook	LIVE (tripwire)	0	-
+notebooks/nb3b_hub_bias_meter.py	notebook	LIVE (tripwire)	0	-
+notebooks/nb4_results_three_axes.py	notebook	LIVE (tripwire)	0	-
+notebooks/nb5_data_exploration.py	notebook	LIVE (tripwire)	0	-
+reference_baseline.json	root-script	LIVE (referenced)	2	GRAPH_BUILDING.md,TARGET_PRIORITIZER.md
+scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
+scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
+tools/build_index.py	tool	LIVE	3	CLAUDE.md,DECISIONS.md,tools/check_indexes.sh
+tools/build_recipe_index.py	tool	LIVE	15	.claude/skills/target-id/SKILL.md,CLAUDE.md,DECISIONS.md,docs/PHASE3_PREREGISTRATION.md
+tools/check_indexes.sh	tool	LIVE	3	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,CLAUDE.md
+tools/model_registry.json	tool	LIVE	4	.claude/skills/target-id/SKILL.md,CLAUDE.md,DECISIONS.md,tools/build_recipe_index.py
+tools/recipe_classes.json	tool	LIVE	5	CLAUDE.md,DECISIONS.md,docs/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py
+webapp/backend.py	webapp	LIVE (referenced)	1	tools/recipe_classes.json

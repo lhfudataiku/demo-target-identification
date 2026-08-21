@@ -1,4 +1,16 @@
 file	line	section	value	status	guarded_by	model_dep	hint	context
+.claude/skills/target-id/SKILL.md	36	-	0.8197	ORPHAN				`TARGET_PRIORITIZER.md` corrupts six of ten `0.8197`s. Classify each hit before touching it.
+.claude/skills/target-id/SKILL.md	39	-	4.4	ORPHAN				admitted rows were *denser* in positives; like-for-like they are 4.4× more dilute).
+.claude/skills/target-id/SKILL.md	63	-	2.38	ORPHAN				after. And an unescaped `.` in `grep 2.38` matches `0.2738`; use `-F`.
+.claude/skills/target-id/SKILL.md	63	-	0.2738	ORPHAN				after. And an unescaped `.` in `grep 2.38` matches `0.2738`; use `-F`.
+.claude/skills/target-id/SKILL.md	65	-	1,630	ORPHAN				is a `.md` file; the claims index grew 1,630 → 1,744 per run until excluded.
+.claude/skills/target-id/SKILL.md	65	-	1,744	ORPHAN				is a `.md` file; the claims index grew 1,630 → 1,744 per run until excluded.
+.claude/skills/target-id/references/number-update.md	48	3	0.8197	ORPHAN				Of ten `0.8197`s in `TARGET_PRIORITIZER.md`, only four were current-state. A global replace corrupts
+.claude/skills/target-id/references/number-update.md	81	6	0.024	ORPHAN				- **Coincidental digit collisions** — §7.2's hub delta `+0.024` survived a grep for the orthogonality
+.claude/skills/target-id/references/number-update.md	82	6	0.024	ORPHAN				`r = +0.024`. Different quantity, same digits.
+.claude/skills/target-id/references/number-update.md	84	6	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			`0.7471 − 0.6911 ≠ +0.0585`.
+.claude/skills/target-id/references/number-update.md	84	6	0.6911	ORPHAN				`0.7471 − 0.6911 ≠ +0.0585`.
+.claude/skills/target-id/references/number-update.md	84	6	0.0585	ORPHAN				`0.7471 − 0.6911 ≠ +0.0585`.
 DECISIONS.md	22	-	0.946	ORPHAN		y		| 2026-08-08 | **A candidate filter can leak even when the feature is rejected.** A filter on a random-walk fe
 DECISIONS.md	22	-	0.43	ORPHAN		y		| 2026-08-08 | **A candidate filter can leak even when the feature is rejected.** A filter on a random-walk fe
 DECISIONS.md	24	-	0.704	ORPHAN				| 2026-08-09 | **Granularity: split by family, report by disease** (§3.3). Family aggregation lifts the weakes
@@ -391,6 +403,7 @@ DECISIONS.md	159	-	1,630	ORPHAN				| 2026-08-21 | **The index was indexing its o
 DECISIONS.md	159	-	1,744	ORPHAN				| 2026-08-21 | **The index was indexing its own output.** `.index/SUMMARY.md` is a `.md` file, so once committ
 DECISIONS.md	161	-	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| 2026-08-21 | **The champion-metric cross-check found a bug in my own indexer within a minute of existing.** 
 DECISIONS.md	161	-	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| 2026-08-21 | **The champion-metric cross-check found a bug in my own indexer within a minute of existing.** 
+DECISIONS.md	164	-	0.85	ORPHAN			hist	| 2026-06-30 | **RWR implemented with `scipy.sparse` + `ThreadPoolExecutor`, not `networkx`** — recorded retro
 DEMO_NARRATIVE.md	18	-	129,253	ORPHAN				**The artifact.** `target_candidates_2` — **129,253 scored candidates across 13 diseases**, each row
 DEMO_NARRATIVE.md	26	-	0.82	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie
 DEMO_NARRATIVE.md	26	-	0.80	ASSERTED	nb3_validation_and_plots.py:header per-split-key AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie
@@ -1417,62 +1430,6 @@ TARGET_PRIORITIZER.md	1950	10.4	3,919	ORPHAN				(**1.04%** of diseases), and **1
 TARGET_PRIORITIZER.md	1954	10.4	1.5	ORPHAN				reachability ceiling is only 1.5%, so it was never a big number. But the counterfactual shows the
 TARGET_PRIORITIZER.md	1956	10.4	2,564	ORPHAN				are null, they score at 52% of the pool mean, and `TACSTD2` lands at #845 of 2,564. **Embeddings are
 TARGET_PRIORITIZER.md	1961	10.4	7,456	ORPHAN				GBGD where TACSTD2 has 997 pairs and triple-negative has 7,456 — the intersection is still empty. The
-chat_starter.md	41	-	113,391	ORPHAN				**Part 1 — the graph. Complete.** 113,391 nodes / 2,851,510 edges / 18 relations, rebuilt from source
-chat_starter.md	41	-	2,851,510	ORPHAN				**Part 1 — the graph. Complete.** 113,391 nodes / 2,851,510 edges / 18 relations, rebuilt from source
-chat_starter.md	49	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		features): macro per-disease AUC **0.8230** over 670 diseases, per-split-key 0.8046, pooled 0.8932,
-chat_starter.md	49	-	0.8046	ASSERTED	nb3_validation_and_plots.py:header per-split-key AUC	y		features): macro per-disease AUC **0.8230** over 670 diseases, per-split-key 0.8046, pooled 0.8932,
-chat_starter.md	49	-	0.8932	ASSERTED	nb3_validation_and_plots.py:header pooled AUC	y		features): macro per-disease AUC **0.8230** over 670 diseases, per-split-key 0.8046, pooled 0.8932,
-chat_starter.md	50	-	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		per-family 0.8009, drug-target 0.6886. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12` 0.8197
-chat_starter.md	50	-	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		per-family 0.8009, drug-target 0.6886. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12` 0.8197
-chat_starter.md	50	-	0.7593	ORPHAN		y		per-family 0.8009, drug-target 0.6886. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12` 0.8197
-chat_starter.md	50	-	0.7882	ORPHAN		y		per-family 0.8009, drug-target 0.6886. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12` 0.8197
-chat_starter.md	50	-	0.8197	ORPHAN		y		per-family 0.8009, drug-target 0.6886. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12` 0.8197
-chat_starter.md	53	-	0.9324	ORPHAN		y		its 0.9324 drug-target AUC as a win, and note those numbers now exist **only in the documentation**.
-chat_starter.md	54	-	0.9354	ORPHAN				The point it proves: a gene-popularity lookup table scores **0.9354** on that benchmark, beating the
-chat_starter.md	60	-	0.01	ORPHAN				components removed; indices remapped; flow rebuilt end to end. **Every metric landed within ±0.01 of
-chat_starter.md	61	-	0.02	ORPHAN			hist	the frozen reference** against a ±0.02 tolerance set in advance, and the candidate pool total is
-chat_starter.md	62	-	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			bit-identical (6,754,128). See TARGET_PRIORITIZER §10.
-chat_starter.md	76	-	129,253	ORPHAN		y		The filterable table is DONE (`target_candidates_2`, **129,253 ranked rows over 13 personas** with
-chat_starter.md	81	-	0.634	ORPHAN		y		both metrics (per-disease 0.634, drug-target 0.256); two non-persona cancers are the strongest
-chat_starter.md	81	-	0.256	ORPHAN		y		both metrics (per-disease 0.634, drug-target 0.256); two non-persona cancers are the strongest
-chat_starter.md	98	-	0.9354	ORPHAN				popularity: a no-graph lookup scores 0.9354, beating the drug-trained model. Report it as a warning
-chat_starter.md	107	-	65,536	ORPHAN				65,536-row chunk, so joins silently miss on some chunks.
-chat_starter.md	115	-	1.42	ORPHAN		y		1.42-1.71x enrichment with **98-100% recall on both ground truths**. Do NOT add "exclude known
-chat_starter.md	118	-	4,110	ORPHAN				- **ALWAYS report both drug ground truths.** `indication` (approved, 4,110 pairs) and
-chat_starter.md	119	-	52,734	ORPHAN				`drug_investigated_for` (in-trial, 52,734). The choice reverses conclusions: NSCLC scores 0/33 on
-chat_starter.md	131	-	0.16	ORPHAN				on `level` before comparing it to the visual chain, or you manufacture a 0.16 discrepancy.
-docs/DOC_OVERHAUL_PLAN.md	15	1	1,726	ORPHAN				`TARGET_PRIORITIZER.md` is **1,726 lines across 55 sections**. Three measurable problems:
-docs/DOC_OVERHAUL_PLAN.md	25	1	2,693,788	ORPHAN				- **§6.2's split sizes are wrong and provably so.** Documented `2,693,788 / 561,214`; live
-docs/DOC_OVERHAUL_PLAN.md	25	1	561,214	ORPHAN				- **§6.2's split sizes are wrong and provably so.** Documented `2,693,788 / 561,214`; live
-docs/DOC_OVERHAUL_PLAN.md	26	1	2,187,862	ORPHAN				`2,187,862 / 607,345`. The live values reconcile exactly to the pool
-docs/DOC_OVERHAUL_PLAN.md	26	1	607,345	ORPHAN				`2,187,862 / 607,345`. The live values reconcile exactly to the pool
-docs/DOC_OVERHAUL_PLAN.md	27	1	2,187,862	ORPHAN				(2,187,862 + 607,345 + 3,958,921 = 6,754,128); the documented ones do not sum to anything.
-docs/DOC_OVERHAUL_PLAN.md	27	1	607,345	ORPHAN				(2,187,862 + 607,345 + 3,958,921 = 6,754,128); the documented ones do not sum to anything.
-docs/DOC_OVERHAUL_PLAN.md	27	1	3,958,921	ORPHAN				(2,187,862 + 607,345 + 3,958,921 = 6,754,128); the documented ones do not sum to anything.
-docs/DOC_OVERHAUL_PLAN.md	27	1	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			(2,187,862 + 607,345 + 3,958,921 = 6,754,128); the documented ones do not sum to anything.
-docs/DOC_OVERHAUL_PLAN.md	30	1	0.69	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		panel measured `breast cancer` as the **worst** term in its family (AUC 0.69, beaten by every
-docs/DOC_OVERHAUL_PLAN.md	39	1	0.024	ORPHAN		y		| Pearson r | **+0.024** |
-docs/DOC_OVERHAUL_PLAN.md	40	1	0.0006	ORPHAN		y		| R² | **0.0006** |
-docs/DOC_OVERHAUL_PLAN.md	41	1	0.036	ORPHAN		y		| Spearman | +0.036 |
-docs/DOC_OVERHAUL_PLAN.md	42	1	0.27	ORPHAN				| t (128 df) | +0.27 — **not significant** |
-docs/DOC_OVERHAUL_PLAN.md	43	1	0.006	ORPHAN				| restricted to ≥10 validated targets (n=42) | r = **+0.006** |
-docs/DOC_OVERHAUL_PLAN.md	46	1	0.06	ORPHAN		y		correlation; this is zero. Association AUC explains **0.06%** of therapeutic-AUC variance. That is a
-docs/DOC_OVERHAUL_PLAN.md	82	3	8.10	ORPHAN				| 8.10 On-graph explanation | 45 | zero tables, all demo mechanics |
-docs/DOC_OVERHAUL_PLAN.md	83	3	8.12	ORPHAN				| 8.12 What it delivers, concretely | 19 | duplicates §1 |
-docs/DOC_OVERHAUL_PLAN.md	102	3	1,726	ORPHAN				**Net: 1,726 → ~1,000 lines**, before any rewriting.
-docs/DOC_OVERHAUL_PLAN.md	102	3	1,000	ORPHAN				**Net: 1,726 → ~1,000 lines**, before any rewriting.
-docs/DOC_OVERHAUL_PLAN.md	124	4	91.8	ORPHAN				| 5.2.1 | 91.8×, 0.6911 → 0.7337 | `pool_selection_bias`, `pool_reachability` | ✅ cite |
-docs/DOC_OVERHAUL_PLAN.md	124	4	0.6911	ORPHAN				| 5.2.1 | 91.8×, 0.6911 → 0.7337 | `pool_selection_bias`, `pool_reachability` | ✅ cite |
-docs/DOC_OVERHAUL_PLAN.md	124	4	0.7337	ORPHAN				| 5.2.1 | 91.8×, 0.6911 → 0.7337 | `pool_selection_bias`, `pool_reachability` | ✅ cite |
-docs/DOC_OVERHAUL_PLAN.md	128	4	22.6	ORPHAN		y		| 6.3 | threshold, recall 22.6% | — | **notebook** |
-docs/DOC_OVERHAUL_PLAN.md	131	4	0.7976	ORPHAN		y		| 7.3 | per-family 0.7976 / 505 | `family_auc_by_family` | ✅ cite + **plot** |
-docs/DOC_OVERHAUL_PLAN.md	132	4	0.6911	ORPHAN				| 7.4 | drug-target 0.6911 | `drug_target_benchmark` | ✅ cite + **plot** |
-docs/DOC_OVERHAUL_PLAN.md	136	4	8.13	ORPHAN				| 8.13 | breast panel | `breast_panel_metrics`, `breast_panel_overlap`, `breast_shortlist` | ✅ cite |
-docs/DOC_OVERHAUL_PLAN.md	137	4	0.01	ORPHAN			hist	| 10.1 | reconstruction ±0.01 | `reference_baseline.json` | ✅ cite |
-docs/DOC_OVERHAUL_PLAN.md	152	5	0.6911	ORPHAN				| `nb2_splitting_and_pool.ipynb` | §5 | pool funnel with both stages; family antichain check; split audit; the
-docs/DOC_OVERHAUL_PLAN.md	152	5	0.7337	ORPHAN				| `nb2_splitting_and_pool.ipynb` | §5 | pool funnel with both stages; family antichain check; split audit; the
-docs/DOC_OVERHAUL_PLAN.md	165	6	0.024	ORPHAN		y		| **Scatter + regression, association vs therapeutic AUC** | 7.4 | `validation_auc_by_disease` ⋈ `drug_target_
-docs/DOC_OVERHAUL_PLAN.md	165	6	0.0006	ORPHAN		y		| **Scatter + regression, association vs therapeutic AUC** | 7.4 | `validation_auc_by_disease` ⋈ `drug_target_
 docs/FEATURE_AUDIT.md	35	1	0.00	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 			§6.1 measured that `gene_ppi_degree` and `gene_n_pathways` show **0.00% variation across diseases**.
 docs/FEATURE_AUDIT.md	37	1	1.23	ORPHAN				> **For 43 diseases (1.23% of pool rows) the model has no disease-specific signal at all. It is
 docs/FEATURE_AUDIT.md	39	1	3.7	ORPHAN				> model being served for 3.7% of the disease population.

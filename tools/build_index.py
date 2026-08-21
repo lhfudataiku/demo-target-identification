@@ -65,7 +65,6 @@ MODELDEP = re.compile(
 # by the append-only decision log and a list of live claims someone might quote.
 RECORD_FILES = {
     "DECISIONS.md",                 # append-only log; corrections are new entries, never edits
-    "docs/DOC_OVERHAUL_PLAN.md",    # executed plan, marked SUPERSEDED
     "docs/appendix/README.md",      # describes m3-era frozen snapshots
 }
 # a hint only -- never used to decide ORPHAN status

@@ -3,3 +3,8 @@
 # Source data — large and/or license-restricted (UMLS, DisGeNET, etc.).
 # Staged locally / uploaded to DSS, never committed.
 data/
+
+# Compiled bytecode. Two .pyc files were tracked until 2026-08-21 and created phantom
+# "references" that made dead prototype scripts look live to the code index.
+__pycache__/
+*.pyc

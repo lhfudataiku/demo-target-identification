@@ -6,12 +6,10 @@
     "build_recipe_index.py EXITS NON-ZERO if a gated recipe is missing from `recipes` below, so a",
     "newly added gate cannot reach Phase 3 unclassified."
   ],
-
   "_class_meaning": {
     "1": "Pure NULL-fill. Widening the seed gate only ADDS rows; every existing value is unchanged, because the recipe's normalisers are global (whole-graph COUNT{} or a per-disease loop over a global adjacency). Safe to widen: the pre-change population stays a clean control.",
     "2": "Recomputes an aggregate over the ELIGIBLE set. Widening the gate CHANGES existing rows -- a different intervention, not a NULL fill. Widening this together with Class 1 recipes confounds two interventions in one rebuild."
   },
-
   "_champion_features": [
     "dwpc_GBGD",
     "dwpc_GFGD",
@@ -28,7 +26,6 @@
     "prox_kernel",
     "shared_pathway_frac"
   ],
-
   "_champion_features_provenance": [
     "m7-f14, saved model hJLGoYn4. RECONSTRUCTED, not read directly -- read the warning below.",
     "",
@@ -50,7 +47,6 @@
     "rows exist (filter_has_path_evidence) but the model never sees it. Section 5.2.1's selection",
     "bias is therefore about evaluability, not about a feature the model reads."
   ],
-
   "recipes": {
     "compute_enriched_dwpc_GGD": {
       "class": "1",
@@ -92,5 +88,15 @@
       "class": "2",
       "note": "THE ONLY CLASS 2. `assoc` (per-gene disease degree) is computed over the ELIGIBLE disease set and feeds the DWPC weight, so widening eligibility changes dwpc_GBGD/dwpc_GFGD for EXISTING pairs. A 20->5 change was applied and REVERTED on 2026-08-20 for this reason. Phase 3 HOLDS this at 20 to keep the pre-change population byte-identical."
     }
-  }
+  },
+  "_entry_points_README": [
+    "Files invoked from OUTSIDE the repo, so nothing here references them. Without this list the code",
+    "index reports them as orphaned: webapp/backend.py is served by a DSS webapp, not called by repo",
+    "code. 'Unreferenced' and 'unused' are not the same thing."
+  ],
+  "entry_points": [
+    "webapp/backend.py",
+    "scripts/create_vg_webapp.py",
+    "scripts/filter_mrconso.sh"
+  ]
 }
