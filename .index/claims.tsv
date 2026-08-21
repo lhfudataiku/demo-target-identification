@@ -14,7 +14,7 @@ file	line	section	value	status	guarded_by	model_dep	hint	context
 CLAUDE.md	29	-	113,391	ORPHAN			hist	**Part 1 complete.** 113,391 nodes / 2,851,510 edges / 18 relations, accepted against the frozen
 CLAUDE.md	29	-	2,851,510	ORPHAN			hist	**Part 1 complete.** 113,391 nodes / 2,851,510 edges / 18 relations, accepted against the frozen
 CLAUDE.md	33	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		**Part 2 built and validated.** Champion `m7-f14` (`hJLGoYn4`), macro per-disease AUC 0.8230 over 670
-CLAUDE.md	77	-	0.9354	ORPHAN				popularity: a no-graph lookup scores 0.9354, beating a drug-trained model. Report it as a warning
+CLAUDE.md	91	-	0.9354	ORPHAN				popularity: a no-graph lookup scores 0.9354, beating a drug-trained model. Report it as a warning
 DECISIONS.md	22	-	0.946	ORPHAN		y		| 2026-08-08 | **A candidate filter can leak even when the feature is rejected.** A filter on a random-walk fe
 DECISIONS.md	22	-	0.43	ORPHAN		y		| 2026-08-08 | **A candidate filter can leak even when the feature is rejected.** A filter on a random-walk fe
 DECISIONS.md	24	-	0.704	ORPHAN				| 2026-08-09 | **Granularity: split by family, report by disease** (§3.3). Family aggregation lifts the weakes

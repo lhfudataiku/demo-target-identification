@@ -191,5 +191,5 @@ A and B · state the estimator on every lift · flag any K where a count is too 
 **How much of the 34% seed-reachability does `dwpc_GPGD` recover?** It is pathway-mediated and does not
 need a direct seed–seed PPI edge, so it should reach more of the admitted diseases' positives than the
 GGD route does. **Not measured.** It is the single number most likely to change P1's prospects, and it
-is cheap — the same computation as §5 of `docs/FEATURE_AUDIT.md` run against `pathway_protein` instead
+is cheap — the same computation as §5 of `FEATURE_AUDIT.md` run against `pathway_protein` instead
 of `protein_protein`. Worth doing first if the branch is expensive to stand up.

@@ -595,7 +595,7 @@ The F1-optimised threshold lands at **0.860** against a ~1.9% base rate (F1 = 0.
 
 ### 6.4 Model selection — four axes, and why AUROC alone would have chosen wrong
 
-*Source: `scored_m3` / `scored_m4` / `scored_m5` for the f12/f13 rows · `docs/appendix/model_comparison.csv` for `m1`/`m2` (that flow artifact was deleted 2026-08-19 and is not re-derivable without re-scoring 7.9M rows) · `docs/FEATURE_AUDIT.md` §4 and the paired tests logged in `DECISIONS.md` 2026-08-20/21 for `m6`–`m8` · champion metrics re-measured in `nb3`/`nb3b`/`nb4` on 2026-08-21.*
+*Source: `scored_m3` / `scored_m4` / `scored_m5` for the f12/f13 rows · `docs/appendix/model_comparison.csv` for `m1`/`m2` (that flow artifact was deleted 2026-08-19 and is not re-derivable without re-scoring 7.9M rows) · `FEATURE_AUDIT.md` §4 and the paired tests logged in `DECISIONS.md` 2026-08-20/21 for `m6`–`m8` · champion metrics re-measured in `nb3`/`nb3b`/`nb4` on 2026-08-21.*
 
 #### The `prox_closest` question, settled on four axes
 
@@ -749,7 +749,7 @@ worth more than arguing about how to impute it.**
 > value of the three because it improves the **current champion**, not a candidate.
 >
 > ✅ **CHECKED 2026-08-20 — no leak, and that recipe is the most careful of the set**
-> (`docs/FEATURE_AUDIT.md`). `compute_dwpc_go_metapaths` removes the `m == g` self-path *analytically*
+> (`FEATURE_AUDIT.md`). `compute_dwpc_go_metapaths` removes the `m == g` self-path *analytically*
 > and uses a leave-one-out module size (`mod_D_loo = mod_raw − [g in module]`). The same check across
 > every feature recipe came back clean: `dwpc_GGD`, `dwpc_GPGD` and `guilt_by_association` all carry
 > both guards, `shared_pathway_count` normalises by the gene's own pathway count so LOO does not apply,
@@ -773,7 +773,7 @@ worth more than arguing about how to impute it.**
 > made in place. Sequence agreed: size the admitted population first, then run a train-narrow /
 > score-wide probe with `m7` against a gene-popularity baseline, and only branch the project if the
 > probe clears it. **Pre-registered in
-> [docs/PHASE3_PREREGISTRATION.md](PHASE3_PREREGISTRATION.md)** before the branch exists.
+> [PHASE3_PREREGISTRATION.md](PHASE3_PREREGISTRATION.md)** before the branch exists.
 
 #### The full sequence — `m7-f14` adopted, `m8` rejected
 

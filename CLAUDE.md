@@ -33,6 +33,20 @@ here, 0-based in the reference**.
 **Part 2 built and validated.** Champion `m7-f14` (`hJLGoYn4`), macro per-disease AUC 0.8230 over 670
 diseases. Query `.index/models.tsv` rather than trusting this line.
 
+## Where the work is
+
+**Active experiment: Phase 3** — widening the pool-route seed gate from 20 to 5, which would admit 931
+diseases the model cannot see today. It is **pre-registered before the branch project exists**:
+`docs/prioritizer/PHASE3_PREREGISTRATION.md` holds the intervention, five pre-flight gates, seven
+falsifiable predictions and the committed adopt/reject rule. Sizing is in
+`docs/prioritizer/FEATURE_AUDIT.md` §5.
+
+Two things to know before touching it: the gate must be changed in a **duplicated project**, because it
+rewrites the candidate population and every number in the docs stops being comparable; and **one of the
+ten gated recipes must be held at 20** (`compute_dwpc_go_metapaths` is Class 2 — it recomputes an
+aggregate over the eligible set, so widening it changes existing rows). `.index/recipes.tsv` has the
+per-recipe class.
+
 ## Start here — do not read the large docs to answer a question
 
 The markdown is well over 140k tokens (`TARGET_PRIORITIZER.md` alone is ~38k).

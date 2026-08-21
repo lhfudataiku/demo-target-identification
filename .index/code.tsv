@@ -65,8 +65,8 @@ scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.jso
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 tools/build_index.py	tool	LIVE	3	CLAUDE.md,DECISIONS.md,tools/check_indexes.sh
 tools/build_recipe_index.py	tool	LIVE	15	.claude/skills/target-id/SKILL.md,CLAUDE.md,DECISIONS.md,docs/prioritizer/PHASE3_PREREGISTRATION.md
-tools/check_indexes.sh	tool	LIVE	3	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,CLAUDE.md
-tools/check_links.py	tool	LIVE	2	CLAUDE.md,DECISIONS.md
+tools/check_indexes.sh	tool	LIVE	4	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,CLAUDE.md,DECISIONS.md
+tools/check_links.py	tool	LIVE	3	CLAUDE.md,DECISIONS.md,tools/check_indexes.sh
 tools/model_registry.json	tool	LIVE	3	.claude/skills/target-id/SKILL.md,DECISIONS.md,tools/build_recipe_index.py
 tools/recipe_classes.json	tool	LIVE	4	DECISIONS.md,docs/prioritizer/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py,tools/model_registry.json
 webapp/backend.py	webapp	LIVE (referenced)	1	tools/recipe_classes.json

@@ -45,11 +45,17 @@ def main():
                     bad_links.append((f, i, target))
             if f in NO_MENTION_CHECK:
                 continue
-            # a bare .md mention that matches no file anywhere is a stale pointer
+            # A bare .md mention is stale if (a) its basename matches no file, or (b) it carries a
+            # PATH that does not resolve. (b) was added after the 2026-08-21 reorganisation left
+            # `docs/FEATURE_AUDIT.md` in prose when the file had moved to docs/prioritizer/ -- the
+            # basename still matched, so the original check passed it.
             for m in MENTION.findall(line):
                 base = os.path.basename(m)
                 if base not in basenames and m not in known:
                     bad_mentions.append((f, i, m))
+                elif "/" in m and m not in known and not os.path.exists(
+                        os.path.join(ROOT, os.path.normpath(os.path.join(d, m)))):
+                    bad_mentions.append((f, i, m + "  (basename exists; this PATH does not)"))
 
     for f, i, t in bad_links:
         print("BROKEN LINK    %s:%d -> %s" % (f, i, t))

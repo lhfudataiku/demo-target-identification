@@ -151,3 +151,5 @@ date	line	chars	topic
 2026-08-21	165	1034	Deleted 12 files that no longer describe the project, rather than indexing them
 2026-08-21	166	993	`chat_starter.md` was wrong to delete outright — it carried the only BOTH-PARTS overview, and the `CLAUDE.md` I wrote to replace it covered Part 2 onl
 2026-08-21	167	890	Markdown reorganised from scattered root + `docs/` into purpose-based directories
+2026-08-21	168	631	Tested the cold-start path for Phase 3 instead of assuming it worked, and it failed in one place: nothing auto-loaded said what the next step was
+2026-08-21	169	592	The link checker had a blind spot that the cold-start test exposed: a bare prose mention with a valid BASENAME but a stale PATH passed
