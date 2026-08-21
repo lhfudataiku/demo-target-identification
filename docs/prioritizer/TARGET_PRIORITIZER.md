@@ -3,10 +3,10 @@
 > Technical documentation for the **modelling, validation and result-visualisation** project: what
 > the data exploration found, why these features and this model, and how well it actually works.
 >
-> Companion documents: **[PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)** (why / who / how the projects
-> fit) · **[GRAPH_BUILDING.md](GRAPH_BUILDING.md)** (the graph this consumes) ·
-> **[RESEARCH_NOTE.md](RESEARCH_NOTE.md)** (per-reference evidence base) ·
-> **[DSS_CHEATSHEET.md](DSS_CHEATSHEET.md)** (platform behaviours).
+> Companion documents: **[PROJECT_CONTEXT.md](../overview/PROJECT_CONTEXT.md)** (why / who / how the projects
+> fit) · **[GRAPH_BUILDING.md](../graph/GRAPH_BUILDING.md)** (the graph this consumes) ·
+> **[RESEARCH_NOTE.md](../reference/RESEARCH_NOTE.md)** (per-reference evidence base) ·
+> **[DSS_CHEATSHEET.md](../platform/DSS_CHEATSHEET.md)** (platform behaviours).
 >
 > **Status: built and validated on the rebuilt graph; champion refreshed 2026-08-21.** Champion
 > **`m7-f14`** (14 features): macro per-disease AUC **0.8230** over 670 diseases, per-split-key
@@ -28,15 +28,15 @@ This is the **methodology** record: what the data forced, why these features and
 measured, and what was refuted. Every table names the dataset it comes from, or is marked
 `notebook-only`.
 
-- **The demo narrative and the executive summary are in [DEMO_NARRATIVE.md](DEMO_NARRATIVE.md)** — what
+- **The demo narrative and the executive summary are in [DEMO_NARRATIVE.md](../demo/DEMO_NARRATIVE.md)** — what
   to show a scientist, in what order, and what not to show. Read that first if you are presenting.
-- **Why the project exists** is in [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md).
-- **Why each decision was made**, including the reversals, is in [DECISIONS.md](DECISIONS.md).
+- **Why the project exists** is in [PROJECT_CONTEXT.md](../overview/PROJECT_CONTEXT.md).
+- **Why each decision was made**, including the reversals, is in [DECISIONS.md](../../DECISIONS.md).
 
 **Every section names its source.** A `*Source:*` line under each heading gives the flow dataset the
 numbers come from and the notebook that re-derives them, or says `notebook-only` where no flow artifact
 exists. Four notebooks in `DEMO_TARGET_IDENTIFICATION` (`nb1`–`nb4`, code env `primekg_kg`) assert every
-quoted aggregate against live data, so drift fails loudly — see [notebooks/README.md](notebooks/README.md).
+quoted aggregate against live data, so drift fails loudly — see [notebooks/README.md](../../notebooks/README.md).
 **If a number here has no source line, treat it as unverified.**
 
 **One thing to know before reading any number here:** the headline metric is *association* AUC, and it
@@ -46,7 +46,7 @@ is **statistically orthogonal** to therapeutic relevance — r = +0.002, R² = 0
 ## 2. Scientific basis
 
 > Per-reference summaries and the feature→reference map are in
-> [RESEARCH_NOTE.md](RESEARCH_NOTE.md).
+> [RESEARCH_NOTE.md](../reference/RESEARCH_NOTE.md).
 
 This reproduces an industry-standard pattern rather than inventing one — deliberately. The
 differentiator is reproducibility, lineage and explainability, not the algorithm.
@@ -468,7 +468,7 @@ best exactly where the personas live and worst in the long tail.
 > `enriched_train_full_2`**, so every build failed and `split_audit_2` sat empty while this section
 > quoted a pre-migration run. Fixed and rebuilt 2026-08-19; the guarantee **holds** — all three
 > split-key overlaps are 0, zero keys straddle, and all 13 persona diseases land in validation. The
-> lesson is in [DECISIONS.md](DECISIONS.md): repointing a recipe's inputs does not repoint its code.
+> lesson is in [DECISIONS.md](../../DECISIONS.md): repointing a recipe's inputs does not repoint its code.
 
 The split key is the **elevated split key** — the anchor's most-specific parent under a fan-out cap —
 **never the disease index**. Persona families are forced into validation. Roughly 41% train / 50%
@@ -487,7 +487,7 @@ if(arrayContains([0,1,2,3,4], mod(disease_split_key, 10))
 **⚠ The forced clause is the only guarantee — the modulo is not.** Of the four keys originally
 forced, three already fell in validation via the modulo, so only one was doing real work. That is a
 trap: when indices are renumbered, whichever keys were *incidentally* in validation can move — which
-is exactly what the 2026-08-17 rebuild did (see [DECISIONS.md](DECISIONS.md), 2026-08-17 entries, and
+is exactly what the 2026-08-17 rebuild did (see [DECISIONS.md](../../DECISIONS.md), 2026-08-17 entries, and
 `index_remap.json`).
 
 **As rebuilt, all five persona groups land in validation via the forced clause**, and the elevation
@@ -773,7 +773,7 @@ worth more than arguing about how to impute it.**
 > made in place. Sequence agreed: size the admitted population first, then run a train-narrow /
 > score-wide probe with `m7` against a gene-popularity baseline, and only branch the project if the
 > probe clears it. **Pre-registered in
-> [docs/PHASE3_PREREGISTRATION.md](docs/PHASE3_PREREGISTRATION.md)** before the branch exists.
+> [docs/PHASE3_PREREGISTRATION.md](PHASE3_PREREGISTRATION.md)** before the branch exists.
 
 #### The full sequence — `m7-f14` adopted, `m8` rejected
 
@@ -1405,7 +1405,7 @@ a blunt instrument. **Report `demonstrated`; keep `assessed` only as a coverage-
 > degree-matched null** (pooled; **2.4–2.9×** macro) is the number to quote — and the rank-10
 > exception is worth volunteering, because being able
 > to say where hub bias does and does not explain the ranking is itself the differentiator (see
-> [DEMO_NARRATIVE.md](DEMO_NARRATIVE.md) Q2).
+> [DEMO_NARRATIVE.md](../demo/DEMO_NARRATIVE.md) Q2).
 
 ### 8.5 The ligand-vs-receptor failure is real but does NOT generalise
 
@@ -1727,7 +1727,7 @@ unknown to science. Unexplained, it makes the model look naive.
 with its top known targets as a calibration anchor, then 20 novel candidates, then four blank columns
 for the clinician's verdict. **If the surgeon rejects an arm's known block, the novel block is not worth
 their time** — and that disagreement is the more valuable finding. Full briefing in
-[BREAST_SURGEON_BRIEFING.md](docs/annotation/BREAST_SURGEON_BRIEFING.md).
+[BREAST_SURGEON_BRIEFING.md](../demo/BREAST_SURGEON_BRIEFING.md).
 
 ## 9. Flow zones
 
@@ -1754,7 +1754,7 @@ without them the flow opened with `Annotations` and put `Results` before `Featur
 
 **Every zone carries its rationale as a Flow description in DSS**, and since 2026-08-19 each one leads
 with **the demo question it answers** — the Q1–Q6 numbering from
-[DEMO_NARRATIVE.md](DEMO_NARRATIVE.md) §2. Zones that are deliberately *not* demo material say so
+[DEMO_NARRATIVE.md](../demo/DEMO_NARRATIVE.md) §2. Zones that are deliberately *not* demo material say so
 outright (`10`–`12`, and the ablation ladder in `31`). A reviewer opening the flow gets the argument,
 and a presenter gets the running order, without either of these documents.
 
@@ -1777,7 +1777,7 @@ zone that had swollen to **40 items** — it was where everything went that was 
 end it held the three-axis overhaul, the leakage audits, the persona selection and a dead experiment
 in one undifferentiated pile. **The flow no longer showed which findings the deliverable rests on.**
 
-The split now follows the **demo objection ladder** ([DEMO_NARRATIVE.md](DEMO_NARRATIVE.md) §2) rather
+The split now follows the **demo objection ladder** ([DEMO_NARRATIVE.md](../demo/DEMO_NARRATIVE.md) §2) rather
 than our own metric taxonomy, because that is the order a sceptical scientist actually asks in:
 
 | Demo Q | What they say | Zone | The evidence |
@@ -1906,7 +1906,7 @@ justification for that ingest cost.
   (`scored_m1`/`scored_m2`, 7.9M rows serving a 2,010-row table), `validation_auc_by_disease_2`,
   `drug_target_benchmark_staged`, `target_reachability`, `disease_hierarchy_annotation` and
   `maturity_confound`, with their recipes. All six results are frozen in
-  [`docs/appendix/`](docs/appendix/) with a manifest; the saved models stay. **Plus a refactor, not a
+  [`docs/appendix/`](../appendix/) with a manifest; the saved models stay. **Plus a refactor, not a
   prune: zone `43` collapses 14 items → 2** (one Python recipe `scored_m3` → `family_auc_by_family`),
   keeping Q5's 505-family answer live and dropping a ~4M-row visual chain.
 - **Re-derive the Cypher literals in §8.7** — *gene* indices for the demo queries, regenerable from
@@ -1974,14 +1974,14 @@ justification for that ingest cost.
 
 ## Appendix — decision log
 
-**Moved to [DECISIONS.md](DECISIONS.md)** on 2026-08-19 — 82 lines and 312 numbers of
+**Moved to [DECISIONS.md](../../DECISIONS.md)** on 2026-08-19 — 82 lines and 312 numbers of
 append-only reference, including every correction and reversal. It is the record of *why*;
 this document is the record of *what*.
 
 ## References
 
 > Per-reference summaries, the feature→reference map, and provenance caveats are in
-> **[RESEARCH_NOTE.md](RESEARCH_NOTE.md)** (unvalidated corpus — verify before client-facing use).
+> **[RESEARCH_NOTE.md](../reference/RESEARCH_NOTE.md)** (unvalidated corpus — verify before client-facing use).
 
 - Locus-to-Gene (the pattern this reproduces) — Mountjoy et al., *Nat Genet* 2021
 - Target prioritisation reference implementation — https://platform-docs.opentargets.org/web-interface/target-prioritisation

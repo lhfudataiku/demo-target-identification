@@ -53,19 +53,20 @@ dss_recipes/extract_ot_druggability.py	recipe-mirror	MIRROR (graph-build project
 dss_recipes/extract_ot_maps.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_ppi.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_reactome.py	recipe-mirror	MIRROR (graph-build project)	0	-
-index_remap.json	root-script	LIVE (referenced)	3	DECISIONS.md,TARGET_PRIORITIZER.md,dss_recipes/compute_split_audit_2.py
+index_remap.json	root-script	LIVE (referenced)	3	DECISIONS.md,docs/prioritizer/TARGET_PRIORITIZER.md,dss_recipes/compute_split_audit_2.py
 notebooks/nb1_features_and_config.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb2_splitting_and_pool.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb3_validation_and_plots.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb3b_hub_bias_meter.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb4_results_three_axes.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb5_data_exploration.py	notebook	LIVE (tripwire)	0	-
-reference_baseline.json	root-script	LIVE (referenced)	2	GRAPH_BUILDING.md,TARGET_PRIORITIZER.md
+reference_baseline.json	root-script	LIVE (referenced)	3	DECISIONS.md,docs/graph/GRAPH_BUILDING.md,docs/prioritizer/TARGET_PRIORITIZER.md
 scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 tools/build_index.py	tool	LIVE	3	CLAUDE.md,DECISIONS.md,tools/check_indexes.sh
-tools/build_recipe_index.py	tool	LIVE	15	.claude/skills/target-id/SKILL.md,CLAUDE.md,DECISIONS.md,docs/PHASE3_PREREGISTRATION.md
+tools/build_recipe_index.py	tool	LIVE	15	.claude/skills/target-id/SKILL.md,CLAUDE.md,DECISIONS.md,docs/prioritizer/PHASE3_PREREGISTRATION.md
 tools/check_indexes.sh	tool	LIVE	3	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,CLAUDE.md
-tools/model_registry.json	tool	LIVE	4	.claude/skills/target-id/SKILL.md,CLAUDE.md,DECISIONS.md,tools/build_recipe_index.py
-tools/recipe_classes.json	tool	LIVE	5	CLAUDE.md,DECISIONS.md,docs/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py
+tools/check_links.py	tool	LIVE	2	CLAUDE.md,DECISIONS.md
+tools/model_registry.json	tool	LIVE	3	.claude/skills/target-id/SKILL.md,DECISIONS.md,tools/build_recipe_index.py
+tools/recipe_classes.json	tool	LIVE	4	DECISIONS.md,docs/prioritizer/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py,tools/model_registry.json
 webapp/backend.py	webapp	LIVE (referenced)	1	tools/recipe_classes.json

@@ -6,8 +6,8 @@ description: Navigate the demo-target-identification repo without reading its la
 # Navigating this repo cheaply
 
 The docs are well over 140k tokens and the recipes ~93k. **Do not read them to answer a factual question.**
-Four generated indexes answer most of it; `TARGET_PRIORITIZER.md` is a last resort, and even then read
-one section, not the file.
+Four generated indexes answer most of it; `docs/prioritizer/TARGET_PRIORITIZER.md` is a last
+resort, and even then read one section, not the file. `docs/README.md` maps the whole doc set.
 
 Regenerate after editing any doc or recipe: `./tools/check_indexes.sh` verifies, the two
 `tools/build_*.py` scripts rebuild. `build_recipe_index.py --refresh` also re-snapshots DSS (slow,
@@ -75,6 +75,6 @@ entries, never edits. New datasets use the S3 connection. Joins go in visual Joi
 Read these only when doing that task:
 
 - **Retargeting documented numbers after a champion change** → `references/number-update.md`
-- **Phase 3 / widening the seed gate** → `docs/PHASE3_PREREGISTRATION.md` (predictions and the
+- **Phase 3 / widening the seed gate** → `docs/prioritizer/PHASE3_PREREGISTRATION.md` (predictions and the
   committed adopt/reject rule) and `.index/recipes.tsv` for the Class 1 / Class 2 split
-- **DSS platform behaviours in depth** → `DSS_CHEATSHEET.md`
+- **DSS platform behaviours in depth** → `docs/platform/DSS_CHEATSHEET.md`

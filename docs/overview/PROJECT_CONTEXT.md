@@ -7,18 +7,18 @@
 > | Document | Covers | DSS project |
 > |---|---|---|
 > | **this file** | purpose, market evidence, personas, how the pieces fit | — |
-> | **[GRAPH_BUILDING.md](GRAPH_BUILDING.md)** | input sources, pipeline, graph schema, graph statistics, the graph webapp | `DEMO_KG_LS` |
-> | **[TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md)** | data exploration, feature & model selection, validation, results | `DEMO_TARGET_IDENTIFICATION` |
-> | **[DEMO_NARRATIVE.md](DEMO_NARRATIVE.md)** | **what we show scientists and in what order** — the objection ladder, the punch line, what not to show | both |
-> | **[DISCOVERY_LANDSCAPE.md](DISCOVERY_LANDSCAPE.md)** | the wider drug-discovery chain (stages 1–6) and where a platform belongs | — |
-> | **[RESEARCH_NOTE.md](RESEARCH_NOTE.md)** | per-reference evidence base for the Part 2 method choices | — |
-> | **[DECISIONS.md](DECISIONS.md)** | **the Part 2 decision log** — every call, including the reversals | `DEMO_TARGET_IDENTIFICATION` |
-> | **[DSS_CHEATSHEET.md](DSS_CHEATSHEET.md)** | platform behaviours and CLI patterns, stated generically | — |
+> | **[GRAPH_BUILDING.md](../graph/GRAPH_BUILDING.md)** | input sources, pipeline, graph schema, graph statistics, the graph webapp | `DEMO_KG_LS` |
+> | **[TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md)** | data exploration, feature & model selection, validation, results | `DEMO_TARGET_IDENTIFICATION` |
+> | **[DEMO_NARRATIVE.md](../demo/DEMO_NARRATIVE.md)** | **what we show scientists and in what order** — the objection ladder, the punch line, what not to show | both |
+> | **[DISCOVERY_LANDSCAPE.md](../reference/DISCOVERY_LANDSCAPE.md)** | the wider drug-discovery chain (stages 1–6) and where a platform belongs | — |
+> | **[RESEARCH_NOTE.md](../reference/RESEARCH_NOTE.md)** | per-reference evidence base for the Part 2 method choices | — |
+> | **[DECISIONS.md](../../DECISIONS.md)** | **the Part 2 decision log** — every call, including the reversals | `DEMO_TARGET_IDENTIFICATION` |
+> | **[DSS_CHEATSHEET.md](../platform/DSS_CHEATSHEET.md)** | platform behaviours and CLI patterns, stated generically | — |
 >
 > Decisions are logged in the **appendix** of each document, not inline — except Part 2's, which
-> outgrew its appendix and now lives in [DECISIONS.md](DECISIONS.md).
+> outgrew its appendix and now lives in [DECISIONS.md](../../DECISIONS.md).
 >
-> **Read [DEMO_NARRATIVE.md](DEMO_NARRATIVE.md) before designing the dashboard or pruning the flow.**
+> **Read [DEMO_NARRATIVE.md](../demo/DEMO_NARRATIVE.md) before designing the dashboard or pruning the flow.**
 > Both should be derived from the story. We tried the reverse and it produced a plan to delete our
 > strongest evidence — see TARGET_PRIORITIZER §9.1.
 
@@ -54,7 +54,7 @@ biomedical data so models can reason over it at scale.
 
 ### 2.1 The two published numbers that anchor the pitch
 
-Summarised from [DISCOVERY_LANDSCAPE.md](DISCOVERY_LANDSCAPE.md) §2. They point in opposite
+Summarised from [DISCOVERY_LANDSCAPE.md](../reference/DISCOVERY_LANDSCAPE.md) §2. They point in opposite
 directions, and holding both is what makes the pitch credible rather than promotional.
 
 | | Finding | What it de-risks |
@@ -79,7 +79,7 @@ Two consequences we lean on:
 
 ### 2.2 Where this POC sits in the discovery chain
 
-Six stages, ~10–15 years. Detail per stage in [DISCOVERY_LANDSCAPE.md](DISCOVERY_LANDSCAPE.md).
+Six stages, ~10–15 years. Detail per stage in [DISCOVERY_LANDSCAPE.md](../reference/DISCOVERY_LANDSCAPE.md).
 
 | # | Stage | Question | This POC | Platform fit |
 |---|---|---|---|---|
@@ -120,7 +120,7 @@ targets, (b) early prediction of off-target liability, therefore (c) reduced ear
 
 Persona diseases drive both graph exploration and model validation (TARGET_PRIORITIZER §9).
 
-**Demo diseases are now chosen by measurement** — see [DEMO_NARRATIVE.md](DEMO_NARRATIVE.md) §6 and
+**Demo diseases are now chosen by measurement** — see [DEMO_NARRATIVE.md](../demo/DEMO_NARRATIVE.md) §6 and
 TARGET_PRIORITIZER §8.7, §8.10. The panel is **non-small cell lung carcinoma** (the MAPK3 discovery
 story), **HER2-positive breast carcinoma** (passes clinical sanity outright: ERBB2 at rank 13, AUC
 0.93 on 599 known targets), **diabetes mellitus** and **obesity disorder**.
@@ -162,7 +162,7 @@ Rebuilt from source and accepted against the frozen reference on a structural cr
 `node_index` is now **deterministic**, which it was not before — every prior rebuild silently
 renumbered all 113k nodes.
 
-→ **[GRAPH_BUILDING.md](GRAPH_BUILDING.md)**
+→ **[GRAPH_BUILDING.md](../graph/GRAPH_BUILDING.md)**
 
 ### 4.2 `DEMO_TARGET_IDENTIFICATION` — modelling, validation, result visualisation
 
@@ -175,7 +175,7 @@ SHAP attributions and on-graph evidence paths.
 ladder, two independent validation metrics cross-checking to 1.9×10⁻⁴, and a documented negative
 result.
 
-→ **[TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md)**
+→ **[TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md)**
 
 ### 4.3 The interface between them
 
@@ -254,8 +254,8 @@ average because nothing averages out.
 
 ## Appendix — decision log
 
-Project-level decisions only. Pipeline decisions are in [GRAPH_BUILDING.md](GRAPH_BUILDING.md);
-modelling decisions in [TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md).
+Project-level decisions only. Pipeline decisions are in [GRAPH_BUILDING.md](../graph/GRAPH_BUILDING.md);
+modelling decisions in [TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md).
 
 | Date | Decision |
 |---|---|

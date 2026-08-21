@@ -65,7 +65,7 @@ awk -F'\t' '$5=="ORPHAN" && $7=="y" && $8=="" && $1!="DECISIONS.md"' .index/clai
 ```
 
 Start with the small client-facing files — `DEMO_NARRATIVE.md`,
-`docs/annotation/BREAST_SURGEON_BRIEFING.md`. Both carried stale numbers into external-audience
+`docs/demo/BREAST_SURGEON_BRIEFING.md`. Both carried stale numbers into external-audience
 documents in the last sweep.
 
 Orphans found this way that mattered: the §8.3 **adopted** discovery row (headline claim, computed ad

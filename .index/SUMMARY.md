@@ -17,93 +17,94 @@ flags them as historical dropped.
 |---|--:|--:|--:|--:|
 | `.claude/skills/target-id/SKILL.md` | 0 | 0 | 6 | 6 |
 | `.claude/skills/target-id/references/number-update.md` | 0 | 1 | 5 | 6 |
+| `CLAUDE.md` | 0 | 1 | 3 | 4 |
 | `DECISIONS.md` | 2 | 48 | 343 | 393 |
-| `DEMO_NARRATIVE.md` | 1 | 14 | 20 | 35 |
-| `DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
-| `DSS_CHEATSHEET.md` | 0 | 1 | 6 | 7 |
-| `GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
-| `PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
-| `RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
-| `TARGET_PRIORITIZER.md` | 46 | 60 | 658 | 764 |
-| `docs/FEATURE_AUDIT.md` | 0 | 15 | 94 | 109 |
-| `docs/PHASE3_PREREGISTRATION.md` | 0 | 10 | 24 | 34 |
-| `docs/annotation/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
+| `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
+| `docs/demo/DEMO_NARRATIVE.md` | 1 | 14 | 20 | 35 |
+| `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
+| `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
+| `docs/platform/DSS_CHEATSHEET.md` | 0 | 1 | 6 | 7 |
+| `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 15 | 94 | 109 |
+| `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 10 | 24 | 34 |
+| `docs/prioritizer/TARGET_PRIORITIZER.md` | 46 | 60 | 658 | 764 |
+| `docs/reference/DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
+| `docs/reference/RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
 | `notebooks/README.md` | 0 | 0 | 2 | 2 |
-| **total** | **49** | **166** | **1392** | **1607** |
+| **total** | **49** | **167** | **1395** | **1611** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**352 rows.** Of 1392 total orphans, these are the model-dependent ones: the numbers that move
+**352 rows.** Of 1395 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
 |---|---|--:|---|
-| `DEMO_NARRATIVE.md:32` | - | 13,126 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
-| `DEMO_NARRATIVE.md:32` | - | 12,364 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
-| `DEMO_NARRATIVE.md:32` | - | 8,615 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
-| `DEMO_NARRATIVE.md:32` | - | 7,877 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
-| `DEMO_NARRATIVE.md:265` | 7 | 66.0 | **66.0%** (ranks 1–10) → **48.0%** (41–50). **That is calibration evidence, not a novelty  |
-| `DEMO_NARRATIVE.md:265` | 7 | 48.0 | **66.0%** (ranks 1–10) → **48.0%** (41–50). **That is calibration evidence, not a novelty  |
-| `DISCOVERY_LANDSCAPE.md:487` | 8 | 0.62 | **Boltz-2** is the one being talked about: claimed Pearson r ≈ 0.62 on the FEP+/OpenFE |
-| `DISCOVERY_LANDSCAPE.md:717` | 9 | 10.1021 | ([JCIM](https://pubs.acs.org/doi/10.1021/acs.jcim.6c00089)) — ranking quality was comparab |
-| `DISCOVERY_LANDSCAPE.md:950` | 11.2 | 13,130 | \| **TDC (Therapeutics Data Commons)** \| S4 S5 \| Benchmark suite: 22 ADMET datasets, 475 |
-| `DISCOVERY_LANDSCAPE.md:1377` | 14 | 0.96 | \| **hERG AUC ~0.96** \| Split-dependent; do not quote without stating the split \| |
-| `PROJECT_CONTEXT.md:106` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
-| `PROJECT_CONTEXT.md:228` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `PROJECT_CONTEXT.md:228` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `PROJECT_CONTEXT.md:229` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `PROJECT_CONTEXT.md:229` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `PROJECT_CONTEXT.md:240` | 4.6 | 129,253 | solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying |
-| `PROJECT_CONTEXT.md:273` | 4.6 | 1,802 | \| 2026-08-17 \| **Discovery adopted as a third reported axis, and it is the strongest res |
-| `RESEARCH_NOTE.md:159` | 5 | 0.92 | ADR prediction from a drug-target-ADR KG (AUC 0.92). Add DepMap + GTEx (per-gene features) |
-| `RESEARCH_NOTE.md:181` | 6 | 10.1186 | \| 10 \| [MultiXrank — *BMC Bioinf* 2024](https://link.springer.com/article/10.1186/s12859 |
-| `TARGET_PRIORITIZER.md:58` | 2 | 0.81 | modules", and proximity to a module predicts association — indication classification at AU |
-| `TARGET_PRIORITIZER.md:143` | 3.3 | 0.110 | predicts ranking quality at all: **Spearman(module size, AUC) = +0.110**, Spearman(positiv |
-| `TARGET_PRIORITIZER.md:211` | 4.1 | 0.641 | \| `dwpc_GPGD` \| pathway + association \| Candidate sits in a **curated pathway** with kn |
-| `TARGET_PRIORITIZER.md:238` | 4.2 | 0.835 | \| `gene_n_diseases` \| **Label-derived** — built from the label relation itself; alone se |
-| `TARGET_PRIORITIZER.md:242` | 4.2 | 0.8207 | \| `prox_closest` \| **Dropped after measurement**, not on suspicion. Removal cost nothing |
-| `TARGET_PRIORITIZER.md:242` | 4.2 | 0.8228 | \| `prox_closest` \| **Dropped after measurement**, not on suspicion. Removal cost nothing |
-| `TARGET_PRIORITIZER.md:242` | 4.2 | 0.6880 | \| `prox_closest` \| **Dropped after measurement**, not on suspicion. Removal cost nothing |
-| `TARGET_PRIORITIZER.md:242` | 4.2 | 0.6836 | \| `prox_closest` \| **Dropped after measurement**, not on suspicion. Removal cost nothing |
-| `TARGET_PRIORITIZER.md:243` | 4.2 | 0.96 | \| `ppi_common_neighbors` \| Redundant — ρ +0.96 with `ppi_jaccard`, +0.93 with `ppi_adami |
-| `TARGET_PRIORITIZER.md:243` | 4.2 | 0.93 | \| `ppi_common_neighbors` \| Redundant — ρ +0.96 with `ppi_jaccard`, +0.93 with `ppi_adami |
-| `TARGET_PRIORITIZER.md:244` | 4.2 | 0.90 | \| `shared_pathway_count` \| Redundant — ρ +0.90 with `gene_n_pathways`; the normalized fo |
-| `TARGET_PRIORITIZER.md:245` | 4.2 | 0.98 | \| `pagerank`, `triangles`, `eigenvector_centrality`, `clustering_coefficient` \| **Collin |
-| `TARGET_PRIORITIZER.md:245` | 4.2 | 0.93 | \| `pagerank`, `triangles`, `eigenvector_centrality`, `clustering_coefficient` \| **Collin |
-| `TARGET_PRIORITIZER.md:246` | 4.2 | 0.5000 | \| `has_inflammatory_go_annotation` \| Built as a priority-1 candidate. **88% null, single |
-| `TARGET_PRIORITIZER.md:252` | 4.2 | 0.43 | > (acceptable): null gaps of −75 pp versus +0.43 pp. |
-| `TARGET_PRIORITIZER.md:282` | 5 | 0.993 | \| 1 \| **Random split** \| AUC 0.993 — a disease's pairs land in both folds, and every fe |
-| `TARGET_PRIORITIZER.md:283` | 5 | 0.989 | \| 2 \| **Missing-data / easy-negative** \| AUC 0.989 even when grouped. No feature separa |
-| `TARGET_PRIORITIZER.md:283` | 5 | 0.685 | \| 2 \| **Missing-data / easy-negative** \| AUC 0.989 even when grouped. No feature separa |
-| `TARGET_PRIORITIZER.md:326` | 5.2.2 | 21,308,566 | *Source: `enriched_graph_features_1` (pre-filter, 21,308,566 rows) scored counterfactually |
-| `TARGET_PRIORITIZER.md:328` | 5.2.2 | 0.90 | The motivating case is §8.10's `TACSTD2`: a curated therapeutic pair at score 0.90 for tri |
-| `TARGET_PRIORITIZER.md:338` | 5.2.2 | 100.0 | \| recall ceiling \| 98.5% → **100.0%** (all 34 pairs) \| |
-| `TARGET_PRIORITIZER.md:351` | 5.2.2 | 0.1426 | probability of admitted pairs is **0.1426 against 0.2738** across the existing pool — **52 |
-| `TARGET_PRIORITIZER.md:351` | 5.2.2 | 0.2738 | probability of admitted pairs is **0.1426 against 0.2738** across the existing pool — **52 |
-| `TARGET_PRIORITIZER.md:359` | 5.2.2 | 1,119 | \| the 23 scoreable unreachable curated pairs \| median rank **1,119**, **0 in the top 50, |
-| `TARGET_PRIORITIZER.md:404` | 5.2.1 | 0.217 | Direct confirmation of the mechanism: GCD-only positives receive mean `proba_1` of **0.217 |
-| `TARGET_PRIORITIZER.md:414` | 5.2.1 | 10.7 | population makes 10.7% of the evaluable diseases go dark on the therapeutic axis. |
-| `TARGET_PRIORITIZER.md:528` | 6.1 | 0.981 | \| `pagerank` \| +0.981 \| |
-| `TARGET_PRIORITIZER.md:541` | 6.1 | 0.8567 | \| **`gene_n_diseases`** \| **0.8567** \| **rejected as label-derived — and it alone beats |
-| `TARGET_PRIORITIZER.md:549` | 6.1 | 0.8567 | > the same hole: **"how many diseases is this gene associated with" scores 0.8567**, above |
-| `TARGET_PRIORITIZER.md:559` | 6.2 | 0.834 | \| Algorithm \| **gradient-boosted trees** \| logistic regression comparator: 0.834 vs 0.8 |
-| `TARGET_PRIORITIZER.md:559` | 6.2 | 0.895 | \| Algorithm \| **gradient-boosted trees** \| logistic regression comparator: 0.834 vs 0.8 |
-| `TARGET_PRIORITIZER.md:559` | 6.2 | 0.06 | \| Algorithm \| **gradient-boosted trees** \| logistic regression comparator: 0.834 vs 0.8 |
-| `TARGET_PRIORITIZER.md:579` | 6.2 | 0.8808 | constant gave the **best pooled AUC in the project (0.8808) and the worst drug-target AUC |
-| `TARGET_PRIORITIZER.md:591` | 6.3 | 27.6 | **552 of 762 known obesity targets are predicted negative**, recall **27.6%**. |
-| `TARGET_PRIORITIZER.md:609` | 6.4 | 0.8197 | \| association — macro AUROC \| 0.8197 \| **0.8200** \| 0.8175 \| |
-| `TARGET_PRIORITIZER.md:609` | 6.4 | 0.8200 | \| association — macro AUROC \| 0.8197 \| **0.8200** \| 0.8175 \| |
-| `TARGET_PRIORITIZER.md:609` | 6.4 | 0.8175 | \| association — macro AUROC \| 0.8197 \| **0.8200** \| 0.8175 \| |
-| `TARGET_PRIORITIZER.md:610` | 6.4 | 0.1737 | \| association — macro AUPRC \| 0.1737 \| **0.1762** \| 0.1711 \| |
-| `TARGET_PRIORITIZER.md:610` | 6.4 | 0.1762 | \| association — macro AUPRC \| 0.1737 \| **0.1762** \| 0.1711 \| |
-| `TARGET_PRIORITIZER.md:610` | 6.4 | 0.1711 | \| association — macro AUPRC \| 0.1737 \| **0.1762** \| 0.1711 \| |
-| `TARGET_PRIORITIZER.md:611` | 6.4 | 0.3161 | \| association — pooled AUPRC \| 0.3161 \| **0.3210** \| 0.3089 \| |
+| `docs/demo/BREAST_SURGEON_BRIEFING.md:97` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
+| `docs/demo/BREAST_SURGEON_BRIEFING.md:106` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
+| `docs/demo/BREAST_SURGEON_BRIEFING.md:108` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
+| `docs/demo/DEMO_NARRATIVE.md:32` | - | 13,126 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
+| `docs/demo/DEMO_NARRATIVE.md:32` | - | 12,364 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
+| `docs/demo/DEMO_NARRATIVE.md:32` | - | 8,615 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
+| `docs/demo/DEMO_NARRATIVE.md:32` | - | 7,877 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
+| `docs/demo/DEMO_NARRATIVE.md:265` | 7 | 66.0 | **66.0%** (ranks 1–10) → **48.0%** (41–50). **That is calibration evidence, not a novelty  |
+| `docs/demo/DEMO_NARRATIVE.md:265` | 7 | 48.0 | **66.0%** (ranks 1–10) → **48.0%** (41–50). **That is calibration evidence, not a novelty  |
+| `docs/overview/PROJECT_CONTEXT.md:106` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
+| `docs/overview/PROJECT_CONTEXT.md:228` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
+| `docs/overview/PROJECT_CONTEXT.md:228` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
+| `docs/overview/PROJECT_CONTEXT.md:229` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
+| `docs/overview/PROJECT_CONTEXT.md:229` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
+| `docs/overview/PROJECT_CONTEXT.md:240` | 4.6 | 129,253 | solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying |
+| `docs/overview/PROJECT_CONTEXT.md:273` | 4.6 | 1,802 | \| 2026-08-17 \| **Discovery adopted as a third reported axis, and it is the strongest res |
+| `docs/prioritizer/FEATURE_AUDIT.md:71` | 3 | 0.646 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
+| `docs/prioritizer/FEATURE_AUDIT.md:71` | 3 | 0.567 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
+| `docs/prioritizer/FEATURE_AUDIT.md:71` | 3 | 0.328 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
+| `docs/prioritizer/FEATURE_AUDIT.md:76` | 3 | 0.857 | \| `gene_n_diseases` \| Cypher \| label-derived; single-feature AUC **0.857**, above the c |
+| `docs/prioritizer/FEATURE_AUDIT.md:77` | 3 | 1.000 | \| `degree`, `pagerank`, `triangles`, `eigenvector_centrality`, `clustering_coefficient` \ |
+| `docs/prioritizer/FEATURE_AUDIT.md:123` | 4 | 4.99 | \| null gap by label \| −4.99 pp \| **−3.94 pp** \| |
+| `docs/prioritizer/FEATURE_AUDIT.md:123` | 4 | 3.94 | \| null gap by label \| −4.99 pp \| **−3.94 pp** \| |
+| `docs/prioritizer/FEATURE_AUDIT.md:127` | 4 | 0.0022 | **63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0 |
+| `docs/prioritizer/FEATURE_AUDIT.md:127` | 4 | 0.0021 | **63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0 |
+| `docs/prioritizer/FEATURE_AUDIT.md:127` | 4 | 1.29 | **63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0 |
+| `docs/prioritizer/FEATURE_AUDIT.md:127` | 4 | 0.8171 | **63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0 |
+| `docs/prioritizer/FEATURE_AUDIT.md:127` | 4 | 0.8323 | **63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0 |
+| `docs/prioritizer/FEATURE_AUDIT.md:129` | 4 | 3.42 | diseases moved significantly (t = 3.42) despite identical features. |
+| `docs/prioritizer/FEATURE_AUDIT.md:139` | 4 | 1,114 | 1,114. A 1.23% slice cannot move a pooled number but can transform those diseases — and ma |
+| `docs/prioritizer/FEATURE_AUDIT.md:139` | 4 | 1.23 | 1,114. A 1.23% slice cannot move a pooled number but can transform those diseases — and ma |
+| `docs/prioritizer/FEATURE_AUDIT.md:153` | 4 | 0.216 | \| **`prox_kernel`** \| **+0.216** \| −0.452 \| 0.6094 \| **chosen for m7** \| |
+| `docs/prioritizer/FEATURE_AUDIT.md:153` | 4 | 0.452 | \| **`prox_kernel`** \| **+0.216** \| −0.452 \| 0.6094 \| **chosen for m7** \| |
+| `docs/prioritizer/FEATURE_AUDIT.md:153` | 4 | 0.6094 | \| **`prox_kernel`** \| **+0.216** \| −0.452 \| 0.6094 \| **chosen for m7** \| |
+| `docs/prioritizer/FEATURE_AUDIT.md:154` | 4 | 0.104 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
+| `docs/prioritizer/FEATURE_AUDIT.md:154` | 4 | 0.534 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
+| `docs/prioritizer/FEATURE_AUDIT.md:154` | 4 | 0.4864 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
+| `docs/prioritizer/FEATURE_AUDIT.md:154` | 4 | 0.982 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
+| `docs/prioritizer/FEATURE_AUDIT.md:165` | 4 | 0.567 | saturates at 74% hop-1 and scores AUC 0.567. If the gain is uniform across module sizes, t |
+| `docs/prioritizer/FEATURE_AUDIT.md:174` | 4 | 0.8197 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
+| `docs/prioritizer/FEATURE_AUDIT.md:174` | 4 | 0.8200 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
+| `docs/prioritizer/FEATURE_AUDIT.md:174` | 4 | 0.8175 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
+| `docs/prioritizer/FEATURE_AUDIT.md:175` | 4 | 0.1737 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
+| `docs/prioritizer/FEATURE_AUDIT.md:175` | 4 | 0.1762 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
+| `docs/prioritizer/FEATURE_AUDIT.md:175` | 4 | 0.1711 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
+| `docs/prioritizer/FEATURE_AUDIT.md:175` | 4 | 0.1749 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
+| `docs/prioritizer/FEATURE_AUDIT.md:175` | 4 | 0.1778 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
+| `docs/prioritizer/FEATURE_AUDIT.md:175` | 4 | 3.18 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
+| `docs/prioritizer/FEATURE_AUDIT.md:176` | 4 | 0.1954 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
+| `docs/prioritizer/FEATURE_AUDIT.md:176` | 4 | 0.1932 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
+| `docs/prioritizer/FEATURE_AUDIT.md:176` | 4 | 0.1915 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
+| `docs/prioritizer/FEATURE_AUDIT.md:176` | 4 | 0.1900 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
+| `docs/prioritizer/FEATURE_AUDIT.md:177` | 4 | 0.6911 | \| therapeutic, all \| 0.6911 \| 0.6949 \| 0.6931 \| 0.6949 \| 0.6886 \| worst of five \| |
+| `docs/prioritizer/FEATURE_AUDIT.md:177` | 4 | 0.6949 | \| therapeutic, all \| 0.6911 \| 0.6949 \| 0.6931 \| 0.6949 \| 0.6886 \| worst of five \| |
+| `docs/prioritizer/FEATURE_AUDIT.md:177` | 4 | 0.6931 | \| therapeutic, all \| 0.6911 \| 0.6949 \| 0.6931 \| 0.6949 \| 0.6886 \| worst of five \| |
+| `docs/prioritizer/FEATURE_AUDIT.md:178` | 4 | 0.7337 | \| therapeutic, route-supported \| 0.7337 \| 0.7371 \| 0.7384 \| 0.7418 \| **0.7471** \| b |
+| `docs/prioritizer/FEATURE_AUDIT.md:178` | 4 | 0.7371 | \| therapeutic, route-supported \| 0.7337 \| 0.7371 \| 0.7384 \| 0.7418 \| **0.7471** \| b |
+| `docs/prioritizer/FEATURE_AUDIT.md:178` | 4 | 0.7384 | \| therapeutic, route-supported \| 0.7337 \| 0.7371 \| 0.7384 \| 0.7418 \| **0.7471** \| b |
+| `docs/prioritizer/FEATURE_AUDIT.md:178` | 4 | 0.7418 | \| therapeutic, route-supported \| 0.7337 \| 0.7371 \| 0.7384 \| 0.7418 \| **0.7471** \| b |
+| `docs/prioritizer/FEATURE_AUDIT.md:179` | 4 | 2.376 | \| tractability dm@200 \| 2.376 \| 2.381 \| 2.380 \| 2.391 \| **2.418** \| **t = +2.56, 0  |
 
 *292 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 
-150 entries, 80206 chars. Query `.index/decisions.tsv` rather than reading the file — it is
+152 entries, 82099 chars. Query `.index/decisions.tsv` rather than reading the file — it is
 the densest file in the repo (~146 tokens per line).
 

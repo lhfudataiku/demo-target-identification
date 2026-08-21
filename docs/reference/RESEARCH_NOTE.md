@@ -1,6 +1,6 @@
 # Research Note — evidence behind the Target Prioritizer's features & model
 
-> **Companion to [TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md).** That doc is the *design*
+> **Companion to [TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md).** That doc is the *design*
 > (what we build). This note is the *evidence*: per-reference summaries with the methodology
 > mapped to each feature and modeling choice — the "why these features" audit trail.
 

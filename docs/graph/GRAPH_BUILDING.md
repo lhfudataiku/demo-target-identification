@@ -3,9 +3,9 @@
 > Technical documentation for the **data pipeline and graph-building webapp**: what goes in, how it
 > is harmonized, the schema it conforms to, and what comes out.
 >
-> Companion documents: **[PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)** (why / who / how the two
-> projects fit) · **[TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md)** (the modelling project that
-> consumes this graph) · **[DSS_CHEATSHEET.md](DSS_CHEATSHEET.md)** (platform behaviours).
+> Companion documents: **[PROJECT_CONTEXT.md](../overview/PROJECT_CONTEXT.md)** (why / who / how the two
+> projects fit) · **[TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md)** (the modelling project that
+> consumes this graph) · **[DSS_CHEATSHEET.md](../platform/DSS_CHEATSHEET.md)** (platform behaviours).
 >
 > **Status: complete.** 113,391 nodes / 2,851,510 edges / 18 relations, rebuilt from source and
 > accepted against the frozen reference (§7). Decisions are logged in the **appendix**.
@@ -392,7 +392,7 @@ which match exactly.
 > **⚠ The in-flow comparison harness does not work.** A recipe cannot read a dataset from another
 > project unless it has been explicitly shared, so the comparison recipe fails on all 58 datasets.
 > Every number above was produced **outside the flow**. Baselines are captured in
-> [reference_baseline.json](reference_baseline.json).
+> [reference_baseline.json](../../reference_baseline.json).
 
 ### 7.3 Versus published PrimeKG
 

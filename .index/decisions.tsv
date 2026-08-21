@@ -59,7 +59,7 @@ date	line	chars	topic
 2026-08-18	73	667	Flow restructured to four validation zones, numerically prefixed
 2026-08-18	74	759	The `m7-drug-label` experiment was DELETED rather than rebuilt
 2026-08-18	75	373	Zone naming rule adopted: a zone is named for the question it answers, not the tool it uses
-2026-08-19	76	356	The demo is an objection ladder, and the flow zones now say so
+2026-08-19	76	366	The demo is an objection ladder, and the flow zones now say so
 2026-08-19	77	603	A pruning plan derived from the dashboard was rejected as circular, and it was dangerous
 2026-08-19	78	763	CORRECTION to §8.4 — the degree-matched claim rested on an estimator mismatch
 2026-08-19	79	376	Snapshot-before-delete adopted as standing practice
@@ -149,3 +149,5 @@ date	line	chars	topic
 2026-08-21	163	825	`CLAUDE.md` added — the project had none, so every standing rule lived only in assistant memory and would not survive a teammate cloning the repo
 2026-06-30	164	619	RWR implemented with `scipy.sparse` + `ThreadPoolExecutor`, not `networkx`
 2026-08-21	165	1034	Deleted 12 files that no longer describe the project, rather than indexing them
+2026-08-21	166	993	`chat_starter.md` was wrong to delete outright — it carried the only BOTH-PARTS overview, and the `CLAUDE.md` I wrote to replace it covered Part 2 onl
+2026-08-21	167	890	Markdown reorganised from scattered root + `docs/` into purpose-based directories

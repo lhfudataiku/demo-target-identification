@@ -1,7 +1,7 @@
 # Appendix snapshots
 
 Frozen results for analyses **removed from the DSS flow** on 2026-08-19. They back specific claims in
-[TARGET_PRIORITIZER.md](../../TARGET_PRIORITIZER.md) but no scientist asks about them in a demo, so
+[TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md) but no scientist asks about them in a demo, so
 they were pruned from the flow and preserved here instead.
 
 **Why these exist at all.** On 2026-08-18 the `drug-label-probe` experiment was deleted from the flow

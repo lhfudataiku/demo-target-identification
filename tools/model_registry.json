@@ -3,7 +3,7 @@
     "Hand-recorded model facts that cannot be derived from DSS. Identity, consumer edges and",
     "DECISIONS.md cross-references are GENERATED into .index/models.tsv -- do not hand-edit that.",
     "",
-    "Metrics are transcribed from docs/FEATURE_AUDIT.md section 4 (m3-m7), TARGET_PRIORITIZER 6.4",
+    "Metrics are transcribed from docs/prioritizer/FEATURE_AUDIT.md section 4 (m3-m7), TARGET_PRIORITIZER 6.4",
     "(the m1-m3 ladder) and DECISIONS.md (m8). A blank means NOT MEASURED or not recoverable --",
     "never a guess. `?` in the rendered table means exactly that.",
     "",

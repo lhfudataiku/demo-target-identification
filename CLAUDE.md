@@ -1,12 +1,41 @@
 # demo-target-identification
 
-Dataiku DSS POC recreating PrimeKG as a knowledge graph for drug-discovery target identification,
-plus an **Explainable Target Prioritizer** (Visual ML + SHAP) that ranks candidate genes per disease.
-DSS instance: `design.solutions.dataiku-dss.io`, project `DEMO_TARGET_IDENTIFICATION`.
+A two-part Dataiku DSS proof-of-concept for drug-discovery **target identification**.
+
+- **Part 1 — the graph.** A PrimeKG-like biomedical knowledge graph built from source, rendered with
+  the Visual Graph plugin. → `docs/graph/GRAPH_BUILDING.md`
+- **Part 2 — the prioritizer.** An explainable model ranking candidate target genes per disease, with
+  SHAP attributions and on-graph evidence paths. → `docs/prioritizer/TARGET_PRIORITIZER.md`
+
+`docs/README.md` maps the whole document set; `docs/overview/PROJECT_CONTEXT.md` explains how the two
+parts fit together, including the shared-object contract.
+
+## Three DSS projects
+
+All on `design.solutions.dataiku-dss.io` (DSS 14.7), code env `primekg_kg` (py3.11).
+Set `export DKU_PROJECT=…` per project.
+
+| project | role |
+|---|---|
+| `DEMO_KG_LS` | Part 1 — sources, graph build, graph webapp |
+| `DEMO_TARGET_IDENTIFICATION` | Part 2 — features, modelling, validation, serving |
+| `KNOWLEDGE_GRAPH_PRIMEKG` | **frozen reference.** Do not modify or rebuild |
+
+Part 2 reads the graph through **13 shared objects** in its `00 Imported from DEMO_KG_LS (synced)`
+zone — 12 datasets as synced copies, the Kuzu folder read directly.
+
+## Status
+
+**Part 1 complete.** 113,391 nodes / 2,851,510 edges / 18 relations, accepted against the frozen
+reference. `node_index` is deterministic (a visual Window recipe over an explicit sort) and **1-based
+here, 0-based in the reference**.
+
+**Part 2 built and validated.** Champion `m7-f14` (`hJLGoYn4`), macro per-disease AUC 0.8230 over 670
+diseases. Query `.index/models.tsv` rather than trusting this line.
 
 ## Start here — do not read the large docs to answer a question
 
-The markdown is well over 140k tokens and growing (`TARGET_PRIORITIZER.md` alone is ~38k).
+The markdown is well over 140k tokens (`TARGET_PRIORITIZER.md` alone is ~38k).
 **Invoke the `target-id` skill first** — it holds the query recipes and the accumulated traps in
 ~1.5k tokens.
 
@@ -14,44 +43,47 @@ Most factual questions are one grep over `.index/`:
 
 | | |
 |---|---|
-| `.index/models.tsv` | m1–m8: role, metrics, verdict, consumer recipes, `DECISIONS.md` refs |
-| `.index/decisions.tsv` | jump table over `DECISIONS.md` — the densest file here |
-| `.index/recipes.tsv` | 97 recipes; which 10 carry a seed gate; Class 1 / Class 2 |
-| `.index/features.tsv` | feature → producing recipe → gate → class → in-champion |
-| `.index/claims.tsv` | every documented number, and whether a notebook guards it |
+| `models.tsv` | m1–m8: role, metrics, verdict, consumer recipes, `DECISIONS.md` refs |
+| `decisions.tsv` | jump table over `DECISIONS.md` — the densest file here |
+| `recipes.tsv` | 97 recipes; which 10 carry a seed gate; Class 1 / Class 2 |
+| `features.tsv` | feature → producing recipe → gate → class → in-champion |
+| `claims.tsv` | every documented number, and whether a notebook guards it |
+| `code.tsv` | every tracked script: live, mirror, or orphaned |
 
-`./tools/check_indexes.sh` verifies them (good as a pre-commit hook). Rebuild with
-`tools/build_index.py` and `tools/build_recipe_index.py` after editing docs or recipes; add
-`--refresh` only when a recipe changed in the DSS UI (~3 min).
+`./tools/check_indexes.sh` and `tools/check_links.py` verify them — both good as pre-commit hooks.
+Rebuild with `tools/build_index.py` and `tools/build_recipe_index.py`; add `--refresh` only when a
+recipe changed in the DSS UI (~3 min).
 
 ## Rules
 
 - **Never `git commit` or `push` without asking.** Make the change, summarise, then ask.
-- **`compute_kg` is never touched or recomputed** unless explicitly asked.
+- **NEVER use a recursive build type in `KNOWLEDGE_GRAPH_PRIMEKG`.** It walks up into the graph zone
+  and renumbers every node. This hazard is *why* the projects were split.
+- **`compute_kg` / the graph is never recomputed** unless explicitly asked.
 - **`DECISIONS.md` is append-only.** Corrections are new entries, never edits to old ones.
-- **New datasets use the S3 connection.**
-- **Joins go in visual Join recipes**, not pandas `.merge()`.
+- **New datasets use the S3 connection** (`dataiku-managed-storage`, parquet).
+- **Joins go in visual Join recipes**, not pandas `.merge()`. Python extracts only load and parse.
 - **`data/` is gitignored** — large and licence-restricted (UMLS). Never commit it.
 - Build many datasets in **one job with repeated `--target`** and `RECURSIVE_BUILD`. To rebuild a
-  zone, build from its *last* dataset with update-output-schemas and stop-at-zone-boundary so
-  intermediates stay virtual.
+  zone, build from its *last* dataset with update-output-schemas and stop-at-zone-boundary.
 - Folder error *"Python process is running remotely, direct access to folder is not possible"* →
-  switch that recipe to the **DSS engine**. Do not rewrite it, and do not try to sync the folder.
+  switch that recipe to the **DSS engine**. Do not rewrite it, and do not sync the folder.
+- **The docs can lag the flow, and `dss_recipes/` can lag DSS.** Confirm live state with `dku`.
 
-## Layout
+## Two measurement rules that reverse conclusions
 
-- `TARGET_PRIORITIZER.md` — methodology, the reference document. Read one section, never the file.
-- `DEMO_NARRATIVE.md` — the demo, as a six-question objection ladder. Client-facing.
-- `DECISIONS.md` — append-only log, including refuted hypotheses and corrections.
-- `docs/` — feature audit, Phase 3 pre-registration, clinician briefing, frozen appendix snapshots.
-- `notebooks/` — assertion notebooks. **They are the source of truth for every documented number**;
-  a doc figure with no assertion is an orphan and will drift.
-- `dss_recipes/` — mirrored recipe source, including `cypher/` (mirrored 2026-08-21; those gates were
-  previously un-versioned).
-- `tools/` — index generators plus the hand-recorded `recipe_classes.json` / `model_registry.json`.
+- **Report macro per-disease AUC, never pooled** — pooled overstates by ~7 points.
+- **A benchmark a lookup table wins is measuring the lookup.** Drug-target AUC is dominated by gene
+  popularity: a no-graph lookup scores 0.9354, beating a drug-trained model. Report it as a warning
+  flag; never optimise against it.
 
-## Working style that this project has earned
+More of these — druggability inverted under the association label, safety proxies pointing *with*
+efficacy, the three-clause candidate filter — are in `docs/prioritizer/TARGET_PRIORITIZER.md` §10 and
+in the `target-id` skill. Platform behaviours are in `docs/platform/DSS_CHEATSHEET.md` §1.
+
+## Working style this project has earned
 
 Report **ties before means** — m3–m6 are near-identical rankers, and every aggregate difference here
 has traced back to 9–15 high-leverage diseases. Prefer a stratified paired test to a macro average.
-When a headline number is about to go in front of someone, re-derive it rather than trusting the doc.
+`notebooks/` is the source of truth for every documented number: a figure with no assertion is an
+orphan and will drift. When a headline number is about to go in front of someone, re-derive it.

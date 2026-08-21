@@ -33,7 +33,7 @@ annotation. Nothing is pre-cut: the scientist filters.
 Landing on GHSR (#8), ADRB2 (#17), MCHR1 (#23) — a coherent neuroendocrine cluster, two of them
 clinically pursued for obesity.
 
-**Method, and every number's source: [TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md)** — all 38 of its
+**Method, and every number's source: [TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md)** — all 38 of its
 subsections name the dataset they come from and the notebook that re-derives them. 44 of 44 assertions
 passed on 2026-08-19, so anything quoted here is verified, not remembered.
 
@@ -244,7 +244,7 @@ Chosen by measurement, not familiarity — TARGET_PRIORITIZER §8.7 and §8.10.
 **Triple-negative breast is the deliberate hard case, not a fifth showcase.** Its list is the only
 genuinely subtype-specific one in the breast panel and the only one we cannot score (8 known
 associations). Use it for Q6 — *"here are four things we already think are wrong with this list"* —
-never as a success story. See [BREAST_SURGEON_BRIEFING.md](docs/annotation/BREAST_SURGEON_BRIEFING.md).
+never as a success story. See [BREAST_SURGEON_BRIEFING.md](BREAST_SURGEON_BRIEFING.md).
 
 **Retire:** type 2 diabetes (weakest on every axis, and its parent term is the strongest), chronic
 kidney disease (below chance on discovery), and two of the three lung terms (~63% shared lists).
