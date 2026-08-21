@@ -772,7 +772,8 @@ worth more than arguing about how to impute it.**
 > features, but it also moves the training population, which is why it is the one change that cannot be
 > made in place. Sequence agreed: size the admitted population first, then run a train-narrow /
 > score-wide probe with `m7` against a gene-popularity baseline, and only branch the project if the
-> probe clears it.
+> probe clears it. **Pre-registered in
+> [docs/PHASE3_PREREGISTRATION.md](docs/PHASE3_PREREGISTRATION.md)** before the branch exists.
 
 #### The full sequence — `m7-f14` adopted, `m8` rejected
 

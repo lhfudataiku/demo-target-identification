@@ -204,3 +204,82 @@ three adoptions cost that three times.
 - **State a falsifiable prediction before running.** It has produced the useful outcome repeatedly —
   including three times when the prediction was wrong.
 - **Report the affected subpopulation separately** from the aggregate.
+
+---
+
+## 5. Phase 3 sizing — what lowering the POOL-ROUTE gate would admit
+
+*Source: `graph_edges` (`disease_protein`, `protein_protein`) and `graph_nodes`, measured 2026-08-21.
+The gate is in the Cypher of `compute_enriched_dwpc_GGD` / `_GPGD` / `_GCD`:
+`WHERE module_size >= 20` on distinct `disease_protein` seeds.*
+
+**This is the number that was owed before any Phase 3 work.** `enriched_module_size_1` cannot answer it
+— that dataset is itself gated, so its minimum *is* 20.
+
+| module size | diseases | status |
+|---|--:|---|
+| 1 seed | 3,334 | correctly excluded — nothing to propagate from |
+| 2–4 | 1,617 | correctly excluded |
+| **5–9** | **547** | **the gap** — thin but usable |
+| **10–19** | **384** | **the gap** — solidly evaluable |
+| 20–49 | 454 | currently eligible |
+| ≥50 | 703 | currently eligible |
+
+**Lowering the gate 20 → 5 takes eligible diseases from 1,157 to 2,088 — a +80% increase — and
+*none* of the 931 admitted diseases is in the scored population today.** They are absent, not degraded:
+with all three pool routes gated off they never enter the candidate pool at all.
+
+**The cost is far smaller than the gain**, because a small module reaches far fewer candidate genes:
+
+| | diseases | GGD candidate rows | mean per disease |
+|---|--:|--:|--:|
+| currently eligible (≥20) | 1,157 | ~3.42M *(sampled n=120)* | 2,960 |
+| **the 5–19 gap** | **931** | **424,523** | **456** |
+
+**+80% more diseases for ~+12% more pool rows.** The sampled estimate implies 3,424,604 rows for the
+current gate against the 3,380,853 actually in `enriched_dwpc_GGD` — a 1.3% error, which is what
+validates the method.
+
+> **⚠ CORRECTED before use.** This section first claimed the admitted rows were *denser* in positives
+> — 2.10% against the pool's 1.89%. **That compared the gap's GGD-route-only row count against the
+> full pool's rate: two different denominators.** It is the same estimator mismatch §8.4 had to correct.
+> Measured like-for-like on the GGD route, the conclusion reverses.
+
+**The admitted rows are substantially more dilute, and this is the finding that should temper the
++80%:**
+
+| GGD route, like-for-like | diseases | rows | positives | rate |
+|---|--:|--:|--:|--:|
+| currently eligible (≥20) | 120 *(sample)* | 355,188 | 11,336 | **3.19%** |
+| **the 5–19 gap** | 931 | 424,523 | 3,067 | **0.72%** |
+
+**The gap is 0.23× as dense — 4.4× more dilute.** Worse, **only 3,067 of the gap's 8,919 seeds are
+GGD-reachable at all (34%)**: in a nine-gene module most seeds have no PPI edge to *another* seed, so
+they never enter the route. That leaves roughly **3.3 usable positives per admitted disease**, and a
+per-disease AUC on three positives is very noisy.
+
+*Measured on the GGD route only. `dwpc_GPGD` is pathway-mediated and does not require a direct
+seed–seed PPI edge, so it should reach more of these positives — **not measured**, and worth measuring
+before the branch, because it is the main thing that could lift the 34%.*
+
+> **⚠ CORRECTION to the rollout sequence.** The plan recorded earlier was "size the population, then run
+> a cheap train-narrow / score-wide probe with `m7`, and branch the project only if the probe clears".
+> **The probe cannot run before the branch.** The 931 diseases have *no pool-route features at all*, so
+> there is nothing for `m7` to score until the gate is lowered and those features are computed — and
+> lowering it rewrites the pool. The only branch-free alternative is to score them on the five
+> gene-level features, which have ~0% cross-disease variation, so the model would rank purely on gene
+> prominence — that *is* the popularity baseline, making the comparison degenerate.
+>
+> **Revised sequence: duplicate the project first**, lower the gate there, compute features, then score
+> with the *existing* `m7` (no retraining) and compare against gene popularity. Retrain only if that
+> clears. The duplication is now the first step, not the last.
+
+**The pre-registration is written: [PHASE3_PREREGISTRATION.md](PHASE3_PREREGISTRATION.md)** — recipe
+inventory split by whether widening changes existing values, pre-flight gates, seven falsifiable
+predictions, and the committed adopt/reject rule.
+
+**Headwind to state in the pre-registration.** `m7` made the <20-seed bucket *worse* (−0.0117, n = 22,
+not significant) while helping every larger bucket — and the 931 diseases this change admits are all in
+or near that regime. The pre-registered prediction should say so, and the decision rule stays the one
+that rejected `m8`: an association gain must be corroborated on the degree-matched tractability axis.
+
