@@ -45,10 +45,11 @@ the row**, and every delta is functional-annotation drift traced to the *referen
 byte-identical builds) — it used to be positional and renumbered the whole graph on every rebuild.
 Note it is **1-based** here and **0-based** in the reference.
 
-**Part 2 — the prioritizer. Built and validated on the rebuilt graph.** Champion **`m3-f12`** (12
-features): macro per-disease AUC **0.8197** over 670 diseases, per-split-key 0.8007, pooled 0.8915,
-per-family 0.7976, drug-target 0.6911. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12`.
-The `m7-drug-label` negative result (§7.5) was **deleted from the flow on 2026-08-18** — do not read
+**Part 2 — the prioritizer. Built and validated on the rebuilt graph.** Champion **`m7-f14`** (14
+features): macro per-disease AUC **0.8230** over 670 diseases, per-split-key 0.8046, pooled 0.8932,
+per-family 0.8009, drug-target 0.6886. Ladder: `m1-f7` 0.7593 → `m2-f10` 0.7882 → `m3-f12` 0.8197
+→ `m7-f14`.
+The `drug-label-probe` negative result (§7.5) was **deleted from the flow on 2026-08-18** — do not read
 its 0.9324 drug-target AUC as a win, and note those numbers now exist **only in the documentation**.
 The point it proves: a gene-popularity lookup table scores **0.9354** on that benchmark, beating the
 trained model.

@@ -86,13 +86,28 @@ if TEST_DISEASES is not None:
 
 
 def closest_distances(module_positions):
-    """Return min distance to another module gene, up to MAX_HOPS.
+    """Return FOUR proximity statistics per gene, all capped at MAX_HOPS.
 
-    A chunked multi-source Dijkstra call avoids Cypher's all-path
-    materialization. Setting each source's own distance to infinity reproduces
-    the original `g.node_index <> m.node_index` condition.
+    PHASE 2 (2026-08-20): the minimum alone saturates. Measured, 73.9% of pairs sit at hop 1 once a
+    module exceeds 300 genes, and single-feature AUC falls from 0.646 (modules of 20-30) to 0.567
+    (>300), Spearman -0.328 against module size. The minimum is the most saturating of the proximity
+    family (Guney et al. 2016 define several); a graded statistic keeps resolving where it floors out.
+
+      prox_closest   min distance                      -- unchanged, the existing feature
+      prox_mean      mean distance over REACHED seeds  -- Guney's d_shortest
+      prox_kernel    sum of exp(-d) over reached seeds -- weights near seeds, never saturates
+      prox_n_reach   count of module genes within MAX_HOPS
+
+    prox_kernel is the one expected to fix the dense regime: two genes both touching the module at
+    distance 1 are identical under the minimum, but distinguishable by HOW MUCH of the module is near.
+
+    Each source's own distance is set to infinity, reproducing `g.node_index <> m.node_index`.
     """
-    nearest = np.full(len(protein_ids), np.inf, dtype=np.float64)
+    n = len(protein_ids)
+    nearest = np.full(n, np.inf, dtype=np.float64)
+    dsum = np.zeros(n, dtype=np.float64)
+    dcount = np.zeros(n, dtype=np.float64)
+    kernel = np.zeros(n, dtype=np.float64)
     for source_chunk in np.array_split(
         module_positions,
         max(1, int(np.ceil(len(module_positions) / SOURCE_CHUNK_SIZE))),
@@ -108,13 +123,20 @@ def closest_distances(module_positions):
             distances = distances[np.newaxis, :]
         distances[np.arange(len(source_chunk)), source_chunk] = np.inf
         nearest = np.minimum(nearest, distances.min(axis=0))
-    return nearest
+        finite = np.isfinite(distances)
+        dsum += np.where(finite, distances, 0.0).sum(axis=0)
+        dcount += finite.sum(axis=0)
+        kernel += np.where(finite, np.exp(-distances, where=finite,
+                                          out=np.zeros_like(distances)), 0.0).sum(axis=0)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        mean_d = np.where(dcount > 0, dsum / np.maximum(dcount, 1), np.inf)
+    return nearest, mean_d, kernel, dcount
 
 
 result_frames = []
 for disease, module_genes in eligible_modules:
     module_positions = protein_position.loc[module_genes].to_numpy()
-    distances = closest_distances(module_positions)
+    distances, mean_d, kernel, n_reach = closest_distances(module_positions)
     reachable = np.flatnonzero(np.isfinite(distances))
     result_frames.append(
         pd.DataFrame(
@@ -122,12 +144,16 @@ for disease, module_genes in eligible_modules:
                 "gene_index": protein_ids[reachable],
                 "disease_index": disease,
                 "prox_closest": distances[reachable].astype(np.int64),
+                "prox_mean": mean_d[reachable],
+                "prox_kernel": kernel[reachable],
+                "prox_n_reach": n_reach[reachable].astype(np.int64),
             }
         )
     )
 
 out = pd.concat(result_frames, ignore_index=True) if result_frames else pd.DataFrame(
-    columns=["gene_index", "disease_index", "prox_closest"]
+    columns=["gene_index", "disease_index", "prox_closest",
+             "prox_mean", "prox_kernel", "prox_n_reach"]
 )
 # Dataset enriched_prox_closest_bfs_test renamed to enriched_prox_closest by liheng.fu@dataiku.com on 2026-08-13 13:30:42
 print("prox rows:", out.shape, "| diseases:", out.disease_index.nunique())

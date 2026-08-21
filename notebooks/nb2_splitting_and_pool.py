@@ -30,7 +30,7 @@ check("5.2.1 GCD-only pct of pool",0.153,round(100*len(gcd_only)/len(pk),3),tol=
 
 # ==== 5.2.1  the selection bias, from its own recipe output ====
 sb=dataiku.Dataset("pool_selection_bias").get_dataframe()
-for lab,docA,docS in [("approved join",0.6911,0.7337),("curated known_drug >=0.8",0.6852,0.7195)]:
+for lab,docA,docS in [("approved join",0.6886,0.7471),("curated known_drug >=0.8",0.6833,0.7335)]:
     r=sb[sb.label==lab]
     if not len(r): print(f"MISS|{lab}"); continue
     a=r.auc_all.mean(); s=r.auc_supported_only.mean()

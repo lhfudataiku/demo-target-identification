@@ -8,9 +8,9 @@
 > **[RESEARCH_NOTE.md](RESEARCH_NOTE.md)** (per-reference evidence base) ·
 > **[DSS_CHEATSHEET.md](DSS_CHEATSHEET.md)** (platform behaviours).
 >
-> **Status: built and validated on the rebuilt graph (2026-08-17).** Champion **`m3-f12`** (12
-> features): macro per-disease AUC **0.8197** over 670 diseases, per-split-key 0.8007, pooled
-> 0.8915, per-family 0.7976, drug-target 0.6911.
+> **Status: built and validated on the rebuilt graph; champion refreshed 2026-08-21.** Champion
+> **`m7-f14`** (14 features): macro per-disease AUC **0.8230** over 670 diseases, per-split-key
+> 0.8046, pooled 0.8932, per-family 0.8009, drug-target 0.6886.
 >
 > **The migration is complete and the reconstruction is confirmed.** Every metric landed within
 > **±0.01** of the frozen reference — inside the ±0.02 tolerance set in advance — and the ablation
@@ -148,7 +148,7 @@ predicts ranking quality at all: **Spearman(module size, AUC) = +0.110**, Spearm
 *"specificity is better"*.
 
 **§8.10 supplies the strong instance.** In the breast family the generic `breast cancer` term scores
-**0.6929** — the worst of twelve — while `HER2 positive breast carcinoma` reaches **0.9338** and every
+**0.7072** — the worst of twelve — while `HER2 positive breast carcinoma` reaches **0.9365** and every
 subtype beats the parent. So the parent-term intuition can fail badly in a specific family even though
 the population effect is mild.
 
@@ -397,12 +397,12 @@ limitation:**
 
 | Drug-target AUC (approved join) | value |
 |---|--:|
-| all positives *(the documented number)* | 0.6911 |
-| positives the model has route features for | **0.7337** *(+0.0426)* |
-| on the 69 affected diseases only | 0.6210 → **0.6929** *(+0.0719)* |
+| all positives *(the documented number)* | 0.6886 |
+| positives the model has route features for | **0.7471** *(+0.0585)* |
+| on the 69 affected diseases only | 0.6041 → **0.7060** *(+0.1019)* |
 
-Direct confirmation of the mechanism: GCD-only positives receive mean `proba_1` of **0.265** against
-**0.540** for route-supported positives — half the score, because half their route features are absent.
+Direct confirmation of the mechanism: GCD-only positives receive mean `proba_1` of **0.217** against
+**0.543** for route-supported positives (344 GCD-only against 1,194 route-supported) — half the score, because half their route features are absent.
 
 **So the pool restriction trades one bias for another.** It was adopted to kill the missing-data leak
 (leak 2); it introduced outcome-dependent selection on the drug axis.
@@ -419,13 +419,13 @@ lost, no re-fit, and the stratification is itself informative:
 
 | Drug-target AUC, approved join | value | what it answers |
 |---|--:|---|
-| all positives | 0.6911 | how the model ranks approved targets among everything in its population |
-| route-supported positives only | **0.7337** | how it ranks the approved targets it can actually see |
+| all positives | 0.6886 | how the model ranks approved targets among everything in its population |
+| route-supported positives only | **0.7471** | how it ranks the approved targets it can actually see |
 
 That pair dominates dropping the route, which would have bought the same number at the price of 22
 diseases.
 
-> **The reported 0.6911 is not wrong, but it answers a worse question than 0.7337 does.** Report both:
+> **The reported 0.6886 is not wrong, but it answers a worse question than 0.7471 does.** Report both:
 > one is "how the model ranks approved targets among everything in its population", the other is "how
 > it ranks the approved targets it can actually see".
 
@@ -538,7 +538,7 @@ Within-disease single-feature macro AUC:
 
 | feature | AUC | |
 |---|--:|---|
-| **`gene_n_diseases`** | **0.8567** | **rejected as label-derived — and it alone beats the 12-feature champion's 0.8197** |
+| **`gene_n_diseases`** | **0.8567** | **rejected as label-derived — and it alone beats the 14-feature champion's 0.8230** |
 | `dwpc_GPGD` | 0.7182 | previously recorded 0.641 |
 | `dwpc_GGD` | 0.6694 | previously recorded 0.601 |
 | `gene_ppi_degree` | 0.5608 | |
@@ -595,7 +595,7 @@ The F1-optimised threshold lands at **0.860** against a ~1.9% base rate (F1 = 0.
 
 ### 6.4 Model selection — four axes, and why AUROC alone would have chosen wrong
 
-*Source: `scored_m3` / `scored_m4` / `scored_m5` for the f12/f13 rows · `docs/appendix/model_comparison.csv` for `m1`/`m2` (that flow artifact was deleted 2026-08-19 and is not re-derivable without re-scoring 7.9M rows) · notebook comparison in `nb3`.*
+*Source: `scored_m3` / `scored_m4` / `scored_m5` for the f12/f13 rows · `docs/appendix/model_comparison.csv` for `m1`/`m2` (that flow artifact was deleted 2026-08-19 and is not re-derivable without re-scoring 7.9M rows) · `docs/FEATURE_AUDIT.md` §4 and the paired tests logged in `DECISIONS.md` 2026-08-20/21 for `m6`–`m8` · champion metrics re-measured in `nb3`/`nb3b`/`nb4` on 2026-08-21.*
 
 #### The `prox_closest` question, settled on four axes
 
@@ -635,10 +635,16 @@ discovery; `m4` beats `m5` by **+3.6% / +2.4% / +0.04%** on tractability, conver
 K=200 — and §8.4 says the deep-list number is the one to quote. The association cost is −2.9% macro
 AUPRC, on the metric §7.4 proved does not predict therapeutic relevance.
 
-> **Recommendation: `m5`.** It pays a modest, well-characterised price on axes that measure
+> **Recommendation at the time: `m5`.** It pays a modest, well-characterised price on axes that measure
 > re-identification, to buy the largest single movement anywhere in this table on the axis that measures
 > discovery — which is what the deliverable claims to do. **This is a product decision, not an
 > optimisation; §7.4 is the reason it cannot be settled by picking the biggest number.**
+>
+> **⚠ SUPERSEDED 2026-08-21 — `m5` was never adopted.** Its discovery lead did not survive a paired
+> test: `m5` and `m6` are the same ranker for ~90% of diseases, and the lift gap above rests on 9–15
+> high-leverage diseases (**115 of 122 exact ties at K=10**). The champion is now **`m7-f14`** — see
+> *The full sequence* below. The reasoning here is kept because the four-axis framing is what stopped
+> `m5` being rejected on macro AUROC alone, and that framing is still the right one.
 
 **`m5` loses 2.9% of association AUPRC and gains 14–28% of discovery lift at every K.** Since §8.3's
 discovery measure *is* the deliverable's central claim and §7.4 proved association AUC does not predict
@@ -742,14 +748,108 @@ worth more than arguing about how to impute it.**
 > GO metapaths → **5**; `rwr_score` → **10** (or lower `KFOLD`). The GO-metapath change is the highest
 > value of the three because it improves the **current champion**, not a candidate.
 >
-> ⚠ **One thing to check before changing `compute_dwpc_go_metapaths`:** whether its `gene → GO → gene →
-> disease` walk excludes the *self* path (`m == g`). If it does not, a positive gene reaches its own
-> disease trivially and the feature is partly a label indicator — which would matter far more than the
-> threshold. Unverified.
+> ✅ **CHECKED 2026-08-20 — no leak, and that recipe is the most careful of the set**
+> (`docs/FEATURE_AUDIT.md`). `compute_dwpc_go_metapaths` removes the `m == g` self-path *analytically*
+> and uses a leave-one-out module size (`mod_D_loo = mod_raw − [g in module]`). The same check across
+> every feature recipe came back clean: `dwpc_GGD`, `dwpc_GPGD` and `guilt_by_association` all carry
+> both guards, `shared_pathway_count` normalises by the gene's own pathway count so LOO does not apply,
+> and `dwpc_GCD` routes through a compound so self-inclusion is impossible.
 >
 > **This also sharpens the `d_shortest` case for `m6`:** min-distance is *already good* for sparse
 > diseases and saturates for dense ones — which are the majority of pool rows. A mean or kernel distance
 > does not saturate at 300 seeds, so it would fix precisely the regime min-distance cannot.
+>
+> **Status of the three changes, 2026-08-21:**
+>
+> | change | state |
+> |---|---|
+> | `prox_closest` → 5 | ✅ **done** (`m6`), capped to the pool so the population did not move |
+> | graded distance instead of the minimum | ✅ **done** (`m7`, `prox_kernel`) — and the saturation mechanism predicted here was **refuted**, Spearman −0.003 |
+> | GO metapaths → 5 · `rwr_score` → 10 | ⏳ **not started** — these gate the **pool routes**, so lowering them changes the candidate population and every number in this document stops being comparable. To be tested in a duplicated project, not in place |
+>
+> ⚠ **The claim above that the GO-metapath change is "highest value because it improves the current
+> champion" was written before that consequence was understood.** It does improve the champion's
+> features, but it also moves the training population, which is why it is the one change that cannot be
+> made in place. Sequence agreed: size the admitted population first, then run a train-narrow /
+> score-wide probe with `m7` against a gene-popularity baseline, and only branch the project if the
+> probe clears it.
+
+#### The full sequence — `m7-f14` adopted, `m8` rejected
+
+The `m4`/`m5` comparison settled one feature's *imputation*. Three further models settled the seed
+threshold and the feature *family*, and the champion changed. **All five models on eight axes:**
+
+| axis | `m3-f12` | `m4` | `m5` | `m6` | **`m7-f14`** | paired `m6` → `m7` |
+|---|--:|--:|--:|--:|--:|---|
+| association — macro AUROC | 0.8197 | 0.8200 | 0.8175 | 0.8197 | **0.8230** | **t = +3.29, 0 ties** |
+| association — macro AUPRC | 0.1737 | 0.1762 | 0.1711 | 0.1749 | **0.1778** | **t = +3.18** |
+| hub-bias spread *(lower better)* | 0.1954 | 0.1932 | 0.1915 | **0.1900** | 0.1935 | worse than `m6` |
+| therapeutic — all positives | 0.6911 | 0.6949 | 0.6931 | 0.6949 | 0.6886 | worst of five |
+| therapeutic — route-supported (§5.2.1) | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best of five |
+| tractability — dm lift@200 | 2.376 | 2.381 | 2.380 | 2.391 | **2.418** | **t = +2.56, 0 ties** |
+| discovery — lift@50 | 7.46 | 7.09 | 9.08 | 7.43 | **9.43** | t = +1.47, **90% ties — n.s.** |
+| discovery — lift@200 | 4.53 | 4.83 | **5.52** | 4.78 | 5.04 | t = +0.70, **78% ties — n.s.** |
+
+**`m6` refuted its own pre-registered prediction — and that is why it earned its place.** Lowering
+`MIN_SEEDS` 20→5 on `prox_closest`, capped to the pool so the population could not move, filled NULLs
+for **42 of 43** affected diseases. Predicted: those diseases improve markedly. **Measured: 64% improved
+against 63% of the 646 controls, t = 1.29 — nothing.** The apparent +0.0152 macro gain was a mean
+dragged by outliers (Raynaud +0.137 against rheumatic heart disease −0.114). What `m6` *did* produce was
+a global gain by an unpredicted mechanism: the 646 diseases whose features are **byte-identical** between
+`m5` and `m6` improved significantly (**t = 3.42**), so the benefit came from a better *training set*,
+not from those diseases being scored better. **Only the stratified paired test separated those two
+readings** — the macro number alone read as a clean 9×-over-control win.
+
+**`m3` through `m6` are the same ranker for roughly 90% of diseases.** Discovery lift@10 shows **115 of
+122 exact ties** between `m5` and `m6`, every median exactly 0.000; every aggregate difference in the
+table above rests on 9–15 high-leverage diseases. **`m7` is the break in that pattern.** `prox_kernel`
+is continuous, so unlike every earlier change it perturbs the whole population: **zero exact ties over
+668 diseases, 414 better / 254 worse, median +0.0023.** The tie count is the finding, not the mean.
+
+##### `m8` scored better on the headline metric and was rejected
+
+`m8-f14-pm` swaps `prox_kernel` for `prox_mean` — same feature family, different aggregation. The trade
+was pre-registered from the degree correlations in §4.1 and then confirmed:
+
+| paired `m7` → `m8`, 668 diseases | result |
+|---|---|
+| association — macro **AUPRC** | 0.1778 → **0.1816, t = +3.42 (significant)** |
+| association — macro AUROC | 0.8230 → 0.8225, **t = −0.42 (no difference)** |
+| **tractability — dm lift** | @10 t = −1.26 · @50 t = +0.01 · @200 median −0.035, t = −1.34 |
+| hub-bias spread | 0.1935 → **0.1968** (third consecutive worsening: 0.1900 → 0.1935 → 0.1968) |
+| discovery | non-finding either way, 79–93% ties |
+
+**The decisive reading: `m8` buys AUPRC without buying tractability.** If `prox_mean` were finding
+genuinely better targets, the uninflated, degree-matched axis should move *with* the association metric.
+It does not. AUPRC up, tractability flat-to-declining, hub bias worse — and the responsible feature is
+the one measured at ρ = **−0.697** with `gene_ppi_degree`, against `prox_kernel`'s **+0.216** (§4.1).
+**That is the signature of exploiting label bias rather than improving target-finding, which is exactly
+what §8.4's degree-matched null exists to detect.** §3.1 already established the label is itself
+study-biased toward hubs, so a feature that discriminates *because* it tracks degree is the thing this
+project has repeatedly decided not to want.
+
+> **Adopted: `m7-f14` (saved model `hJLGoYn4`).** Two significant gains, each with **zero ties** — on
+> association *and* on tractability, the axis §8.4 calls the most robust positive claim in this
+> document. `m8` offers one significant gain, on the metric §7.4 proved does not predict therapeutic
+> relevance, paid for in hub fairness and tractability.
+>
+> **The decision rule this establishes: an association gain must be corroborated on the degree-matched
+> axis, or it is not adopted.** `m8` is the case that rule was written for, and it is the most
+> defensible thing in this section — a model was rejected for scoring better.
+>
+> **`m7`'s costs are logged, not hidden.** Hub spread worsens against `m6` (0.1900 → 0.1935), though it
+> still improves on the `m3-f12` it replaced (0.1954); §7.2's refutation stands regardless, since both
+> are far worse than the retired 13-feature generation's 0.1099. Therapeutic-on-all-positives is the
+> **worst of the five** (0.6886) while route-supported is the **best** (0.7471) — the largest gap in the
+> sequence (**0.0585**), which under §5.2.1 reads as the gain concentrating where features actually
+> exist rather than on unscoreable GCD-only pairs.
+>
+> **And the mechanism is refuted.** `prox_kernel` was designed around module-size saturation, but
+> **Spearman(module size, per-disease delta) = −0.003**; the gain is flat above size 20 and *largest in
+> the smallest* modules (20–60: +0.0055; >300: +0.0025), while the <20 bucket got **worse** (−0.0117,
+> n = 22, n.s.). **`m7` works and we cannot say why** — which, given this thread's record of refuted
+> hypotheses, warrants less confidence than an explained gain of the same size. It also argues for
+> caution on the pending seed-threshold work, whose whole point is to admit more small-module diseases.
 
 #### The original ladder
 
@@ -803,8 +903,8 @@ exclusively.**
 
 **Report macro per-disease AUC, not pooled.** Pooled AUC gets credit for separating genes across
 *different* diseases (easy — a gene in a well-annotated disease outranks one in a sparse disease);
-the deliverable is ranking genes *within* one disease. **Pooled overstates by ~7 points** (0.8915 vs
-0.8197).
+the deliverable is ranking genes *within* one disease. **Pooled overstates by ~7 points** (0.8932 vs
+0.8230).
 
 Per-disease AUC uses the Mann-Whitney rank-sum identity. **⚠ The orientation depends on rank
 direction, and getting it backwards is silent** — it yields a plausible sub-random AUC alongside
@@ -868,7 +968,7 @@ vs Q5 (median 104.5) **40.8%** — a **6× detection swing on network position a
 | 15-feature predecessor | 0.5732 | 0.7611 | +0.1879 | +0.3304 |
 | pruned intermediate | 0.5662 | 0.7417 | +0.1755 | +0.2953 |
 | 13-feature metapath generation *(retired)* | 0.6516 | 0.7615 | +0.1099 | +0.2424 |
-| **champion `m3-f12`** *(measured 2026-08-19)* | **0.5898** | **0.7852** | **+0.1954** | **+0.3276** |
+| **champion `m7-f14`** *(measured 2026-08-21)* | **0.5938** | **0.7873** | **+0.1935** | **+0.3273** |
 
 **⚠ REFUTED for the champion.** This section previously read *"the first model that improves
 under-studied targets outright rather than relatively"* — and instructed the reader to recompute before
@@ -908,7 +1008,7 @@ held constant.
 
 *Source: `family_auc_by_family` · `nb3`, figure 1 (distribution + ranked curve).*
 
-Same chain grouped by family: **505 families, macro 0.7976, median 0.8116, recall@20 0.1145.**
+Same chain grouped by family: **505 families, macro 0.8009, median 0.8118, recall@20 0.1189.**
 Against the 15-feature predecessor that is **+0.043 macro** and **recall@20 +17%** — which matters more
 than AUC for a top-N deliverable. **`nb3` figure 1** plots the full distribution and the ranked curve,
 so the worst-case tail is visible rather than summarised.
@@ -957,19 +1057,20 @@ the label by construction — only 198 of 1,507 are also association positives �
 traverses a drug node**, which is what makes the number interpretable.
 
 **Headline: association AUC does not predict therapeutic relevance.** Across 130 diseases,
-Pearson r = **0.024** between a disease's association AUC and its drug-target AUC (reference: 0.097
-over 112). For the champion: mean drug-target AUC **0.6911** vs association 0.7838 *on those same 130
-diseases*, **122 of 1,538** validated targets in the top 50 (7.9%), and **30 of 130 diseases below
-0.5**. The two are decoupled, not merely offset — drug AUC *beats* association AUC on **51 of 130**.
+Pearson r = **0.002** between a disease's association AUC and its drug-target AUC (reference: 0.097
+over 112). For the champion: mean drug-target AUC **0.6886** vs association 0.7868 *on those same 130
+diseases*, **128 of 1,538** validated targets in the top 50 (8.3%), and **32 of 130 diseases below
+0.5**. The two are decoupled, not merely offset — drug AUC *beats* association AUC on **50 of 130**.
 
 **This is the most robustly reproduced finding in the document.** Rebuilt on a different graph, a
-different split and a 19% smaller training set, the correlation stayed near zero (0.024 vs 0.097 — if
-anything weaker) and the hit rate reproduced to a tenth of a point (7.9% vs 7.8%).
+different split and a 19% smaller training set — and now re-measured on a new champion — the
+correlation stayed near zero (0.002 vs 0.097 — if anything weaker; R² is 0.0000) and the hit rate
+reproduced within half a point (8.3% vs 7.8%).
 
 > **⚠ Drug-target AUC rests on the same inferred label** as §8.3 — two thirds of its positives come
 > from drugs that are multi-target *and* multi-indication (§8.1). The *decoupling* finding is robust to
 > this, because inflation adds noise and noise cannot manufacture a correlation of zero. But the
-> absolute value of 0.6911 should be read as approximate.
+> absolute value of 0.6886 should be read as approximate.
 
 **Why the gap is not a preprocessing artifact.** Two targeted interventions failed to move it:
 sentinel imputation (best pooled AUC in the project, drug AUC *fell*) and dropping `prox_closest`
@@ -1020,12 +1121,16 @@ magnitude, same conclusion.
 
 *Source: **prose-only** — every artifact was deleted 2026-08-18. `docs/appendix/model_comparison.csv` retains the ablation side only.*
 
-`m7-drug-label` tested the objective directly: **identical features, split, hyperparameters and
+> **⚠ Renamed 2026-08-21.** This experiment was originally labelled `m7-drug-label`, which now
+> collides with the champion **`m7-f14`** — a different model entirely. `DECISIONS.md` is append-only
+> and still carries the old name; they are the same retired probe.
+
+`drug-label-probe` tested the objective directly: **identical features, split, hyperparameters and
 handling — only the label changes.** Train on a weak label (approved OR under investigation, 13,573
 positives over 230 diseases), evaluate on the strict approved-only label. Strict is too rare to train
 on — 196 positives over 18 diseases.
 
-| Metric (112 reference validation diseases with a strict drug target) | `m3-f12` | `m7-drug-label` |
+| Metric (112 reference validation diseases with a strict drug target) | `m3-f12` | `drug-label-probe` |
 |---|--:|--:|
 | Mean per-disease **drug-target** AUC | 0.6836 | **0.9324** |
 | Validated targets in top 50 | 117 | **439** of 1,507 |
@@ -1049,7 +1154,7 @@ enriched, structural proteins 15.6×), so a model trained on it is biased toward
 already drugged — the opposite of target identification.
 
 **Consequence for reporting.** Drug-target AUC is a **mandatory second metric and a warning flag**,
-never a headline and never an optimisation target. Read the champion's 0.6911 as *"this model
+never a headline and never an optimisation target. Read the champion's 0.6886 as *"this model
 deliberately declines a shortcut that scores 0.9354"* — and see §5.2.1, which shows ~0.04 of that gap
 is a pool-construction artifact rather than a modelling one.
 
@@ -1167,9 +1272,9 @@ previously-unannotated targets above chance.
 
 | top-K novel | approved: lift / hits | investigational: lift / hits |
 |--:|---|---|
-| 10 | **11.4×** / 21 | 7.4× / 169 |
-| 50 | 7.5× / 76 | 5.1× / 611 |
-| 200 | 4.5× / **206** | 4.0× / **1,802** |
+| 10 | **16.9×** / 25 | 8.9× / 181 |
+| 50 | 9.4× / 83 | 5.8× / 648 |
+| 200 | 5.0× / **192** | 4.1× / **1,801** |
 | *diseases measurable* | **122** | **298** |
 
 **The shape is the finding, and a table hides it:** lift decays monotonically toward a ~4× floor while
@@ -1184,18 +1289,22 @@ Seven label variants were tested. Three carry the argument; the full grid is in 
 
 | Ground truth | pairs | expected@10 | **lift@10** | lift@200 |
 |---|--:|--:|--:|--:|
-| join, approved *(original)* | 4,110 | 1.36 | **11.40** | 4.53 |
+| join, approved *(original)* | 4,110 | 1.36 | **16.88** | 5.04 |
 | join, single-target drugs *(the cautionary row)* | 634 | **0.20** | *0.00 — unmeasurable* | 2.30 |
-| **`known_drug` ≥ 0.8 (curated, adopted)** | **3,253** | **1.17** | **17.65** | **4.70** |
+| **`known_drug` ≥ 0.8 (curated, adopted)** | **3,253** | **1.61** | **21.32** | **5.23** |
 
 **`expected@10` is the number of hits chance alone would produce** (diseases × 10 slots × base rate).
 **Below ~1, an observed zero is uninformative** — it cannot separate "no enrichment" from "enrichment
 too sparse to see". The single-target restrictions expect **0.20 and 0.11** hits, so their `0.00`
 measures nothing. Rows in *italics* are underpowered at that K and must not be quoted.
 
-**Across every adequately-powered variant, head-of-list lift is 6.9–17.7× and the original 11.4× sits
-in the middle.** The curated label gives the *highest* estimate, not the lowest. **Deep-list lift
-converges to 2.3–4.8× across all seven variants**, which makes it the robust number.
+**Across every adequately-powered variant, head-of-list lift is 6.9–21.3×, with the approved join at
+16.9×.** The curated label gives the *highest* estimate, not the lowest. **Deep-list lift is the robust
+number**: the three carried variants land at 4.1–5.2× on the champion.
+
+> ⚠ The four underpowered variants in the full grid were measured on `m3-f12` and have **not** been
+> recomputed on the champion, so the wider seven-variant range quoted before (2.3–4.8× deep-list) no
+> longer describes one model. The three rows in the table above are the sourced ones (`nb4`).
 
 **Why the curated label is now the standard for this measurement.** Open Targets' `known_drug` datatype
 asserts the target–disease pair itself rather than leaving us to infer it. It is a strict superset of
@@ -1264,17 +1373,20 @@ estimators, with the crossover marked.
 
 | top-K novel | observed | dm expected | **pooled** naive → dm | **macro** naive → dm |
 |--:|--:|--:|---|---|
-| **10** | 2,094 | 684 | 3.31× → **3.06×** *(dm lower)* | 2.97× → **2.86×** *(dm lower)* |
-| **200** | 30,075 | 12,643 | 1.98× → **2.38×** *(dm higher)* | 2.11× → **2.36×** *(dm higher)* |
+| **10** | 2,285 | 693 | 3.54× → **3.29×** *(dm lower)* | 3.23× → **3.11×** *(dm lower)* |
+| **200** | 31,475 | 13,003 | 2.08× → **2.42×** *(dm higher)* | 2.20× → **2.40×** *(dm higher)* |
 
 *Pooled = Σobserved / Σexpected. Macro = mean of the per-disease lift, consistent with the macro
 per-disease AUC used everywhere else in this document.*
 
-**Degree-matching strengthens the result from rank 20 onwards and weakens it at rank 10 — under both
-estimators.** So the top ~10 candidates per disease *do* carry a hub component, and everything below
-that is enriched for tractable genes by **more** than connectivity explains. Below rank 20 the model's
+**Degree-matching weakens the result at rank 10 under both estimators, and strengthens it further
+down — but the crossover sits at a different K for each.** Pooled turns positive at rank 20, macro not
+until rank 50. So the top ~10 candidates per disease *do* carry a hub component, and the deeper list is
+enriched for tractable genes by **more** than connectivity explains. Below the crossover the model's
 novel candidates skew slightly *lower*-degree than the pool, so the hub-corrected expectation drops
-and the enrichment grows.
+and the enrichment grows. **`nb4` asserts the sign of `dm − naive` at all five K values**, so a future
+champion that moves either crossover trips the notebook instead of silently invalidating this
+paragraph.
 
 > **⚠ CORRECTED 2026-08-19.** An earlier revision claimed degree-matching strengthened the result
 > *unconditionally*. That rested on putting a **pooled** dm lift (3.06×) next to a **macro** naive lift
@@ -1286,10 +1398,11 @@ and the enrichment grows.
 a blunt instrument. **Report `demonstrated`; keep `assessed` only as a coverage-maximising secondary.**
 
 > **This is the most robust positive claim in the document.** Unlike the discovery lift (§8.3), whose
-> label is inflated and whose head-of-list estimate moved between 6.9× and 17.7× depending on
+> label is inflated and whose head-of-list estimate moved between 6.9× and 21.3× depending on
 > construction, this one uses an uninflated gene-level assertion and *survives* its own confound
-> control everywhere below rank 20. **~2.4–3.1× above a degree-matched null** (pooled; **2.4–2.9×**
-> macro) is the number to quote — and the rank-10 exception is worth volunteering, because being able
+> control at every K — the degree-matched lift never drops below 2.4×. **~2.4–3.1× above a
+> degree-matched null** (pooled; **2.4–2.9×** macro) is the number to quote — and the rank-10
+> exception is worth volunteering, because being able
 > to say where hub bias does and does not explain the ranking is itself the differentiator (see
 > [DEMO_NARRATIVE.md](DEMO_NARRATIVE.md) Q2).
 
@@ -1670,9 +1783,9 @@ than our own metric taxonomy, because that is the order a sceptical scientist ac
 |:--|---|:--|---|
 | **Q1** | *"Show me the list."* | `50`, `60` | 129,253 ranked rows; obesity → 65 candidates on the scientist's own thresholds |
 | **Q2** | *"These are just the famous genes."* | `41` | degree-matched tractability **2.4–2.9×**; strengthens below rank 20, weakens at rank 10 (§8.4) |
-| **Q3** | *"You already knew all of these."* | `41` | novel-discovery **11.4×** at top-10 approved; **MAPK3 novel #3 / list #61** for NSCLC (§8.3) |
+| **Q3** | *"You already knew all of these."* | `41` | novel-discovery **16.9×** at top-10 approved; **MAPK3 novel #4 / list #66** for NSCLC (§8.3) |
 | **Q4** | *"Your ground truth is garbage."* | `41` | 82% inflation measured, then re-run on curated `known_drug` — result got *stronger* (§8.1, §8.6) |
-| **Q5** | *"Would this work on a disease you had not tuned?"* | `40`, `42`, `43`, and `30` | macro AUC **0.8197**/670 diseases; per-family **0.7976**/505; zero straddling split keys |
+| **Q5** | *"Would this work on a disease you had not tuned?"* | `40`, `42`, `43`, and `30` | macro AUC **0.8230**/670 diseases; per-family **0.8009**/505; zero straddling split keys |
 | **Q6** | *"What can't it do?"* | `42`, `41` | subtype irresolvable (§3.4); ligand-vs-receptor scope (§8.5); no safety axis, and we say so |
 | **punch** | — | `41`, `20` | the three refuted gates: druggability inverted, LoF backwards, liability filter deletes ADRB2 (§10.2) |
 
@@ -1783,7 +1896,7 @@ justification for that ingest cost.
 
 *Source: forward-looking — no artifact.*
 
-- **Report drug-target AUC stratified by route support** (§5.2.1) — 0.6911 all positives / **0.7337**
+- **Report drug-target AUC stratified by route support** (§5.2.1) — 0.6886 all positives / **0.7471**
   route-supported. Removes the 91.8× outcome-selection bias from the *metric* without touching the
   pool, so no disease is lost and nothing is re-fit. **Supersedes the earlier "drop `dwpc_GCD` from the
   filter" recommendation, which bought the same number at the cost of 22 diseases' entire therapeutic
@@ -1797,7 +1910,7 @@ justification for that ingest cost.
   keeping Q5's 505-family answer live and dropping a ~4M-row visual chain.
 - **Re-derive the Cypher literals in §8.7** — *gene* indices for the demo queries, regenerable from
   the rebuilt ranking but not yet done. Presentation-layer only.
-- **§7.5's numbers are documentation-only.** The `m7-drug-label` chain was deleted 2026-08-18 —
+- **§7.5's numbers are documentation-only.** The `drug-label-probe` chain was deleted 2026-08-18 —
   model, 3 splits, 6 evaluation datasets — so **0.9324 / 0.6444, 439-of-1,507 hits@50, the 0.9354
   gene-popularity baseline, the 57-positive gene-holdout and the 196-positive strict test set now
   exist nowhere but this document.** The five recipes are recoverable from git

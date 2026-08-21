@@ -170,9 +170,10 @@ Consumes the graph, derives network and functional-annotation features per (gene
 trains an explainable ranking model, and produces a per-disease shortlist of candidate targets with
 SHAP attributions and on-graph evidence paths.
 
-**Status: built and validated on the rebuilt graph.** Champion `m3-f12` (12 features): macro
-per-disease AUC **0.8197** over 670 diseases. Three-rung ablation ladder, two independent validation
-metrics cross-checking to 1.9×10⁻⁴, and a documented negative result.
+**Status: built and validated on the rebuilt graph; champion refreshed 2026-08-21.** Champion
+`m7-f14` (14 features): macro per-disease AUC **0.8230** over 670 diseases. Three-rung ablation
+ladder, two independent validation metrics cross-checking to 1.9×10⁻⁴, and a documented negative
+result.
 
 → **[TARGET_PRIORITIZER.md](TARGET_PRIORITIZER.md)**
 

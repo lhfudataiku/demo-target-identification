@@ -4,7 +4,7 @@ Frozen results for analyses **removed from the DSS flow** on 2026-08-19. They ba
 [TARGET_PRIORITIZER.md](../../TARGET_PRIORITIZER.md) but no scientist asks about them in a demo, so
 they were pruned from the flow and preserved here instead.
 
-**Why these exist at all.** On 2026-08-18 the `m7-drug-label` experiment was deleted from the flow
+**Why these exist at all.** On 2026-08-18 the `drug-label-probe` experiment was deleted from the flow
 without a snapshot, and its most reusable finding — a gene-popularity lookup table scoring 0.9354 and
 beating the trained model — now survives only as prose. These files are the fix for that mistake:
 version-controlled, diffable, citable, and independent of whether anyone re-runs a notebook.
@@ -25,3 +25,7 @@ and in git history.
 **Staleness warning.** These are a point-in-time export from the 2026-08-17 graph generation. They are
 outside the build graph, so nothing will tell you when they no longer match a rebuilt flow. If the
 graph is rebuilt, re-export or stop citing them. The stamp is in `manifest.json`.
+
+> ⚠ **These snapshots predate the `m7-f14` champion (adopted 2026-08-21).** They were
+> exported from `m3-f12` and are kept as the frozen evidence for the sections that cite the
+> ablation ladder. For current champion numbers use the notebooks, which re-measure live.

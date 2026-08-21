@@ -33,7 +33,11 @@ for _,r in nulls.iterrows():
 w=float(nulls.gap_pp.min())
 print(f"NULLMIN|worst gap {w:+.1f} pp ({nulls.iloc[0].feature}) | features <= -20pp: "
       f"{int((nulls.gap_pp<=-20).sum())}")
-check("6.2 worst null gap pp",-31.6,round(w,1),tol=1.5,fmt="{:+.1f}")
+# §6.2 quotes -31.7 for the FOUR MODEL features; the global minimum is rwr_score (rejected) at
+# ~-57. Assert against the model-feature gap, which is what the document actually claims.
+w_model = float(nulls[nulls.in_model].gap_pp.min())
+print("NULLMODEL|worst gap among MODEL features = %+.1f pp" % w_model)
+check("6.2 worst null gap pp (model features)",-31.7,round(w_model,1),tol=1.5,fmt="{:+.1f}")
 
 # ==== 6.1  collinearity: the hub cluster ====
 HUB=[c for c in ["gene_ppi_degree","degree","eigenvector_centrality","pagerank","triangles",
@@ -67,12 +71,12 @@ sf={}
 for c in ["dwpc_GPGD","dwpc_GGD","gene_ppi_degree","gene_n_diseases","module_size"]:
     if c in sm.columns:
         sf[c]=macro_auc(sm,c); print(f"AUC1|{c:22s}|{sf[c]:.4f}")
-check("6.1 dwpc_GPGD single-feature AUC",0.641,round(sf.get("dwpc_GPGD",0),3),tol=0.06,fmt="{:.3f}")
-check("6.1 dwpc_GGD single-feature AUC",0.601,round(sf.get("dwpc_GGD",0),3),tol=0.06,fmt="{:.3f}")
+check("6.1 dwpc_GPGD single-feature AUC",0.718,round(sf.get("dwpc_GPGD",0),3),tol=0.04,fmt="{:.3f}")
+check("6.1 dwpc_GGD single-feature AUC",0.669,round(sf.get("dwpc_GGD",0),3),tol=0.04,fmt="{:.3f}")
 del tr, sm
 
 # ==== 6.3  the threshold is not the ranking ====
-sc=dataiku.Dataset("scored_m3").get_dataframe(
+sc=dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index","is_target","proba_1"])
 ob=sc[sc.disease_index==37143]
 tot=int(ob.is_target.sum())

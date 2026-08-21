@@ -1,5 +1,10 @@
 # Documentation overhaul — proposal
 
+> **⚠ SUPERSEDED — executed, kept for the record.** The section/number pairs in the tables below were
+> the *citation targets* as of 2026-08-19 and were measured on `m3-f12`. The champion is now `m7-f14`
+> and those figures have moved. Read them as "which dataset backs which section", never as current
+> values; the notebooks are the live source.
+
 Drafted 2026-08-19 after reviewing all seven markdown files, the 100 datasets and 55 recipes in
 `DEMO_TARGET_IDENTIFICATION`, and the 47 mirrored scripts in `dss_recipes/`.
 

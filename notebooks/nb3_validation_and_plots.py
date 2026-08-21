@@ -13,14 +13,14 @@ def check(name,doc,live,tol=0.0,fmt="{:,}"):
 va=dataiku.Dataset("validation_auc_by_disease").get_dataframe()
 print(f"AUC|diseases={len(va)}|macro={va.auc_disease.mean():.4f}|"
       f"pos>=10 macro={va[va.n_pos>=10].auc_disease.mean():.4f}")
-check("10.1 macro per-disease AUC",0.8197,round(float(va.auc_disease.mean()),4),tol=0.0006,fmt="{:.4f}")
+check("10.1 macro per-disease AUC",0.8230,round(float(va.auc_disease.mean()),4),tol=0.0006,fmt="{:.4f}")
 check("10.1 validation diseases",670,len(va))
 
 # ==== 7.3  per-family validation, and the plot that replaces a 45-number table ====
 fa=dataiku.Dataset("family_auc_by_family").get_dataframe()
 col=[c for c in fa.columns if "auc" in c.lower()][0]
 print(f"FAM|families={len(fa)}|macro={fa[col].mean():.4f}|median={fa[col].median():.4f}")
-check("7.3 per-family macro AUC",0.7976,round(float(fa[col].mean()),4),tol=0.0006,fmt="{:.4f}")
+check("7.3 per-family macro AUC",0.8009,round(float(fa[col].mean()),4),tol=0.0006,fmt="{:.4f}")
 check("7.3 families",505,len(fa))
 fig,ax=plt.subplots(1,2,figsize=(13,4.2))
 ax[0].hist(fa[col].dropna(),bins=32,color="#4a7ba7",edgecolor="white")
@@ -48,8 +48,8 @@ print(f"ORTH|n={n}|pearson={r:+.4f}|R2={r*r:.4f}|spearman={rs:+.4f}|slope={slope
 wp=j[j.n_validated_targets>=10]
 rw=np.corrcoef(wp.auc_disease,wp.auc_drug_targets)[0,1] if len(wp)>5 else float("nan")
 print(f"ORTH|well-powered n={len(wp)}|pearson={rw:+.4f}")
-check("7.4 orthogonality pearson r",0.024,round(float(r),3),tol=0.004,fmt="{:+.3f}")
-check("7.4 orthogonality R2",0.0006,round(float(r*r),4),tol=0.0004,fmt="{:.4f}")
+check("7.4 orthogonality pearson r",0.002,round(float(r),3),tol=0.004,fmt="{:+.3f}")
+check("7.4 orthogonality R2",0.0000,round(float(r*r),4),tol=0.0004,fmt="{:.4f}")
 fig,ax=plt.subplots(figsize=(7.2,6))
 sc=ax.scatter(x,y,s=np.clip(j.n_validated_targets*3,12,300),alpha=.55,
               c=np.log10(j.n_pos.clip(lower=1)),cmap="viridis",edgecolor="white",linewidth=.5)
@@ -67,10 +67,10 @@ print("PLOT|nb3_orthogonality.png")
 # ==== 7.4  drug-target benchmark aggregates ====
 print(f"DRUG|diseases={len(db)}|macro drug AUC={db.auc_drug_targets.mean():.4f}|"
       f"below 0.5={int((db.auc_drug_targets<0.5).sum())}")
-check("7.4 drug-target macro AUC",0.6911,round(float(db.auc_drug_targets.mean()),4),tol=0.0006,fmt="{:.4f}")
+check("7.4 drug-target macro AUC",0.6886,round(float(db.auc_drug_targets.mean()),4),tol=0.0006,fmt="{:.4f}")
 
 # ==== 7.2  hub-bias meter -- it has no recipe, so this notebook IS its artifact ====
-sc3=dataiku.Dataset("scored_m3").get_dataframe(
+sc3=dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index","gene_index","is_target","proba_1","gene_ppi_degree"])
 sc3["dq"]=pd.qcut(sc3.gene_ppi_degree.rank(method="first"),5,labels=False)
 top=sc3.sort_values("proba_1",ascending=False).groupby("disease_index").head(50)

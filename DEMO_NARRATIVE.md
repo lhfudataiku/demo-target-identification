@@ -24,7 +24,7 @@ annotation. Nothing is pre-cut: the scientist filters.
 | **Model** | gradient-boosted trees + SHAP, 12 network-topology features |
 | **Why not a GNN** | it is the Open Targets Locus-to-Gene pattern (*Nat Genet* 2021). The differentiator is reproducibility and lineage, not the algorithm |
 | **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 families |
-| **Discovery** | novel candidates enriched **11.4×** for approved drug targets at top-10 |
+| **Discovery** | novel candidates enriched **16.9×** for approved drug targets at top-10 |
 | **Actionability** | **2.4–2.9×** enrichment for druggable targets vs equally-connected genes |
 | **What it does not do** | no safety axis, no *morphological* subtype resolution, and association ranking does **not** predict therapeutic relevance (r = +0.024) |
 
@@ -130,7 +130,7 @@ Across all diseases, the novel candidates are enriched for real drug targets:
 
 | | Top 10 | Top 200 |
 |---|--:|--:|
-| Against approved drugs | **11.4×** | **4.5×** |
+| Against approved drugs | **16.9×** | **5.0×** |
 | Against drugs in trials | **7.4×** | **4.0×** |
 
 > **The point to make out loud:** this is the deliverable. Not "the model reproduces what you know" —
@@ -147,7 +147,7 @@ We measured how bad it is: **82% of our validated pairs come from drugs that hit
 target.** Only **8%** survive if we demand single-target drugs.
 
 Then we found a curated source that asserts the target–disease link directly, and re-ran everything
-on it. **The discovery result got stronger** — 17.7× instead of 11.4×.
+on it. **The discovery result got stronger** — 21.3× instead of 16.9×.
 
 > **The point to make out loud:** we found the flaw in our own evidence, quantified it, and re-tested
 > against a better source. The finding survived. That is what due diligence looks like.

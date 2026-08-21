@@ -140,7 +140,24 @@ retrain on the **unchanged 13-feature set**.
   averages weight every disease equally, so 3.7% of the population is where to look.
 - **Cost:** rebuilding four Cypher recipes over the full graph is the expensive step.
 
-### Phase 2 — `m7`: `d_shortest`
+### Phase 2 — `m7`: graded proximity  ▸ features built, collinearity checked 2026-08-21
+
+Four statistics now come from one Dijkstra pass: `prox_closest` (min, unchanged), `prox_mean`
+(Guney's d_shortest), `prox_kernel` (Σexp(−d)), `prox_n_reach` (count within 3 hops). Pool held at
+6,754,128; splits unchanged.
+
+| | ρ with `gene_ppi_degree` | max ρ vs the 13 | single-feature AUC | verdict |
+|---|--:|--:|--:|---|
+| `prox_closest` | −0.378 | −0.378 | 0.5956 | incumbent |
+| `prox_mean` | **−0.697** | −0.697 | **0.6499** | best discriminator, **most hub-entangled** — deferred |
+| **`prox_kernel`** | **+0.216** | −0.452 | 0.6094 | **chosen for m7** |
+| `prox_n_reach` | +0.104 | −0.534 | 0.4864 | **dropped** — ρ = +0.982 with kernel, below the 0.5 floor |
+
+**The prediction that a kernel sum would be a hub proxy was wrong, and backwards.** Reach saturates
+(mean 184 seeds reached), so the count reflects module size rather than gene degree — while a *mean
+distance* shortens systematically for hubs. Averaging imports the bias; summing does not.
+
+### Phase 2 — original plan
 
 Add the graded distance (mean distance to module genes, or a kernel Σexp(−d)) alongside `prox_closest`.
 
@@ -149,6 +166,27 @@ Add the graded distance (mean distance to module genes, or a kernel Σexp(−d))
   saturation mechanism is wrong and the improvement is coming from somewhere unexamined.
 - Keep `MAX_HOPS = 3` — measured at 93–99% interactome coverage already; raising it adds ≤6 points as a
   constant.
+
+### Phase 2 result — `m7-f14` recommended for adoption
+
+| axis | m3 | m4 | m5 | m6 | **m7** | paired m6→m7 |
+|---|--:|--:|--:|--:|--:|---|
+| association macro AUROC | 0.8197 | 0.8200 | 0.8175 | 0.8197 | **0.8230** | **t = +3.29, 0 ties** |
+| association macro AUPRC | 0.1737 | 0.1762 | 0.1711 | 0.1749 | **0.1778** | **t = +3.18** |
+| hub spread *(lower better)* | 0.1954 | 0.1932 | 0.1915 | **0.1900** | 0.1935 | worse |
+| therapeutic, all | 0.6911 | 0.6949 | 0.6931 | 0.6949 | 0.6886 | worst of five |
+| therapeutic, route-supported | 0.7337 | 0.7371 | 0.7384 | 0.7418 | **0.7471** | best |
+| tractability dm@200 | 2.376 | 2.381 | 2.380 | 2.391 | **2.418** | **t = +2.56, 0 ties** |
+| discovery lift@50 | 7.46 | 7.09 | 9.08 | 7.43 | **9.43** | t = +1.47, **90% ties — n.s.** |
+| discovery lift@200 | 4.53 | 4.83 | **5.52** | 4.78 | 5.04 | t = +0.70, **78% ties — n.s.** |
+
+**Two significant gains, both on axes that matter: association (the headline) and tractability (§8.4's
+"most robust positive claim", uninflated label, degree-matched null).** Discovery is a non-finding in
+both directions. Two costs: hub spread worsens slightly, and therapeutic-on-all-positives is the worst
+of the five — though route-supported is the best, which under §5.2.1 is the more meaningful of the pair.
+
+**The mechanism is unexplained.** `Spearman(module size, delta) = −0.003` refutes the saturation story
+the feature was designed around.
 
 ### Phase 3 — decide once, then re-run downstream once
 
