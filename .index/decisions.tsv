@@ -145,3 +145,5 @@ date	line	chars	topic
 2026-08-21	159	495	The index was indexing its own output
 2026-08-21	160	754	`.index/models.tsv` built, and made PROTECTIVE rather than merely convenient
 2026-08-21	161	834	The champion-metric cross-check found a bug in my own indexer within a minute of existing
+2026-08-21	162	782	`target-id` skill written as the entry point to the index layer — 80 lines (~1k tokens), with the long procedures behind pointers so they load only wh
+2026-08-21	163	825	`CLAUDE.md` added — the project had none, so every standing rule lived only in assistant memory and would not survive a teammate cloning the repo

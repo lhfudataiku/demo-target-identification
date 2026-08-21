@@ -104,6 +104,6 @@ when the champion changes and that no notebook would catch.
 
 ## DECISIONS.md jump table
 
-146 entries, 76946 chars. Query `.index/decisions.tsv` rather than reading the file — it is
+148 entries, 78553 chars. Query `.index/decisions.tsv` rather than reading the file — it is
 the densest file in the repo (~146 tokens per line).
 
