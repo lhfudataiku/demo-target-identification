@@ -431,6 +431,7 @@ DECISIONS.md	173	-	0.8197	ORPHAN		y		| 2026-08-21 | **Found a claim surface no i
 DECISIONS.md	173	-	0.7976	ORPHAN		y		| 2026-08-21 | **Found a claim surface no index covers: DSS flow-zone descriptions.** They are demo-facing pro
 DECISIONS.md	173	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| 2026-08-21 | **Found a claim surface no index covers: DSS flow-zone descriptions.** They are demo-facing pro
 DECISIONS.md	173	-	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		| 2026-08-21 | **Found a claim surface no index covers: DSS flow-zone descriptions.** They are demo-facing pro
+docs/README.md	32	-	95.7	ORPHAN		y		| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) | **Current mockup.** Four interactive acts
 docs/appendix/README.md	8	-	0.9354	ORPHAN				without a snapshot, and its most reusable finding — a gene-popularity lookup table scoring 0.9354 and
 docs/appendix/README.md	14	-	2,010	ORPHAN		y		| `model_comparison.csv` | 2,010 | §6.4 ablation ladder, m1-f7 → m2-f10 → m3-f12 | saved models `Lx5Mz2hY`, `6
 docs/appendix/README.md	15	-	1,113	ORPHAN		y		| `validation_auc_by_disease_2.csv` | 1,113 | §7.1 per-split-key AUC (the second metric run) | `scored_m3` |
@@ -569,6 +570,126 @@ docs/demo/DASHBOARD_DESIGN.md	546	10	16.88	VALUE_ONLY	nb4_results_three_axes.py:
 docs/demo/DASHBOARD_DESIGN.md	548	10	1,086	ORPHAN				5. **`CLAUDE.md` Track A is stale.** *"What is missing is the UI itself"* — the old webapp is 1,086 lines,
 docs/demo/DASHBOARD_DESIGN.md	573	11	10,000	ORPHAN				**DSS traps worth keeping** (they apply to any presentation layer): chart sampling defaults to 10,000
 docs/demo/DASHBOARD_DESIGN.md	576	11	129,253	ORPHAN				`dashboard_candidates` pulls all 129,253 rows in one `head` call, which is how every HER2+ figure here was
+docs/demo/DASHBOARD_DESIGN.md	620	12.2	2,851,510	ORPHAN				at most a few hundred rows *once computed*. The app must never read `graph_edges` (2,851,510 rows) to
+docs/demo/DASHBOARD_DESIGN.md	637	12.2	12,272	ORPHAN				**Second question, and it applies to exactly one dataset.** Act 4 needs row-level data: ~12,272 rows ×
+docs/demo/DASHBOARD_DESIGN.md	643	12.2	129,253	ORPHAN				(129,253 × 63).
+docs/demo/DASHBOARD_DESIGN.md	648	12.2	12,272	ORPHAN				`WHERE disease_index = 48537` is pushed to the warehouse and only 12,272 rows transfer. Cold start is
+docs/demo/DASHBOARD_DESIGN.md	687	12.4	0.8962	ORPHAN		y		`auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal test split**:
+docs/demo/DASHBOARD_DESIGN.md	687	12.4	0.3359	ORPHAN		y		`auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal test split**:
+docs/demo/DASHBOARD_DESIGN.md	691	12.4	0.8962	ORPHAN		y		| AUROC | 0.8962 | **0.8230** | +7.3 pts — exactly the pooled overstatement the project warns about |
+docs/demo/DASHBOARD_DESIGN.md	691	12.4	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| AUROC | 0.8962 | **0.8230** | +7.3 pts — exactly the pooled overstatement the project warns about |
+docs/demo/DASHBOARD_DESIGN.md	692	12.4	0.3359	ORPHAN		y		| AUPRC | 0.3359 | **0.1778** | nearly 2× |
+docs/demo/DASHBOARD_DESIGN.md	692	12.4	0.1778	ORPHAN		y		| AUPRC | 0.3359 | **0.1778** | nearly 2× |
+docs/demo/DASHBOARD_DESIGN.md	697	12.4	1.89	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %	y		candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion's 0.1778 is
+docs/demo/DASHBOARD_DESIGN.md	697	12.4	0.0189	ORPHAN		y		candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion's 0.1778 is
+docs/demo/DASHBOARD_DESIGN.md	697	12.4	0.1778	ORPHAN		y		candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion's 0.1778 is
+docs/demo/DASHBOARD_DESIGN.md	698	12.4	9.4	ORPHAN				**9.4× the base rate**. Form: a horizontal bar with the base rate as a hairline at the left edge and the
+docs/demo/DASHBOARD_DESIGN.md	699	12.4	9.4	ORPHAN				achieved value as the bar, labelled *"9.4× better than chance at concentrating true targets."* Put
+docs/demo/DASHBOARD_DESIGN.md	701	12.4	1.89	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			1.89% prevalence.
+docs/demo/DASHBOARD_DESIGN.md	712	12.5	38,092	ORPHAN			hist	| 1 | Replace *Accepted vs reference* with the source count | **but say "6 external sources"**, not 7. The sev
+docs/demo/DASHBOARD_DESIGN.md	712	12.5	25,906	ORPHAN			hist	| 1 | Replace *Accepted vs reference* with the source count | **but say "6 external sources"**, not 7. The sev
+docs/demo/DASHBOARD_DESIGN.md	712	12.5	20,861	ORPHAN			hist	| 1 | Replace *Accepted vs reference* with the source count | **but say "6 external sources"**, not 7. The sev
+docs/demo/DASHBOARD_DESIGN.md	712	12.5	19,120	ORPHAN			hist	| 1 | Replace *Accepted vs reference* with the source count | **but say "6 external sources"**, not 7. The sev
+docs/demo/DASHBOARD_DESIGN.md	712	12.5	5,282	ORPHAN			hist	| 1 | Replace *Accepted vs reference* with the source count | **but say "6 external sources"**, not 7. The sev
+docs/demo/DASHBOARD_DESIGN.md	712	12.5	2,883	ORPHAN			hist	| 1 | Replace *Accepted vs reference* with the source count | **but say "6 external sources"**, not 7. The sev
+docs/demo/DASHBOARD_DESIGN.md	712	12.5	1,247	ORPHAN			hist	| 1 | Replace *Accepted vs reference* with the source count | **but say "6 external sources"**, not 7. The sev
+docs/demo/DASHBOARD_DESIGN.md	719	12.5	0.03	ORPHAN				write*. Keep it as **one sentence in the act lede** (`−0.03% on edges, 14 of 18 relations reproduce
+docs/demo/DASHBOARD_DESIGN.md	727	12.6	3,380,853	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GGD rows			GGD 3,380,853 ─┐
+docs/demo/DASHBOARD_DESIGN.md	728	12.6	5,373,706	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GPGD rows			GPGD 5,373,706 ─┼─► pool 6,754,128 (1.89% positive) ─┬─► train 2,187,862
+docs/demo/DASHBOARD_DESIGN.md	728	12.6	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			GPGD 5,373,706 ─┼─► pool 6,754,128 (1.89% positive) ─┬─► train 2,187,862
+docs/demo/DASHBOARD_DESIGN.md	728	12.6	1.89	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			GPGD 5,373,706 ─┼─► pool 6,754,128 (1.89% positive) ─┬─► train 2,187,862
+docs/demo/DASHBOARD_DESIGN.md	728	12.6	2,187,862	ORPHAN				GPGD 5,373,706 ─┼─► pool 6,754,128 (1.89% positive) ─┬─► train 2,187,862
+docs/demo/DASHBOARD_DESIGN.md	729	12.6	42,227	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GCD rows			GCD 42,227 ─┘ ├─► validation 3,958,921
+docs/demo/DASHBOARD_DESIGN.md	729	12.6	3,958,921	ORPHAN				GCD 42,227 ─┘ ├─► validation 3,958,921
+docs/demo/DASHBOARD_DESIGN.md	730	12.6	607,345	ORPHAN				└─► test 607,345
+docs/demo/DASHBOARD_DESIGN.md	733	12.6	8,796,786	ORPHAN				Two things to get right. **The three routes overlap** — they sum to 8,796,786 against a union of
+docs/demo/DASHBOARD_DESIGN.md	734	12.6	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			6,754,128 — so a naive Sankey overstates the left side by 30%. Render the union explicitly or label the
+docs/demo/DASHBOARD_DESIGN.md	735	12.6	0.6	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability			overlap. And **the GCD ribbon is the drug route at 0.6%**: showing it is honest and preempts a
+docs/demo/DASHBOARD_DESIGN.md	744	12.6	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		Each tab carries its own n and macro: *disease* → 668 / 0.8230, *family* → 503 / 0.8009.
+docs/demo/DASHBOARD_DESIGN.md	744	12.6	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		Each tab carries its own n and macro: *disease* → 668 / 0.8230, *family* → 503 / 0.8009.
+docs/demo/DASHBOARD_DESIGN.md	749	12.6	129,253	ORPHAN		y		drivers for all 129,253 scored rows. Aggregating gives an empirical importance ranking over all 14
+docs/demo/DASHBOARD_DESIGN.md	754	12.6	76,487	ORPHAN				| 1 | `ppi_evidence_depth` | 76,487 | | 8 | `gene_n_pathways` | 4,666 |
+docs/demo/DASHBOARD_DESIGN.md	754	12.6	4,666	ORPHAN				| 1 | `ppi_evidence_depth` | 76,487 | | 8 | `gene_n_pathways` | 4,666 |
+docs/demo/DASHBOARD_DESIGN.md	755	12.6	46,643	ORPHAN				| 2 | `ppi_multi_source_frac` | 46,643 | | 9 | `ppi_adamic_adar` | 3,220 |
+docs/demo/DASHBOARD_DESIGN.md	755	12.6	3,220	ORPHAN				| 2 | `ppi_multi_source_frac` | 46,643 | | 9 | `ppi_adamic_adar` | 3,220 |
+docs/demo/DASHBOARD_DESIGN.md	756	12.6	46,382	ORPHAN				| 3 | `dwpc_GBGD` | 46,382 | | 10 | `prox_closest` | 2,550 |
+docs/demo/DASHBOARD_DESIGN.md	756	12.6	2,550	ORPHAN				| 3 | `dwpc_GBGD` | 46,382 | | 10 | `prox_closest` | 2,550 |
+docs/demo/DASHBOARD_DESIGN.md	757	12.6	23,204	ORPHAN				| 4 | `dwpc_GPGD` | 23,204 | | 11 | `ppi_jaccard` | 2,167 |
+docs/demo/DASHBOARD_DESIGN.md	757	12.6	2,167	ORPHAN				| 4 | `dwpc_GPGD` | 23,204 | | 11 | `ppi_jaccard` | 2,167 |
+docs/demo/DASHBOARD_DESIGN.md	758	12.6	21,802	ORPHAN				| 5 | `prox_kernel` | 21,802 | | 12 | `dwpc_GGD` | 1,148 |
+docs/demo/DASHBOARD_DESIGN.md	758	12.6	1,148	ORPHAN				| 5 | `prox_kernel` | 21,802 | | 12 | `dwpc_GGD` | 1,148 |
+docs/demo/DASHBOARD_DESIGN.md	759	12.6	19,180	ORPHAN				| 6 | `dwpc_GFGD` | 19,180 | | 13 | `shared_pathway_frac` | 111 |
+docs/demo/DASHBOARD_DESIGN.md	760	12.6	10,857	ORPHAN				| 7 | `gene_ppi_degree` | 10,857 | | 14 | `ppi_common_neighbors_z` | 89 |
+docs/demo/DASHBOARD_DESIGN.md	790	12.7	0.9188	ORPHAN				| hematologic cancer | 29 | 0.9188 | largest panel in the project |
+docs/demo/DASHBOARD_DESIGN.md	791	12.7	0.9272	ORPHAN				| breast cancer | 19 | 0.9272 | the spine; the subtype-resolution story |
+docs/demo/DASHBOARD_DESIGN.md	792	12.7	0.9312	ORPHAN				| lung cancer | 17 | 0.9312 | the morphological-subtype *failure*, in-panel |
+docs/demo/DASHBOARD_DESIGN.md	793	12.7	0.9309	ORPHAN				| sarcoma | 13 | 0.9309 | a rare-disease shape |
+docs/demo/DASHBOARD_DESIGN.md	794	12.7	0.9233	ORPHAN				| salivary gland cancer | 11 | 0.9233 | small, high-quality |
+docs/demo/DASHBOARD_DESIGN.md	795	12.7	0.8577	ORPHAN				| **anemia** | 9 | 0.8577 | **not cancer** |
+docs/demo/DASHBOARD_DESIGN.md	796	12.7	0.8345	ORPHAN				| **epilepsy syndrome** | 7 | 0.8345 | **not cancer, not oncology-adjacent** |
+docs/demo/DASHBOARD_DESIGN.md	832	12.7	0.9365	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC			| HER2+ breast | 599 | 0.9365 | [0.923, 0.950] |
+docs/demo/DASHBOARD_DESIGN.md	832	12.7	0.923	ORPHAN				| HER2+ breast | 599 | 0.9365 | [0.923, 0.950] |
+docs/demo/DASHBOARD_DESIGN.md	832	12.7	0.950	ORPHAN				| HER2+ breast | 599 | 0.9365 | [0.923, 0.950] |
+docs/demo/DASHBOARD_DESIGN.md	833	12.7	0.9043	ORPHAN				| breast adenocarcinoma | 53 | 0.9043 | [0.850, 0.959] |
+docs/demo/DASHBOARD_DESIGN.md	833	12.7	0.850	ORPHAN				| breast adenocarcinoma | 53 | 0.9043 | [0.850, 0.959] |
+docs/demo/DASHBOARD_DESIGN.md	833	12.7	0.959	ORPHAN				| breast adenocarcinoma | 53 | 0.9043 | [0.850, 0.959] |
+docs/demo/DASHBOARD_DESIGN.md	834	12.7	0.8411	ORPHAN				| ER-negative breast | 14 | 0.8411 | [0.712, 0.971] |
+docs/demo/DASHBOARD_DESIGN.md	834	12.7	0.712	ORPHAN				| ER-negative breast | 14 | 0.8411 | [0.712, 0.971] |
+docs/demo/DASHBOARD_DESIGN.md	834	12.7	0.971	ORPHAN				| ER-negative breast | 14 | 0.8411 | [0.712, 0.971] |
+docs/demo/DASHBOARD_DESIGN.md	835	12.7	0.8949	ORPHAN				| **triple-negative breast** | **8** | 0.8949 | **[0.749, 1.041]** |
+docs/demo/DASHBOARD_DESIGN.md	835	12.7	0.749	ORPHAN				| **triple-negative breast** | **8** | 0.8949 | **[0.749, 1.041]** |
+docs/demo/DASHBOARD_DESIGN.md	835	12.7	1.041	ORPHAN				| **triple-negative breast** | **8** | 0.8949 | **[0.749, 1.041]** |
+docs/demo/DASHBOARD_DESIGN.md	837	12.7	1.041	ORPHAN		y		**TNBC's upper bound is 1.041 — impossible for an AUC.** That single fact demonstrates the point better
+docs/demo/DASHBOARD_DESIGN.md	877	12.8	12,272	ORPHAN				| 3 | Funnel as a Sankey | ⚠ **prototype before committing.** The last stage is 38 of 12,272 — 0.3% — which re
+docs/demo/DASHBOARD_DESIGN.md	877	12.8	0.3	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)			| 3 | Funnel as a Sankey | ⚠ **prototype before committing.** The last stage is 38 of 12,272 — 0.3% — which re
+docs/demo/DASHBOARD_DESIGN.md	894	12.9	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		| Orthogonality (r = +0.002) | **act 2** — the AUC spread | *"a high AUC in act 2 does not buy therapeutic rel
+docs/demo/DASHBOARD_DESIGN.md	897	12.9	0.9354	ORPHAN				| The 0.9354 lookup | **act 2** | *"this is why act 2 led with a distribution and not a score"* |
+docs/demo/DASHBOARD_DESIGN.md	930	12.11	2.9	ORPHAN		y		1. **`2.9×` degree-matched at top-10 is unguarded and matches no current estimator.** The guarded
+docs/demo/DASHBOARD_DESIGN.md	931	12.11	3.29	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @10	y		assertions in `nb4` §8.4 are **pooled 3.29× at K=10** and **2.42× at K=200**, with **macro 3.11× at
+docs/demo/DASHBOARD_DESIGN.md	931	12.11	2.42	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @200	y		assertions in `nb4` §8.4 are **pooled 3.29× at K=10** and **2.42× at K=200**, with **macro 3.11× at
+docs/demo/DASHBOARD_DESIGN.md	931	12.11	3.11	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10	y		assertions in `nb4` §8.4 are **pooled 3.29× at K=10** and **2.42× at K=200**, with **macro 3.11× at
+docs/demo/DASHBOARD_DESIGN.md	941	12.11	1,247	ORPHAN				4. **Counting seven node sources overstates the claim.** `MONDO_grouped` (1,247) is a grouping we
+docs/demo/DASHBOARD_DESIGN.md	963	13.1	129,253	ORPHAN				| `shap_driver_frequency` | **Prepare** (split ", " → strip " (…)" → fold to rows) → **Group** | all 129,253 r
+docs/demo/DASHBOARD_DESIGN.md	979	13.2	27,153	ORPHAN				27,153 disease nodes
+docs/demo/DASHBOARD_DESIGN.md	980	13.2	1,157	ORPHAN				└── 1,157 eligible (module_size ≥ 20 — the seed gate)
+docs/demo/DASHBOARD_DESIGN.md	981	13.2	25,996	ORPHAN				└── 25,996 EXCLUDED (95.7%): fewer than 20 curated gene associations
+docs/demo/DASHBOARD_DESIGN.md	981	13.2	95.7	ORPHAN				└── 25,996 EXCLUDED (95.7%): fewer than 20 curated gene associations
+docs/demo/DASHBOARD_DESIGN.md	983	13.2	3,380,853	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GGD rows			GGD 3,380,853 ┐
+docs/demo/DASHBOARD_DESIGN.md	984	13.2	5,373,706	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GPGD rows			GPGD 5,373,706├─► pool 6,754,128 (1.89% positive) ─┬─► train 2,187,862 (383 diseases)
+docs/demo/DASHBOARD_DESIGN.md	984	13.2	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			GPGD 5,373,706├─► pool 6,754,128 (1.89% positive) ─┬─► train 2,187,862 (383 diseases)
+docs/demo/DASHBOARD_DESIGN.md	984	13.2	1.89	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			GPGD 5,373,706├─► pool 6,754,128 (1.89% positive) ─┬─► train 2,187,862 (383 diseases)
+docs/demo/DASHBOARD_DESIGN.md	984	13.2	2,187,862	ORPHAN				GPGD 5,373,706├─► pool 6,754,128 (1.89% positive) ─┬─► train 2,187,862 (383 diseases)
+docs/demo/DASHBOARD_DESIGN.md	985	13.2	42,227	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GCD rows			GCD 42,227 ┘ ├─► validation 3,958,921 (670)
+docs/demo/DASHBOARD_DESIGN.md	985	13.2	3,958,921	ORPHAN				GCD 42,227 ┘ ├─► validation 3,958,921 (670)
+docs/demo/DASHBOARD_DESIGN.md	986	13.2	607,345	ORPHAN				└─► test 607,345 (104)
+docs/demo/DASHBOARD_DESIGN.md	989	13.2	1,157	ORPHAN				`383 + 670 + 104 = 1,157` — the eligible count exactly. **The excluded branch is 95.7% of the disease
+docs/demo/DASHBOARD_DESIGN.md	989	13.2	95.7	ORPHAN				`383 + 670 + 104 = 1,157` — the eligible count exactly. **The excluded branch is 95.7% of the disease
+docs/demo/DASHBOARD_DESIGN.md	991	13.2	2,341	ORPHAN				widen (20 → 5 would admit 931 more diseases). A second, much smaller loss belongs beside it: of 2,341
+docs/demo/DASHBOARD_DESIGN.md	992	13.2	98.5	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 reachability ceiling %			curated targets in the audited diseases, **98.5% are reachable in the pool and 1.5% (34) are not**.
+docs/demo/DASHBOARD_DESIGN.md	992	13.2	1.5	ORPHAN				curated targets in the audited diseases, **98.5% are reachable in the pool and 1.5% (34) are not**.
+docs/demo/DASHBOARD_DESIGN.md	1001	13.3	0.975	VALUE_ONLY	nb1_features_and_config.py:6.1 highest |rho| vs degree	y		**Do not.** `nb1` §6.1 records the highest |rho| between a model feature and node degree at **0.975**.
+docs/demo/DASHBOARD_DESIGN.md	1020	13.4	0.062	ORPHAN				| minimum | 0.062% |
+docs/demo/DASHBOARD_DESIGN.md	1021	13.4	0.319	ORPHAN				| 10th percentile | 0.319% |
+docs/demo/DASHBOARD_DESIGN.md	1022	13.4	0.774	ORPHAN				| median | 0.774% |
+docs/demo/DASHBOARD_DESIGN.md	1023	13.4	2.861	ORPHAN				| 90th percentile | 2.861% |
+docs/demo/DASHBOARD_DESIGN.md	1024	13.4	19.466	ORPHAN				| maximum | 19.466% |
+docs/demo/DASHBOARD_DESIGN.md	1027	13.4	0.06	ORPHAN		y		from a floor 312× higher than one at 0.06%. Comparing AUPRC across that population compares prevalence
+docs/demo/DASHBOARD_DESIGN.md	1034	13.4	1.89	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %	y		So the rule: **AUPRC only at a single fixed prevalence** (the pooled pool at 1.89%, where 0.1778 against
+docs/demo/DASHBOARD_DESIGN.md	1034	13.4	0.1778	ORPHAN		y		So the rule: **AUPRC only at a single fixed prevalence** (the pooled pool at 1.89%, where 0.1778 against
+docs/demo/DASHBOARD_DESIGN.md	1035	13.4	0.0189	ORPHAN		y		a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which is comparable
+docs/demo/DASHBOARD_DESIGN.md	1035	13.4	9.4	ORPHAN		y		a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which is comparable
+docs/demo/DASHBOARD_DESIGN.md	1083	13.7	0.0069	ORPHAN				| HER2+ | 599 | 0.0069 | 0.0070 |
+docs/demo/DASHBOARD_DESIGN.md	1083	13.7	0.0070	ORPHAN				| HER2+ | 599 | 0.0069 | 0.0070 |
+docs/demo/DASHBOARD_DESIGN.md	1084	13.7	0.0080	ORPHAN				| breast carcinoma | 864 | 0.0080 | 0.0081 |
+docs/demo/DASHBOARD_DESIGN.md	1084	13.7	0.0081	ORPHAN				| breast carcinoma | 864 | 0.0080 | 0.0081 |
+docs/demo/DASHBOARD_DESIGN.md	1085	13.7	0.0243	ORPHAN				| luminal A | 101 | 0.0243 | 0.0243 |
+docs/demo/DASHBOARD_DESIGN.md	1086	13.7	0.0250	ORPHAN				| parent term | 138 | 0.0250 | 0.0250 |
+docs/demo/DASHBOARD_DESIGN.md	1087	13.7	0.0660	ORPHAN				| ER-negative | 14 | 0.0660 | 0.0661 |
+docs/demo/DASHBOARD_DESIGN.md	1087	13.7	0.0661	ORPHAN				| ER-negative | 14 | 0.0660 | 0.0661 |
+docs/demo/DASHBOARD_DESIGN.md	1088	13.7	0.0745	ORPHAN				| triple-negative | 8 | 0.0745 | 0.0746 |
+docs/demo/DASHBOARD_DESIGN.md	1088	13.7	0.0746	ORPHAN				| triple-negative | 8 | 0.0745 | 0.0746 |
+docs/demo/DASHBOARD_DESIGN.md	1090	13.7	0.0001	ORPHAN		y		Every value agrees to ≤ 0.0001. The interval is therefore **pure arithmetic on `auc`, `n_pos` and
+docs/demo/DASHBOARD_DESIGN.md	1133	13.9	12,272	ORPHAN				| show all pairs for the disease (12,272 rows, virtualised) | **add** — replaces the top-15 slice |
 docs/demo/DEMO_NARRATIVE.md	18	-	129,253	ORPHAN				**The artifact.** `target_candidates_2` — **129,253 scored candidates across 13 diseases**, each row
 docs/demo/DEMO_NARRATIVE.md	26	-	0.82	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie
 docs/demo/DEMO_NARRATIVE.md	26	-	0.80	ASSERTED	nb3_validation_and_plots.py:header per-split-key AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie

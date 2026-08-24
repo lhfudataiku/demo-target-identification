@@ -1,0 +1,1122 @@
+<title>Prioritizer Four Acts</title>
+<!--
+  Mockup iteration 2. Specified in DASHBOARD_DESIGN.md section 12.
+  Iteration 1 is kept alongside at DASHBOARD_MOCKUP.html — do not overwrite it.
+
+  WHAT CHANGED FROM ITERATION 1
+    - Acts 5 and 6 left the webapp (section 12.1). Four acts here; their content is
+      summarised in the "Not in the app" section as a talk track with the card-to-act
+      mapping, because that is what they are now for.
+    - Every chart is specified against a small pre-aggregated dataset, not the raw
+      one (section 12.2). The provenance footers are links.
+    - Act 1: node sources added, node types moved left, graph explorer embedded,
+      frozen-reference table dropped, "6 external sources" replaces it.
+    - Act 2: Sankey over pool routes and splits; AUC cards merged behind a tab;
+      SHAP-driver importance added; the enrichment box plot now carries all 668
+      diseases as a beeswarm with hover labels; AUPRC stated against base rate.
+    - Act 3: family dropdown, ontology tree, AUC as confidence intervals rather
+      than points, overlap matrix and gene-by-disease grid.
+    - Act 4: disease selector, filterable list, gene selection drives the last two
+      cards, and the liability toggle imported from act 6.
+    - Four numbers corrected — see section 12.11. The degree-matched figure moved
+      to the talk track with its guarded value (3.29x pooled, not 2.9x).
+
+  DATA
+    Everything marked LIVE was computed from the DSS datasets on 2026-08-21.
+    The 668-disease enrichment array, the 66-pair overlap matrix and the 119-gene
+    membership grid are real values, not shapes.
+    Values marked MOCK are illustrative and exist to show a layout: currently only
+    the per-gene feature percentiles in act 4.
+
+  DESIGN SYSTEM — inherited from bs-blueprint/frontend/src/styles/tokens.css.
+    Primary is the Dataiku indigo hsl(233.92 50% 35%); neutrals carry the
+    blueprint's blue bias (hue 240); series colours are --chart-1..5; type is the
+    Tailwind default sans stack, the same faces the Vue app will render.
+-->
+<style>
+  :root {
+    --background: hsl(0 0% 100%); --foreground: hsl(240 10% 3.9%); --card: hsl(0 0% 100%);
+    --muted: hsl(240 4.8% 95.9%); --muted-foreground: hsl(240 3.8% 46.1%);
+    --primary: hsl(233.92 50% 35%); --primary-foreground: hsl(0 0% 98%);
+    --border: hsl(240 5.9% 90%); --destructive: hsl(0 72% 45%);
+    --chart-1: hsl(22 84% 60%); --chart-2: hsl(172 46% 48%); --chart-3: hsl(221 47% 31%);
+    --chart-4: hsl(72 55% 55%); --chart-5: hsl(56 62% 52%);
+    --good: hsl(158 64% 32%); --good-bg: hsl(152 55% 95%);
+    --warn: hsl(28 75% 38%); --warn-bg: hsl(38 80% 94%);
+    --bad: hsl(350 65% 42%); --bad-bg: hsl(350 70% 96%);
+    --sidebar: hsl(223 78% 98%); --sidebar-border: hsl(220 13% 91%);
+    --shadow: 0 1px 2px hsl(240 10% 3.9% / .05), 0 1px 3px hsl(240 10% 3.9% / .04);
+    --radius: 0.625rem;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --background: hsl(240 10% 9%); --foreground: hsl(0 0% 96%); --card: hsl(240 8% 12%);
+      --muted: hsl(240 5% 18%); --muted-foreground: hsl(240 5% 66%);
+      --primary: hsl(228 70% 72%); --primary-foreground: hsl(240 20% 12%);
+      --border: hsl(240 5% 22%); --destructive: hsl(0 70% 66%);
+      --chart-1: hsl(22 80% 64%); --chart-2: hsl(172 44% 56%); --chart-3: hsl(221 60% 68%);
+      --chart-4: hsl(72 48% 60%); --chart-5: hsl(56 58% 58%);
+      --good: hsl(152 50% 62%); --good-bg: hsl(158 40% 16%);
+      --warn: hsl(36 70% 64%); --warn-bg: hsl(30 45% 17%);
+      --bad: hsl(352 70% 70%); --bad-bg: hsl(350 40% 18%);
+      --sidebar: hsl(240 9% 11%); --sidebar-border: hsl(240 5% 20%);
+      --shadow: 0 1px 2px hsl(0 0% 0% / .3), 0 1px 3px hsl(0 0% 0% / .2);
+    }
+  }
+  :root[data-theme="dark"] {
+    --background: hsl(240 10% 9%); --foreground: hsl(0 0% 96%); --card: hsl(240 8% 12%);
+    --muted: hsl(240 5% 18%); --muted-foreground: hsl(240 5% 66%);
+    --primary: hsl(228 70% 72%); --primary-foreground: hsl(240 20% 12%);
+    --border: hsl(240 5% 22%); --destructive: hsl(0 70% 66%);
+    --chart-1: hsl(22 80% 64%); --chart-2: hsl(172 44% 56%); --chart-3: hsl(221 60% 68%);
+    --chart-4: hsl(72 48% 60%); --chart-5: hsl(56 58% 58%);
+    --good: hsl(152 50% 62%); --good-bg: hsl(158 40% 16%);
+    --warn: hsl(36 70% 64%); --warn-bg: hsl(30 45% 17%);
+    --bad: hsl(352 70% 70%); --bad-bg: hsl(350 40% 18%);
+    --sidebar: hsl(240 9% 11%); --sidebar-border: hsl(240 5% 20%);
+    --shadow: 0 1px 2px hsl(0 0% 0% / .3), 0 1px 3px hsl(0 0% 0% / .2);
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--background); color: var(--foreground);
+         font-family: var(--sans); font-size: 14px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .num, td.n, .stat-v, .fv { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  .app { display: flex; min-height: 100vh; }
+  .side { width: 268px; flex: none; background: var(--sidebar); border-right: 1px solid var(--sidebar-border);
+          display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+  .brand { padding: 18px 20px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--sidebar-border); }
+  .brand-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--primary); display: grid; place-items: center; flex: none; }
+  .brand-name { font-weight: 600; font-size: 14px; letter-spacing: -0.01em; }
+  .brand-sub { font-size: 11px; color: var(--muted-foreground); }
+  .nav-label { padding: 18px 20px 6px; font-size: 10.5px; font-weight: 600; letter-spacing: .07em;
+               text-transform: uppercase; color: var(--muted-foreground); }
+  .nav { display: flex; flex-direction: column; gap: 2px; padding: 0 10px; }
+  .nav button { display: flex; align-items: baseline; gap: 10px; width: 100%; text-align: left; padding: 8px 10px;
+                border: 0; border-radius: calc(var(--radius) - 2px); background: transparent; color: var(--foreground);
+                font: inherit; cursor: pointer; }
+  .nav button:hover { background: color-mix(in oklab, var(--primary) 8%, transparent); }
+  .nav button[aria-current="page"] { background: var(--primary); color: var(--primary-foreground); }
+  .nav .k { font-family: var(--mono); font-size: 11px; opacity: .7; flex: none; width: 14px; }
+  .nav .t { font-size: 13px; }
+  .nav.out button { opacity: .82; }
+  .nav.out button .k { font-size: 13px; }
+  :focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  .side-foot { margin-top: auto; padding: 14px 20px; border-top: 1px solid var(--sidebar-border);
+               font-size: 11px; color: var(--muted-foreground); }
+
+  .main { flex: 1; min-width: 0; }
+  .act-head { position: sticky; top: 0; z-index: 5; background: color-mix(in oklab, var(--background) 88%, transparent);
+              backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); padding: 18px 32px; }
+  .act-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-foreground); }
+  .act-q { font-size: 21px; font-weight: 600; letter-spacing: -.015em; margin: 3px 0 0; text-wrap: balance; }
+  .act-lede { font-size: 13px; color: var(--muted-foreground); margin: 4px 0 0; max-width: 82ch; }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 24px 32px 56px; }
+  .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+
+  .card { grid-column: span 12; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+          box-shadow: var(--shadow); display: flex; flex-direction: column; overflow: hidden; }
+  .c3 { grid-column: span 3; } .c4 { grid-column: span 4; } .c5 { grid-column: span 5; }
+  .c6 { grid-column: span 6; } .c7 { grid-column: span 7; } .c8 { grid-column: span 8; } .c9 { grid-column: span 9; }
+  .card-h { padding: 14px 16px 10px; display: flex; gap: 10px; align-items: start; justify-content: space-between; }
+  .card-t { font-size: 13.5px; font-weight: 600; letter-spacing: -.005em; }
+  .card-d { font-size: 12px; color: var(--muted-foreground); margin-top: 2px; max-width: 74ch; }
+  .card-b { padding: 4px 16px 14px; flex: 1; }
+  .card-f { padding: 8px 16px; border-top: 1px solid var(--border); background: color-mix(in oklab, var(--muted) 45%, transparent);
+            font-family: var(--mono); font-size: 10.5px; color: var(--muted-foreground); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .card-f a { color: var(--primary); text-decoration: none; border-bottom: 1px dotted color-mix(in oklab, var(--primary) 45%, transparent); }
+  .card-f a:hover { border-bottom-style: solid; }
+  .card-f .sep { opacity: .45; }
+
+  .chip { flex: none; font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .04em;
+          text-transform: uppercase; padding: 2px 6px; border-radius: 5px; border: 1px solid; white-space: nowrap; }
+  .chip-live { color: var(--good); background: var(--good-bg); border-color: color-mix(in oklab, var(--good) 30%, transparent); }
+  .chip-gap  { color: var(--warn); background: var(--warn-bg); border-color: color-mix(in oklab, var(--warn) 30%, transparent); }
+  .chip-mock { color: var(--muted-foreground); background: var(--muted); border-color: var(--border); }
+  .chip-port { color: var(--primary); background: color-mix(in oklab, var(--primary) 10%, transparent);
+               border-color: color-mix(in oklab, var(--primary) 28%, transparent); }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(148px, 1fr)); gap: 12px; }
+  .stat { border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px); padding: 12px 14px; }
+  .stat-l { font-size: 10.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted-foreground); }
+  .stat-v { font-size: 25px; font-weight: 600; letter-spacing: -.02em; margin-top: 4px; line-height: 1.1; }
+  .stat-c { font-size: 11.5px; color: var(--muted-foreground); margin-top: 3px; }
+
+  .tw { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead th { text-align: left; font-size: 10.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+             color: var(--muted-foreground); padding: 7px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  thead th.n, td.n { text-align: right; }
+  tbody td { padding: 7px 10px; border-bottom: 1px solid color-mix(in oklab, var(--border) 55%, transparent); }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr.hl { background: color-mix(in oklab, var(--primary) 7%, transparent); }
+  tbody tr.hl td:first-child { box-shadow: inset 2px 0 0 var(--primary); }
+  tbody tr.sel { background: color-mix(in oklab, var(--primary) 14%, transparent); }
+  tbody tr.dead td { opacity: .3; text-decoration: line-through; }
+  tbody tr.click { cursor: pointer; }
+  tbody tr.click:hover { background: color-mix(in oklab, var(--primary) 5%, transparent); }
+  .gene { font-family: var(--mono); font-weight: 600; }
+  .zero { color: var(--good); font-weight: 600; }
+
+  .b { display: inline-block; font-size: 10px; font-family: var(--mono); font-weight: 600; padding: 1px 5px;
+       border-radius: 4px; border: 1px solid; margin-right: 3px; white-space: nowrap; }
+  .b-known { color: var(--muted-foreground); background: var(--muted); border-color: var(--border); }
+  .b-novel { color: var(--chart-3); background: color-mix(in oklab, var(--chart-3) 12%, transparent); border-color: color-mix(in oklab, var(--chart-3) 30%, transparent); }
+  .b-appr  { color: var(--good); background: var(--good-bg); border-color: color-mix(in oklab, var(--good) 32%, transparent); }
+  .b-trial { color: var(--chart-1); background: color-mix(in oklab, var(--chart-1) 14%, transparent); border-color: color-mix(in oklab, var(--chart-1) 34%, transparent); }
+  .b-liab  { color: var(--bad); background: var(--bad-bg); border-color: color-mix(in oklab, var(--bad) 30%, transparent); }
+
+  .say { border-left: 3px solid var(--primary); padding: 8px 0 8px 12px; margin: 12px 0 0; font-size: 12.5px; }
+  .no { border: 1px dashed color-mix(in oklab, var(--bad) 40%, var(--border)); border-radius: calc(var(--radius) - 2px);
+        padding: 10px 12px; font-size: 12px; background: color-mix(in oklab, var(--bad) 4%, transparent); }
+  .no-t { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+          color: var(--bad); margin-bottom: 4px; }
+  .warnbox { border: 1px solid color-mix(in oklab, var(--warn) 35%, var(--border)); background: color-mix(in oklab, var(--warn) 6%, transparent);
+             border-radius: calc(var(--radius) - 2px); padding: 10px 12px; font-size: 12px; }
+  ul.tight { margin: 8px 0 0; padding-left: 18px; } ul.tight li { margin-bottom: 4px; font-size: 12.5px; }
+  pre { font-family: var(--mono); font-size: 11px; background: var(--muted); border: 1px solid var(--border);
+        border-radius: calc(var(--radius) - 2px); padding: 11px 12px; overflow-x: auto; margin: 10px 0 0; line-height: 1.5; }
+  .cmt { color: var(--muted-foreground); }
+
+  /* Vertical funnel: each step carries a width-proportional bar, so the taper IS
+     the chart. Horizontal steps needed 524px in a 460px column and overflowed. */
+  .funnel { display: flex; flex-direction: column; gap: 5px; margin-top: 4px; }
+  .fstep { border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px); padding: 7px 10px 8px; }
+  .fstep.last { border-color: var(--primary); background: color-mix(in oklab, var(--primary) 8%, transparent); }
+  .fstep .frow { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .fstep .fv { font-size: 17px; font-weight: 600; letter-spacing: -.02em; }
+  .fstep .fl { font-size: 11px; color: var(--muted-foreground); }
+  .fbar { height: 5px; border-radius: 3px; background: var(--muted); margin-top: 5px; overflow: hidden; }
+  .fbar i { display: block; height: 100%; background: var(--chart-3); border-radius: 3px; }
+  .fstep.last .fbar i { background: var(--primary); }
+
+  .lgd { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; font-size: 11.5px; color: var(--muted-foreground); }
+  .lgd i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; margin-right: 5px; }
+
+  .tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+  .tabs button, .seg button { font: inherit; font-size: 11.5px; padding: 4px 10px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted-foreground); border-radius: calc(var(--radius) - 4px); cursor: pointer; }
+  .tabs button[aria-selected="true"], .seg button[aria-selected="true"] {
+      background: var(--primary); color: var(--primary-foreground); border-color: var(--primary); }
+  .seg { display: inline-flex; gap: 4px; }
+
+  select, .ctl { font: inherit; font-size: 12.5px; padding: 5px 9px; border: 1px solid var(--border);
+                 border-radius: calc(var(--radius) - 4px); background: var(--card); color: var(--foreground); }
+  label.tog { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; cursor: pointer;
+              border: 1px solid var(--border); border-radius: calc(var(--radius) - 4px); padding: 4px 9px; }
+  label.tog.on { border-color: var(--bad); background: color-mix(in oklab, var(--bad) 8%, transparent); color: var(--bad); font-weight: 600; }
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 9px; align-items: center; }
+
+  .tree { font-size: 12.5px; }
+  .tree div { padding: 3px 6px; border-radius: 4px; cursor: pointer; display: flex; justify-content: space-between; gap: 10px; }
+  .tree div:hover { background: color-mix(in oklab, var(--primary) 7%, transparent); }
+  .tree div.anchor { font-weight: 600; }
+  .tree div.sel { background: color-mix(in oklab, var(--primary) 14%, transparent); }
+  .tree div.inelig { opacity: .45; }
+  .tree .dn { font-family: var(--mono); font-size: 11px; color: var(--muted-foreground); }
+
+  .embed { border: 1px solid var(--border); border-radius: calc(var(--radius) - 2px); height: 300px;
+           background: repeating-linear-gradient(45deg, transparent, transparent 9px,
+             color-mix(in oklab, var(--muted) 60%, transparent) 9px, color-mix(in oklab, var(--muted) 60%, transparent) 18px);
+           display: grid; place-items: center; text-align: center; }
+  .embed p { margin: 0; font-size: 12px; color: var(--muted-foreground); max-width: 46ch; }
+
+  .view[hidden] { display: none; }
+  svg { display: block; max-width: 100%; }
+  svg text { font-family: var(--mono); font-variant-numeric: tabular-nums; fill: var(--muted-foreground); }
+  svg text.lab { font-family: var(--sans); }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  @media (max-width: 1150px) { .c3,.c4,.c5,.c6,.c7,.c8,.c9 { grid-column: span 12; } .side { display: none; } }
+</style>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">
+      <span class="brand-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(0 0% 100%)" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="5" r="2.4"></circle><circle cx="5" cy="18" r="2.4"></circle>
+          <circle cx="19" cy="18" r="2.4"></circle><path d="M12 7.4 6.6 15.8M12 7.4l5.4 8.4M7.4 18h9.2"></path>
+        </svg>
+      </span>
+      <span><div class="brand-name">Target Prioritizer</div>
+        <div class="brand-sub">Breast oncology &middot; HER2+ lead</div></span>
+    </div>
+    <div class="nav-label">In the app</div>
+    <nav class="nav" id="nav"></nav>
+    <div class="nav-label">Not in the app</div>
+    <nav class="nav out" id="navOut"></nav>
+    <div class="side-foot">Mockup v2 &middot; static<br>Figures verified 2026-08-21</div>
+  </aside>
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+/* ==========================================================================
+   DATA — mirrors frontend/src/data/mock/*.ts. Real values unless marked MOCK.
+   ========================================================================== */
+const D = {
+  graph: {
+    nodes: [['disease',27153],['biological_process',23974],['gene / protein',20861],['effect / phenotype',19120],
+            ['molecular_function',10041],['drug',5282],['cellular_component',4077],['pathway',2883]],
+    /* node_source. MONDO_grouped is OURS, not an external source — see the card note. */
+    sources: [['GO',38092,1],['MONDO',25906,1],['NCBI',20861,1],['HPO',19120,1],
+              ['DrugBank',5282,1],['REACTOME',2883,1],['MONDO_grouped',1247,0]],
+    relations: [['protein_protein',520380],['phenotype_protein',487054],['disease_phenotype_positive',380280],
+      ['disease_protein',378888],['bioprocess_protein',251808],['cellcomp_protein',186806],['molfunc_protein',156246],
+      ['disease_disease',129606],['pathway_protein',97618],['bioprocess_bioprocess',80972],['drug_investigated_for',69682],
+      ['phenotype_phenotype',45912],['molfunc_molfunc',24548],['drug_protein',15918],['indication',9418],
+      ['cellcomp_cellcomp',9392],['pathway_pathway',5798],['disease_phenotype_negative',1184]],
+    ppi: [['menche',189982,1],['string',151254,1],['huri',92536,1],['menche + string',54554,2],
+          ['huri + menche',28478,2],['huri + menche + string',2714,3],['huri + string',862,2]],
+    label: [['genetic association',171810],['somatic mutation',150266],['both',1710]],
+  },
+  pool: {
+    routes: [['GGD · gene–gene',3380853],['GPGD · via pathway',5373706],['GCD · via drug',42227]],
+    union: 6754128, posRate: 1.89,
+    splits: [['train',2187862],['validation',3958921],['test',607345]],
+  },
+  calib: {
+    diseaseAuc: [0,0,1,1,0,2,2,0,1,1,5,13,31,51,73,71,65,101,205,45],
+    familyAuc:  [0,0,1,1,0,2,2,0,1,1,5,13,31,46,66,65,51,66,125,27],
+    split: [['train',2187862,42450,1.9403,383,323,348],['validation',3958921,73829,1.8649,670,443,505],
+            ['test',607345,11184,1.8415,104,74,80]],
+    box: { min: 0.0, q1: 9.13, med: 19.23, q3: 28.23, max: 59.22 },
+    /* SHAP top-2 driver frequency over all 129,253 scored rows. */
+    drivers: [['ppi_evidence_depth',76487,'provenance'],['ppi_multi_source_frac',46643,'provenance'],
+      ['dwpc_GBGD',46382,'path'],['dwpc_GPGD',23204,'path'],['prox_kernel',21802,'proximity'],
+      ['dwpc_GFGD',19180,'path'],['gene_ppi_degree',10857,'topology'],['gene_n_pathways',4666,'topology'],
+      ['ppi_adamic_adar',3220,'topology'],['prox_closest',2550,'proximity'],['ppi_jaccard',2167,'topology'],
+      ['dwpc_GGD',1148,'path'],['shared_pathway_frac',111,'topology'],['ppi_common_neighbors_z',89,'topology']],
+  },
+  families: [
+    ['breast','breast cancer',19,0.9272,true],['hematologic','hematologic cancer',29,0.9188,false],
+    ['lung','lung cancer',17,0.9312,false],['sarcoma','sarcoma',13,0.9309,false],
+    ['salivary','salivary gland cancer',11,0.9233,false],['anemia','anemia',9,0.8577,false],
+    ['epilepsy','epilepsy syndrome',7,0.8345,false],
+  ],
+  /* breast panel: [short, full, hop, pool, nKnown, auc, lo95, hi95, hits50, enrich50, trustworthy] */
+  panel: [
+    ['Breast (parent)','breast cancer (parent term)',0,9067,138,0.7072,0.6581,0.7562,21,27.6,true],
+    ['Breast ca.','breast carcinoma',1,13290,864,0.8608,0.8449,0.8766,49,15.1,true],
+    ['Female breast','female breast carcinoma',2,11946,544,0.9359,0.9214,0.9502,50,22.0,true],
+    ['Invasive','invasive breast carcinoma',2,8170,123,0.9351,0.9047,0.9653,19,25.2,true],
+    ['Lobular','breast lobular carcinoma',3,11723,513,0.9337,0.9187,0.9487,48,21.9,true],
+    ['Adeno','breast adenocarcinoma',3,6738,53,0.9043,0.8497,0.9589,16,40.7,true],
+    ['HER2+','HER2 positive breast carcinoma',3,12272,599,0.9365,0.9228,0.9501,48,19.7,true],
+    ['Luminal A','luminal A breast carcinoma',3,8157,101,0.8467,0.7990,0.8943,14,22.6,true],
+    ['Luminal B','luminal B breast carcinoma',3,7439,88,0.9106,0.8694,0.9518,20,33.8,true],
+    ['ER+','estrogen-receptor positive breast cancer',3,5297,33,0.8136,0.7244,0.9026,4,12.8,true],
+    ['ER−','estrogen-receptor negative breast cancer',3,3474,14,0.8411,0.7115,0.9706,4,19.9,false],
+    ['TNBC','triple-negative breast carcinoma',3,2563,8,0.8949,0.7487,1.0410,2,12.8,false],
+  ],
+  /* HER2+ top 15: [rank, gene, novel, approvedForDisease, trial, liability, class] */
+  her2: [
+    [1,'TP53',0,0,0,1,'Transcription factor'],[2,'EP300',0,0,0,0,'Epigenetic regulator'],
+    [3,'PIK3R1',0,0,0,1,'Enzyme'],[4,'CREBBP',0,0,0,0,'Epigenetic regulator'],
+    [5,'PIK3CA',0,0,1,1,'Enzyme'],[6,'CTNNB1',0,0,0,1,'Unclassified'],
+    [7,'JAK2',0,0,1,1,'Enzyme'],[8,'PTPN11',0,0,0,1,'Enzyme'],
+    [9,'HRAS',1,0,0,0,'Other cytosolic'],[10,'KRAS',0,0,0,0,'Enzyme'],
+    [11,'EGFR',0,0,1,1,'Enzyme'],[12,'BRCA1',0,0,0,0,'Enzyme'],
+    [13,'SMAD3',0,0,0,0,'Transcription factor'],[14,'ERBB2',0,1,1,1,'Enzyme'],
+    [15,'MAPK1',0,0,0,1,'Enzyme'],
+  ],
+  geneIdx: { TP53:96092, EP300:84374, PIK3R1:91764, CREBBP:82734, PIK3CA:91759, CTNNB1:83250,
+             JAK2:88867, PTPN11:94031, HRAS:88097, KRAS:89095, EGFR:84123, BRCA1:95630,
+             SMAD3:90029, ERBB2:84431, MAPK1:93120 },
+  funnel: [['all candidates',12272],['novel only',11673],['+ tractable',7951],['+ not secreted',7274],['+ rank ≤ 200',38]],
+  auprc: { value: 0.1778, base: 0.0189, auroc: 0.8230 },
+  /* 668 validation diseases: [rank_enrichment, disease]. Real values. */
+  enrichment: [[0.0,"Raynaud disease"],[0.0,"Tourette syndrome"],[0.0,"alopecia areata"],[0.0,"appendicitis"],[0.0,"atopic conjunctivitis"],[0.0,"auditory system disorder"],[0.0,"autoimmune disorder of musculoskeletal syste"],[0.0,"bacterial arthritis"],[0.0,"benign neoplasm of pituitary gland"],[0.0,"benign soft tissue neoplasm"],[0.0,"brain cancer"],[0.0,"brain injury"],[0.0,"bronchiectasis"],[0.0,"cardiac arrest"],[0.0,"central nervous system infectious disorder"],[0.0,"cerebellar ataxia"],[0.0,"chondromalacia"],[0.0,"chronic atrophic gastritis"],[0.0,"chronic intestinal vascular insufficiency"],[0.0,"congenital tracheomalacia"],[0.0,"connective and soft tissue neoplasm"],[0.0,"cornea plana"],[0.0,"corneal edema"],[0.0,"dermatophytosis"],[0.0,"diabetic polyneuropathy"],[0.0,"diaphragmatic eventration"],[0.0,"ectopia pupillae"],[0.0,"esophageal atresia/tracheoesophageal fistula"],[0.0,"esophageal disorder"],[0.0,"esophageal ulcer"],[0.0,"food allergy"],[0.0,"hemangioma of subcutaneous tissue"],[0.0,"hyperaldosteronism"],[0.0,"hyperphosphatemia"],[0.0,"hypogonadism"],[0.0,"idiopathic generalized epilepsy"],[0.0,"infantile spasms"],[0.0,"interstitial lung disease"],[0.0,"intestinal obstruction"],[0.0,"laryngitis"],[0.0,"lung abscess"],[0.0,"lupus erythematosus"],[0.0,"morbid obesity"],[0.0,"movement disorder"],[0.0,"nerve plexus disorder"],[0.0,"neuroendocrine neoplasm"],[0.0,"non-neoplastic bile duct disorder"],[0.0,"paralytic strabismus"],[0.0,"pneumonitis"],[0.0,"polyarteritis nodosa"],[0.0,"polyp"],[0.0,"postinflammatory pulmonary fibrosis"],[0.0,"pregnancy disorder"],[0.0,"presbycusis"],[0.0,"rheumatic heart disease"],[0.0,"sialadenitis"],[0.0,"spermatogenic failure"],[0.0,"spinocerebellar ataxia"],[0.0,"splenic disorder"],[0.0,"syndromic intellectual disability"],[0.0,"synovium disorder"],[0.0,"testicular disorder"],[0.0,"tuberculosis"],[0.0,"urethral syndrome"],[1.83,"Graves disease"],[2.37,"gestational diabetes"],[2.5,"gastric ulcer"],[2.57,"hearing loss disorder"],[2.81,"ocular hypotension"],[2.85,"hyperpituitarism"],[2.86,"diabetic ketoacidosis"],[2.87,"vertebral column disorder"],[2.91,"breast disorder"],[2.92,"chronic kidney disease"],[3.06,"skull disorder"],[3.23,"thyroid gland disorder"],[3.24,"non-autoimmune hemolytic anemia"],[3.35,"obsessive-compulsive disorder"],[3.39,"glomerulonephritis"],[3.52,"ovarian dysfunction"],[3.56,"bronchial disorder"],[3.59,"X-linked intellectual disability"],[3.61,"overnutrition"],[3.65,"spinal cord injury"],[3.69,"open-angle glaucoma"],[3.78,"urolithiasis"],[3.9,"vascular disorder"],[3.93,"pernicious anemia"],[3.95,"diabetic neuropathy"],[3.95,"pulmonary mucoepidermoid carcinoma"],[4.01,"hereditary disease"],[4.05,"respiratory tract infectious disorder"],[4.06,"Sjogren syndrome"],[4.06,"tooth agenesis"],[4.09,"focal epilepsy"],[4.12,"substance-related disorder"],[4.15,"corneal neovascularization"],[4.19,"exostosis"],[4.19,"insomnia"],[4.24,"transient global amnesia"],[4.27,"type 2 diabetes mellitus"],[4.37,"gastroesophageal reflux disease"],[4.39,"developmental disability"],[4.41,"overactive bladder"],[4.43,"benign neoplasm of adrenal gland"],[4.47,"drug allergy"],[4.63,"acquired thrombocytopenia"],[4.64,"irritable bowel syndrome"],[4.65,"complex neurodevelopmental disorder"],[4.69,"sialolithiasis"],[4.71,"ovarian neoplasm"],[4.74,"poisoning"],[4.74,"severe acute respiratory syndrome"],[4.75,"lower urinary tract calculus"],[4.78,"Hashimoto thyroiditis"],[4.8,"skin disorder"],[4.82,"liver disorder"],[4.85,"aortic valve disease"],[4.86,"sarcoidosis"],[4.94,"dyscalculia"],[4.96,"hidradenitis"],[4.97,"pelvic organ prolapse"],[5.04,"color vision disorder"],[5.16,"psoriatic arthritis"],[5.28,"alopecia"],[5.37,"COVID-19"],[5.37,"enophthalmos"],[5.38,"cervical carcinoma"],[5.4,"peptic ulcer disease"],[5.42,"keloid"],[5.46,"placenta praevia"],[5.52,"generalized dystonia"],[5.54,"acute tonsillitis"],[6.07,"vertebral joint disorder"],[6.09,"nodular goiter"],[6.13,"hydrops fetalis"],[6.17,"benign chondrogenic neoplasm"],[6.32,"vein disorder"],[6.42,"hypothyroidism"],[6.55,"duodenal ulcer"],[6.97,"vertebral disorder"],[7.04,"rheumatoid arthritis"],[7.08,"epilepsy"],[7.17,"infectious disease"],[7.34,"familial hemolytic anemia"],[7.36,"lymphatic system disorder"],[7.37,"herpes zoster"],[7.46,"short-rib thoracic dysplasia with or without"],[7.5,"toxic multinodular goitre"],[7.57,"major salivary gland cancer"],[7.72,"female infertility"],[7.76,"gram-negative bacterial infections"],[7.92,"obesity disorder"],[8.09,"substance abuse/dependence"],[8.16,"primary ovarian failure"],[8.19,"IgA glomerulonephritis"],[8.42,"osteoarthritis"],[8.43,"kidney failure"],[8.44,"injury"],[8.45,"blepharophimosis"],[8.49,"peripheral neuropathy"],[8.55,"cardiovascular disorder"],[8.76,"echolalia"],[8.81,"pneumonia"],[8.89,"diabetes mellitus"],[8.97,"retinoblastoma"],[9.01,"uveitis"],[9.13,"rectal prolapse"],[9.18,"B-cell prolymphocytic leukemia"],[9.18,"undetermined early-onset epileptic encephalo"],[9.23,"humerus fracture"],[9.29,"congenital anomaly of cardiovascular system"],[9.31,"prolapse of female genital organ"],[9.36,"connective tissue disease"],[9.38,"systemic lupus erythematosus"],[9.42,"hematopoietic and lymphoid cell neoplasm"],[9.43,"autism spectrum disorder"],[9.51,"centronuclear myopathy"],[9.64,"benign neoplasm of pancreas"],[9.7,"secondary malignant neoplasm"],[9.73,"obstructive sleep apnea syndrome"],[9.96,"autoimmune thyroid disease"],[9.97,"urinary system disorder"],[10.08,"androgenetic alopecia"],[10.09,"basal cell carcinoma"],[10.17,"corneal ulcer"],[10.21,"spinal stenosis"],[10.52,"hemiplegia"],[10.64,"mitochondrial DNA depletion syndrome"],[10.66,"malignant germ cell tumor"],[10.67,"nodal marginal zone B-cell lymphoma"],[10.71,"myopathy"],[10.84,"peritoneal mesothelioma"],[10.99,"pleural empyema"],[11.0,"retinal degeneration"],[11.15,"hemoglobinopathy"],[11.34,"multiple sclerosis"],[11.36,"allergic rhinitis"],[11.42,"large artery stroke"],[11.44,"polyhydramnios"],[11.51,"dedifferentiated chondrosarcoma"],[11.66,"familial glucocorticoid deficiency"],[11.68,"liver cancer"],[11.88,"cholelithiasis"],[11.91,"bladder calculus"],[11.97,"early-infantile DEE"],[12.03,"holoprosencephaly"],[12.06,"cheilitis"],[12.12,"kidney oncocytoma"],[12.19,"tympanic membrane disorder"],[12.28,"congenital myopathy"],[12.43,"endocarditis"],[12.71,"refractive error"],[12.81,"triple-negative breast carcinoma"],[12.82,"constipation disorder"],[12.84,"estrogen-receptor positive breast cancer"],[12.86,"scleritis"],[12.87,"lymphoid leukemia"],[12.88,"hyperprolactinemia"],[12.93,"synovitis"],[12.98,"asthma"],[13.06,"bone osteosarcoma"],[13.1,"diarrheal disease"],[13.15,"gastric tubular adenocarcinoma"],[13.21,"cellulitis"],[13.29,"pyuria"],[13.47,"choreatic disease"],[13.55,"desmoplastic small round cell tumor"],[13.59,"ptosis"],[13.72,"cataract"],[13.8,"dermatofibrosarcoma protuberans"],[13.91,"gallbladder disease"],[14.03,"ureterolithiasis"],[14.05,"esophageal atresia"],[14.14,"atherosclerosis"],[14.14,"autism"],[14.21,"amyloidosis"],[14.33,"myxedema"],[14.37,"nephrolithiasis"],[14.38,"mutism"],[14.39,"benign neoplasm"],[14.43,"mitochondrial disease"],[14.44,"brain disorder"],[14.5,"lung inflammatory myofibroblastic tumor"],[14.67,"cryptorchidism"],[14.91,"developmental and epileptic encephalopathy"],[15.07,"breast carcinoma"],[15.19,"adult T-cell leukemia/lymphoma"],[15.21,"Usher syndrome"],[15.23,"thrombocytopenia"],[15.26,"adrenal gland hyperfunction"],[15.26,"anemia"],[15.37,"dementia"],[15.5,"chondroblastoma"],[15.5,"choroidal neovascularization"],[15.51,"muscular dystrophy"],[15.54,"Barrett esophagus"],[15.65,"fasciitis"],[15.75,"intestinal disorder"],[15.79,"rosacea"],[15.8,"lymphopenia"],[15.81,"systemic sclerosis"],[15.87,"coloboma of optic nerve"],[15.89,"neurodegenerative disease"],[15.94,"CINCA syndrome"],[16.02,"skin cancer"],[16.11,"progressive external ophthalmoplegia"],[16.15,"rhinitis"],[16.46,"atrial flutter"],[16.47,"sarcomatoid mesothelioma"],[16.6,"gallbladder small cell neuroendocrine carcin"],[16.65,"celiac disease"],[16.67,"thyroid gland carcinoma"],[16.7,"congestive heart failure"],[16.83,"hypomyelinating leukodystrophy"],[17.24,"deficiency anemia"],[17.24,"thrombophilia"],[17.29,"orthostatic hypotension"],[17.43,"bone disorder"],[17.49,"cerebellar pilocytic astrocytoma"],[17.49,"hypersplenism"],[17.53,"leiomyoma"],[17.57,"myeloid leukemia"],[17.58,"large cell medulloblastoma"],[17.59,"extraskeletal Ewing sarcoma/peripheral primi"],[17.62,"Hodgkins lymphoma"],[17.65,"frontotemporal dementia"],[17.71,"protein-losing enteropathy"],[17.71,"testicular germ cell tumor"],[17.87,"male infertility"],[17.93,"oligospermia"],[17.94,"lung adenocarcinoma"],[17.94,"myxofibrosarcoma"],[17.97,"bilateral striopallidodentate calcinosis"],[17.98,"primary biliary cholangitis"],[17.99,"small intestinal diffuse large B-cell lympho"],[18.03,"gastrointestinal stromal tumor"],[18.06,"gastric carcinoma"],[18.13,"squamous cell lung carcinoma"],[18.15,"Leber congenital amaurosis"],[18.16,"spondylosis"],[18.19,"breast ductal adenocarcinoma"],[18.23,"urinary bladder carcinoma"],[18.27,"hepatobiliary neoplasm"],[18.3,"hypophosphatemia"],[18.32,"atopic eczema"],[18.34,"pancreatic ductal adenocarcinoma"],[18.36,"lung carcinoma"],[18.37,"vitamin B deficiency"],[18.38,"rectum adenocarcinoma"],[18.39,"esophageal adenosquamous carcinoma"],[18.4,"carcinoma of liver and intrahepatic biliary "],[18.46,"auditory neuropathy"],[18.46,"gastric adenocarcinoma"],[18.47,"lymphoid neoplasm"],[18.59,"pectus excavatum"],[18.63,"plasma cell myeloma"],[18.64,"extrarenal rhabdoid tumor"],[18.69,"seborrheic keratosis"],[18.72,"megalocornea"],[18.8,"cervical squamous cell carcinoma"],[18.82,"Kallmann syndrome"],[18.82,"vesicoureteral reflux"],[18.86,"macular degeneration"],[18.87,"neuromuscular disease"],[18.89,"amenorrhea"],[18.98,"Fuchs' endothelial dystrophy"],[19.03,"hypogonadotropic hypogonadism"],[19.04,"osteosarcoma"],[19.09,"epididymitis"],[19.12,"kidney neoplasm"],[19.17,"rectal tubulovillous adenoma"],[19.18,"esophageal squamous cell carcinoma"],[19.18,"signet ring cell gastric adenocarcinoma"],[19.29,"plasmacytoma"],[19.35,"hemorrhoid"],[19.42,"metabolic disease"],[19.43,"non-small cell lung carcinoma"],[19.46,"thymic undifferentiated carcinoma"],[19.48,"small cell lung carcinoma"],[19.61,"otosclerosis"],[19.62,"allergic asthma"],[19.63,"myeloproliferative neoplasm, unclassifiable"],[19.67,"HER2 positive breast carcinoma"],[19.75,"undifferentiated pleomorphic sarcoma"],[19.75,"uterine carcinosarcoma"],[19.85,"estrogen-receptor negative breast cancer"],[19.91,"epithelioid cell melanoma"],[19.92,"recurrent pneumonia"],[19.97,"parathyroid gland adenoma"],[20.0,"sarcoma"],[20.02,"congenital myasthenic syndrome"],[20.07,"rolandic epilepsy"],[20.11,"nodular malignant melanoma"],[20.18,"soft tissue sarcoma"],[20.23,"myocardial ischemia"],[20.24,"pancreatic neuroendocrine tumor"],[20.35,"extraosseous osteosarcoma"],[20.54,"exanthem"],[20.55,"gastric adenoma"],[20.64,"T-cell prolymphocytic leukemia"],[20.68,"Charcot-Marie-Tooth disease"],[20.87,"craniosynostosis"],[20.91,"clear cell sarcoma"],[20.94,"hematologic disorder"],[21.15,"kidney Wilms tumor"],[21.23,"fatty liver disease"],[21.3,"exocrine pancreatic carcinoma"],[21.31,"nonsyndromic genetic hearing loss"],[21.33,"gallbladder adenocarcinoma"],[21.52,"gastric intestinal type adenocarcinoma"],[21.54,"hereditary spastic paraplegia"],[21.58,"vulvar intraepithelial neoplasia"],[21.69,"lung large cell carcinoma"],[21.73,"mantle cell lymphoma"],[21.78,"marginal zone lymphoma"],[21.79,"pontocerebellar hypoplasia"],[21.88,"polyp of colon"],[21.92,"nephronophthisis"],[21.93,"brachydactyly"],[21.94,"breast lobular carcinoma"],[21.95,"autosomal dominant nonsyndromic deafness"],[21.96,"female breast carcinoma"],[22.05,"diffuse alveolar hemorrhage"],[22.07,"testicular non-seminomatous germ cell tumor"],[22.18,"salivary gland mucoepidermoid carcinoma"],[22.22,"gastroesophageal junction adenocarcinoma"],[22.23,"esophagitis"],[22.24,"neuroendocrine carcinoma"],[22.25,"osteomyelitis"],[22.26,"malignant epithelioid mesothelioma"],[22.31,"atresia of urethra"],[22.49,"digestive system melanoma"],[22.56,"cerebral atherosclerosis"],[22.56,"lung disorder"],[22.61,"luminal A breast carcinoma"],[22.63,"myelomeningocele"],[22.64,"lipodystrophy"],[22.65,"pleural mesothelioma"],[22.68,"carcinoma of esophagus"],[22.79,"hemangioma"],[22.95,"Behcet disease"],[22.99,"chronic rhinosinusitis"],[23.07,"dilated cardiomyopathy"],[23.22,"rectum malignant melanoma"],[23.28,"lymphoma"],[23.33,"combined small cell lung carcinoma"],[23.34,"rectal tubular adenoma"],[23.41,"ovarian endometriosis"],[23.45,"non-Hodgkin lymphoma"],[23.46,"microcytic anemia"],[23.51,"arthrogryposis multiplex congenita"],[23.57,"sarcomatoid carcinoma"],[23.6,"lung cancer"],[23.62,"polycythemia"],[23.72,"ovarian granulosa cell tumor"],[23.79,"extranodal nasal NK/T cell lymphoma"],[23.82,"escherichia coli infection"],[23.93,"Ewing sarcoma/peripheral primitive neuroecto"],[24.17,"lymphoplasmacytic lymphoma"],[24.26,"familial hypercholesterolemia"],[24.32,"dyskeratosis congenita"],[24.33,"lymphadenitis"],[24.36,"angiosarcoma"],[24.43,"corneal dystrophy"],[24.46,"T-cell large granular lymphocyte leukemia"],[24.55,"hypercalcemia disease"],[24.59,"angioimmunoblastic T-cell lymphoma"],[24.6,"respiratory failure"],[24.63,"pulmonary large cell neuroendocrine carcinom"],[24.68,"rickets"],[24.76,"childhood onset asthma"],[24.81,"pancreatic insulinoma"],[24.84,"allergic disease"],[24.85,"testicular teratoma"],[24.87,"hypochromic anemia"],[24.92,"immunodeficiency"],[25.03,"hypotensive disorder"],[25.04,"erectile dysfunction"],[25.1,"ACTH-producing pituitary gland adenoma"],[25.12,"Fanconi anemia complementation group"],[25.12,"acquired polycythemia vera"],[25.14,"goiter"],[25.22,"gastric small cell neuroendocrine carcinoma"],[25.24,"invasive breast carcinoma"],[25.24,"lipoma"],[25.27,"pleural biphasic mesothelioma"],[25.29,"acinar lung adenocarcinoma"],[25.32,"congenital stationary night blindness"],[25.38,"choroid plexus papilloma"],[25.43,"nasopharyngeal squamous cell carcinoma"],[25.54,"metaplastic breast carcinoma"],[25.56,"chronic neutrophilic leukemia"],[25.58,"skin angiosarcoma"],[25.74,"megaloblastic anemia"],[25.88,"dyslexia"],[26.03,"breast carcinoma by gene expression profile"],[26.07,"laryngeal squamous cell carcinoma"],[26.08,"pleomorphic liposarcoma"],[26.13,"mucoepidermoid carcinoma of parotid gland"],[26.19,"situs inversus"],[26.4,"pulmonic stenosis"],[26.44,"Burkitt lymphoma"],[26.47,"pneumothorax"],[26.53,"chordoma"],[26.72,"adrenal cortex carcinoma"],[26.8,"hyperpigmentation of the skin"],[26.82,"atypical endometrial hyperplasia"],[26.93,"spindle cell melanoma"],[27.03,"aggressive NK-cell leukemia"],[27.03,"gastroparesis"],[27.04,"early-onset non-syndromic cataract"],[27.12,"gastric neuroendocrine tumor"],[27.15,"malignant syringoma"],[27.19,"brain sarcoma"],[27.24,"anus neoplasm"],[27.33,"gallbladder biliary intraepithelial neoplasi"],[27.34,"pancreatic acinar cell carcinoma"],[27.39,"endometrial carcinoma"],[27.43,"pancreatitis"],[27.5,"peripheral arterial disease"],[27.51,"eccrine porocarcinoma"],[27.58,"acute lymphoblastic leukemia"],[27.58,"phlebitis"],[27.59,"therapy-related myeloid neoplasm"],[27.6,"breast cancer"],[27.62,"diffuse gastric adenocarcinoma"],[27.65,"chondroblastic osteosarcoma"],[27.72,"benign neoplasm of skin"],[27.81,"medullomyoblastoma with myogenic differentia"],[27.81,"ulna fracture"],[27.86,"systemic mastocytosis with an associated clo"],[27.93,"microphthalmia"],[27.94,"macrocytic anemia"],[27.98,"salivary gland adenoid cystic carcinoma"],[27.99,"venous thromboembolism"],[28.04,"familial idiopathic steroid-resistant nephro"],[28.2,"hyperinsulinemic hypoglycemia"],[28.21,"aortic atherosclerosis"],[28.21,"leukemia"],[28.21,"vaginal atresia"],[28.23,"breast neoplasm"],[28.24,"non-functional pancreatic neuroendocrine tum"],[28.33,"embryonal rhabdomyosarcoma"],[28.45,"acral lentiginous melanoma"],[28.47,"ichthyosis"],[28.59,"Meckel syndrome"],[28.65,"low grade glioma"],[28.76,"neoplasm of mature B-cells"],[28.77,"anaplastic large cell lymphoma"],[28.82,"hiatus hernia"],[28.83,"pulmonary blastoma"],[28.9,"therapy related acute myeloid leukemia and m"],[28.91,"amelanotic skin melanoma"],[28.93,"chondrosarcoma"],[29.09,"acute myeloid leukemia with mutated NPM1"],[29.15,"digestive system neoplasm"],[29.17,"gallbladder adenoma"],[29.21,"mitochondrial complex 1 deficiency, nuclear"],[29.31,"salivary gland squamous cell carcinoma"],[29.31,"urinary bladder small cell neuroendocrine ca"],[29.36,"epispadias"],[29.4,"extramammary Paget disease"],[29.45,"myeloid neoplasm"],[29.66,"pancreatic adenocarcinoma"],[29.68,"colon small cell neuroendocrine carcinoma"],[29.7,"isolated familial wooly hair disorder"],[29.75,"undifferentiated gallbladder carcinoma"],[29.85,"CD4+/CD56+ hematodermic neoplasm"],[29.95,"minimally invasive lung adenocarcinoma"],[29.98,"rectal neoplasm"],[30.01,"cervical small cell carcinoma"],[30.22,"sclerocornea"],[30.28,"thyroid gland undifferentiated (anaplastic) "],[30.32,"esophageal melanoma"],[30.32,"ileal neuroendocrine tumor G1"],[30.33,"alveolar rhabdomyosarcoma"],[30.33,"myelodysplastic syndrome"],[30.38,"cardiomyopathy"],[30.4,"meningocele"],[30.48,"leiomyosarcoma"],[30.49,"Joubert syndrome and related disorders"],[30.71,"spina bifida"],[30.89,"leprosy"],[30.94,"myelofibrosis"],[30.95,"rhabdomyosarcoma"],[31.02,"digestive system carcinoma"],[31.08,"pleural epithelioid mesothelioma"],[31.21,"major salivary gland adenoid cystic carcinom"],[31.31,"Joubert syndrome"],[31.4,"lichen planus"],[31.41,"larynx cancer"],[31.42,"acute leukemia of ambiguous lineage"],[31.42,"oligohydramnios"],[31.43,"hypertriglyceridemia"],[31.51,"anal melanoma"],[31.61,"retinitis pigmentosa"],[31.68,"erythematosquamous dermatosis"],[31.77,"hairy cell leukemia"],[31.81,"meningioma"],[31.84,"adenosquamous lung carcinoma"],[32.02,"renal pelvis papillary urothelial carcinoma"],[32.05,"viral eye infection"],[32.06,"osteopetrosis"],[32.09,"mixed lobular and ductal breast carcinoma"],[32.18,"olfactory neuroblastoma"],[32.43,"osteoblastic osteosarcoma"],[32.53,"poorly differentiated thyroid gland carcinom"],[32.64,"cavernous hemangioma"],[32.72,"liposarcoma"],[33.0,"synovial sarcoma"],[33.2,"follicular variant thyroid gland papillary c"],[33.2,"glycogen storage disease"],[33.26,"ovarian teratoma"],[33.27,"salivary gland carcinoma ex pleomorphic aden"],[33.33,"minor salivary gland adenoid cystic carcinom"],[33.37,"myelomonocytic leukemia"],[33.39,"endometrial cancer"],[33.49,"benign colon neoplasm"],[33.5,"Fanconi anemia"],[33.52,"familial lipoprotein lipase deficiency"],[33.64,"thymoma"],[33.68,"acute leukemia"],[33.81,"luminal B breast carcinoma"],[33.87,"cirrhosis of liver"],[33.91,"urinary bladder cancer"],[34.02,"pancreatic neoplasm"],[34.08,"porencephaly"],[34.12,"familial hypertrophic cardiomyopathy"],[34.15,"endometrioid stromal sarcoma"],[34.26,"dysgraphia"],[34.29,"astigmatism"],[34.36,"primary pulmonary diffuse large B-cell lymph"],[34.37,"cervical adenocarcinoma"],[34.49,"Langerhans cell histiocytosis"],[34.62,"adenoid cystic breast carcinoma"],[34.85,"endometrial clear cell adenocarcinoma"],[34.92,"melanocytic nevus"],[34.95,"bile duct papillary neoplasm"],[35.04,"juvenile pilocytic astrocytoma"],[35.08,"hepatoblastoma"],[35.3,"fetal akinesia deformation sequence"],[35.43,"acute myeloid leukemia, t(3;5)(q25;q34)"],[35.43,"granulocytic sarcoma"],[35.6,"familial pancreatic carcinoma"],[35.81,"gastric cancer"],[36.18,"endometrial serous adenocarcinoma"],[36.25,"lung carcinoid tumor"],[36.46,"parotid gland adenoid cystic carcinoma"],[36.64,"pleomorphic rhabdomyosarcoma"],[36.73,"breast phyllodes tumor"],[36.91,"thoracic aortic aneurysm and aortic dissecti"],[37.35,"vaginal melanoma"],[37.44,"peripheral T-cell lymphoma, not otherwise sp"],[37.45,"cervical adenosquamous carcinoma"],[37.62,"malignant pancreatic neoplasm"],[37.68,"colorectal adenoma"],[37.68,"dedifferentiated liposarcoma"],[37.69,"primary peritoneal carcinoma"],[37.83,"endometrial mixed adenocarcinoma"],[37.83,"vitamin B12 deficiency"],[38.12,"salivary gland carcinoma"],[38.35,"well-differentiated liposarcoma"],[38.4,"conjunctivitis"],[38.69,"salivary duct carcinoma"],[39.09,"polydactyly"],[39.23,"acinic cell breast carcinoma"],[39.44,"carcinoma of pharynx"],[39.52,"colon adenoma"],[39.61,"bladder urachal adenocarcinoma"],[39.64,"extragonadal seminoma"],[39.7,"chronic mucocutaneous candidiasis"],[39.83,"hereditary neoplastic syndrome"],[39.98,"otitis media"],[40.52,"medullary thyroid gland carcinoma"],[40.61,"thymic carcinoma"],[40.68,"breast adenocarcinoma"],[40.91,"laryngeal carcinoma"],[40.94,"corneal degeneration"],[40.97,"myelodysplastic/myeloproliferative neoplasm"],[41.08,"oligoastrocytoma"],[41.21,"primary ciliary dyskinesia"],[41.36,"Wolffian duct adenocarcinoma"],[41.9,"aplasia cutis congenita"],[42.35,"mixed germ cell tumor"],[42.54,"Diamond-Blackfan anemia"],[42.97,"endometrium adenocarcinoma"],[43.19,"lung sarcomatoid carcinoma"],[43.22,"hereditary breast ovarian cancer syndrome"],[43.25,"breast adenosis"],[43.75,"thymus squamous cell carcinoma"],[43.87,"ovarian yolk sac tumor"],[44.19,"Sprengel deformity"],[45.66,"carcinoid tumor"],[46.08,"mucosal melanoma"],[46.22,"autosomal recessive nonsyndromic deafness"],[46.84,"hypopigmentation of the skin"],[47.19,"bladder adenocarcinoma"],[47.83,"esophageal cancer"],[47.95,"small cell carcinoma"],[48.31,"thumb deformity"],[49.05,"carcinosarcoma"],[53.98,"breast-ovarian cancer, familial, susceptibil"],[55.51,"endometrial undifferentiated carcinoma"],[56.17,"lung adenoma"],[57.46,"hereditary breast carcinoma"],[58.17,"sebaceous adenocarcinoma"],[59.22,"epidermal appendage tumor"]],
+  /* pairwise top-50 overlap across the 12 breast terms: [a, b, allGenes, novelOnly] */
+  overlap: [["Lobular","ER\u2212",13,0],["Lobular","ER+",13,1],["Lobular","Breast (parent)",14,1],["Female breast","ER+",13,1],["HER2+","ER+",14,1],["HER2+","Breast (parent)",14,1],["TNBC","Lobular",12,1],["Breast ca.","ER+",17,2],["Breast ca.","ER\u2212",15,2],["Breast ca.","TNBC",15,2],["HER2+","ER\u2212",14,2],["TNBC","HER2+",14,2],["Female breast","Breast (parent)",15,2],["Female breast","ER\u2212",13,3],["Female breast","TNBC",12,3],["Breast ca.","Breast (parent)",17,4],["Luminal B","Breast (parent)",20,5],["Adeno","Breast (parent)",13,5],["Luminal B","Breast ca.",31,6],["Adeno","Breast ca.",31,6],["Luminal A","Lobular",26,6],["Luminal A","Female breast",26,7],["ER\u2212","Breast (parent)",15,7],["Invasive","Breast (parent)",15,7],["Female breast","Adeno",26,8],["Adeno","HER2+",28,8],["Luminal B","HER2+",32,8],["Luminal A","HER2+",25,8],["Luminal B","Lobular",33,8],["Luminal B","Female breast",34,8],["Adeno","Lobular",27,9],["Adeno","TNBC",13,9],["Luminal B","ER\u2212",12,9],["Luminal A","Breast ca.",26,9],["Adeno","ER+",14,9],["Breast ca.","Invasive",36,9],["Adeno","ER\u2212",16,10],["Female breast","Invasive",36,10],["TNBC","Breast (parent)",17,10],["Lobular","Invasive",35,10],["Luminal B","TNBC",12,10],["Invasive","ER\u2212",13,10],["Luminal A","ER\u2212",14,11],["Luminal A","Breast (parent)",21,11],["Luminal A","TNBC",16,11],["HER2+","Invasive",37,11],["Luminal B","ER+",13,11],["Invasive","ER+",14,11],["ER+","Breast (parent)",23,12],["Luminal B","Luminal A",22,12],["TNBC","Invasive",11,13],["Luminal A","ER+",18,14],["Luminal A","Adeno",21,15],["ER+","ER\u2212",19,15],["Luminal A","Invasive",26,16],["TNBC","ER\u2212",19,16],["TNBC","ER+",20,17],["Adeno","Invasive",29,20],["Luminal B","Invasive",34,23],["Luminal B","Adeno",26,24],["Breast ca.","Lobular",38,29],["Female breast","Breast ca.",38,31],["Lobular","HER2+",45,31],["Breast ca.","HER2+",40,33],["Female breast","HER2+",46,35],["Female breast","Lobular",47,36]],
+  /* top-50 membership grid: [gene, nSubtypes, rankHER2, rankLumA, rankLumB, rankTNBC]; 0 = absent */
+  grid: [["ATM",4,18,2,17,2],["BRCA2",4,39,33,18,4],["CTNNB1",4,6,15,10,20],["EP300",4,2,1,1,13],["FGFR1",4,25,8,15,30],["FGFR2",4,46,11,34,27],["MSH2",4,37,3,47,21],["TP53",4,1,7,6,3],["BARD1",3,0,26,33,9],["BLM",3,38,12,25,0],["ERBB3",3,17,29,7,0],["ERBB4",3,22,13,12,0],["ESR1",3,31,6,0,17],["HRAS",3,9,28,19,0],["JAK2",3,7,31,13,0],["KRAS",3,10,37,8,0],["PIK3CA",3,5,10,4,0],["PIK3R1",3,3,4,3,0],["PTPN11",3,8,21,11,0],["RAD51",3,0,17,21,49],["RUNX1",3,19,49,22,0],["SMAD3",3,13,14,0,8],["SMAD4",3,24,27,0,7],["STAT3",3,16,9,26,0],["AKT1",2,29,19,0,0],["ARID1A",2,45,0,30,0],["ATR",2,0,0,38,11],["BRAF",2,30,0,32,0],["BRCA1",2,12,0,5,0],["BRIP1",2,0,45,0,6],["CDK4",2,35,0,0,43],["CHEK2",2,0,0,39,14],["CREBBP",2,4,44,0,0],["EGFR",2,11,0,9,0],["ERBB2",2,14,0,14,0],["KDR",2,33,0,40,0],["KIT",2,34,0,35,0],["MAPK1",2,15,0,37,0],["MET",2,0,16,43,0],["MYC",2,50,0,0,12],["NBN",2,0,22,0,5],["NRAS",2,21,0,29,0],["NTRK1",2,27,0,20,0],["RAD50",2,0,18,0,1],["RB1",2,49,0,0,50],["SMARCA4",2,23,0,46,0],["SOS1",2,32,0,27,0],["STAT5B",2,40,0,48,0],["YAP1",2,41,43,0,0],["ABL1",1,47,0,0,0],["ADHFE1",1,0,0,0,25],["APC",1,0,0,0,35],["ARID1B",1,43,0,0,0],["AURKA",1,0,0,0,33],["CBL",1,36,0,0,0],["CCND1",1,44,0,0,0],["CDK6",1,0,0,0,19],["CDKN2B",1,0,0,0,24],["CFLAR",1,0,47,0,0],["CHEK1",1,0,0,0,32],["CTBP1",1,0,0,0,38],["ERCC6",1,0,0,0,26],["ESRRB",1,0,0,0,41],["FGF8",1,0,0,0,31],["FGFR3",1,0,0,45,0],["FOXO1",1,0,48,0,0],["GAB2",1,0,20,0,0],["GART",1,0,0,0,34],["GATA2",1,42,0,0,0],["GRHL3",1,0,0,0,44],["H3-3A",1,0,0,50,0],["HCN2",1,0,36,0,0],["HCN4",1,0,46,0,0],["HNF4A",1,0,41,0,0],["INHA",1,0,0,0,10],["IRS2",1,0,35,0,0],["JAK1",1,28,0,0,0],["KMT2D",1,0,23,0,0],["LEF1",1,48,0,0,0],["MDC1",1,0,0,0,16],["MDM2",1,0,0,0,18],["MED10",1,0,0,0,29],["MRE11",1,0,34,0,0],["MRTFB",1,0,0,0,48],["MSH6",1,0,0,2,0],["NANOG",1,0,32,0,0],["NCOR2",1,0,30,0,0],["NOTCH1",1,0,40,0,0],["NR2E1",1,0,0,0,40],["NR2F1",1,0,0,0,45],["NRG1",1,0,0,16,0],["PALB2",1,0,0,0,39],["PBRM1",1,0,0,41,0],["PDGFRB",1,0,0,49,0],["PIP4K2B",1,0,25,0,0],["PMS2",1,0,0,24,0],["POLD1",1,0,50,0,0],["PPARG",1,0,38,0,0],["RAD51C",1,0,0,0,37],["RAD9A",1,0,0,0,46],["RAF1",1,0,0,42,0],["RBBP8",1,0,0,0,23],["RMI2",1,0,0,0,47],["RPA1",1,0,0,0,15],["SLITRK4",1,0,0,0,28],["SMAD2",1,26,0,0,0],["SMARCA2",1,0,0,23,0],["SMARCB1",1,0,0,28,0],["SMARCC2",1,0,0,44,0],["SMARCD2",1,0,0,31,0],["SMARCD3",1,0,0,36,0],["SPO11",1,0,0,0,36],["SRC",1,20,0,0,0],["STAT5A",1,0,42,0,0],["THRA",1,0,24,0,0],["THRB",1,0,39,0,0],["TOPBP1",1,0,0,0,42],["WRN",1,0,5,0,0],["XRCC5",1,0,0,0,22]],
+};
+
+/* ==========================================================================
+   Helpers
+   ========================================================================== */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = n => n.toLocaleString('en-US');
+const DSS = 'https://design.solutions.dataiku-dss.io/projects/DEMO_TARGET_IDENTIFICATION';
+const dsLink = n => `<a href="${DSS}/datasets/${n}/explore/" target="_blank" rel="noopener">${n}</a>`;
+const rcLink = n => `<a href="${DSS}/recipes/${n}/" target="_blank" rel="noopener">${n}</a>`;
+
+function hbars(rows, o = {}) {
+  const rh = o.rowH || 20, gap = 4, lw = o.labelW || 168, vw = 62;
+  const h = rows.length * (rh + gap), max = Math.max(...rows.map(r => r[1]));
+  const bw = Math.max(110, (o.width || 640) - lw - vw);
+  let s = `<svg viewBox="0 0 ${lw + bw + vw} ${h}" role="img" aria-label="${esc(o.aria || 'bar chart')}">`;
+  rows.forEach((r, i) => {
+    const y = i * (rh + gap), w = Math.max(1.5, (r[1] / max) * bw);
+    s += `<text class="lab" x="${lw - 8}" y="${y + rh / 2 + 4}" font-size="11" text-anchor="end">${esc(r[0])}</text>`
+      +  `<rect x="${lw}" y="${y + 2}" width="${w}" height="${rh - 4}" rx="2.5" fill="${r[2] || 'var(--chart-3)'}"/>`
+      +  `<text x="${lw + bw + vw - 2}" y="${y + rh / 2 + 4}" font-size="10.5" text-anchor="end">${fmt(r[1])}</text>`;
+  });
+  return s + '</svg>';
+}
+
+function histogram(bins, o = {}) {
+  const W = 640, H = o.height || 190, pl = 34, pb = 26, pt = 10, pr = 8;
+  const iw = W - pl - pr, ih = H - pb - pt, max = Math.max(...bins), bw = iw / bins.length;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.aria || 'histogram')}">`;
+  for (let g = 0; g <= 4; g++) {
+    const y = pt + ih - ih * g / 4;
+    s += `<line x1="${pl}" x2="${W - pr}" y1="${y}" y2="${y}" stroke="var(--border)" stroke-dasharray="3 3"/>`
+      +  `<text x="${pl - 6}" y="${y + 3.5}" font-size="9.5" text-anchor="end">${Math.round(max * g / 4)}</text>`;
+  }
+  bins.forEach((c, i) => {
+    if (!c) return;
+    const bh = (c / max) * ih, mid = (i + .5) / bins.length;
+    s += `<rect x="${pl + i * bw + 1}" y="${pt + ih - bh}" width="${bw - 2}" height="${bh}" rx="1.5"
+           fill="${mid < .5 ? 'var(--chart-1)' : 'var(--chart-3)'}"/>`;
+  });
+  const ch = pl + .5 * iw;
+  s += `<line x1="${ch}" x2="${ch}" y1="${pt}" y2="${pt + ih}" stroke="var(--muted-foreground)" stroke-dasharray="2 3"/>`
+    +  `<text x="${ch - 4}" y="${pt + 11}" font-size="9" text-anchor="end">chance</text>`;
+  if (o.mean != null) {
+    const x = pl + o.mean * iw;
+    s += `<line x1="${x}" x2="${x}" y1="${pt}" y2="${pt + ih}" stroke="var(--destructive)" stroke-width="1.5"/>`
+      +  `<text x="${x + 4}" y="${pt + 11}" font-size="10" fill="var(--destructive)">macro ${o.mean.toFixed(4)}</text>`;
+  }
+  if (o.marker != null) {
+    const x = pl + o.marker * iw;
+    s += `<path d="M${x} ${pt + ih} l-4 8 h8 z" fill="var(--primary)"/>`
+      +  `<text x="${x}" y="${pt + ih + 22}" font-size="10" text-anchor="middle" fill="var(--primary)">${esc(o.markerLabel || '')}</text>`;
+  }
+  s += `<line x1="${pl}" x2="${W - pr}" y1="${pt + ih}" y2="${pt + ih}" stroke="var(--border)"/>`;
+  [0,.25,.5,.75,1].forEach(t => s += `<text x="${pl + t * iw}" y="${H - 6}" font-size="9.5" text-anchor="middle">${t.toFixed(2)}</text>`);
+  return s + '</svg>';
+}
+
+/** Sankey: routes -> pool -> splits. Routes overlap, so the join is drawn as a
+ *  convergence onto the UNION node and the removed duplication is labelled. */
+function sankey(p) {
+  const W = 780, H = 250, pad = 14, lw = 132, midX = 330, midW = 26, rightX = 560;
+  const rawSum = p.routes.reduce((a, b) => a + b[1], 0);
+  const scale = (H - pad * 2 - 24) / Math.max(rawSum, p.union);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="candidate pool routes and splits">`;
+  let y = pad, midY = pad, ribbons = '';
+  const midH = p.union * scale;
+  p.routes.forEach((r, i) => {
+    const h = r[1] * scale, col = ['var(--chart-3)','var(--chart-2)','var(--chart-1)'][i];
+    s += `<text class="lab" x="${lw - 16}" y="${y + h / 2 - 1}" font-size="10.5" text-anchor="end" fill="var(--foreground)">${esc(r[0])}</text>`
+      +  `<text x="${lw - 16}" y="${y + h / 2 + 11}" font-size="10" text-anchor="end">${fmt(r[1])}</text>`
+      +  `<rect x="${lw - 10}" y="${y}" width="10" height="${Math.max(1.5, h)}" rx="2" fill="${col}"/>`;
+    const th = h * (p.union / rawSum);
+    ribbons += `<path d="M${lw} ${y} C${midX - 80} ${y}, ${midX - 80} ${midY}, ${midX} ${midY}
+                 L${midX} ${midY + th} C${midX - 80} ${midY + th}, ${midX - 80} ${y + h}, ${lw} ${y + h} Z"
+                 fill="${col}" fill-opacity=".26"/>`;
+    y += h + 8; midY += th;
+  });
+  s = s.replace('>', '>' + ribbons);
+  s += `<rect x="${midX}" y="${pad}" width="${midW}" height="${midH}" rx="3" fill="var(--primary)"/>`
+    +  `<text class="lab" x="${midX + midW / 2}" y="${pad - 4}" font-size="10.5" text-anchor="middle" fill="var(--foreground)">candidate pool</text>`
+    +  `<text x="${midX + midW / 2}" y="${pad + midH / 2}" font-size="11" text-anchor="middle" fill="var(--primary-foreground)">${fmt(p.union)}</text>`
+    +  `<text x="${midX + midW / 2}" y="${pad + midH / 2 + 13}" font-size="9" text-anchor="middle" fill="var(--primary-foreground)">${p.posRate}% positive</text>`;
+  let ry = pad;
+  p.splits.forEach((r, i) => {
+    const h = r[1] * scale, col = ['var(--chart-3)','var(--chart-2)','var(--chart-1)'][i];
+    s += `<path d="M${midX + midW} ${ry} C${rightX - 90} ${ry}, ${rightX - 90} ${ry}, ${rightX} ${ry}
+           L${rightX} ${ry + h} C${rightX - 90} ${ry + h}, ${rightX - 90} ${ry + h}, ${midX + midW} ${ry + h} Z"
+           fill="${col}" fill-opacity=".26"/>`
+      +  `<rect x="${rightX}" y="${ry}" width="10" height="${Math.max(1.5, h)}" rx="2" fill="${col}"/>`
+      +  `<text class="lab" x="${rightX + 16}" y="${ry + h / 2 - 2}" font-size="10.5" fill="var(--foreground)">${esc(r[0])}</text>`
+      +  `<text x="${rightX + 16}" y="${ry + h / 2 + 10}" font-size="10">${fmt(r[1])}</text>`;
+    ry += h;
+  });
+  s += `<text x="${midX + midW / 2}" y="${H - 6}" font-size="9.5" text-anchor="middle">`
+    +  `routes overlap — ${fmt(rawSum - p.union)} duplicate admissions removed</text>`;
+  return s + '</svg>';
+}
+
+/** Box plot with every observation as a jittered dot underneath. */
+function beeswarm(box, pts, o = {}) {
+  const W = 700, H = 168, pl = 14, pr = 14, by = 16, bh = 26, sy = 62, sh = 78;
+  const hi = Math.ceil(box.max / 10) * 10, iw = W - pl - pr, X = v => pl + (v / hi) * iw;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="rank enrichment across 668 diseases">`;
+  s += `<line x1="${X(box.min)}" x2="${X(box.max)}" y1="${by + bh / 2}" y2="${by + bh / 2}" stroke="var(--chart-3)" stroke-width="1.5"/>`;
+  [box.min, box.max].forEach(v => s += `<line x1="${X(v)}" x2="${X(v)}" y1="${by + 5}" y2="${by + bh - 5}" stroke="var(--chart-3)" stroke-width="1.5"/>`);
+  s += `<rect x="${X(box.q1)}" y="${by}" width="${X(box.q3) - X(box.q1)}" height="${bh}" rx="3"
+         fill="color-mix(in oklab, var(--chart-3) 20%, transparent)" stroke="var(--chart-3)"/>`
+    +  `<line x1="${X(box.med)}" x2="${X(box.med)}" y1="${by - 3}" y2="${by + bh + 3}" stroke="var(--chart-3)" stroke-width="2.5"/>`
+    +  `<text x="${X(box.med)}" y="${by - 8}" font-size="11" text-anchor="middle" fill="var(--chart-3)">median ${box.med.toFixed(1)}×</text>`;
+  /* 668 dots as ONE path, not 668 elements with 668 <title> children — that shape
+     costs ~1,300 DOM nodes and visibly stalls a render. Hover is served instead by
+     a nearest-point lookup over BEE_PTS, which the caller stores. */
+  const named = o.named || {};
+  let d = '', hits = '';
+  o.hover = [];
+  pts.forEach((p, i) => {
+    const jitter = ((i * 2654435761) % 1000) / 1000;
+    const cy = sy + 5 + jitter * (sh - 12), cx = X(p[0]);
+    if (named[p[1]]) {
+      hits += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="4" fill="var(--primary)"/>`;
+    } else {
+      d += `M${cx.toFixed(1)} ${cy.toFixed(1)}m-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0`;
+    }
+    o.hover.push([cx, cy, p[1], p[0]]);
+  });
+  s += `<path d="${d}" fill="var(--chart-3)" fill-opacity=".28"/>${hits}`;
+  Object.keys(o.named || {}).forEach(nm => {
+    const p = pts.find(x => x[1] === nm); if (!p) return;
+    s += `<text class="lab" x="${X(p[0])}" y="${sy}" font-size="9.5" text-anchor="middle" fill="var(--primary)">${esc(o.named[nm])}</text>`;
+  });
+  for (let v = 0; v <= hi; v += 10) s += `<text x="${X(v)}" y="${H - 4}" font-size="9.5" text-anchor="middle">${v}×</text>`;
+  s += `<text id="beeTip" x="0" y="0" font-size="10" fill="var(--primary)" text-anchor="middle" visibility="hidden"></text>`;
+  s += `<rect x="0" y="${sy}" width="${W}" height="${sh}" fill="transparent" id="beeHit"/>`;
+  return s + '</svg>';
+}
+
+/** Nearest-point hover for the beeswarm — one listener, no per-dot DOM. */
+function wireBeeswarm(root, pts, W) {
+  const hit = root.querySelector('#beeHit'), tip = root.querySelector('#beeTip');
+  if (!hit) return;
+  const svg = hit.ownerSVGElement;
+  hit.addEventListener('mousemove', ev => {
+    const r = svg.getBoundingClientRect(), sx = (ev.clientX - r.left) / r.width * W;
+    const sy2 = (ev.clientY - r.top) / r.height * (svg.viewBox.baseVal.height);
+    let best = null, bd = 1e9;
+    for (const p of pts) { const dx = p[0] - sx, dy = p[1] - sy2, dd = dx * dx + dy * dy;
+      if (dd < bd) { bd = dd; best = p; } }
+    if (best && bd < 90) {
+      tip.textContent = `${best[2]} — ${best[3].toFixed(1)}×`;
+      tip.setAttribute('x', Math.min(Math.max(best[0], 90), W - 90));
+      tip.setAttribute('y', best[1] - 8);
+      tip.setAttribute('visibility', 'visible');
+    } else tip.setAttribute('visibility', 'hidden');
+  });
+  hit.addEventListener('mouseleave', () => tip.setAttribute('visibility', 'hidden'));
+}
+
+/** Horizontal confidence intervals — the honest form for per-disease AUC. */
+function intervals(rows) {
+  const W = 660, rh = 24, pl = 118, pr = 78, H = rows.length * rh + 26;
+  const lo = 0.6, hi = 1.06, iw = W - pl - pr, X = v => pl + ((v - lo) / (hi - lo)) * iw;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="per-disease AUC with 95% confidence intervals">`;
+  const one = X(1.0);
+  s += `<line x1="${one}" x2="${one}" y1="6" y2="${H - 20}" stroke="var(--destructive)" stroke-dasharray="3 3"/>`
+    +  `<text x="${one + 4}" y="${H - 22}" font-size="9" fill="var(--destructive)">AUC = 1.0, the ceiling</text>`;
+  rows.forEach((r, i) => {
+    const y = 10 + i * rh + rh / 2, ok = r[10];
+    const col = ok ? 'var(--chart-3)' : 'var(--destructive)';
+    const over = r[7] > 1.0;
+    s += `<text class="lab" x="${pl - 8}" y="${y + 3.5}" font-size="11" text-anchor="end"
+           fill="${ok ? 'var(--muted-foreground)' : 'var(--destructive)'}">${esc(r[0])}</text>`
+      +  `<line x1="${X(r[6])}" x2="${X(Math.min(r[7], hi))}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="1.5"/>`
+      +  `<line x1="${X(r[6])}" x2="${X(r[6])}" y1="${y - 4}" y2="${y + 4}" stroke="${col}" stroke-width="1.5"/>`
+      +  (over ? `<path d="M${X(hi)} ${y - 5} l7 5 -7 5 Z" fill="${col}"/>`
+               : `<line x1="${X(r[7])}" x2="${X(r[7])}" y1="${y - 4}" y2="${y + 4}" stroke="${col}" stroke-width="1.5"/>`)
+      +  `<circle cx="${X(r[5])}" cy="${y}" r="3.4" fill="${col}"/>`
+      +  `<text x="${W - 4}" y="${y + 3.5}" font-size="9.5" text-anchor="end"
+           fill="${ok ? 'var(--muted-foreground)' : 'var(--destructive)'}">n=${r[4]}${over ? '  hi ' + r[7].toFixed(3) : ''}</text>`;
+  });
+  [0.6,0.7,0.8,0.9,1.0].forEach(t => s += `<text x="${X(t)}" y="${H - 4}" font-size="9.5" text-anchor="middle">${t.toFixed(1)}</text>`);
+  return s + '</svg>';
+}
+
+/** Symmetric pairwise overlap matrix. */
+function matrix(labels, pairs, mode) {
+  const n = labels.length, cell = 26, pl = 104, pt = 74, W = pl + n * cell + 46, H = pt + n * cell + 12;
+  const lookup = {};
+  pairs.forEach(p => { lookup[p[0] + '|' + p[1]] = mode === 'novel' ? p[3] : p[2];
+                       lookup[p[1] + '|' + p[0]] = mode === 'novel' ? p[3] : p[2]; });
+  const vals = Object.values(lookup), max = Math.max(...vals, 1);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="pairwise top-50 overlap">`;
+  labels.forEach((l, j) => s += `<text class="lab" x="${pl + j * cell + cell / 2}" y="${pt - 8}" font-size="9.5"
+      text-anchor="start" transform="rotate(-52 ${pl + j * cell + cell / 2} ${pt - 8})">${esc(l)}</text>`);
+  labels.forEach((a, i) => {
+    s += `<text class="lab" x="${pl - 7}" y="${pt + i * cell + cell / 2 + 3.5}" font-size="10.5" text-anchor="end">${esc(a)}</text>`;
+    labels.forEach((b, j) => {
+      const x = pl + j * cell, y = pt + i * cell;
+      if (i === j) { s += `<rect x="${x + 1}" y="${y + 1}" width="${cell - 2}" height="${cell - 2}" rx="2" fill="var(--muted)"/>`; return; }
+      const v = lookup[a + '|' + b] ?? 0, t = v / max;
+      s += `<rect x="${x + 1}" y="${y + 1}" width="${cell - 2}" height="${cell - 2}" rx="2"
+             fill="var(--chart-3)" fill-opacity="${(0.08 + t * 0.9).toFixed(3)}"><title>${esc(a)} × ${esc(b)}: ${v} of 50</title></rect>`
+        +  `<text x="${x + cell / 2}" y="${y + cell / 2 + 3.5}" font-size="9.5" text-anchor="middle"
+             fill="${t > .55 ? 'var(--primary-foreground)' : 'var(--muted-foreground)'}">${v}</text>`;
+    });
+  });
+  return s + '</svg>';
+}
+
+/** Gene x disease membership grid — the common programme vs subtype-specific split. */
+function geneGrid(rows, cols) {
+  const perCol = 30, groups = [];
+  for (let i = 0; i < rows.length; i += perCol) groups.push(rows.slice(i, i + perCol));
+  const gw = 190, cell = 15, lw = 86, H = 26 + perCol * cell, W = groups.length * gw;
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="top-50 gene membership across breast subtypes">`;
+  groups.forEach((g, gi) => {
+    const ox = gi * gw;
+    cols.forEach((c, j) => s += `<text class="lab" x="${ox + lw + j * cell + cell / 2}" y="16" font-size="8.5"
+        text-anchor="start" transform="rotate(-60 ${ox + lw + j * cell + cell / 2} 16)">${esc(c)}</text>`);
+    g.forEach((r, i) => {
+      const y = 26 + i * cell;
+      const shared = r[1] >= 3;
+      s += `<text class="lab" x="${ox + lw - 6}" y="${y + cell / 2 + 3}" font-size="9" text-anchor="end"
+             fill="${shared ? 'var(--muted-foreground)' : 'var(--chart-1)'}">${esc(r[0])}</text>`;
+      cols.forEach((c, j) => {
+        const rank = r[2 + j];
+        if (!rank) return;
+        const x = ox + lw + j * cell + cell / 2;
+        s += `<circle cx="${x}" cy="${y + cell / 2}" r="${rank <= 10 ? 5 : rank <= 25 ? 4 : 3}"
+               fill="${shared ? 'var(--chart-3)' : 'var(--chart-1)'}" fill-opacity="${rank <= 10 ? .95 : rank <= 25 ? .7 : .45}"
+               ><title>${esc(r[0])} — ${esc(c)} rank ${rank}</title></circle>`;
+      });
+    });
+  });
+  return s + '</svg>';
+}
+
+/* ==========================================================================
+   Card scaffolding
+   ========================================================================== */
+function card(o) {
+  const chips = (o.chips || []).map(c => `<span class="chip chip-${c[0]}">${esc(c[1])}</span>`).join('');
+  const src = (o.src || []).map((x, i) => (i ? '<span class="sep">·</span>' : '') + x).join(' ');
+  return `<section class="card ${o.span || ''}" ${o.id ? `id="${o.id}"` : ''}>
+    <div class="card-h"><div><div class="card-t">${o.title}</div>${o.desc ? `<div class="card-d">${o.desc}</div>` : ''}</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${chips}</div></div>
+    <div class="card-b">${o.body}</div>
+    ${o.src ? `<div class="card-f"><span>src</span>${src}</div>` : ''}</section>`;
+}
+const stat = (l, v, c) => `<div class="stat"><div class="stat-l">${l}</div><div class="stat-v">${v}</div>${c ? `<div class="stat-c">${c}</div>` : ''}</div>`;
+const legend = items => `<div class="lgd">${items.map(([c, l]) => `<span><i style="background:${c}"></i>${esc(l)}</span>`).join('')}</div>`;
+const never = h => `<div class="no"><div class="no-t">Must not appear</div>${h}</div>`;
+
+/* ==========================================================================
+   ACTS
+   ========================================================================== */
+const ACTS = [];
+
+ACTS.push({ id: 'evidence-base', n: 1, title: 'The evidence base',
+  q: 'What can the model actually see?',
+  lede: 'A biomedical knowledge graph built from six external sources and accepted against a frozen reference — −0.03% on edges, 14 of 18 relations reproducing exactly. No model yet. This act is about the evidence, and about the fact that every node and every edge carries its provenance.',
+  render: () => `
+  ${card({ span: 'card', title: 'The graph, in four numbers', chips: [['live','live']],
+    body: `<div class="stats">
+      ${stat('Nodes','113,391','8 types')}
+      ${stat('Edges','2,851,510','18 relations')}
+      ${stat('With provenance','844,166','edges carrying an explicit source')}
+      ${stat('External sources','6','GO · MONDO · NCBI · HPO · DrugBank · REACTOME')}
+    </div>`,
+    src: [dsLink('graph_node_type_counts'), dsLink('graph_relation_counts'), dsLink('graph_ppi_provenance')] })}
+
+  ${card({ span: 'card', title: 'Explore the graph', chips: [['port','existing webapp']],
+    desc: 'The interactive explorer, embedded. Act 4 comes back here to show a prediction explaining itself on the canvas.',
+    body: `<div class="embed"><p><b>Visual Graph Explorer</b> (webapp <code>wBcApLN</code>) renders here in a
+        fixed 540px panel with an <b>open full screen</b> button.<br><br>
+        Fixed height deliberately: letting it size to content is what clipped the drawer in iteration 1.</p></div>`,
+    src: ['webapp wBcApLN', 'Kuzu folder'] })}
+
+  ${card({ span: 'c5', title: '8 node types', desc: 'What kinds of thing the graph knows about.', chips: [['live','live']],
+    body: hbars(D.graph.nodes.map(r => [r[0], r[1], 'var(--chart-2)']), { aria: 'node counts by type', labelW: 146, width: 470 }),
+    src: [dsLink('graph_node_type_counts'), rcLink('compute_graph_node_type_counts')] })}
+
+  ${card({ span: 'c7', title: '18 relations', desc: 'Every relation and its count. The seven largest match <code>GRAPH_BUILDING.md</code> §7.1 exactly.',
+    chips: [['live','live']],
+    body: hbars(D.graph.relations.map(r => [r[0], r[1], 'var(--chart-3)']), { aria: 'edge counts by relation', labelW: 176 }),
+    src: [dsLink('graph_relation_counts')] })}
+
+  ${card({ span: 'c5', title: 'Where the nodes came from', desc: 'Six external vocabularies, and one grouping we derived ourselves.',
+    chips: [['live','live']],
+    body: hbars(D.graph.sources.map(r => [r[0], r[1], r[2] ? 'var(--chart-2)' : 'var(--muted-foreground)']),
+      { aria: 'node counts by source', labelW: 132, width: 470 })
+      + `<div class="warnbox" style="margin-top:10px"><b>Say six sources, not seven.</b>
+         <code>MONDO_grouped</code> (1,247) is a grouping <i>we</i> created to collapse near-duplicate
+         disease terms. Counting it as a source inflates the claim.</div>`,
+    src: [dsLink('graph_node_source_counts')] })}
+
+  ${card({ span: 'c7', title: 'Every edge knows where it came from',
+    desc: 'The 520,380 protein interactions, by which interactome asserted them. <b>86,608 (16.6%) are corroborated by more than one independent source.</b>',
+    chips: [['live','live']],
+    body: hbars(D.graph.ppi.map(r => [r[0], r[1], r[2] > 1 ? 'var(--chart-2)' : 'var(--chart-1)']),
+      { aria: 'protein interaction edges by source', labelW: 158 })
+      + legend([['var(--chart-1)','single source'],['var(--chart-2)','corroborated by 2+ interactomes']])
+      + `<div class="say">Remember this chart. In act 2 the model's two strongest signals turn out to be
+         <b>exactly these two things</b> — how deeply evidenced an interaction is, and how many sources agree.</div>`,
+    src: [dsLink('graph_ppi_provenance')] })}
+
+  ${card({ span: 'c5', title: 'What “known target” actually means',
+    desc: 'The 323,786 annotated disease–gene edges are the training label.', chips: [['live','live']],
+    body: hbars(D.graph.label.map((r, i) => [r[0], r[1], ['var(--chart-3)','var(--chart-1)','var(--chart-2)'][i]]),
+      { aria: 'disease-gene edges by evidence type', labelW: 132, width: 470, rowH: 26 })
+      + `<div class="warnbox" style="margin-top:10px"><b>Not all disease–gene edges.</b> There are 378,888
+         <code>disease_protein</code> edges but only 323,786 with an evidence type — 55,102 (14.5%) carry none.</div>`,
+    src: [dsLink('graph_label_evidence')] })}
+
+  ${card({ span: 'c7', title: 'What this act must not do',
+    body: never(`<ul class="tight">
+      <li><b>No model, no score.</b> The model has not been mentioned yet, and that is the point — this act
+        establishes what it is allowed to see.</li>
+      <li><b>No build pipeline, no recipe counts, no timings.</b> Nobody asked how it was made.</li>
+      <li><b>Do not open the explorer cold.</b> It is the payoff for act 4, not a tour of the data model.</li>
+    </ul>`) })}
+  `,
+});
+
+ACTS.push({ id: 'calibration', n: 2, title: 'Scope and calibration',
+  q: 'How far can this be trusted, and for which disease?',
+  lede: 'Where the candidates come from, how they were split, and how well the ranking holds. The distribution leads and the summary follows — a single accuracy number answers a question nobody asked.',
+  render: () => `
+  ${card({ span: 'c8', title: 'Where the candidates come from',
+    desc: 'Three admission routes build one pool, split by disease family. <b>GGD</b> gene–gene–disease, <b>GPGD</b> gene–pathway–gene–disease, <b>GCD</b> gene–drug–disease. Nothing is filtered by the model yet.',
+    chips: [['gap','needs recipe C']],
+    body: sankey(D.pool)
+      + `<div class="say">The thin orange ribbon is the <b>drug route</b> — 42,227 of 6.75M. No model feature
+         traverses a drug node, but this route <i>admits pairs to the pool</i>, so it shapes the population
+         that gets scored. Say <b>“not a feature”</b>, never “not used”.</div>`,
+    src: [dsLink('pool_route_counts'), dsLink('split_audit_2')] })}
+
+  ${card({ span: 'c4', title: 'Zero straddling keys',
+    desc: 'Related diseases are never allowed on both sides of a divide. Until these read zero, nothing below means anything.',
+    chips: [['live','live']],
+    body: `<div class="stats" style="grid-template-columns:repeat(2,1fr)">
+        ${stat('Train–test','0','shared split keys')}
+        ${stat('Train–val','0','shared split keys')}
+        ${stat('Test–val','0','shared split keys')}
+        ${stat('Straddling','0','across all folds')}
+      </div>
+      <div class="say">The split key came from a curated medical ontology, not an algorithm.
+        <b>“Type 2 diabetes and diabetes mellitus are the same programme”</b> became a rule in the
+        pipeline and <b>lowered</b> the honest score. Act 3 shows that rule as a tree.</div>`,
+    src: [dsLink('split_audit_2')] })}
+
+  ${card({ span: 'c7', id: 'aucCard', title: 'How well the ranking holds',
+    desc: 'Per-disease AUC across the held-out set. Switch the grouping to see it survive at family level.',
+    chips: [['live','live']],
+    body: `<div class="tabs" role="tablist" id="aucTabs">
+        <button role="tab" aria-selected="true" data-t="disease">By disease · 668</button>
+        <button role="tab" aria-selected="false" data-t="family">By family · 503</button>
+      </div><div id="aucBody"></div>`,
+    src: [dsLink('calibration_histograms')] })}
+
+  ${card({ span: 'c5', title: 'What the model actually keys on',
+    desc: 'How often each feature is one of the two strongest SHAP drivers, across all 129,253 scored candidates.',
+    chips: [['live','live']],
+    body: hbars(D.calib.drivers.map(r => [r[0], r[1], r[2] === 'provenance' ? 'var(--chart-2)' : 'var(--chart-3)']),
+      { aria: 'SHAP driver frequency', labelW: 168, rowH: 17 })
+      + legend([['var(--chart-2)','edge-provenance features'],['var(--chart-3)','path, proximity and topology']])
+      + `<div class="say"><b>The top two drivers are both provenance features.</b> The strongest signal the
+         model has is <i>how well evidenced is this interaction</i> — which is exactly what act 1's
+         source chart was showing. Act 1 is not scene-setting; it is the reason this works.</div>
+      <div class="warnbox" style="margin-top:10px"><b>Do not use the saved model's own metrics panel.</b>
+         <code>hJLGoYn4</code> reports AUC 0.8962 and average precision 0.3359 — both <b>pooled on its
+         internal test split</b>. The honest macro figures are 0.8230 and 0.1778. And permutation
+         importance was skipped at training, so this SHAP aggregation <i>is</i> the importance story.</div>`,
+    src: [dsLink('shap_driver_frequency'), dsLink('dashboard_candidates')] })}
+
+  ${card({ span: 'c5', title: 'Precision, against the base rate it has to beat',
+    desc: 'AUROC flatters an imbalanced problem. At 1.89% prevalence, average precision is the honest one — but only when you show what chance would score.',
+    chips: [['live','live']],
+    body: (() => { const a = D.auprc, W = 560, pl = 6, pr = 90, iw = W - pl - pr, X = v => pl + (v / 0.9) * iw;
+      return `<svg viewBox="0 0 ${W} 108" role="img" aria-label="AUPRC against base rate">
+        <text class="lab" x="${pl}" y="14" font-size="11" fill="var(--foreground)">Average precision</text>
+        <rect x="${pl}" y="22" width="${X(a.value) - pl}" height="18" rx="3" fill="var(--chart-3)"/>
+        <rect x="${pl}" y="22" width="${Math.max(2, X(a.base) - pl)}" height="18" fill="var(--destructive)"/>
+        <text x="${X(a.value) + 6}" y="35" font-size="11" fill="var(--chart-3)">${a.value.toFixed(4)}</text>
+        <text x="${pl}" y="56" font-size="9.5" fill="var(--destructive)">chance = the base rate, ${(a.base * 100).toFixed(2)}%</text>
+        <text class="lab" x="${pl}" y="80" font-size="11" fill="var(--foreground)">AUROC</text>
+        <rect x="${pl}" y="86" width="${X(a.auroc) - pl}" height="18" rx="3" fill="var(--chart-2)"/>
+        <text x="${X(a.auroc) + 6}" y="99" font-size="11" fill="var(--chart-2)">${a.auroc.toFixed(4)}</text></svg>`; })()
+      + `<div class="say"><b>9.4× better than chance</b> at concentrating true targets. Quoting 0.1778 alone
+         sounds weak; quoting it against a 1.89% base rate is the same number, correctly read.
+         The unit a biologist reads fastest is the one below.</div>`,
+    src: [dsLink('validation_auc_by_disease_2'), 'FEATURE_AUDIT §4'] })}
+
+  ${card({ span: 'card', title: 'Usefulness is not uniform — every disease, not just a summary',
+    desc: '<b>Rank enrichment</b> = (known targets in the top 50 ÷ 50) ÷ that disease’s own base rate. Read it as: <i>“the top 50 is N× richer in real targets than this disease’s pool.”</i> All 668 scored diseases are below the box — hover any dot.',
+    chips: [['live','live']],
+    body: beeswarm(D.calib.box, D.enrichment, BEE_OPTS = { named: {
+        'HER2 positive breast carcinoma': 'HER2+', 'non-small cell lung carcinoma': 'NSCLC',
+        'diabetes mellitus': 'diabetes', 'obesity disorder': 'obesity', 'chronic kidney disease': 'CKD' } }, BEE = BEE_OPTS)
+      + `<div class="say"><b>19× is the median, not the ceiling.</b> The narrative quotes “19× on NSCLC and
+         2.9× on chronic kidney disease” — true <i>of the 13-disease demo panel</i>. Across all 668 the
+         median is 19.2× and the maximum is 59.2×. Presenting 19× as the high end understates the model
+         and invites correction from anyone who opens the dataset.</div>`,
+    src: [dsLink('persona_candidates'), rcLink('compute_persona_candidates')] })}
+  `,
+});
+
+ACTS.push({ id: 'therapeutic-area', n: 3, title: 'The therapeutic area',
+  q: 'Does it work across my area, or just on one cherry-picked term?',
+  lede: 'Pick a disease family. The same model, every term in that family, and the ontology that decides which terms are allowed to train against each other.',
+  render: () => `
+  ${card({ span: 'card', title: 'Choose a family',
+    desc: 'Seventeen families have four or more scored diseases. Two of these are not cancer, which is how this deck answers <i>“does it only work on oncology?”</i>',
+    chips: [['gap','needs recipe D']],
+    body: `<div class="filters">
+        <select id="famSel">${D.families.map(f => `<option value="${f[0]}"${f[4] ? ' selected' : ''}>${esc(f[1])} — ${f[2]} diseases, AUC ${f[3].toFixed(4)}</option>`).join('')}</select>
+        <span style="font-size:12px;color:var(--muted-foreground)" id="famNote"></span>
+      </div>
+      <div id="famBody"></div>`,
+    src: [dsLink('family_auc_by_family'), rcLink('compute_breast_panel')] })}
+
+  ${card({ span: 'c5', title: 'Where these terms sit in the ontology',
+    desc: 'Indented by hop depth from the family anchor. Siblings here <b>share a split key</b> — this tree is act 2’s leakage control, drawn.',
+    chips: [['gap','needs recipe E']],
+    body: `<div class="tree" id="tree"></div>
+      <div class="say">The panel’s terms are <b>not</b> siblings. <code>breast carcinoma</code> sits one hop
+        below the parent term; the four clinical subtypes sit three. Selecting a node filters the table.</div>`,
+    src: [dsLink('disease_hierarchy_annotation'), dsLink('raw_disease_disease')] })}
+
+  ${card({ span: 'c7', title: 'AUC, with the uncertainty it actually has',
+    desc: 'A per-disease AUC is the probability that a randomly chosen known target outranks a randomly chosen non-target. With few known targets that probability is barely pinned down — so plot the interval, not the point.',
+    chips: [['live','live']],
+    body: intervals(D.panel)
+      + `<div class="warnbox" style="margin-top:10px"><b>Triple-negative’s 95% interval runs to 1.041 —
+         above the ceiling an AUC can reach.</b> With 8 known targets the estimate is not wrong, it is
+         unpinned. That single fact retires the metric for thin diseases better than any threshold rule.
+         <br><br>The dataset already carries an <code>auc_trustworthy</code> flag: false at n=14 and n=8,
+         true from n=33 up.</div>`,
+    src: [dsLink('breast_panel_metrics')] })}
+
+  ${card({ span: 'c5', title: 'For the thin diseases, change the metric',
+    desc: 'Observed versus expected hits in the top 50 is well defined at n=8, where AUC is not.',
+    chips: [['live','live']],
+    body: hbars(D.panel.filter(r => r[4] <= 138).map(r =>
+        [r[0] + '  (n=' + r[4] + ')', Math.round(r[9] * 10) / 10, r[10] ? 'var(--chart-3)' : 'var(--destructive)']),
+      { aria: 'enrichment at 50 for thin diseases', labelW: 156, width: 480, rowH: 22 })
+      + `<div class="say">Enrichment at 50 — observed hits over what chance would give. TNBC still scores
+         <b>12.8×</b> on a metric that is defined at its sample size. <b>Show AUC where it is trustworthy
+         and this where it is not</b>, and say which is which on screen.</div>`,
+    src: [dsLink('breast_panel_metrics')] })}
+
+  ${card({ span: 'c6', title: 'How much do the subtypes overlap?',
+    desc: 'Shared genes in each pair’s top 50. Switch between all ranked genes and novel-only — <b>they tell different stories and the deck quotes the novel one.</b>',
+    chips: [['live','live']],
+    body: `<div class="filters"><span class="seg" id="ovSeg">
+        <button aria-selected="true" data-m="all">All top-50 genes</button>
+        <button aria-selected="false" data-m="novel">Novel only</button>
+      </span></div><div id="ovBody"></div>
+      <div class="warnbox" style="margin-top:10px"><b>Be precise about which number you are quoting.</b>
+        HER2+ and triple-negative share <b>2 of 50</b> on the novel sub-list but <b>14 of 50</b> across all
+        ranked genes. The “2 of 50” claim is the novel one — say so.</div>`,
+    src: [dsLink('breast_panel_overlap')] })}
+
+  ${card({ span: 'c6', title: 'The common programme, and what is subtype-specific',
+    desc: 'Every gene in the union of the four clinical subtypes’ top 50. Dot size is rank band.',
+    chips: [['gap','needs recipe F']],
+    body: `<div id="gridBody"></div>`
+      + legend([['var(--chart-3)','in 3 or 4 subtypes — the shared breast programme'],
+                ['var(--chart-1)','in one subtype only — subtype-specific']])
+      + `<div class="say">119 genes in the union. <b>24 appear in three or more subtypes</b> — ATM, BRCA2,
+         EP300, ESR1, FGFR1, HRAS, KRAS and the rest of the common programme. And the specificity is not
+         even: <b>TNBC contributes 29 genes nobody else has; HER2+ contributes 9.</b> That is the
+         quantitative version of “triple-negative is the only genuinely subtype-specific list.”</div>`,
+    src: [dsLink('breast_panel_metrics'), dsLink('dashboard_candidates')] })}
+
+  ${card({ span: 'card', title: 'What this act must not do',
+    body: never(`<ul class="tight">
+      <li><b>Never present triple-negative as a win.</b> Eight known associations. Read
+        <code>BREAST_SURGEON_BRIEFING.md</code> before this goes near a clinician.</li>
+      <li><b>Never call a subtype list “validated”.</b> This act shows coherence, and coherence is not validation.</li>
+      <li><b>Do not quote an overlap number without saying which sub-list it is on.</b> 2 of 50 and 14 of 50
+        are both true and they are not the same claim.</li>
+    </ul>`) })}
+  `,
+});
+
+ACTS.push({ id: 'shortlist', n: 4, title: 'The shortlist',
+  q: 'Show me the list.',
+  lede: 'One disease, all the way down. The point is not that the model is right — it is that you can argue with it on your own thresholds, then see the mechanism on the graph.',
+  render: () => `
+  ${card({ span: 'card', title: 'The contract',
+    desc: 'A ranked shortlist of candidate targets, each carrying two independent explanations — a SHAP attribution and a graph path to the disease module.',
+    chips: [['live','live']],
+    body: `<div class="filters">
+        <select id="disSel">${D.panel.filter(p => p[4] >= 30).map(p =>
+          `<option value="${p[0]}"${p[0] === 'HER2+' ? ' selected' : ''}>${esc(p[1])} — ${fmt(p[3])} candidates</option>`).join('')}</select>
+        <span style="font-size:12px;color:var(--muted-foreground)">only diseases with a materialised candidate list are offered</span>
+      </div>
+      <div class="stats">
+        ${stat('Candidates scored','12,272','nothing pre-cut; you filter')}
+        ${stat('Known targets','599','the answer key, available to delete')}
+        ${stat('AUC on this disease','0.9365','[0.923, 0.950]')}
+        ${stat('ERBB2 lands at','#14','never told the disease’s name')}
+      </div>
+      ${never(`<div style="font-size:12px"><b>Three things this does not do, said here and not saved for the end:</b>
+        no safety axis of any kind; no <i>morphological</i> subtype resolution; and association ranking does
+        <b>not</b> predict therapeutic relevance (r = +0.002).</div>`)}`,
+    src: [dsLink('dashboard_candidates'), dsLink('dashboard_persona_trust')] })}
+
+  ${card({ span: 'c7', title: 'The ranked list',
+    desc: 'Filter by attribute. <b>Click a row</b> and the two cards below follow it.',
+    chips: [['live','live']],
+    body: `<div class="filters" id="tblFilters">
+        <button class="ctl" data-f="all" aria-selected="true">All 15</button>
+        <button class="ctl" data-f="novel" aria-selected="false">Novel only</button>
+        <button class="ctl" data-f="trial" aria-selected="false">In trials</button>
+        <label class="tog" id="liabTog"><input type="checkbox" id="liabChk">
+          Apply a safety-liability filter</label>
+      </div>
+      <div class="tw"><table><thead><tr><th class="n">Rank</th><th>Gene</th><th>Class</th><th>Status</th></tr></thead>
+        <tbody id="tblBody"></tbody></table></div>
+      <div id="liabNote"></div>`,
+    src: [dsLink('dashboard_candidates')] })}
+
+  ${card({ span: 'c5', title: 'Your thresholds, not ours',
+    desc: 'Three clauses, each measured at 1.42–1.71× enrichment with 98–100% recall.',
+    chips: [['live','live'],['port','existing webapp']],
+    body: `<div class="funnel">${D.funnel.map((f, i) => {
+        const pct = (f[1] / D.funnel[0][1]) * 100, last = i === D.funnel.length - 1;
+        return `<div class="fstep ${last ? 'last' : ''}">
+          <div class="frow"><span class="fl">${esc(f[0])}</span><span class="fv">${fmt(f[1])}</span></div>
+          <div class="fbar"><i style="width:${Math.max(pct, 0.4).toFixed(2)}%"></i></div></div>`;
+      }).join('')}</div>
+      <div class="say"><b>Thirty-eight is a shortlist a team clears in a week.</b> Always say the rank
+        cut-off in the same breath as the count — that is how the obesity version of this figure ended up
+        with two conflicting values in our own documents.</div>
+      <div class="warnbox" style="margin-top:10px"><b>Sankey variant still to prototype.</b> The last stage
+        is 0.3% of the first, which renders as an invisible ribbon. The proportional connectors above are
+        the cheaper reading; build both before choosing.</div>`,
+    src: [dsLink('dashboard_candidates'), dsLink('filter_three_axes')] })}
+
+  ${card({ span: 'c6', id: 'drawerCard', title: 'Why this gene?', chips: [['mock','values illustrative'],['port','existing webapp']],
+    desc: 'Each feature placed against <i>this disease’s</i> own distribution, not a global one.',
+    body: `<div id="drawerBody"></div>` , src: [dsLink('dashboard_candidates')] })}
+
+  ${card({ span: 'c6', id: 'graphCard', title: 'The mechanism, on the graph',
+    desc: 'The selected gene, its interaction evidence, and the disease’s own annotated genes — one connected module.',
+    chips: [['live','live']],
+    body: `<div id="graphBody"></div>`, src: ['Kuzu folder', 'webapp wBcApLN'] })}
+  `,
+});
+
+/* ---------- not in the app ---------- */
+const TALK = { id: 'talk-track', title: 'Acts 5 & 6 — talk track',
+  q: 'The interrogation and the close — deliberately not in the app.',
+  lede: 'These two acts are argument, not exploration: no interaction, no per-disease state, and they owned five of the nine flow gaps. They become a talk track and a figure set generated from the notebooks. Each card below defends an act that IS in the app.',
+  render: () => `
+  ${card({ span: 'c8', title: 'How each card links back',
+    desc: 'This mapping is the reason they can leave the app without losing the argument.',
+    body: `<div class="tw"><table><thead><tr><th>Card</th><th>Defends</th><th>The line to say</th></tr></thead><tbody>
+      ${[['Degree-matched enrichment','Act 4 — the shortlist','“the list you just filtered isn’t merely well-connected genes”'],
+         ['Hub-bias meter','Act 2 — calibration','“and here is the population where we still under-score”'],
+         ['Delete the answer key','Act 4 — the top 15','“HRAS at #9 was novel; here is what that is worth at scale”'],
+         ['Lift vs K','Act 3 — the panel','“per-disease lift is what act 3’s enrichment column measured”'],
+         ['Ground-truth provenance','Act 1 — the label evidence chart','“act 1 said 53% genetic association; here is why the rest is weaker”'],
+         ['Orthogonality, r = +0.002','Act 2 — the AUC spread','“a high AUC in act 2 does not buy therapeutic relevance”'],
+         ['The three refuted gates','Acts 1 and 4','“the annotations you filtered on are deliberately not model inputs”'],
+         ['The 0.9354 lookup table','Act 2','“this is why act 2 led with a distribution and not a score”']]
+        .map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td style="color:var(--muted-foreground)">${esc(r[2])}</td></tr>`).join('')}
+      </tbody></table></div>
+      <div class="say"><b>One beat stayed in the app.</b> The ten-second check — nine of the HER2+ top 15
+        carry a liability flag, including ERBB2 — is now the toggle in act 4. It is far stronger live than
+        on a slide, and it cost nothing because the column was already loaded.</div>` })}
+
+  ${card({ span: 'c4', title: 'Act 5, card 1 — how it is calculated',
+    desc: 'Asked directly, and worth writing down because the mockup previously stated it wrong.',
+    chips: [['live','live']],
+    body: `<div style="font-size:12.5px">
+      <p style="margin:0 0 8px">Take the <b>novel-only sub-list</b> — measured after the known targets are
+        deleted, which iteration 1 did not say. For each disease and cut-off K, count how many of the top K
+        are tractable (<code>obs</code>), then compare against two expectations:</p>
+      <ul class="tight" style="margin-top:0">
+        <li><code>naive</code> — sample K genes uniformly from that disease’s pool</li>
+        <li><code>dm</code> — sample K genes <b>matched on network degree</b></li>
+      </ul>
+      <p style="margin:8px 0 0">Enrichment is <code>obs / expected</code>, reported pooled as
+        <code>Σobs / Σexp</code>.</p></div>
+      <div class="warnbox" style="margin-top:10px"><b>Correction.</b> Iteration 1 showed <b>2.9×</b> at
+        top-10. That matches no guarded assertion. The real values are <b>3.29× pooled</b> and
+        <b>3.11× macro</b> at K=10, and <b>2.42× pooled</b> at K=200.</div>
+      <div class="say">The finding is the <b>crossover</b>, not the level: the degree control makes the
+        result look <b>worse</b> at K=10 and <b>better</b> from K=20–50 onward. Volunteering that is the
+        entire point of the card.</div>`,
+    src: [dsLink('tractability_axis'), 'nb4 §8.4'] })}
+  `,
+};
+
+/* ==========================================================================
+   Interactivity
+   ========================================================================== */
+const SHORTS = D.panel.map(p => p[0]);
+const CLIN = ['HER2+','Luminal A','Luminal B','TNBC'];
+let BEE_OPTS, BEE = { hover: [] };
+let sel = { gene: 'HRAS', auc: 'disease', ov: 'all', filter: 'all', liab: false };
+
+/* MOCK: per-disease feature percentiles. Shape is right; values are illustrative
+   until the backend computes them per gene (the existing webapp already does). */
+const FEAT = {
+  HRAS:   [96, 91, 88, 74, 62], ERBB2: [99, 97, 94, 89, 81], TP53: [99, 98, 97, 92, 88],
+  PIK3CA: [97, 95, 91, 86, 79], EGFR:  [95, 93, 90, 84, 77],
+};
+const FEATL = ['Gene–gene–disease path weight','Random-walk proximity to the module',
+               'Shared interaction partners','Closest hop to a module gene','Shared pathways with the module'];
+
+function renderAuc() {
+  const dis = sel.auc === 'disease';
+  document.getElementById('aucBody').innerHTML =
+    histogram(dis ? D.calib.diseaseAuc : D.calib.familyAuc, {
+      mean: dis ? 0.8230 : 0.8009, marker: dis ? 0.9365 : null, markerLabel: 'HER2+ 0.9365',
+      aria: dis ? 'per-disease AUC' : 'per-family AUC' })
+    + legend([['var(--chart-3)','at or above chance'],['var(--chart-1)','below chance — 8, and we show them']])
+    + (dis
+      ? `<div class="warnbox" style="margin-top:10px"><b>The <code>level</code> filter is load-bearing.</b>
+         This dataset holds two populations — 670 <code>disease</code> rows and 443 <code>split_key</code>
+         rows. Filtered: <b>0.8230</b>. Unfiltered: <b>0.8157</b>. A view missing it is off by 73 basis
+         points and looks perfectly fine.</div>`
+      : `<div class="warnbox" style="margin-top:10px">Two of the 505 families carry a literal
+         <code>NaN</code> — zero positives, so AUC is undefined. The documented 0.8009 is a NaN-skipping
+         mean over <b>503</b> families presented as 505.</div>`);
+}
+
+function renderFamily() {
+  const key = document.getElementById('famSel').value;
+  const f = D.families.find(x => x[0] === key);
+  document.getElementById('famNote').textContent =
+    `${f[2]} diseases · family AUC ${f[3].toFixed(4)}` + (f[4] ? '' : ' · panel metrics not yet materialised');
+  document.getElementById('famBody').innerHTML = f[4]
+    ? `<div class="tw"><table><thead><tr><th>Term</th><th class="n">Hop</th><th class="n">Pool</th>
+        <th class="n">Known</th><th class="n">AUC</th><th class="n">95% CI</th><th class="n">Hits@50</th><th></th></tr></thead>
+      <tbody>${D.panel.map(p => `<tr class="${p[0] === 'HER2+' ? 'hl' : ''}">
+        <td>${esc(p[1])}</td><td class="n">${p[2]}</td><td class="n">${fmt(p[3])}</td><td class="n">${p[4]}</td>
+        <td class="n">${p[5].toFixed(4)}</td><td class="n">${p[6].toFixed(3)}–${p[7].toFixed(3)}</td>
+        <td class="n">${p[8]}</td><td>${p[10] ? '' : '<span class="b b-liab">AUC UNPINNED</span>'}</td></tr>`).join('')}
+      </tbody></table></div>`
+    : `<div class="warnbox"><b>${esc(f[1])} is scored but has no panel table yet.</b>
+        <code>compute_breast_panel.py</code> carries a hardcoded <code>PANEL</code> dict of disease
+        indices. Replacing it with a join on <code>disease_family_id</code> (recipe D) unlocks this
+        family and the fifteen others — including the two non-oncology ones, which are how this deck
+        answers <i>“does it only work on cancer?”</i></div>`;
+  renderTree(f[4]);
+}
+
+function renderTree(real) {
+  if (!real) { document.getElementById('tree').innerHTML =
+    `<div style="font-size:12px;color:var(--muted-foreground);padding:6px">Select breast cancer to see the tree.</div>`; return; }
+  document.getElementById('tree').innerHTML = D.panel
+    .slice().sort((a, b) => a[2] - b[2] || b[4] - a[4])
+    .map(p => `<div class="${p[2] === 0 ? 'anchor' : ''} ${p[0] === 'HER2+' ? 'sel' : ''} ${p[10] ? '' : 'inelig'}"
+        style="padding-left:${6 + p[2] * 16}px">
+        <span>${p[2] ? '└ ' : ''}${esc(p[1])}</span><span class="dn">${p[4]}</span></div>`).join('');
+}
+
+function renderOverlap() {
+  document.getElementById('ovBody').innerHTML = matrix(SHORTS, D.overlap, sel.ov);
+}
+function renderGrid() {
+  document.getElementById('gridBody').innerHTML = geneGrid(D.grid, CLIN);
+}
+
+function rowsFor() {
+  let r = D.her2;
+  if (sel.filter === 'novel') r = r.filter(x => x[2]);
+  if (sel.filter === 'trial') r = r.filter(x => x[4]);
+  return r;
+}
+function renderTable() {
+  const rows = rowsFor();
+  document.getElementById('tblBody').innerHTML = rows.map(r => {
+    const dead = sel.liab && r[5];
+    return `<tr class="click ${r[1] === sel.gene ? 'sel' : ''} ${dead ? 'dead' : ''}" data-g="${r[1]}">
+      <td class="n">${r[0]}</td><td class="gene">${r[1]}</td><td>${esc(r[6])}</td><td>
+      ${r[2] ? '<span class="b b-novel">NOVEL</span>' : '<span class="b b-known">known</span>'}
+      ${r[3] ? '<span class="b b-appr">APPROVED</span>' : ''}
+      ${r[4] ? '<span class="b b-trial">trial</span>' : ''}
+      ${r[5] ? '<span class="b b-liab">liability</span>' : ''}</td></tr>`;
+  }).join('');
+  const killed = rows.filter(r => r[5]).length;
+  document.getElementById('liabTog').classList.toggle('on', sel.liab);
+  document.getElementById('liabNote').innerHTML = sel.liab
+    ? `<div class="no" style="margin-top:10px"><div class="no-t">What that filter just did</div>
+        <b>${killed} of ${rows.length} deleted — including ERBB2 at #14</b>, the target of this disease’s
+        standard-of-care antibody. Flagged genes carry <b>4.62×</b> enrichment among drug-validated
+        targets, because liabilities are discovered <i>by</i> drugging something. The flag marks the
+        best-studied targets, which is why it is a badge here and never a filter in production.</div>`
+    : `<div class="say" style="margin-top:10px">Liability flags and drug badges are shown but
+        <b>cannot be filtered on in production</b> — the drug badges are the ground truth the discovery
+        result is measured against. The toggle above exists to demonstrate <i>why</i>, once.</div>`;
+  Array.prototype.forEach.call(document.querySelectorAll('#tblBody tr[data-g]'), tr =>
+    tr.onclick = () => { sel.gene = tr.dataset.g; renderTable(); renderDrawer(); renderGraph(); });
+}
+
+function renderDrawer() {
+  const g = D.her2.find(x => x[1] === sel.gene) || D.her2[8];
+  const pct = FEAT[g[1]] || [88, 84, 80, 71, 60];
+  document.getElementById('drawerBody').innerHTML =
+    `<div style="display:flex;justify-content:space-between;align-items:baseline">
+      <span class="gene" style="font-size:17px">${g[1]}</span>
+      <span>${g[2] ? '<span class="b b-novel">NOVEL</span>' : '<span class="b b-known">known</span>'}
+        ${g[3] ? '<span class="b b-appr">APPROVED</span>' : ''}${g[5] ? '<span class="b b-liab">liability</span>' : ''}</span></div>
+    <div style="font-size:11.5px;color:var(--muted-foreground);margin-bottom:9px">
+      rank #${g[0]} of 12,272 · ${esc(g[6])} · node_index ${D.geneIdx[g[1]]}</div>
+    ${FEATL.map((l, i) => `<div style="margin-bottom:7px">
+      <div style="display:flex;justify-content:space-between;font-size:11px"><span>${esc(l)}</span>
+        <span class="num">${pct[i]} pct</span></div>
+      <div style="height:5px;background:var(--muted);border-radius:3px;margin-top:2px">
+        <i style="display:block;height:100%;width:${pct[i]}%;background:var(--chart-3);border-radius:3px"></i></div></div>`).join('')}
+    <div style="font-size:11px;color:var(--muted-foreground);margin-top:8px">
+      “Higher than ${pct[0]}% of candidates <b>for this disease</b>” — not a global percentile.</div>`;
+}
+
+function renderGraph() {
+  const g = D.her2.find(x => x[1] === sel.gene) || D.her2[8];
+  const idx = D.geneIdx[g[1]];
+  document.getElementById('graphBody').innerHTML =
+    `<pre><span class="cmt">// Why ${g[1]}? Interaction evidence to genes already annotated
+// for HER2-positive breast carcinoma.</span>
+MATCH (D:disease {node_index: 48537})
+MATCH (g:protein {node_index: ${idx}})
+MATCH (g)-[ppi:protein_protein]-(m:protein)-[assoc:disease_protein]-(D)
+WHERE m.node_index &lt;&gt; g.node_index
+RETURN g, ppi, m, assoc, D LIMIT 300</pre>
+    <div class="filters" style="margin-top:10px">
+      <button class="ctl">Open in Graph Explorer</button>
+      <button class="ctl">Copy query</button>
+      <span style="font-size:11.5px;color:var(--muted-foreground)">follows the selected row</span></div>
+    <div class="warnbox" style="margin-top:10px">Traversal is <b>undirected</b>; relationship variables must
+      be <b>bound and returned</b> or the canvas shows floating nodes; the engine’s label for genes is
+      <code>protein</code>. Indices are snapshot-specific and generated live from the current ranking.</div>`;
+}
+
+/* ==========================================================================
+   Shell
+   ========================================================================== */
+const nav = document.getElementById('nav'), navOut = document.getElementById('navOut'), main = document.getElementById('main');
+const ALL = ACTS.concat([TALK]);
+nav.innerHTML = ACTS.map(a => `<button type="button" data-id="${a.id}"><span class="k">${a.n}</span><span class="t">${esc(a.title)}</span></button>`).join('');
+navOut.innerHTML = `<button type="button" data-id="${TALK.id}"><span class="k">◇</span><span class="t">${esc(TALK.title)}</span></button>`;
+main.innerHTML = ALL.map(a => `<div class="view" id="v-${a.id}" hidden>
+    <header class="act-head">
+      <div class="act-eyebrow">${a.n ? `Act ${a.n} of 4 · ${esc(a.title)}` : 'Demo preparation · not shipped in the app'}</div>
+      <h1 class="act-q">${a.q}</h1><p class="act-lede">${a.lede}</p></header>
+    <div class="wrap"><div class="grid">${a.render()}</div></div></div>`).join('');
+
+function show(id) {
+  ALL.forEach(a => {
+    document.getElementById('v-' + a.id).hidden = a.id !== id;
+    const b = document.querySelector(`[data-id="${a.id}"]`);
+    if (a.id === id) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+  });
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  if (id === 'calibration') { renderAuc(); wireBeeswarm(document.getElementById('v-calibration'), BEE.hover, 700); }
+  if (id === 'therapeutic-area') { renderFamily(); renderOverlap(); renderGrid(); }
+  if (id === 'shortlist') { renderTable(); renderDrawer(); renderGraph(); }
+  if (location.hash.slice(1) !== id) history.replaceState(null, '', '#' + id);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-id]'); if (b) return show(b.dataset.id);
+  const t = e.target.closest('#aucTabs button');
+  if (t) { sel.auc = t.dataset.t;
+    document.querySelectorAll('#aucTabs button').forEach(x => x.setAttribute('aria-selected', String(x === t)));
+    return renderAuc(); }
+  const o = e.target.closest('#ovSeg button');
+  if (o) { sel.ov = o.dataset.m;
+    document.querySelectorAll('#ovSeg button').forEach(x => x.setAttribute('aria-selected', String(x === o)));
+    return renderOverlap(); }
+  const f = e.target.closest('#tblFilters button[data-f]');
+  if (f) { sel.filter = f.dataset.f;
+    document.querySelectorAll('#tblFilters button[data-f]').forEach(x => x.setAttribute('aria-selected', String(x === f)));
+    return renderTable(); }
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'famSel') { renderFamily(); renderOverlap(); renderGrid(); }
+  if (e.target.id === 'liabChk') { sel.liab = e.target.checked; renderTable(); }
+});
+show(ALL.some(a => a.id === location.hash.slice(1)) ? location.hash.slice(1) : ACTS[0].id);
+</script>

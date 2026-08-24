@@ -9,9 +9,9 @@ the `bs-blueprint` template. Six acts, six routes, one sidebar. This document sp
 data contract behind each one, the guardrails the code must enforce, and what has to be built in the
 flow first.
 
-**Status.** Mockup stage. [`DASHBOARD_MOCKUP.html`](DASHBOARD_MOCKUP.html) is a static, self-contained
-preview of all six acts with the verified numbers hard-coded — the artefact to iterate on before any Vue
-component is written. The native-DSS-dashboard attempt is superseded; see §3.1 for why, and §11 for what
+**Status.** Mockup stage, iteration 3. [`DASHBOARD_MOCKUP_V3.html`](DASHBOARD_MOCKUP_V3.html) is the
+current artefact, built to the §12 and §13 plans. Iterations 1 and 2 are kept alongside at
+[`DASHBOARD_MOCKUP.html`](DASHBOARD_MOCKUP.html) and [`DASHBOARD_MOCKUP_V2.html`](DASHBOARD_MOCKUP_V2.html). The native-DSS-dashboard attempt is superseded; see §3.1 for why, and §11 for what
 it left behind.
 
 ---
@@ -587,3 +587,567 @@ provenance: [`TARGET_PRIORITIZER.md`](../prioritizer/TARGET_PRIORITIZER.md). Gra
 
 Every HER2+ and TNBC figure in §2, §4 and §10, and every graph and calibration figure in act 1 and act 2,
 was computed from the live datasets on 2026-08-21, not copied from prose.
+
+---
+
+## 12. Mockup iteration 2 — decisions and revision plan
+
+Review of [`DASHBOARD_MOCKUP.html`](DASHBOARD_MOCKUP.html) iteration 1. Everything below was checked
+against the live project before being recommended. **§12.7 lists four numbers this review found wrong**
+— two of them are on the current mockup and one is in the narrative's one-page summary.
+
+### 12.1 Scope change — acts 5 and 6 leave the webapp
+
+**Agreed, with one exception.** Acts 5 and 6 are *argument*, not *exploration*: no interaction, no
+per-disease state, nothing the user drives. They also own **five of the nine flow gaps**, so moving them
+out cuts webapp scope by a third and takes the five hardest recipes off the critical path.
+
+They become a **talk track plus a figure set**, which is their natural home — `nb3` and `nb4` already
+emit the figures (`nb3_orthogonality.png`, `nb3_family_auc.png`, the §8.3 lift figure).
+
+**The exception: keep the ten-second check, and move it into act 4.** *"9 of the HER2+ top 15 carry a
+liability flag, including ERBB2"* is computed from `dashboard_candidates`, which the app already holds.
+As a **toggle on the ranked list** — switch on a safety-liability filter and watch ERBB2 disappear from
+its own disease's shortlist — it is far stronger live than on a slide, and it costs nothing because the
+column is already loaded. This is the one act-6 beat that is genuinely interactive.
+
+**Consequence for the gap list:** webapp-blocking gaps drop from nine to six, and four of those six are
+new (§12.6). Old gaps 9.1, 9.2, 9.3, 9.5, 9.6 become demo-prep, not app features.
+
+### 12.2 Data loading — the connection question is the second question
+
+**First question: how much data crosses the wire at all.** Every chart in acts 1–3 is an aggregate over
+at most a few hundred rows *once computed*. The app must never read `graph_edges` (2,851,510 rows) to
+draw 18 bars — it should read an 18-row `graph_relation_counts`. That is five orders of magnitude, and
+no connection choice comes close to mattering as much.
+
+| chart | reads today | should read | rows |
+|---|---|---|--:|
+| relations | `graph_edges` | `graph_relation_counts` | 18 |
+| node types | `graph_nodes` | `graph_node_type_counts` | 8 |
+| node sources | `graph_nodes` | `graph_node_source_counts` | 7 |
+| PPI provenance | `edge_metadata` | `graph_ppi_provenance` | 7 |
+| label evidence | `edge_metadata` | `graph_label_evidence` | 3 |
+| AUC histograms | `validation_auc_by_disease_2` | `calibration_histograms` | 40 |
+| feature drivers | `dashboard_candidates` | `shap_driver_frequency` | 14 |
+
+**Seven Group recipes, all trivial, all landing in zone 60.** This is the single highest-leverage change
+in this plan.
+
+**Second question, and it applies to exactly one dataset.** Act 4 needs row-level data: ~12,272 rows ×
+16 columns for one disease, held client-side so the filter count is instant with no round-trip. That is
+the only large read left.
+
+- Everything is currently on `dataiku-managed-storage` (S3/EC2). Most datasets are parquet — but
+  **`dashboard_candidates` is CSV**, which is the worst format for the largest serving dataset
+  (129,253 × 63).
+- On **S3/parquet** the backend must read the whole object and filter in pandas. That works — the
+  existing backend caches the frame in `_CACHE` on first request, which is why it is usable — but cold
+  start reads all 13 diseases to serve one.
+- On **Snowflake** (`managed-snowflake` and `bs-snowflake` both exist on this instance),
+  `WHERE disease_index = 48537` is pushed to the warehouse and only 12,272 rows transfer. Cold start is
+  effectively instant and backend memory is bounded by one disease, not thirteen.
+
+> **Recommendation: move `dashboard_candidates` to Snowflake. Leave everything else on S3/parquet.**
+
+Four reasons: it is the only dataset with a per-request `WHERE`; it is CSV today so we are already
+paying to rewrite it; Snowflake unlocks `dku dataset query`, which would have let this review verify
+figures in-database instead of pulling 129k rows to a laptop; and every other dataset is read once at
+startup and cached, where parquet-on-S3 is both fine and cheaper.
+
+**If the demo must not depend on a warehouse**, the fallback is nearly as good and adds nothing:
+convert `dashboard_candidates` to **parquet, partitioned by `disease_index`**, so one disease is one
+file read.
+
+**On DSS dataset metrics and insights as the aggregation layer:** do not use them. Dataset *metrics* are
+designed for monitoring (one scalar per probe, computed on a schedule) and are awkward to read as a
+chart series. *Insights* would re-couple the app to the presentation objects §11 is retiring. A Group
+recipe writing a small dataset is simpler, versioned in the flow, and is itself the lineage story.
+
+### 12.3 Linking charts back to their source
+
+This is §3.3's lineage rule made clickable. The `src` footer becomes real links via one
+`<ProvenanceFooter :dataset :recipe :zone>` component, with the DSS base URL served from a backend
+`/api/system/dss-base` so it resolves in both dev and embedded mode.
+
+| target | URL form |
+|---|---|
+| dataset | `/projects/{KEY}/datasets/{NAME}/explore/` |
+| recipe | `/projects/{KEY}/recipes/{NAME}/` |
+| flow zone | `/projects/{KEY}/flow/?zoneId={ID}` |
+| saved model | `/projects/{KEY}/savedmodels/{ID}/versions/` |
+
+> **Link to datasets and recipes, never to insights.** Insights are presentation objects and §11 retires
+> them; a link into one couples the app to an artifact that may be deleted. Datasets and recipes *are*
+> the lineage, and they are stable.
+
+### 12.4 AUPRC — and a trap in the saved model
+
+**Do not surface `hJLGoYn4`'s own metrics panel.** `dku model metrics hJLGoYn4` reports
+`auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal test split**:
+
+| | saved model panel | documented (macro) | gap |
+|---|--:|--:|---|
+| AUROC | 0.8962 | **0.8230** | +7.3 pts — exactly the pooled overstatement the project warns about |
+| AUPRC | 0.3359 | **0.1778** | nearly 2× |
+
+Surfacing that panel would put both forbidden numbers on screen at once.
+
+**How to represent AUPRC so it means something: never alone, always against the base rate.** The
+candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion's 0.1778 is
+**9.4× the base rate**. Form: a horizontal bar with the base rate as a hairline at the left edge and the
+achieved value as the bar, labelled *"9.4× better than chance at concentrating true targets."* Put
+AUROC beside it with one line of copy — AUROC flatters an imbalanced problem, AUPRC is the honest one at
+1.89% prevalence.
+
+**Better still, lead with the unit a biologist already uses.** `rank_enrichment` is
+`(hits_at_50 / 50) / base_rate` — the same intuition as AUPRC, expressed as *"the top 50 is N× richer in
+real targets than the pool."* Lead with that; keep AUPRC as the technical footnote for the
+computational-biology half of the room.
+
+### 12.5 Act 1 — The evidence base
+
+| # | change | notes |
+|---|---|---|
+| 1 | Replace *Accepted vs reference* with the source count | **but say "6 external sources"**, not 7. The seven `node_source` values are GO 38,092 · MONDO 25,906 · NCBI 20,861 · HPO 19,120 · DrugBank 5,282 · REACTOME 2,883 · **MONDO_grouped 1,247** — and the last is a *derived* grouping we created, not an external source. Counting it inflates the claim |
+| 2 | Embed the Visual Graph Explorer below the metrics | fixed-height panel (≈540px) with an **open-full-screen** button. Do not let it size to content — this is the same clipping lesson as §3.4 |
+| 3 | Node-type chart to the left of relations | agreed, and it is the right reading order: what things *are*, then how they *connect* |
+| 4 | Add a node-source chart | new Group recipe, 7 rows. Pair it visually with the PPI-provenance chart — together they say *"every node and every edge knows where it came from"* |
+| 5 | Drop the frozen-reference table | agreed — it also removes old gap 9.8 |
+
+⚠ **Dropping the table loses a claim that was doing real work:** *accepted against a reference we did not
+write*. Keep it as **one sentence in the act lede** (`−0.03% on edges, 14 of 18 relations reproduce
+exactly`). One line, no recipe, claim retained.
+
+### 12.6 Act 2 — Scope and calibration
+
+**1 — Sankey from routes through the pool to the splits.** The numbers exist and reconcile exactly:
+
+```
+  GGD   3,380,853  ─┐
+  GPGD  5,373,706  ─┼─►  pool 6,754,128  (1.89% positive)  ─┬─►  train      2,187,862
+  GCD      42,227  ─┘                                       ├─►  validation 3,958,921
+                                                            └─►  test         607,345
+```
+
+Two things to get right. **The three routes overlap** — they sum to 8,796,786 against a union of
+6,754,128 — so a naive Sankey overstates the left side by 30%. Render the union explicitly or label the
+overlap. And **the GCD ribbon is the drug route at 0.6%**: showing it is honest and preempts a
+ground-truth objection, because it is the thing the narrative insists we describe as *"not a feature,
+but it shapes the scored population."*
+
+**Arrangement:** the Sankey takes the top slot. The split audit stays, but compressed from a 9-column
+table to a **four-zero strip** beneath the Sankey — the zeros are the point, and they are four numbers,
+not a table.
+
+**2 — Merge the two AUC cards behind a tab.** Agreed. Same axis, same 20 bins; a tab is exactly right.
+Each tab carries its own n and macro: *disease* → 668 / 0.8230, *family* → 503 / 0.8009.
+
+**3 — Feature importance: use SHAP driver frequency, not the model object.** `hJLGoYn4` was trained with
+`skipPermutationImportance: True`, so **there is no feature importance on the champion**. Retraining to
+get one is not worth it, and the better artifact already exists: `top_shap_drivers` carries the top two
+drivers for all 129,253 scored rows. Aggregating gives an empirical importance ranking over all 14
+champion features:
+
+| rank | feature | times a top-2 driver | | rank | feature | |
+|--:|---|--:|---|--:|---|--:|
+| 1 | `ppi_evidence_depth` | 76,487 | | 8 | `gene_n_pathways` | 4,666 |
+| 2 | `ppi_multi_source_frac` | 46,643 | | 9 | `ppi_adamic_adar` | 3,220 |
+| 3 | `dwpc_GBGD` | 46,382 | | 10 | `prox_closest` | 2,550 |
+| 4 | `dwpc_GPGD` | 23,204 | | 11 | `ppi_jaccard` | 2,167 |
+| 5 | `prox_kernel` | 21,802 | | 12 | `dwpc_GGD` | 1,148 |
+| 6 | `dwpc_GFGD` | 19,180 | | 13 | `shared_pathway_frac` | 111 |
+| 7 | `gene_ppi_degree` | 10,857 | | 14 | `ppi_common_neighbors_z` | 89 |
+
+This is **better than a global model statistic for this demo**: it is measured on the rankings actually
+delivered, it filters per disease (the same aggregation restricted to HER2+ gives *this disease's*
+drivers), and it sidesteps the missing permutation importance entirely.
+
+> **And it closes a loop.** The two strongest drivers — `ppi_evidence_depth` and
+> `ppi_multi_source_frac` — are both **provenance** features. The model's best signal is *how well
+> evidenced is this interaction*, which is precisely what act 1's "every edge knows where it came from"
+> chart was showing. Act 1 stops being scene-setting and becomes the reason act 2 works.
+
+**4 — Explain the enrichment quantile chart, and overlay the diseases.**
+
+*What is ranked:* the 670 validation diseases (668 with a computable value).
+*How the lift is calculated:* `rank_enrichment = (hits_at_50 / 50) / base_rate` — of the top 50
+candidates the model ranks for a disease, the share that are known targets, divided by that disease's
+**own** base rate of known targets in its pool. So *"the top 50 is N× richer in real targets than this
+disease's pool average."* Same intuition as AUPRC, in a unit a biologist reads directly.
+
+*Overlaying the dots:* **yes, and it is the right fix.** Render a jittered beeswarm strip of all 668
+diseases beneath the box, with hover labels. Name only the demo diseases as permanent callouts; leave
+the rest faint. This answers *"which disease is which"* without a legend and makes the spread concrete
+rather than abstract.
+
+### 12.7 Act 3 — The therapeutic area
+
+**1 — Other families for the dropdown: 17 exist with ≥4 scored diseases.** Recommended list:
+
+| family | diseases | AUC | why it earns a slot |
+|---|--:|--:|---|
+| hematologic cancer | 29 | 0.9188 | largest panel in the project |
+| breast cancer | 19 | 0.9272 | the spine; the subtype-resolution story |
+| lung cancer | 17 | 0.9312 | the morphological-subtype *failure*, in-panel |
+| sarcoma | 13 | 0.9309 | a rare-disease shape |
+| salivary gland cancer | 11 | 0.9233 | small, high-quality |
+| **anemia** | 9 | 0.8577 | **not cancer** |
+| **epilepsy syndrome** | 7 | 0.8345 | **not cancer, not oncology-adjacent** |
+
+The last two matter most. *"Does this only work on cancer?"* is a question this deck currently cannot
+answer, and two non-oncology families with respectable AUCs answer it directly.
+
+**Cost:** `compute_breast_panel.py` carries a **hardcoded `PANEL` dict** of `disease_index → name`.
+Generalising means replacing it with a join on `disease_family_id`. Same change generalises
+`breast_panel_overlap`. One recipe edit each — see §12.10.
+
+**2 — The ontology hierarchy is available, and it should drive the interaction.**
+`disease_hierarchy_annotation` carries `mondo_id`, `current_hop_depth`, `is_anchor`,
+`current_anchor_name`, `is_eligible`; `raw_disease_disease` carries `parent_id` / `child_id`. So a real
+tree can be rendered, not a flat list.
+
+> **Recommendation: a collapsible ontology tree beside the panel table.** Indent by
+> `current_hop_depth`, mark the anchor, grey out terms that are not `is_eligible`, and let selecting a
+> node filter the table. It answers the user's question directly — the panel's terms are *not* siblings,
+> and the tree shows exactly how they sit.
+
+The payoff is bigger than orientation: **siblings in that tree share a split key.** The tree is the
+clearest possible explanation of act 2's leakage control — *"these two terms are the same programme, so
+they never straddle the train/test divide"* — shown rather than asserted. Act 3 becomes act 2's proof.
+
+**3 — The AUC scatter.**
+
+*Hover labels and visible axes:* agreed, both.
+
+*What per-disease AUC is:* a rank-based (Mann-Whitney) AUC — `(Σ ranks of known targets − n₁(n₁+1)/2) /
+(n₁·n₀)`. In plain language: **pick one known target and one non-target at random from this disease's
+pool; the AUC is the probability the model ranked the known one higher.**
+
+*Why it degrades at low counts — it is variance, not definition.* The real intervals, already in
+`breast_panel_metrics`:
+
+| disease | known targets | AUC | 95% CI |
+|---|--:|--:|---|
+| HER2+ breast | 599 | 0.9365 | [0.923, 0.950] |
+| breast adenocarcinoma | 53 | 0.9043 | [0.850, 0.959] |
+| ER-negative breast | 14 | 0.8411 | [0.712, 0.971] |
+| **triple-negative breast** | **8** | 0.8949 | **[0.749, 1.041]** |
+
+**TNBC's upper bound is 1.041 — impossible for an AUC.** That single fact demonstrates the point better
+than any threshold rule, and it is already computed.
+
+⚠ **The mockup's "≈ 50 known targets" line is wrong.** The dataset already carries an
+`auc_trustworthy` flag, and it reads False at n=14 and n=8 but **True from n=33 upward** — so the
+boundary sits between 14 and 33, not at 50. Read the rule out of `compute_breast_panel.py` and quote it,
+or drop the threshold line and let the confidence intervals speak.
+
+*Supplementary charts for the thin diseases:* two, both already supported by existing columns.
+1. **Plot the CI, not the point** — an error-bar chart instead of a scatter. The honest form, and the
+   thin diseases visibly disqualify themselves.
+2. **Switch metric below the threshold.** `breast_panel_metrics` already has `hits_at_50`,
+   `expected_at_50`, `hits50_poisson_p` and `hits50_verdict`. Observed-versus-expected hits with a
+   Poisson p-value is well-defined at n=8 where AUC is not. **Show AUC where it is trustworthy and
+   hits-vs-expected where it is not** — and say why on screen.
+
+**4 — Making the overlap card interactive.** Two forms, and the second answers the biology question.
+
+- **Primary: a pairwise overlap matrix.** n×n heatmap over the family's diseases, cell = shared genes in
+  the top 50. This is the readable form for 12–29 diseases and it carries the "2 of 50 vs 47 of 50"
+  claim directly. Clicking a cell reveals the shared genes.
+- **On click: a gene × disease dot grid.** Rows = the union of top-50 genes, columns = the family's
+  diseases, dot present if the gene is in that disease's top 50, coloured by rank band. **This is the
+  one with a biologically meaningful reading** — it separates the genes shared across the whole family
+  (the common programme) from the ones unique to one subtype (the subtype-specific biology), which is
+  exactly the distinction the act is claiming to make.
+
+On the dot-plot axes question: there is no natural continuous x/y for gene overlap, which is why a
+symmetric matrix or a categorical gene × disease grid is the right form and a scatter is not.
+
+**5 — Drop *The signature of each subtype's head* once families are added.** Agreed. It is static prose
+that cannot survive a dropdown. Its content is absorbed by the gene × disease grid, which shows the same
+thing generatively.
+
+### 12.8 Act 4 — The shortlist
+
+| # | change | notes |
+|---|---|---|
+| 1 | Curated disease selector | reuse act 3's family dropdown, scoped to diseases that *have candidate lists*. ⚠ `dashboard_candidates` covers **13 personas, not 670** — the picker must distinguish *scored* from *has a list* or it offers 670 diseases and dead-ends on most. The existing backend already computes `has_candidates`; port it |
+| 2 | Interactive top 15 with attribute filters | agreed — it becomes the same table component as the full list, defaulting to `rank ≤ 15` |
+| 3 | Funnel as a Sankey | ⚠ **prototype before committing.** The last stage is 38 of 12,272 — 0.3% — which renders as an invisible ribbon. A stepped funnel with proportional connectors, or a broken axis, will read better. Recommend building both and choosing on sight |
+| 4 | Gene click refreshes the last two cards | agreed, and it is the strongest interaction in the app. The existing drawer already does the feature panel; extending it to drive the graph card is the improvement |
+| 5 | Graph card backed by the Explorer | agreed — with a gene selected the query is pre-filled and the button becomes *"show this gene's evidence"* |
+| **6** | **New: the liability toggle** (from §12.1) | switch on a safety-liability filter and ERBB2 vanishes from its own disease's shortlist. Act 6's best beat, made live, at zero data cost |
+
+### 12.9 Acts 5–6 — how each card links back
+
+Asked for explicitly, and it is also the test of whether they belong outside the app. Each act-5/6 card
+defends an earlier act:
+
+| card | defends | the link to make out loud |
+|---|---|---|
+| Degree-matched enrichment | **act 4** — the shortlist | *"the list you just filtered isn't just well-connected genes"* |
+| Hub-bias meter | **act 2** — calibration | *"and here is the population where we still under-score"* |
+| Delete the answer key | **act 4** — the top 15 | *"HRAS at #9 was novel; here is what that is worth at scale"* |
+| Lift vs K | **act 3** — the panel | *"per-disease lift is what act 3's enrichment column was measuring"* |
+| Ground-truth provenance | **act 1** — the label evidence donut | *"act 1 said 53% genetic association; here is why the other half is weaker"* |
+| Orthogonality (r = +0.002) | **act 2** — the AUC spread | *"a high AUC in act 2 does not buy therapeutic relevance"* |
+| The three refuted gates | **act 1 + act 4** | *"the annotations you filtered on in act 4 are deliberately not model inputs, and here is the measurement"* |
+| Ten-second check | **act 4** | **stays in the app** as the liability toggle |
+| The 0.9354 lookup | **act 2** | *"this is why act 2 led with a distribution and not a score"* |
+
+**Act 5, card 1 — how the degree-matched number is calculated.** Take the **novel-only** sub-list
+(`tractability_axis` where `scope = "novel only"` — this is measured after the known targets are
+deleted, which the mockup does not currently say). For each disease and cut-off K, count how many of the
+top K are tractable (`obs`), then compare against two expectations: `naive`, sampling K genes uniformly
+from that disease's pool, and `dm`, sampling K genes **matched on network degree**. Enrichment is
+`obs / expected`, reported pooled as `Σobs / Σexp`.
+
+The finding is the *crossover*, not the level: **the degree control makes the result look worse at
+K = 10 and better from K = 20–50 onward.** Deep in the list the model is finding something popularity
+does not explain; at the very head it is not. Volunteering that is the whole point of the card.
+
+### 12.10 Flow work this plan requires
+
+Six new items; five old gaps leave the webapp with acts 5–6.
+
+| # | for | build | size |
+|---|---|---|---|
+| **A** | §12.2 | seven Group recipes → `graph_relation_counts`, `graph_node_type_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence`, `calibration_histograms`, `shap_driver_frequency` | trivial, 3–40 rows each |
+| **B** | §12.2 | move `dashboard_candidates` to Snowflake (or parquet + partition by `disease_index`) | one recipe output change |
+| **C** | act 2 Sankey | `pool_route_counts` — GGD / GPGD / GCD admissions and the union, currently only in `nb2` §5.2 | one recipe, 4 rows |
+| **D** | act 3 dropdown | replace the hardcoded `PANEL` dict in `compute_breast_panel.py` with a `disease_family_id` join; same for `breast_panel_overlap` | two recipe edits |
+| **E** | act 3 tree | join `disease_hierarchy_annotation` × `raw_disease_disease` → parent/child edges within a family | one **visual Join** |
+| **F** | act 3 grid | top-50 gene membership per disease, long form, for the gene × disease dot grid | one recipe |
+
+Old gaps **9.1, 9.2, 9.3, 9.5, 9.6** are now demo-prep, not app features. Old gap **9.8** is dropped
+with the frozen-reference table. Old gap **9.7** (lung overlap) is absorbed by **D**.
+
+### 12.11 Numbers this review corrected
+
+Four, found while checking the suggestions. Two are on the mockup now.
+
+1. **`2.9×` degree-matched at top-10 is unguarded and matches no current estimator.** The guarded
+   assertions in `nb4` §8.4 are **pooled 3.29× at K=10** and **2.42× at K=200**, with **macro 3.11× at
+   K=10**. `2.4` maps to the pooled K=200 assertion; `2.9` maps to nothing. **On the mockup now — fix
+   before it is shown.**
+2. **The narrative's one-page summary says "12 network-topology features."** The champion `m7-f14` has
+   **14**: `dwpc_GBGD`, `dwpc_GFGD`, `dwpc_GGD`, `dwpc_GPGD`, `gene_n_pathways`, `gene_ppi_degree`,
+   `ppi_adamic_adar`, `ppi_common_neighbors_z`, `ppi_evidence_depth`, `ppi_jaccard`,
+   `ppi_multi_source_frac`, `prox_closest`, `prox_kernel`, `shared_pathway_frac`. The `12` is an
+   `m3-f12`-era number in a **demo-facing** table.
+3. **The mockup's "≈ 50 known targets" threshold does not match the data.** `auc_trustworthy` is False
+   at n=14 and n=8, True from n=33. **On the mockup now.**
+4. **Counting seven node sources overstates the claim.** `MONDO_grouped` (1,247) is a grouping we
+   derived, not an external source. Six external sources.
+
+
+---
+
+## 13. Iteration 3 — answers and revisions
+
+Review of [`DASHBOARD_MOCKUP_V2.html`](DASHBOARD_MOCKUP_V2.html). **Two of the challenges here were
+right and change the build plan** (§13.2 and §13.7). One caught a guardrail I broke in v2 (§13.9).
+
+### 13.1 All-disease aggregates, and visual over Python
+
+Adopted as a standing rule for the serving layer: **one dataset per statistic covering every disease,
+never one per disease.** Almost all of it is visual:
+
+| dataset | recipe | all diseases? |
+|---|---|---|
+| `graph_relation_counts`, `graph_node_type_counts`, `graph_node_source_counts` | **Group** | n/a — graph-wide |
+| `graph_ppi_provenance`, `graph_label_evidence` | **Group** with a relation filter | n/a |
+| `calibration_histograms` | **Prepare** (binning) → **Group** | 670 + 505 |
+| `validation_auc_ci` | **Prepare** + Formula — see §13.7 | **670** |
+| `shap_driver_frequency` | **Prepare** (split ", " → strip " (…)" → fold to rows) → **Group** | all 129,253 rows |
+| `top50_membership` | **Filter** `rank_in_disease ≤ 50` — the rank column already exists | every scored disease |
+| `pairwise_overlap` | **Join** `top50_membership` × itself on `gene_index` → **Group** by disease pair | **every pair, every family** |
+| `family_panel` | **Join** `validation_auc_ci` × `disease_family_id` × names | every family |
+| `pool_route_counts` | one small Python unless the pair spine carries a route column | n/a |
+
+Two consequences worth stating. `pairwise_overlap` as a **self-join plus a group** replaces
+`compute_breast_panel_overlap` and covers all 17 families at once — the breast-only recipe was never
+necessary. And `top50_membership` is a **filter, not a computation**, because `dashboard_candidates`
+already carries `rank_in_disease`.
+
+### 13.2 The Sankey should start from the whole graph — and the excluded branch is the study's limit
+
+Agreed, and the numbers reconcile exactly:
+
+```
+  27,153 disease nodes
+      └── 1,157 eligible  (module_size ≥ 20 — the seed gate)
+      └── 25,996 EXCLUDED (95.7%): fewer than 20 curated gene associations
+                                    ↓
+       GGD 3,380,853 ┐
+       GPGD 5,373,706├─► pool 6,754,128 (1.89% positive) ─┬─► train      2,187,862  (383 diseases)
+       GCD    42,227 ┘                                     ├─► validation 3,958,921  (670)
+                                                           └─► test        607,345  (104)
+```
+
+`383 + 670 + 104 = 1,157` — the eligible count exactly. **The excluded branch is 95.7% of the disease
+ontology**, and showing it is the most honest thing act 2 can do: it is precisely what Phase 3 exists to
+widen (20 → 5 would admit 931 more diseases). A second, much smaller loss belongs beside it: of 2,341
+curated targets in the audited diseases, **98.5% are reachable in the pool and 1.5% (34) are not**.
+
+**Clicking a split branch to reveal its families: yes, and make it navigate.** The split *is* by family,
+so clicking `validation` should carry the viewer into act 3 with the family list pre-filtered to that
+fold. That makes the zero-straddling card and act 3's hierarchy the same story told twice, which is what
+the challenge was pointing at. Needs one visual **Group** of `disease_family_id` × split.
+
+### 13.3 Retraining for permutation importance — no, and the reason is technical
+
+**Do not.** `nb1` §6.1 records the highest |rho| between a model feature and node degree at **0.975**.
+Permutation importance is unreliable at that level of collinearity: permuting one feature leaves its
+information reachable through its correlate, so the score is understated and the split between a
+correlated pair is arbitrary. On 14 graph-topology features that are correlated by construction, it
+would produce a confident-looking chart that does not mean what a viewer would read into it.
+
+Retraining also risks moving `m7-f14`'s documented numbers, which the whole doc set is pinned to.
+
+The SHAP-driver aggregation is the better artifact on the merits, not merely the cheaper one: it is
+measured on the rankings actually delivered, and **it filters per disease** — the same aggregation
+restricted to HER2+ gives that disease's drivers, which permutation importance can never do.
+
+### 13.4 Why AUPRC does not travel across diseases
+
+**Because AUPRC's floor is the base rate, and the base rate is not remotely constant.** Across the 668
+scored diseases:
+
+| | base rate (positives ÷ pool) |
+|---|--:|
+| minimum | 0.062% |
+| 10th percentile | 0.319% |
+| median | 0.774% |
+| 90th percentile | 2.861% |
+| maximum | 19.466% |
+
+**A 312× spread.** A random ranker scores AUPRC ≈ the base rate, so a disease at 19% prevalence starts
+from a floor 312× higher than one at 0.06%. Comparing AUPRC across that population compares prevalence
+at least as much as ranking quality, and averaging it produces a number driven by which diseases happen
+to be well annotated.
+
+AUROC is **prevalence-invariant** — it is a pure ranking statistic — which is why the macro per-disease
+figure is an AUROC and why it is comparable across a heterogeneous disease set.
+
+So the rule: **AUPRC only at a single fixed prevalence** (the pooled pool at 1.89%, where 0.1778 against
+a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which is comparable
+*because* it divides by each disease's own base rate.
+
+### 13.5 Act 2 layout, enrichment card, feature table
+
+**Swap the aggregate card and the per-disease distribution** — agreed. Summary before detail is the
+right reading order for a scanned surface, and the act lede still frames the distribution as the honest
+one. Aggregate AUROC/AUPRC left, per-disease distribution right.
+
+**Enrichment card:** add hover readouts on the box itself (min / Q1 / median / Q3 / max), drive the
+highlighted diseases from the **currently selected persona** rather than a fixed list, and resolve label
+collisions by laying the callouts out with a simple left-to-right sweep that pushes each label right of
+the previous one's extent, dropping any that still cannot fit.
+
+**Feature table** — the 14 champion features in the language a scientist uses:
+
+| feature | what it measures |
+|---|---|
+| `dwpc_GGD` | degree-weighted count of paths reaching the disease **through an interacting gene** |
+| `dwpc_GPGD` | the same, **through a shared pathway** |
+| `dwpc_GBGD` | the same, **through a shared biological process** |
+| `dwpc_GFGD` | the same, **through a shared molecular function** |
+| `prox_closest` | hops to the **nearest** gene already annotated for this disease |
+| `prox_kernel` | diffusion proximity to the **whole disease module**, all hops, distance-weighted |
+| `ppi_common_neighbors_z` | interaction partners shared with the module, **z-scored against what degree alone predicts** |
+| `ppi_adamic_adar` | shared partners, weighted so **rare** partners count for more |
+| `ppi_jaccard` | shared partners as a fraction of the union |
+| `ppi_evidence_depth` | how **deeply evidenced** this gene's interactions are |
+| `ppi_multi_source_frac` | fraction of its interactions asserted by **more than one interactome** |
+| `gene_ppi_degree` | raw connectivity — how many partners the gene has |
+| `gene_n_pathways` | how many pathways the gene belongs to |
+| `shared_pathway_frac` | fraction of the gene's pathways that also contain a module gene |
+
+Do **not** put the Class 1 / Class 2 seed-gate column in this table. That is Phase 3 engineering, not
+demo material.
+
+### 13.6 Act 3 — merge the panel and the tree
+
+Agreed: one table, with `└` and indentation in the first column carrying `current_hop_depth`. The
+separate tree card goes. Selecting a row still filters the rest of the act, and the indentation does the
+explanatory work the tree was doing.
+
+### 13.7 Act 3 — the confidence intervals need no new Python recipe
+
+**Verified, and the challenge was right.** Hanley–McNeil reproduces every documented `auc_se`:
+
+| disease | n_pos | documented SE | Hanley–McNeil |
+|---|--:|--:|--:|
+| HER2+ | 599 | 0.0069 | 0.0070 |
+| breast carcinoma | 864 | 0.0080 | 0.0081 |
+| luminal A | 101 | 0.0243 | 0.0243 |
+| parent term | 138 | 0.0250 | 0.0250 |
+| ER-negative | 14 | 0.0660 | 0.0661 |
+| triple-negative | 8 | 0.0745 | 0.0746 |
+
+Every value agrees to ≤ 0.0001. The interval is therefore **pure arithmetic on `auc`, `n_pos` and
+`n_neg`** — all three of which `validation_auc_by_disease_2` already carries, in zone 40, **for all 670
+diseases**.
+
+> **So: a visual Prepare recipe with a Formula, over the existing ranking-quality output, gives every
+> disease a confidence interval.** No Python, no breast-only recipe, and it satisfies §13.1's
+> all-diseases rule. `compute_breast_panel` shrinks to whatever is genuinely breast-specific
+> (`hits50_poisson_p`, `top10_novel_genes`) — and those generalise the same way.
+
+### 13.8 Act 3 — what "subtype" means is not the same in every family
+
+Investigated. **Breast is the only family in the project whose subtypes are biomarker-defined**, which
+is why its gene grid reads the way it does. The others divide on a different axis:
+
+| family | subtype axis | largest members | reads as |
+|---|---|---|---|
+| **breast** | **biomarker** (receptor status) | HER2+, luminal A/B, TNBC, ER± | the common programme vs subtype-specific biology |
+| **lung** | **histological** | adenocarcinoma 766, squamous 750, NSCLC 668, small cell 652 | **the negative result** — these are the subtypes the model cannot separate (47 of 50 shared) |
+| **hematologic** | **lineage** | lymphoid neoplasm 733, plasma cell myeloma 731, Hodgkins 521, NK/T 486 | richest hierarchy in the project, hop 2–5 |
+| **anemia** | **mechanism** | anemia 492, hemolytic 118, pernicious 102 | non-oncology, but modules 26–118 |
+| **epilepsy** | **syndrome** | epilepsy 99, early-onset DEE 58, focal 27 | non-oncology, modules 26–99 |
+
+Two consequences. The **grid generalises structurally** — it is only top-50 membership — but its
+**interpretation text must be per-family**, and for lung the same chart is the honest demonstration of a
+limitation rather than a strength. That is elegant: one component, two truthful readings.
+
+And a caution: anemia's and epilepsy's modules are small enough that most of their terms will land in
+the **AUC-unpinned** regime from §13.7. They still earn their place — they are the answer to *"does this
+only work on cancer?"* — but the honest framing is *"it works, with much wider error bars"*, never as a
+showcase.
+
+### 13.9 Act 4 — the list, and a guardrail v2 broke
+
+**"Drop the in-trials filter" is correct, and it is a rule violation I introduced.** §6 of this document
+says the drug badges must never be filterable, because the discovery lift is measured against exactly
+those labels — a viewer who filters by them has made the headline circular. v2's *In trials* button does
+precisely that. **Remove it.**
+
+Revised control set for the ranked list:
+
+| control | verdict |
+|---|---|
+| gene name search | **add** — navigation, not selection bias |
+| show all pairs for the disease (12,272 rows, virtualised) | **add** — replaces the top-15 slice |
+| tractability, as both a status badge and a filter | **add** — it is one of the three *validated* clauses |
+| druggability class filter | **add** — a validated display grouping |
+| novel / known | keep |
+| rank cut-off | keep |
+| **in trials** | **drop — guardrail violation** |
+| **safety liability** | **drop as a filter** (see below) |
+
+⚠ **The liability control is the one open question.** It arrived as the act-6 migration, and its whole
+purpose is to demonstrate *once* that the filter everybody wants would delete ERBB2. Recommendation:
+**keep the demonstration, drop the filter** — render it as a separate, clearly-labelled
+*"show what a safety filter would cost"* control that strikes rows through in place rather than removing
+them, sitting outside the filter row. If that still reads as a filter, make the card static instead.
+
+**How the feature percentile is calculated** (currently marked `mock` in the mockup): for one gene and
+one feature, it is `100 × (candidates for this disease with a lower value) ÷ (candidates with a
+non-null value)` — the percentile rank of this gene's feature value **within this disease's own pool**,
+which is why the drawer says *"higher than 96% of candidates for this disease"* and not a global figure.
+The existing webapp backend computes it per request in its `/gene` endpoint; the mockup's numbers are
+placeholders until that endpoint is ported.
+

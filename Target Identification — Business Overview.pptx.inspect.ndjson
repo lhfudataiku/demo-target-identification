@@ -1,0 +1,122 @@
+{"kind":"deck","id":"pr/19pbj9","name":"Deck"}
+{"kind":"layout","layoutId":"/ppt/slideMasters/slideMaster1.xml","name":"simple-light-2","type":"master","placeholders":[{"name":"title","type":"title"},{"name":"body","type":"body"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout1.xml","name":"CUSTOM","placeholders":[{"name":"title","type":"title"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout2.xml","name":"CUSTOM_3_1","placeholders":[{"name":"title","type":"title"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout3.xml","name":"CUSTOM_5_1","placeholders":[{"name":"title","type":"title"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout4.xml","name":"TITLE","type":"title"}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout5.xml","name":"TITLE_1"}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout6.xml","name":"CUSTOM_7"}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout7.xml","name":"CUSTOM_8","placeholders":[{"name":"title","type":"title"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout8.xml","name":"CUSTOM_8_1","placeholders":[{"name":"title","type":"title"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout9.xml","name":"CUSTOM_8_1_1","placeholders":[{"name":"title","type":"title"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout10.xml","name":"CUSTOM_4","placeholders":[{"name":"title","type":"title"},{"name":"body","type":"body"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout11.xml","name":"CUSTOM_4_1","placeholders":[{"name":"title","type":"title"},{"name":"body","type":"body"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout12.xml","name":"CUSTOM_4_1_1","placeholders":[{"name":"title","type":"title"},{"name":"body","type":"body"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout13.xml","name":"CUSTOM_4_1_1_1","placeholders":[{"name":"title","type":"title"},{"name":"body","type":"body"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout14.xml","name":"CUSTOM_5","placeholders":[{"name":"title","type":"title"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout15.xml","name":"CUSTOM_5_3","placeholders":[{"name":"title","type":"title"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout16.xml","name":"CUSTOM_5_2","placeholders":[{"name":"title","type":"title"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout17.xml","name":"CUSTOM_5_2_1","placeholders":[{"name":"title","type":"title"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout18.xml","name":"CUSTOM_5_1_1","placeholders":[{"name":"title","type":"title"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout19.xml","name":"CUSTOM_5_1_1_1","placeholders":[{"name":"title","type":"title"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout20.xml","name":"CUSTOM_5_1_1_1_1","placeholders":[{"name":"title","type":"title"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout21.xml","name":"CUSTOM_3","placeholders":[{"name":"title","type":"title"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout22.xml","name":"CUSTOM_3_1_1","placeholders":[{"name":"title","type":"title"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout23.xml","name":"CUSTOM_3_1_1_1","placeholders":[{"name":"title","type":"title"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout24.xml","name":"CUSTOM_6","placeholders":[{"name":"title","type":"title"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout25.xml","name":"CUSTOM_7_1_1_1_1_1","placeholders":[{"name":"slideNumber","type":"slideNumber","textPreview":"‹#›"},{"name":"title","type":"title"},{"name":"subtitle","type":"subtitle"},{"name":"subtitle","type":"subtitle"},{"name":"subtitle","type":"subtitle"},{"name":"subtitle","type":"subtitle"},{"name":"subtitle","type":"subtitle"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout26.xml","name":"5 - general_1","placeholders":[{"name":"slideNumber","type":"slideNumber","textPreview":"[ ‹#› ]"},{"name":"title","type":"title"}]}
+{"kind":"slide","id":"sl/y90nupkv","slide":1,"title":"Governed Dataiku Flow","textShapes":13}
+{"kind":"shape","id":"sh/x4nexs32","slide":1,"name":"Google Shape;161;p28","bbox":[19.63,124.7,277.64,81.13]}
+{"kind":"textbox","id":"sh/a1wvmx4r","slide":1,"name":"Google Shape;162;p28","text":"Governed Dataiku Flow","textPreview":"Governed Dataiku Flow","textChars":21,"textLines":1,"bbox":[347.4,249.9,240.72,38.56]}
+{"kind":"textbox","id":"sh/v25wv2lc","slide":1,"name":"Google Shape;163;p28","text":"Life Sciences | Drug Discovery R&D","textPreview":"Life Sciences | Drug Discovery R&D","textChars":34,"textLines":1,"bbox":[632.54,31.1,327.46,29.1]}
+{"kind":"shape","id":"sh/sza5s7md","slide":1,"name":"Google Shape;164;p28","bbox":[625.12,383.39,37.13,0.06]}
+{"kind":"shape","id":"sh/90nuts36","slide":1,"name":"Google Shape;165;p28","bbox":[27.63,83.58,277.39,150.36]}
+{"kind":"textbox","id":"sh/mdcvid4f","slide":1,"name":"Google Shape;166;p28","text":"Business Challenge","textPreview":"Business Challenge","textChars":18,"textLines":1,"bbox":[46.87,97.27,250.11,22.61]}
+{"kind":"textbox","id":"sh/nelcril0","slide":1,"name":"Google Shape;167;p28","text":"Target decisions depend on fragmented biomedical evidence. Teams need a governed way to connect sources, preserve lineage, and make the evidence usable before R&D investment is committed.","textPreview":"Target decisions depend on fragmented biomedical evidence. Teams need a governed way to connect sources, preserve lineage, and make the e...","textChars":187,"textLines":1,"bbox":[46.87,128.81,258.14,98.17]}
+{"kind":"shape","id":"sh/bql4bm1w","slide":1,"name":"Google Shape;168;p28","bbox":[46.87,122,230.05,0]}
+{"kind":"shape","id":"sh/lc3up83u","slide":1,"name":"Google Shape;169;p28","bbox":[331.06,83.57,277.64,150.36]}
+{"kind":"textbox","id":"sh/361wzy5w","slide":1,"name":"Google Shape;170;p28","text":"Business Value","textPreview":"Business Value","textChars":14,"textLines":1,"bbox":[352.1,97.27,207.06,22.61]}
+{"kind":"shape","id":"sh/crulkr2h","slide":1,"name":"Google Shape;171;p28","bbox":[352.04,122,224.16,0]}
+{"kind":"shape","id":"sh/p8je18n2","slide":1,"name":"Google Shape;172;p28","bbox":[638.75,83.58,277.64,150.36]}
+{"kind":"textbox","id":"sh/o7ad836h","slide":1,"name":"Google Shape;173;p28","text":"Business Outcome","textPreview":"Business Outcome","textChars":16,"textLines":1,"bbox":[649.65,92.83,266.17,22.61]}
+{"kind":"shape","id":"sh/po3m9cj6","slide":1,"name":"Google Shape;174;p28","bbox":[665.66,122,224.47,0.25]}
+{"kind":"shape","id":"sh/dc3e5sny","slide":1,"name":"Google Shape;176;p28","bbox":[886.49,83.57,29.89,29.89]}
+{"kind":"shape","id":"sh/zylw7i54","slide":1,"name":"Google Shape;178;p28","bbox":[892.59,92.73,14.64,14.64]}
+{"kind":"shape","id":"sh/yxcfexoj","slide":1,"name":"Google Shape;179;p28","bbox":[895.64,95.78,8.54,8.54]}
+{"kind":"shape","id":"sh/mlsz2hkn","slide":1,"name":"Google Shape;180;p28","bbox":[899.91,90.29,9.76,9.76]}
+{"kind":"shape","id":"sh/7m10vml8","slide":1,"name":"Google Shape;181;p28","bbox":[904.18,89.68,6.1,6.1]}
+{"kind":"shape","id":"sh/8nah4r2t","slide":1,"name":"Google Shape;182;p28","bbox":[578.81,83.57,29.89,29.89]}
+{"kind":"textbox","id":"sh/9o3ixw3e","slide":1,"name":"Google Shape;183;p28","text":"Explore evidence in context","textPreview":"Explore evidence in context","textChars":27,"textLines":1,"bbox":[655.21,249.9,245.67,38.56]}
+{"kind":"textbox","id":"sh/upcz61kz","slide":1,"name":"Google Shape;184;p28","text":"Unifies fragmented public and proprietary evidence\nCreates an auditable, reusable graph asset\nGives teams a shared view of disease biology and supporting evidence\n","textPreview":"Unifies fragmented public and proprietary evidence | Creates an auditable, reusable graph asset | Gives teams a shared view of disease bi...","textChars":163,"textLines":4,"bbox":[343,125.16,266.17,119.59]}
+{"kind":"textbox","id":"sh/val0zmlk","slide":1,"name":"Google Shape;185;p28","text":"Industry: Life sciences\n\nBusiness Function: R&D decision support\n\nValue: Faster, more traceable target-evidence review\n","textPreview":"Industry: Life sciences |  | Business Function: R&D decision support |  | Value: Faster, more traceable target-evidence review |","textChars":119,"textLines":6,"bbox":[649.65,128.81,266.17,124.8]}
+{"kind":"shape","id":"sh/hc3i1wja","slide":1,"name":"Google Shape;187;p28","bbox":[582.55,86.27,22.4,20.8]}
+{"kind":"shape","id":"sh/idcja1kv","slide":1,"name":"Google Shape;188;p28","bbox":[275.13,83.86,29.89,29.89]}
+{"kind":"shape","id":"sh/t872t0ni","slide":1,"name":"Google Shape;190;p28","bbox":[283.9,99.29,4.94,3.92]}
+{"kind":"shape","id":"sh/s7yl0vmx","slide":1,"name":"Google Shape;191;p28","bbox":[280.81,94.88,18.53,11.27]}
+{"kind":"shape","id":"sh/r65krq5s","slide":1,"name":"Google Shape;192;p28","bbox":[288.22,91.45,3.71,4.9]}
+{"kind":"shape","id":"sh/65w3y547","slide":1,"name":"Google Shape;193;p28","bbox":[291.31,99.78,4.94,0.49]}
+{"kind":"shape","id":"sh/1c72xk3u","slide":1,"name":"Google Shape;194;p28","bbox":[291.31,102.72,4.94,0.49]}
+{"kind":"textbox","id":"sh/0byl4fm9","slide":1,"name":"Google Shape;195;p28","text":"Golden Demo | Knowledge Graph (Part 1)","textPreview":"Golden Demo | Knowledge Graph (Part 1)","textChars":38,"textLines":1,"bbox":[27.79,32.21,787.46,33.44]}
+{"kind":"shape","id":"sh/r2pszuhw","slide":1,"name":"Google Shape;197;p28","bbox":[239.71,380.16,86.49,65.39]}
+{"kind":"shape","id":"sh/61gr6p0b","slide":1,"name":"Google Shape;199;p28","bbox":[239.75,349.5,86.46,30.65]}
+{"kind":"textbox","id":"sh/ofepkb6l","slide":1,"name":"Google Shape;201;p28","text":"Connect and govern biomedical evidence","textPreview":"Connect and govern biomedical evidence","textChars":38,"textLines":1,"bbox":[38.9,249.9,220.28,57.92]}
+{"kind":"shape","id":"sh/2tc7i1of","slide":1,"name":"Google Shape;203;p28","bbox":[38.28,465.06,210.71,33.92]}
+{"kind":"textbox","id":"sh/pgnqdgn6","slide":1,"name":"Google Shape;200;p28","text":"Public biomedical\nsources","textPreview":"Public biomedical | sources","textChars":25,"textLines":2,"bbox":[77.04,303.06,162.71,92.88]}
+{"kind":"textbox","id":"sh/p0rm1k3q","slide":1,"name":"Google Shape;198;p28","text":"Proprietary\nknowledge","textPreview":"Proprietary | knowledge","textChars":21,"textLines":2,"bbox":[77.01,409.93,162.71,71.24]}
+{"kind":"image","id":"im/gnipgruh","slide":1,"name":"Google Shape;160;p28","bbox":[38.28,23.94,38.76,31.99]}
+{"kind":"image","id":"im/1orqpwv2","slide":1,"name":"Google Shape;186;p28","bbox":[616.87,259.59,14.17,17.79]}
+{"kind":"image","id":"im/jip8zmxo","slide":1,"name":"Google Shape;196;p28","bbox":[333.6,303.02,268.31,180.22]}
+{"kind":"image","id":"im/ihgrqhw3","slide":1,"name":"Google Shape;202;p28","bbox":[254.65,261.11,14.17,17.79]}
+{"kind":"image","id":"im/5k7a1cfu","slide":1,"name":"Google Shape;204;p28","bbox":[50.35,324.25,22.4,22.4]}
+{"kind":"image","id":"im/4jy9sre9","slide":1,"name":"Google Shape;205;p28","bbox":[50.35,350.69,22.4,22.4]}
+{"kind":"image","id":"im/rm9s3mx0","slide":1,"name":"Google Shape;206;p28","bbox":[50.35,434.52,22.4,22.4]}
+{"kind":"image","id":"im/6l0ruhwf","slide":1,"name":"Google Shape;207;p28","bbox":[671.12,303.02,240.72,179.39]}
+{"kind":"notes","id":"nt/y90nupkv","slide":1,"text":"[Sources]\n- docs/overview/PROJECT_CONTEXT.md §1, §4.1\n- docs/graph/GRAPH_BUILDING.md §7\n\nBusiness framing: the graph is a governed, queryable evidence foundation—not an end in itself."}
+{"kind":"slide","id":"sl/hwbqtkby","slide":2,"title":"Explainable Ranking Flow","textShapes":13}
+{"kind":"shape","id":"sh/t8fmd43a","slide":2,"name":"Google Shape;161;p28","bbox":[19.63,124.7,277.64,81.13]}
+{"kind":"textbox","id":"sh/65o329kz","slide":2,"name":"Google Shape;162;p28","text":"Explainable Ranking Flow","textPreview":"Explainable Ranking Flow","textChars":24,"textLines":1,"bbox":[347.4,249.9,240.72,38.56]}
+{"kind":"textbox","id":"sh/76x4belk","slide":2,"name":"Google Shape;163;p28","text":"Life Sciences | Drug Discovery R&D","textPreview":"Life Sciences | Drug Discovery R&D","textChars":34,"textLines":1,"bbox":[632.54,31.1,327.46,29.1]}
+{"kind":"shape","id":"sh/0bu94bah","slide":2,"name":"Google Shape;164;p28","bbox":[625.12,383.39,37.13,0.06]}
+{"kind":"shape","id":"sh/54f2943e","slide":2,"name":"Google Shape;165;p28","bbox":[27.63,83.58,277.39,150.36]}
+{"kind":"textbox","id":"sh/iho3ypkn","slide":2,"name":"Google Shape;166;p28","text":"Business Challenge","textPreview":"Business Challenge","textChars":18,"textLines":1,"bbox":[46.87,97.27,250.11,22.61]}
+{"kind":"textbox","id":"sh/j2xk7ul8","slide":2,"name":"Google Shape;167;p28","text":"A ranked gene list is not enough to drive a portfolio decision. R&D teams need a shortlist they can interrogate, filter, and defend—with clear evidence behind each candidate.","textPreview":"A ranked gene list is not enough to drive a portfolio decision. R&D teams need a shortlist they can interrogate, filter, and defend—with ...","textChars":174,"textLines":1,"bbox":[46.87,128.81,258.14,98.17]}
+{"kind":"shape","id":"sh/zmtwbel8","slide":2,"name":"Google Shape;168;p28","bbox":[46.87,122,230.05,0]}
+{"kind":"shape","id":"sh/p0jmloji","slide":2,"name":"Google Shape;169;p28","bbox":[331.06,83.57,277.64,150.36]}
+{"kind":"textbox","id":"sh/zulobi50","slide":2,"name":"Google Shape;170;p28","text":"Business Value","textPreview":"Business Value","textChars":14,"textLines":1,"bbox":[352.1,97.27,207.06,22.61]}
+{"kind":"shape","id":"sh/knmxkjmt","slide":2,"name":"Google Shape;171;p28","bbox":[352.04,122,224.16,0]}
+{"kind":"shape","id":"sh/1w36dsnq","slide":2,"name":"Google Shape;172;p28","bbox":[638.75,83.58,277.64,150.36]}
+{"kind":"textbox","id":"sh/0vup4nm5","slide":2,"name":"Google Shape;173;p28","text":"Business Outcome","textPreview":"Business Outcome","textChars":16,"textLines":1,"bbox":[649.65,92.83,266.17,22.61]}
+{"kind":"shape","id":"sh/dkbe9432","slide":2,"name":"Google Shape;174;p28","bbox":[665.66,122,224.47,0.25]}
+{"kind":"shape","id":"sh/90n6hc32","slide":2,"name":"Google Shape;176;p28","bbox":[886.49,83.57,29.89,29.89]}
+{"kind":"shape","id":"sh/321o3y5s","slide":2,"name":"Google Shape;178;p28","bbox":[892.59,92.73,14.64,14.64]}
+{"kind":"shape","id":"sh/21snud47","slide":2,"name":"Google Shape;179;p28","bbox":[895.64,95.78,8.54,8.54]}
+{"kind":"shape","id":"sh/6dovehs7","slide":2,"name":"Google Shape;180;p28","bbox":[899.91,90.29,9.76,9.76]}
+{"kind":"shape","id":"sh/rexw7m9s","slide":2,"name":"Google Shape;181;p28","bbox":[904.18,89.68,6.1,6.1]}
+{"kind":"shape","id":"sh/sf6dgrax","slide":2,"name":"Google Shape;182;p28","bbox":[578.81,83.57,29.89,29.89]}
+{"kind":"textbox","id":"sh/tgze9wri","slide":2,"name":"Google Shape;183;p28","text":"Evidence paths for review","textPreview":"Evidence paths for review","textChars":25,"textLines":1,"bbox":[655.21,249.9,245.67,38.56]}
+{"kind":"textbox","id":"sh/eh8fi1s3","slide":2,"name":"Google Shape;184;p28","text":"Ranks candidate targets for each disease\nExplains why a candidate surfaced and how it connects to disease biology\nLets scientists filter the list on their own decision criteria\n","textPreview":"Ranks candidate targets for each disease | Explains why a candidate surfaced and how it connects to disease biology | Lets scientists fil...","textChars":177,"textLines":4,"bbox":[343,125.16,266.17,119.59]}
+{"kind":"textbox","id":"sh/fihwbm9o","slide":2,"name":"Google Shape;185;p28","text":"Validated champion: 0.823 macro AUC\n\nCoverage: 670 diseases\n\nValue: A transparent shortlist for R&D review\n","textPreview":"Validated champion: 0.823 macro AUC |  | Coverage: 670 diseases |  | Value: A transparent shortlist for R&D review |","textChars":107,"textLines":6,"bbox":[649.65,128.81,266.17,110.4]}
+{"kind":"shape","id":"sh/1kzedwru","slide":2,"name":"Google Shape;187;p28","bbox":[582.55,86.27,22.4,20.8]}
+{"kind":"shape","id":"sh/ul4v6xsz","slide":2,"name":"Google Shape;188;p28","bbox":[275.13,83.86,29.89,29.89]}
+{"kind":"shape","id":"sh/dg3y50b2","slide":2,"name":"Google Shape;190;p28","bbox":[283.9,99.29,4.94,3.92]}
+{"kind":"shape","id":"sh/cfuhcvuh","slide":2,"name":"Google Shape;191;p28","bbox":[280.81,94.88,18.53,11.27]}
+{"kind":"shape","id":"sh/be1g3qtw","slide":2,"name":"Google Shape;192;p28","bbox":[288.22,91.45,3.71,4.9]}
+{"kind":"shape","id":"sh/qdszalcb","slide":2,"name":"Google Shape;193;p28","bbox":[291.31,99.78,4.94,0.49]}
+{"kind":"shape","id":"sh/l43i9kby","slide":2,"name":"Google Shape;194;p28","bbox":[291.31,102.72,4.94,0.49]}
+{"kind":"textbox","id":"sh/k3uhgfud","slide":2,"name":"Google Shape;195;p28","text":"Golden Demo | Prioritizer (Part 2)","textPreview":"Golden Demo | Prioritizer (Part 2)","textChars":34,"textLines":1,"bbox":[27.79,32.21,787.46,33.44]}
+{"kind":"shape","id":"sh/zuhcvqp4","slide":2,"name":"Google Shape;197;p28","bbox":[239.71,380.16,86.49,65.39]}
+{"kind":"shape","id":"sh/et8b2loj","slide":2,"name":"Google Shape;199;p28","bbox":[239.75,349.5,86.46,30.65]}
+{"kind":"textbox","id":"sh/c7etcfup","slide":2,"name":"Google Shape;201;p28","text":"Start with a shared evidence base","textPreview":"Start with a shared evidence base","textChars":33,"textLines":1,"bbox":[38.9,249.9,220.28,57.92]}
+{"kind":"shape","id":"sh/a5wba5cj","slide":2,"name":"Google Shape;203;p28","bbox":[38.28,465.06,210.71,33.92]}
+{"kind":"textbox","id":"sh/x8nu5kba","slide":2,"name":"Google Shape;200;p28","text":"Graph-derived\nfeatures","textPreview":"Graph-derived | features","textChars":22,"textLines":2,"bbox":[77.04,303.06,162.71,92.88]}
+{"kind":"textbox","id":"sh/18jyxgbu","slide":2,"name":"Google Shape;198;p28","text":"Business and\nscientist filters","textPreview":"Business and | scientist filters","textChars":30,"textLines":2,"bbox":[77.01,409.93,162.71,71.24]}
+{"kind":"image","id":"im/8ne1kfup","slide":2,"name":"Google Shape;160;p28","bbox":[38.28,23.94,38.76,31.99]}
+{"kind":"image","id":"im/t8nitkva","slide":2,"name":"Google Shape;186;p28","bbox":[616.87,259.59,14.17,17.79]}
+{"kind":"image","id":"im/bilk3axw","slide":2,"name":"Google Shape;196;p28","bbox":[333.6,303.02,268.31,180.22]}
+{"kind":"image","id":"im/ahc3u5wr","slide":2,"name":"Google Shape;202;p28","bbox":[254.65,261.11,14.17,17.79]}
+{"kind":"image","id":"im/xk325kf2","slide":2,"name":"Google Shape;204;p28","bbox":[50.35,324.25,22.4,22.4]}
+{"kind":"image","id":"im/wjulwfeh","slide":2,"name":"Google Shape;205;p28","bbox":[50.35,350.69,22.4,22.4]}
+{"kind":"image","id":"im/jmlk7ux8","slide":2,"name":"Google Shape;206;p28","bbox":[50.35,434.52,22.4,22.4]}
+{"kind":"image","id":"im/ylc3ypwn","slide":2,"name":"Google Shape;207;p28","bbox":[671.12,303.02,240.72,179.39]}
+{"kind":"notes","id":"nt/hwbqtkby","slide":2,"text":"[Sources]\n- docs/overview/PROJECT_CONTEXT.md §4.2\n- docs/demo/DEMO_NARRATIVE.md, one-page version and Q1–Q5\n- .index/models.tsv (champion m7-f14)\n\nThe 0.823 figure is macro per-disease AUC; it is not a pooled metric. The slide intentionally does not claim a safety capability."}

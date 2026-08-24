@@ -1,7 +1,7 @@
 path	kind	status	n_refs	referenced_by
 docs/appendix/manifest.json	docs	LIVE (referenced)	1	docs/appendix/README.md
 dss_recipes/attach_node_index.py	recipe-mirror	MIRROR (graph-build project)	0	-
-dss_recipes/compute_breast_panel.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_breast_panel.py	recipe-mirror	MIRROR	3	docs/demo/DASHBOARD_DESIGN.md,docs/demo/DASHBOARD_MOCKUP_V2.html,docs/demo/DASHBOARD_MOCKUP_V3.html
 dss_recipes/compute_breast_shortlist.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_family_id.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_group_map.py	recipe-mirror	MIRROR (graph-build project)	0	-

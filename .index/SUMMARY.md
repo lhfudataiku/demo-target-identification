@@ -19,9 +19,10 @@ flags them as historical dropped.
 | `.claude/skills/target-id/references/number-update.md` | 0 | 1 | 5 | 6 |
 | `CLAUDE.md` | 0 | 1 | 8 | 9 |
 | `DECISIONS.md` | 2 | 53 | 356 | 411 |
+| `docs/README.md` | 0 | 0 | 1 | 1 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
-| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 20 | 87 | 107 |
+| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 46 | 181 | 227 |
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 14 | 20 | 35 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
@@ -32,16 +33,17 @@ flags them as historical dropped.
 | `docs/reference/DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
 | `docs/reference/RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
 | `notebooks/README.md` | 0 | 0 | 2 | 2 |
-| **total** | **49** | **201** | **1535** | **1785** |
+| **total** | **49** | **227** | **1630** | **1906** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**372 rows.** Of 1535 total orphans, these are the model-dependent ones: the numbers that move
+**388 rows.** Of 1630 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
 |---|---|--:|---|
 | `CLAUDE.md:45` | - | 129,253 | `dashboard_persona_trust`, `drug_evidence_pairs` and `target_candidates_2` (129,253 ranked |
+| `docs/README.md:32` | - | 95.7 | \| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) \| **Current mockup.** |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:97` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:106` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:108` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
@@ -64,6 +66,21 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/DASHBOARD_DESIGN.md:381` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
 | `docs/demo/DASHBOARD_DESIGN.md:383` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
 | `docs/demo/DASHBOARD_DESIGN.md:383` | 4 | 4.0 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
+| `docs/demo/DASHBOARD_DESIGN.md:687` | 12.4 | 0.8962 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
+| `docs/demo/DASHBOARD_DESIGN.md:687` | 12.4 | 0.3359 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
+| `docs/demo/DASHBOARD_DESIGN.md:691` | 12.4 | 0.8962 | \| AUROC \| 0.8962 \| **0.8230** \| +7.3 pts — exactly the pooled overstatement the projec |
+| `docs/demo/DASHBOARD_DESIGN.md:692` | 12.4 | 0.3359 | \| AUPRC \| 0.3359 \| **0.1778** \| nearly 2× \| |
+| `docs/demo/DASHBOARD_DESIGN.md:692` | 12.4 | 0.1778 | \| AUPRC \| 0.3359 \| **0.1778** \| nearly 2× \| |
+| `docs/demo/DASHBOARD_DESIGN.md:697` | 12.4 | 0.0189 | candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion |
+| `docs/demo/DASHBOARD_DESIGN.md:697` | 12.4 | 0.1778 | candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion |
+| `docs/demo/DASHBOARD_DESIGN.md:749` | 12.6 | 129,253 | drivers for all 129,253 scored rows. Aggregating gives an empirical importance ranking ove |
+| `docs/demo/DASHBOARD_DESIGN.md:837` | 12.7 | 1.041 | **TNBC's upper bound is 1.041 — impossible for an AUC.** That single fact demonstrates the |
+| `docs/demo/DASHBOARD_DESIGN.md:930` | 12.11 | 2.9 | 1. **`2.9×` degree-matched at top-10 is unguarded and matches no current estimator.** The  |
+| `docs/demo/DASHBOARD_DESIGN.md:1027` | 13.4 | 0.06 | from a floor 312× higher than one at 0.06%. Comparing AUPRC across that population compare |
+| `docs/demo/DASHBOARD_DESIGN.md:1034` | 13.4 | 0.1778 | So the rule: **AUPRC only at a single fixed prevalence** (the pooled pool at 1.89%, where  |
+| `docs/demo/DASHBOARD_DESIGN.md:1035` | 13.4 | 0.0189 | a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which  |
+| `docs/demo/DASHBOARD_DESIGN.md:1035` | 13.4 | 9.4 | a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which  |
+| `docs/demo/DASHBOARD_DESIGN.md:1090` | 13.7 | 0.0001 | Every value agrees to ≤ 0.0001. The interval is therefore **pure arithmetic on `auc`, `n_p |
 | `docs/demo/DEMO_NARRATIVE.md:32` | - | 13,126 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
 | `docs/demo/DEMO_NARRATIVE.md:32` | - | 12,364 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
 | `docs/demo/DEMO_NARRATIVE.md:32` | - | 8,615 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
@@ -85,24 +102,8 @@ when the champion changes and that no notebook would catch.
 | `docs/prioritizer/FEATURE_AUDIT.md:123` | 4 | 4.99 | \| null gap by label \| −4.99 pp \| **−3.94 pp** \| |
 | `docs/prioritizer/FEATURE_AUDIT.md:123` | 4 | 3.94 | \| null gap by label \| −4.99 pp \| **−3.94 pp** \| |
 | `docs/prioritizer/FEATURE_AUDIT.md:127` | 4 | 0.0022 | **63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0 |
-| `docs/prioritizer/FEATURE_AUDIT.md:127` | 4 | 0.0021 | **63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0 |
-| `docs/prioritizer/FEATURE_AUDIT.md:127` | 4 | 1.29 | **63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0 |
-| `docs/prioritizer/FEATURE_AUDIT.md:127` | 4 | 0.8171 | **63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0 |
-| `docs/prioritizer/FEATURE_AUDIT.md:127` | 4 | 0.8323 | **63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0 |
-| `docs/prioritizer/FEATURE_AUDIT.md:129` | 4 | 3.42 | diseases moved significantly (t = 3.42) despite identical features. |
-| `docs/prioritizer/FEATURE_AUDIT.md:139` | 4 | 1,114 | 1,114. A 1.23% slice cannot move a pooled number but can transform those diseases — and ma |
-| `docs/prioritizer/FEATURE_AUDIT.md:139` | 4 | 1.23 | 1,114. A 1.23% slice cannot move a pooled number but can transform those diseases — and ma |
-| `docs/prioritizer/FEATURE_AUDIT.md:153` | 4 | 0.216 | \| **`prox_kernel`** \| **+0.216** \| −0.452 \| 0.6094 \| **chosen for m7** \| |
-| `docs/prioritizer/FEATURE_AUDIT.md:153` | 4 | 0.452 | \| **`prox_kernel`** \| **+0.216** \| −0.452 \| 0.6094 \| **chosen for m7** \| |
-| `docs/prioritizer/FEATURE_AUDIT.md:153` | 4 | 0.6094 | \| **`prox_kernel`** \| **+0.216** \| −0.452 \| 0.6094 \| **chosen for m7** \| |
-| `docs/prioritizer/FEATURE_AUDIT.md:154` | 4 | 0.104 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
-| `docs/prioritizer/FEATURE_AUDIT.md:154` | 4 | 0.534 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
-| `docs/prioritizer/FEATURE_AUDIT.md:154` | 4 | 0.4864 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
-| `docs/prioritizer/FEATURE_AUDIT.md:154` | 4 | 0.982 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
-| `docs/prioritizer/FEATURE_AUDIT.md:165` | 4 | 0.567 | saturates at 74% hop-1 and scores AUC 0.567. If the gain is uniform across module sizes, t |
-| `docs/prioritizer/FEATURE_AUDIT.md:174` | 4 | 0.8197 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
 
-*312 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*328 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 
