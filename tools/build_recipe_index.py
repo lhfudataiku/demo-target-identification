@@ -156,14 +156,27 @@ def refresh():
     # `_sibling_recipes` is a LIST and `_models` / `_schemas` are dicts, so the meta keys must be
     # skipped before calling .get() -- otherwise --refresh dies with AttributeError AFTER the
     # snapshot has already been written, leaving the index half-refreshed and the exit code 0.
-    unmirrored = [n for n, r in sorted(snap.items())
-                  if not n.startswith("_") and r.get("code") and not os.path.exists(
-                      os.path.join(ROOT, "dss_recipes", n + ".py"))]
-    for n in unmirrored:
+    # `not os.path.exists` alone meant --refresh could only CREATE a missing mirror, never update a
+    # drifted one. On 2026-08-25 twelve mirrors still read `scored_m3` months after the live recipes
+    # moved to `scored_champion`, and --refresh reported success without touching any of them.
+    # A refresh that cannot refresh is worse than no refresh: it launders staleness as freshness.
+    unmirrored, drifted = [], []
+    for n, r in sorted(snap.items()):
+        if n.startswith("_") or not r.get("code"):
+            continue
+        mp = os.path.join(ROOT, "dss_recipes", n + ".py")
+        if not os.path.exists(mp):
+            unmirrored.append(n)
+        elif open(mp).read() != r["code"]:
+            drifted.append(n)
+    for n in unmirrored + drifted:
         open(os.path.join(ROOT, "dss_recipes", n + ".py"), "w").write(snap[n]["code"])
     if unmirrored:
         print("mirrored %d previously-unversioned python recipes: %s"
               % (len(unmirrored), ", ".join(unmirrored)))
+    if drifted:
+        print("REFRESHED %d drifted mirror(s) from live DSS: %s"
+              % (len(drifted), ", ".join(drifted)))
 
     # mirror the Cypher so a gate change becomes a reviewable diff
     os.makedirs(CYPHER_DIR, exist_ok=True)
@@ -194,8 +207,17 @@ def source_for(name, rec):
     return "", ""
 
 
-def mirror_status(stem, own, sibling):
+def mirror_status(stem, own, sibling, snap=None, path=None):
+    """Status of one mirrored file.
+
+    This used to test only whether a live recipe of that NAME existed anywhere, so "0 stale mirror"
+    was reported while twelve mirrors held m3-era code. Name-existence and content-freshness are
+    different questions; DRIFTED MIRROR answers the second."""
     if stem in own:
+        if snap and path and os.path.exists(path):
+            live = (snap.get(stem) or {}).get("code")
+            if live is not None and open(path).read() != live:
+                return "DRIFTED MIRROR (content differs from live DSS)"
         return "MIRROR"
     if stem in sibling:
         return "MIRROR (graph-build project)"
@@ -404,7 +426,8 @@ def main():
             status = mirror_status(stem, recipe_names, sibling_recipes)
         elif f.startswith("dss_recipes/"):
             kind = "recipe-mirror"
-            status = mirror_status(stem, recipe_names, sibling_recipes)
+            status = mirror_status(stem, recipe_names, sibling_recipes,
+                                   snap, os.path.join(ROOT, f))
         elif f.startswith("notebooks/"):
             kind, status = "notebook", "LIVE (tripwire)"
         elif f.startswith("tools/"):

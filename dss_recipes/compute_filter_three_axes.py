@@ -149,3 +149,4 @@ for o, lab in OUT:
 print("\n  Read the therapeutic rows as the result. The tractability row is definitional -- clause 2")
 print("  filters on a correlate of that outcome -- and is reported only so the bias is visible.")
 dataiku.Dataset("filter_three_axes").write_with_schema(out)
+

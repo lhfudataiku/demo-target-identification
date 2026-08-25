@@ -53,6 +53,9 @@ dss_recipes/extract_ot_druggability.py	recipe-mirror	MIRROR (graph-build project
 dss_recipes/extract_ot_maps.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_ppi.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_reactome.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/run_nb6_assertions.py	recipe-mirror	MIRROR	0	-
+dss_recipes/verify_nb1_on_champion.py	recipe-mirror	MIRROR	0	-
+dss_recipes/verify_nb3_on_champion.py	recipe-mirror	MIRROR	0	-
 index_remap.json	root-script	LIVE (referenced)	3	DECISIONS.md,docs/prioritizer/TARGET_PRIORITIZER.md,dss_recipes/compute_split_audit_2.py
 notebooks/nb1_features_and_config.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb2_splitting_and_pool.py	notebook	LIVE (tripwire)	0	-
@@ -64,10 +67,12 @@ notebooks/nb6_interrogation_and_close.py	notebook	LIVE (tripwire)	0	-
 reference_baseline.json	root-script	LIVE (referenced)	4	DECISIONS.md,docs/demo/DASHBOARD_DESIGN.md,docs/graph/GRAPH_BUILDING.md,docs/prioritizer/TARGET_PRIORITIZER.md
 scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
-tools/build_index.py	tool	LIVE	5	AGENTS.md,CLAUDE.md,DECISIONS.md,docs/demo/DASHBOARD_DESIGN.md
+tools/build_index.py	tool	LIVE	6	AGENTS.md,CLAUDE.md,DECISIONS.md,docs/demo/DASHBOARD_DESIGN.md
 tools/build_recipe_index.py	tool	LIVE	18	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,AGENTS.md,CLAUDE.md
+tools/check_freshness.py	tool	LIVE	1	docs/demo/DASHBOARD_DESIGN.md
 tools/check_indexes.sh	tool	LIVE	7	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md
 tools/check_links.py	tool	LIVE	4	AGENTS.md,CLAUDE.md,DECISIONS.md,tools/check_indexes.sh
 tools/model_registry.json	tool	LIVE	5	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,DECISIONS.md,docs/demo/DASHBOARD_DESIGN.md
+tools/pull_notebooks.py	tool	LIVE	1	docs/demo/DASHBOARD_DESIGN.md
 tools/recipe_classes.json	tool	LIVE	4	DECISIONS.md,docs/prioritizer/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py,tools/model_registry.json
 webapp/backend.py	webapp	LIVE (referenced)	3	AGENTS.md,CLAUDE.md,tools/recipe_classes.json

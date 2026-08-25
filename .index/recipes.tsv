@@ -104,7 +104,7 @@ join_disease_name	join	-	-		DSS-only	graph_nodes,top_annotated	target_candidates
 join_family_gene_name	join	-	-		DSS-only	family_top_genes,graph_nodes	family_top_genes_named
 join_trust_for_personas	join	-	-		DSS-only	disease_pool_sizes,persona_candidates	dashboard_persona_trust
 rank_per_disease	window	-	-		DSS-only	persona2_scored_shap	top_candidates
-run_nb6_assertions	python	-	-		dss_recipes/run_nb6_assertions.py	breast_panel_overlap,dashboard_candidates,drug_disease_edges,drug_protein_edges,drug_target_benchmark,enriched_gene_druggability_v2,lung_granularity_check,novel_discovery_eval,raw_ot_known_drug,safety_lift,scored_champion,tractability_axis,tractability_lift,validation_auc_by_disease	nb6_assertion_results
+run_nb6_assertions	python	-	-		dss_recipes/run_nb6_assertions.py	breast_panel_overlap,dashboard_candidates,drug_disease_edges,drug_protein_edges,drug_target_benchmark,enriched_gene_druggability_v2,enriched_gene_safety_v2,graph_nodes,lung_granularity_check,novel_discovery_eval,raw_ot_known_drug,safety_lift,scored_champion,tractability_axis,tractability_lift,validation_auc_by_disease	nb6_assertion_results
 score_persona_candidates	prediction_scoring	-	-		DSS-only	hJLGoYn4,validation_set_personas_2	persona2_scored
 score_psplit_validation_m4	prediction_scoring	-	-		DSS-only	79JOklWN,psplit_validation_set	scored_m4
 score_psplit_validation_m5	prediction_scoring	-	-		DSS-only	psplit_validation_set,r2oXoTEw	scored_m5

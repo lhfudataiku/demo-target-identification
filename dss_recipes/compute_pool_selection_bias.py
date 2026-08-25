@@ -27,7 +27,7 @@ supported = np.union1d(GGD, GPGD)          # pairs the model actually has route 
 gcd_only  = np.setdiff1d(GCD, supported)
 print(f"H|supported(GGD|GPGD) {len(supported):,} | GCD-only {len(gcd_only):,}")
 
-sc = dataiku.Dataset("scored_m3").get_dataframe(
+sc = dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index","gene_index","proba_1"])
 sc["k"]=(sc.disease_index.to_numpy(np.int64)*M)+sc.gene_index.to_numpy(np.int64)
 
@@ -78,3 +78,4 @@ for lname, sub in LABELS.items():
 res = pd.concat(OUT, ignore_index=True)
 res["auc_delta"] = res.auc_supported_only - res.auc_all
 dataiku.Dataset("pool_selection_bias").write_with_schema(res)
+

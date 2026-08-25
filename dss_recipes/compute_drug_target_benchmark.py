@@ -53,7 +53,7 @@ print(f"\nvalidated (disease, target) pairs: {len(truth)} over "
       f"{truth.disease_index.nunique()} diseases, {truth.gene_index.nunique()} genes")
 
 # Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46
-sc = dataiku.Dataset("scored_m3").get_dataframe(
+sc = dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", "disease_split_key", SCORE])
 pairs = set(map(tuple, truth.values))
 

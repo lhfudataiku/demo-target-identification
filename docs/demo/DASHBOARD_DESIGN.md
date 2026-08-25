@@ -2621,3 +2621,203 @@ Converting it to parquet would let a three-column read touch roughly 7% of the b
 conversion-then-swap done for `gene_crosswalk` in §20, and it is the single highest-leverage change
 available to notebook runtime. **Not done here** — a format conversion without a rebuild is exactly
 what corrupted `dashboard_candidates` in §17, and it should not ride along with a codification change.
+
+## 31. Step 4 completed — three codified, three kept in the flow on purpose
+
+### 31.1 Verification moved to a Scenario, not more recipes
+
+`validate_notebooks` (step-based, three `build_flowitem` steps over `nb1_verify`, `nb3_verify`,
+`nb6_assertion_results`, each `NON_RECURSIVE_FORCED_BUILD`, `proceed_on_failure` so one failure does
+not hide the others) is now the single entry point for notebook validation, with run history in DSS.
+
+This also settles the objection in §30: adding a verify *recipe* per notebook would have grown the
+flow we are shrinking. For nb2 and nb4 the answer is `add-step-python` — a `custom_python` scenario
+step runs assertion code with **no recipe and no dataset** in the flow at all. The three existing
+verify recipes stay only until the pruning pass.
+
+### 31.2 Codified — three recipes whose logic is notebook-shaped
+
+| recipe | loc | → | why it moved cleanly |
+|---|---|---|---|
+| `compute_lung_granularity_check` | 77 | nb6 | self-contained; one family filter and a top-50 per disease |
+| `compute_pool_selection_bias` | 55 | nb2 | nb2 already built `gcd_only`, `M` and `keys()` — only the AUC loop had to move |
+| ~~`compute_family_auc`~~ | shaker | — | **attempted and reverted** — see 31.5 |
+
+Two deliberate reductions, both recorded in the code: the selection-bias recipe also computed an
+"all known_drug" label that nothing asserts or reads — dropped rather than reproduced; and the lung
+recipe's own console table is dropped because nb6 builds a different table from the same frame.
+
+### 31.3 NOT codified — three shared or heavy precomputations, and why
+
+Mechanically completing step 4 would have made things worse in three cases:
+
+| recipe | loc | consumed by | why it stays |
+|---|---|---|---|
+| `compute_tractability_axis` | 92 | nb4 §8.4 **and** nb6 §5.1 | both notebooks run the *same* block over its output; codifying means duplicating a full 3.96M-row scan in two places |
+| `compute_breast_panel` | 210 | nb4 **and** nb6 §6.3 | same shared-output shape |
+| `compute_pool_reachability` | 145 | nb2 | reads `graph_edges` (2.85M) **and** the 6.75M-row pool, writes two datasets, and carries dead code (`gid` "unused; kept for clarity", `nid_by_id` "placeholder") |
+
+The notebook principle is that a number should be *traceable to code*, not that every aggregate must
+be recomputed per reader. A precomputation consumed identically by two notebooks is a legitimate flow
+member; duplicating it is how the two copies drift apart. These three keep their recipes, and their
+datasets are **excluded from the pruning list**.
+
+### 31.4 A cost this surfaced
+
+`nb6` now reads `scored_champion` three times (positives, lift base, lung family). Against a 45-column
+CSV with no column pruning (§30.5) that is three full-width scans of 3.96M rows. It is the direct
+reason the validation scenario takes minutes rather than seconds. The parquet conversion in §30.5
+would fix all of it at once and is the highest-leverage change left; it should be its own change,
+with a rebuild, not a rider on a codification.
+
+### 31.5 `family_auc_by_family` cannot be codified — its entire upstream chain is unbuilt
+
+The shaker looked like the easiest item in step 4: three GREL columns over `family_auc_grouped`,
+reproduced in three lines of pandas. It was codified, pushed, and the run failed:
+
+```
+Error while connecting to dataset DEMO_TARGET_IDENTIFICATION.family_auc_grouped,
+caused by: DataStoreIOException: Root path of the dataset does not exist
+```
+
+The chain behind the 0.8009 per-family AUC:
+
+| dataset | state |
+|---|---|
+| `family_validation_ranked` (from `window_family_rank`) | **never built** |
+| `family_auc_grouped` (from `group_family_auc`) | **never built** |
+| `family_auc_by_family` (from `compute_family_auc`) | 505 rows, built 2026-08-21 |
+
+`family_auc_by_family` is a terminal artifact whose provenance no longer exists on disk. The
+codification was **reverted** — pointing a notebook at a dataset that does not exist is strictly
+worse than reading one that does — and nb3 carries a comment saying why.
+
+Consequences, both of which matter for the pruning pass:
+
+- **`family_auc_by_family` must NOT be deleted.** It is the only surviving copy of `7.3 per-family
+  macro AUC = 0.8009` over 505 families, and nb3 asserts both.
+- Re-deriving it means rebuilding a three-recipe chain that has never run in its current form. That
+  is not a pre-demo change: it could move a documented number with no way to tell which value was
+  right.
+
+A second lesson, from my own error: `dku recipe add-input` had already been used to declare
+`family_auc_grouped`, and **DSS connects to every declared input at job start whether the code reads
+it or not**, so the recipe kept failing after the code was reverted. There is no `remove-input`; the
+fix is `get-settings`, drop the item from `inputs.main.items`, `set-settings --settings @file.json`.
+
+### 31.6 The verify tables were failure-only, which made green ambiguous
+
+`nb1_verify` and `nb3_verify` wrote one row per **failure**, falling back to a single
+`(all) | - | - | PASS` row when nothing failed. So a notebook asserting nine things and a notebook
+asserting nothing produced an identical green table — the count that would distinguish them was
+never written. (`nb6_assertion_results` already wrote every row, which is why it reads 33 PASS.)
+
+`verify_nb3_on_champion` now records every check and raises `SystemExit` on failure. The scenario's
+`proceed_on_failure` makes this necessary rather than optional: without a raise, a step that finishes
+after a stale assertion still reports SUCCESS.
+
+### 31.7 Revised pruning list — step 4 moved four datasets OFF it
+
+The pruning pass was scoped before step 4 ran. Step 4 changed it in both directions:
+
+**Cleared for deletion — redundancy proven, not assumed:**
+
+| dataset | recipe | evidence |
+|---|---|---|
+| `safety_lift` | `compute_safety_lift` | recomputed in nb6 §6.0; six lifts match to the digit, base population 907,246 exact |
+| `tractability_lift` | `compute_tractability_lift` | same block, same run |
+| `lung_granularity_check` | `compute_lung_granularity_check` | recomputed in nb6; 33/33 PASS after the move |
+| `pool_selection_bias` | `compute_pool_selection_bias` | recomputed in nb2; cleared once the scenario's nb2 step passes |
+
+**Moved OFF the list — these must survive:**
+
+| dataset | why |
+|---|---|
+| `family_auc_by_family` | only surviving copy of 0.8009 / 505 families; upstream chain never built (31.5) |
+| `tractability_axis` | consumed identically by nb4 §8.4 and nb6 §5.1 |
+| `breast_panel_metrics`, `breast_panel_overlap` | consumed by nb4 and nb6 §6.3 |
+| `pool_reachability` | 145-line graph computation over `graph_edges` + the 6.75M pool |
+
+`pool_unreachable_targets` was already excluded — it shares `compute_pool_reachability` with a
+dataset nb2 reads. That exclusion now extends to the recipe itself.
+
+**The general rule this earned:** a dataset is safe to delete when a notebook *recomputes* it and the
+assertions still pass — not when a grep shows nothing reads it. Two of the four survivors above would
+have passed a reference check and taken a documented number with them.
+
+### 31.8 Step 4 verified end to end
+
+`validate_notebooks` run `2026-08-25-15-25-19-734`, 811.8s, all four steps green:
+
+| step | result |
+|---|---|
+| `nb1_verify` | PASS (failure-only format — 1 row; see below) |
+| `nb3_verify` | **9 / 9 PASS**, now itemised |
+| `nb6_assertion_results` | **34 / 34 PASS** |
+| `assert nb2` (custom_python) | **19 checks, 0 failures** |
+
+All four codifications are confirmed against the recipe outputs they replaced:
+
+| codified | evidence |
+|---|---|
+| `safety_lift` → nb6 | six lifts to the digit; base population 907,246 exact |
+| `tractability_lift` → nb6 | same run |
+| `lung_granularity_check` → nb6 | 34/34 still green after the move |
+| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 / 0.6833 / 0.7335 |
+
+**Counting note.** The `rows` metric on `nb6_assertion_results` reads 33 while the table holds 34 —
+DSS does not recompute dataset metrics after a build, so the metric lags by one run. Count the rows,
+not the metric. (`dku dataset head` also prints a title line for some datasets and not others, which
+makes any fixed `tail -n +N` offset unreliable — key off the header row instead.)
+
+**Left open, deliberately:** `nb1_verify` still writes failures only, so its green is the ambiguous
+kind described in 31.6. It is six assertions and converting it is the same four-line change made to
+nb3 — worth doing, not worth blocking the pruning pass.
+
+## 32. The validation scenario is a test harness, not the validation
+
+Stated by the user on 2026-08-25 and worth recording, because it changes what the scenario is *for*:
+
+> the scenario is just a workaround to test the python scripts from the local notebook. We won't use
+> the scenario as part of the notebook validation
+
+The **notebooks** are the due-diligence artifact — a human opens one and reads the computation. The
+scenario exists only because `dku` cannot execute a notebook (`dku notebook` has create/get/delete/
+clear-outputs/list/sessions/stop and no run; scenarios have no notebook step). Without it, every
+codification would reach the user unverified.
+
+That reframing is what justified the conversion. The harness had grown **3 recipes and 3 datasets
+inside the flow**, sitting in `90 Notebook — validation evidence` where they read as validation
+evidence — precisely the wrong impression, since the evidence is the notebook.
+
+`validate_notebooks` is now four `custom_python` steps and **zero flow items**. A `custom_python` step
+reads any dataset without declaring it as an input, writes nothing, and fails the run by raising.
+
+Verified before deleting anything — run `2026-08-25-16-37-34-679`, 845.6s, **68 assertions, 0 stale**:
+
+| step | checks | failures |
+|---|---|---|
+| nb1 | 6 | 0 |
+| nb2 | 19 | 0 |
+| nb3 | 9 | 0 |
+| nb6 | 34 | 0 |
+
+nb1 now reports its six checks individually; the ambiguous single `(all) PASS` row described in 31.6
+is gone as a side effect.
+
+**Cost accepted:** `nb6_assertion_results` was the only queryable record of the 34 assertions. Results
+now live in the scenario run log. For a harness rather than a deliverable, that is the right trade.
+
+**Pending deletion** (blocked by the session's permission classifier): recipes
+`verify_nb1_on_champion`, `verify_nb3_on_champion`, `run_nb6_assertions`; datasets `nb1_verify`,
+`nb3_verify`, `nb6_assertion_results`.
+
+### 32.1 Also in this pass
+
+- `compute_pool_reachability` no longer produces `pool_unreachable_targets` — the `miss_out` build and
+  its write are removed, the `miss` "why unreachable" console analysis is untouched, lint clean. The
+  dataset is now producer-less and deletable on its own; the shared-recipe caveat is gone.
+- `llm_hx` is flagged **Keep**, held for the Part 1 visual-graph webapp in `DEMO_KG_LS`. It is never
+  built and unreferenced here, so any reference check inside this project reads it as dead.
+- Dataset count corrected: `dku dataset list` returns **125**, all mapped to a zone. An earlier
+  reading of 137 was wrong.

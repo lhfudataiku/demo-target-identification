@@ -219,7 +219,7 @@ if "n_validated_targets" in db.columns:
 # every assertion looks the value up by that string.
 # ============================================================================
 _nodes = dataiku.Dataset("graph_nodes").get_dataframe(
-    columns=["node_index", "node_id", "node_type"], infer_with_pandas=False)
+    columns=["node_index", "node_id", "node_name", "node_type"], infer_with_pandas=False)
 _nodes["node_index"] = _nodes.node_index.astype(int)
 _nodes["node_id"] = _nodes.node_id.astype(str)
 _dis_map = dict(zip(_nodes[_nodes.node_type == "disease"].node_id,
@@ -381,7 +381,31 @@ try:
 except Exception as e:  # noqa: BLE001
     print(f"SUBTYPE|skipped: {e}")
 
-lg = dataiku.Dataset("lung_granularity_check").get_dataframe()
+# `lung_granularity_check` COMPUTED here (step 4) — the recipe was 77 lines that this reproduces in
+# a dozen. Its own printout is dropped: nb6 builds a different table from the same frame below, so
+# reproducing the recipe's console output would only duplicate what follows.
+_LUNG_FAMILY, _TOPN = 52236, 50           # disease_family_id: lung cancer
+_gname = dict(zip(_nodes[_nodes.node_type == "gene/protein"].node_index.astype(int),
+                  _nodes[_nodes.node_type == "gene/protein"].node_name))
+_dname = dict(zip(_nodes[_nodes.node_type == "disease"].node_index.astype(int),
+                  _nodes[_nodes.node_type == "disease"].node_name))
+_lgc = []
+for _c in dataiku.Dataset("scored_champion").iter_dataframes(
+        chunksize=250_000,
+        columns=["disease_index", "gene_index", "is_target", "disease_family_id", "proba_1"]):
+    _c = _c[_c.disease_family_id == _LUNG_FAMILY]
+    if len(_c):
+        _lgc.append(_c)
+_lgdf = pd.concat(_lgc, ignore_index=True)
+_rows = []
+for _d, _g in _lgdf.groupby("disease_index"):
+    _t = _g.nlargest(_TOPN, "proba_1").copy()
+    _t["rank_in_disease"] = range(1, len(_t) + 1)
+    _t["disease_name"] = _dname.get(_d)
+    _t["gene_name"] = _t.gene_index.map(_gname)
+    _rows.append(_t)
+lg = pd.concat(_rows, ignore_index=True)
+print(f"LUNG|computed rows={len(lg):,}|diseases={lg.disease_index.nunique()}")
 lg["rank_in_disease"] = pd.to_numeric(lg.rank_in_disease, errors="coerce")
 tops = {d: set(g.nsmallest(50, "rank_in_disease").gene_index)
         for d, g in lg.dropna(subset=["rank_in_disease"]).groupby("disease_name")}

@@ -111,3 +111,4 @@ dataiku.Dataset("maturity_confound").write_with_schema(
     w[["disease_index", "disease", "cls", "maturity", "delta", "n_approved_drugs", "n_trial_drugs",
        ap, iv, "lift_top50_approved", "lift_top50_investigational",
        "hits_top50_approved", "hits_top50_investigational"]])
+

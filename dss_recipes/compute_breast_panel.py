@@ -102,7 +102,7 @@ def pairs_for(rel):
 TRUTH = {"approved": pairs_for("indication"),
          "investigational": pairs_for("drug_investigated_for")}
 
-sc = dataiku.Dataset("scored_m3").get_dataframe(
+sc = dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", "proba_1"])
 sc = sc[sc.disease_index.isin(PANEL)].copy()
 print(f"{len(sc):,} scored rows over {sc.disease_index.nunique()} breast terms\n")
@@ -207,3 +207,4 @@ print("  its own list. Say that to the surgeon before they say it to us.")
 
 dataiku.Dataset("breast_panel_metrics").write_with_schema(metrics)
 dataiku.Dataset("breast_panel_overlap").write_with_schema(overlap)
+
