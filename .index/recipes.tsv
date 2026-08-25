@@ -39,6 +39,11 @@ compute_filter_three_axes	python	-	-		dss_recipes/compute_filter_three_axes.py	d
 compute_gene_druggability	python	-	-		dss_recipes/compute_gene_druggability.py	enriched_gene_localization,gene_names,graph_nodes,raw_ot_druggability	enriched_gene_druggability
 compute_gene_localization	python	-	-		dss_recipes/compute_gene_localization.py	graph_edges,graph_nodes,raw_go_hierarchy	enriched_gene_localization
 compute_gene_safety	python	-	-		dss_recipes/compute_gene_safety.py	gene_names,graph_nodes,raw_ot_safety	enriched_gene_safety
+compute_graph_label_evidence	grouping	-	-		DSS-only	edge_metadata	graph_label_evidence
+compute_graph_node_source_counts	grouping	-	-		DSS-only	graph_nodes	graph_node_source_counts
+compute_graph_node_type_counts	grouping	-	-		DSS-only	graph_nodes	graph_node_type_counts
+compute_graph_ppi_provenance	grouping	-	-		DSS-only	edge_metadata	graph_ppi_provenance
+compute_graph_relation_counts	grouping	-	-		DSS-only	graph_edges	graph_relation_counts
 compute_known_drug_truth	python	-	-		dss_recipes/compute_known_drug_truth.py	drug_disease_edges,drug_protein_edges,gene_names,graph_nodes,raw_ot_known_drug	known_drug_truth
 compute_lung_granularity_check	python	-	-		dss_recipes/compute_lung_granularity_check.py	graph_nodes,scored_champion	lung_granularity_check
 compute_maturity_confound	python	-	-		dss_recipes/compute_maturity_confound.py	drug_disease_edges,graph_nodes,novel_discovery_eval	maturity_confound
@@ -61,6 +66,7 @@ compute_validation_auc_by_disease_2	python	-	-		dss_recipes/compute_validation_a
 compute_validation_set_scored	sync	-	-		DSS-only	scored_champion	validation_set_scored
 compute_validation_set_scored_grouped	grouping	-	-		DSS-only	validation_set_scored_windows	validation_set_scored_grouped
 compute_validation_set_scored_windows	window	-	-		DSS-only	validation_set_scored	validation_set_scored_windows
+compute_ytvuniN8	merge_folder	-	-		DSS-only	DEMO_KG_LS.Lg8lbpl5	ytvuniN8
 count_candidates_per_disease	grouping	-	-		DSS-only	target_candidates_2	disease_pool_sizes
 decorate_target_candidates	join	-	-		DSS-only	enriched_gene_druggability,enriched_gene_safety,graph_nodes,top_candidates	top_annotated
 extract_hetionet_disease_slim	python	-	-		dss_recipes/extract_hetionet_disease_slim.py	-	hetionet_disease_slim

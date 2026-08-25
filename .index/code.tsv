@@ -63,10 +63,10 @@ notebooks/nb5_data_exploration.py	notebook	LIVE (tripwire)	0	-
 reference_baseline.json	root-script	LIVE (referenced)	4	DECISIONS.md,docs/demo/DASHBOARD_DESIGN.md,docs/graph/GRAPH_BUILDING.md,docs/prioritizer/TARGET_PRIORITIZER.md
 scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
-tools/build_index.py	tool	LIVE	3	CLAUDE.md,DECISIONS.md,tools/check_indexes.sh
-tools/build_recipe_index.py	tool	LIVE	15	.claude/skills/target-id/SKILL.md,CLAUDE.md,DECISIONS.md,docs/prioritizer/PHASE3_PREREGISTRATION.md
-tools/check_indexes.sh	tool	LIVE	4	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,CLAUDE.md,DECISIONS.md
-tools/check_links.py	tool	LIVE	3	CLAUDE.md,DECISIONS.md,tools/check_indexes.sh
-tools/model_registry.json	tool	LIVE	3	.claude/skills/target-id/SKILL.md,DECISIONS.md,tools/build_recipe_index.py
+tools/build_index.py	tool	LIVE	4	AGENTS.md,CLAUDE.md,DECISIONS.md,tools/check_indexes.sh
+tools/build_recipe_index.py	tool	LIVE	18	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,AGENTS.md,CLAUDE.md
+tools/check_indexes.sh	tool	LIVE	7	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md
+tools/check_links.py	tool	LIVE	4	AGENTS.md,CLAUDE.md,DECISIONS.md,tools/check_indexes.sh
+tools/model_registry.json	tool	LIVE	5	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,DECISIONS.md,docs/demo/DASHBOARD_DESIGN.md
 tools/recipe_classes.json	tool	LIVE	4	DECISIONS.md,docs/prioritizer/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py,tools/model_registry.json
-webapp/backend.py	webapp	LIVE (referenced)	2	CLAUDE.md,tools/recipe_classes.json
+webapp/backend.py	webapp	LIVE (referenced)	3	AGENTS.md,CLAUDE.md,tools/recipe_classes.json

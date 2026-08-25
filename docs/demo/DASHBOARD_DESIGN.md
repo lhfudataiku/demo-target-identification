@@ -628,7 +628,7 @@ no connection choice comes close to mattering as much.
 | node sources | `graph_nodes` | `graph_node_source_counts` | 7 |
 | PPI provenance | `edge_metadata` | `graph_ppi_provenance` | 7 |
 | label evidence | `edge_metadata` | `graph_label_evidence` | 3 |
-| AUC histograms | `validation_auc_by_disease_2` | `calibration_histograms` | 40 |
+| AUC histograms | `validation_auc_by_disease_2` | **binned in the backend** — see the rule in §12.2 | — |
 | feature drivers | `dashboard_candidates` | `shap_driver_frequency` | 14 |
 
 **Seven Group recipes, all trivial, all landing in zone 60.** This is the single highest-leverage change
@@ -659,10 +659,101 @@ startup and cached, where parquet-on-S3 is both fine and cheaper.
 convert `dashboard_candidates` to **parquet, partitioned by `disease_index`**, so one disease is one
 file read.
 
-**On DSS dataset metrics and insights as the aggregation layer:** do not use them. Dataset *metrics* are
-designed for monitoring (one scalar per probe, computed on a schedule) and are awkward to read as a
-chart series. *Insights* would re-couple the app to the presentation objects §11 is retiring. A Group
-recipe writing a small dataset is simpler, versioned in the flow, and is itself the lineage story.
+**On DSS dataset metrics as the aggregation layer** — revisited after a challenge, and the earlier
+wording here was wrong in one respect.
+
+*Ingestion is not the problem.* `get_last_metric_values()` is a few lines, and
+`dku dataset metrics get graph_edges records:COUNT_RECORDS` returns 2,851,510 today. Reading a metric
+from the backend is no harder than reading a dataset.
+
+*And for the two headline scalars, metrics are strictly better.* 113,391 nodes and 2,851,510 edges are
+already `records:COUNT_RECORDS` on `graph_nodes` and `graph_edges` — computed, free, no recipe. Building
+a dataset to sum back to a number DSS already holds is redundant.
+
+*But the five breakdowns cannot be metrics*, for three reasons that are about correctness, not
+convenience:
+
+1. **Two of them need a filter, and a metric describes the whole dataset.** `graph_ppi_provenance` is
+   `WHERE relation = 'protein_protein'`; `graph_label_evidence` is `WHERE relation = 'disease_protein'`.
+   The only filtered probe type is a SQL probe, and these are S3/parquet — not SQL-backed — so that
+   route does not exist here either. It is the same reason `dku dataset query` does not work on them.
+2. **The categories would freeze at probe-definition time.** Expressed as metrics the breakdowns need one
+   probe per value — 8 + 7 + 18 = 33 hand-defined probes. Add a 19th relation to the graph and the Group
+   recipe grows a bar automatically while the probe set silently omits it. Act 1's claim is *"18
+   relations, here they all are"*; a silently incomplete inventory is the one failure that card cannot
+   survive.
+3. **Metrics go stale without saying so, and DSS documents this itself:** *"DSS does NOT auto-refresh
+   metric values on rebuild — call this after every build."* A serving dataset rebuilt in the same job as
+   its source cannot drift from it. A metric can, and nothing on screen would show it.
+
+A fourth, smaller reason: §3.3 requires every card to link to its source. A metric has no flow object to
+link to.
+
+> **The principle: metrics are for *watching* data, datasets are for *serving* it.**
+
+**And the challenge produced a real improvement.** Use the metrics as an **integrity check on the serving
+tables**: if `graph_relation_counts` does not sum to `records:COUNT_RECORDS` on `graph_edges`, the
+serving copy is stale. That is a free, automatic guard, wired as a DSS check on the dataset — exactly
+what metrics are good at, and it closes the one hole a precomputed serving layer has.
+
+*Insights* remain out: they would re-couple the app to the presentation objects §11 is retiring.
+
+**The chart-KPI route, investigated.** The proposal was to read the aggregate off a DSS chart instead:
+charts recompute at render time, so they never go stale, and the chart aggregation language is more
+flexible than a probe. Both halves of that are true, and it still does not work — for one hard reason
+and one that dissolves.
+
+*The hard reason: a chart's aggregated data is not readable by a backend.* The public API client exposes
+`get_settings()`, `delete()` and metadata on an insight and **no data accessor at all** — there is no
+`get_data()` anywhere in `dataikuapi`. The chart computes server-side for the *renderer*, and the only
+way to reach that computation is an internal `/dip/api/` endpoint: undocumented, unversioned and
+session-authenticated. A serving path cannot rest on it. (Semantic-model metrics are a different
+mechanism again — `add-metric` takes pseudo-SQL for the natural-language query layer, it is a
+*definition* consumed by a query generator rather than a stored value, and pseudo-SQL needs SQL-backed
+data. Ours is parquet on S3.)
+
+*The reason that dissolves: the formula flexibility is already here.* `recipe create-group` takes
+`--pre-filter` and `--post-filter` GREL formulas and `--computed-col` expressions evaluated before
+grouping. That is the same expressive power as a chart's computed columns — the two filtered A1 tables
+were built with `--pre-filter` and needed nothing else.
+
+**But the auto-update property is the right thing to want, and it belongs in the plan.** It is exactly the
+weakness §12.2 pins on metrics. The answer is a **scenario**, not a different aggregation mechanism:
+`scenario add-trigger-dataset` fires when a source dataset changes and `add-step-build` rebuilds the
+serving zone. Then the serving tables carry the same freshness guarantee a chart has — and with one
+advantage a metric never has: **if a serving table does fall behind, DSS shows the dataset as
+out-of-date in the flow.** Visible staleness beats invisible staleness.
+
+> Net: chart KPIs are blocked by the missing read path; metrics are right for scalars and for integrity
+> checks; datasets plus a rebuild scenario are the serving layer.
+
+⚠ **One cost of the dataset route that the chart route genuinely would not have, found by running the
+scenario:** a `NON_RECURSIVE_FORCED_BUILD` **truncates before it writes**, so mid-rebuild every serving
+table reads **zero rows**. A live chart never does that, because it queries the source. Three
+mitigations, in order of preference: the backend caches at startup (the existing one already does), so
+this only bites on a cold start during a rebuild; schedule the refresh outside demo hours; or drop
+`FORCED` so DSS skips the rebuild when nothing upstream changed. Do not leave a demo machine cold-starting
+against a rebuilding serving zone.
+
+**The rule this settled on, after measuring rather than asserting** (`analyze-column` costs **15.9s** on
+`graph_edges` and **7.5s** on `graph_nodes`; a prebuilt 43-row table reads in milliseconds):
+
+> **Prebuild when the source is large, or when the aggregate needs a filter or join the on-demand tools
+> cannot express. Use metrics for whole-dataset scalars. Compute in the backend when the source is
+> already small and the transform is cheap.**
+
+Two consequences, both applied below:
+
+- **Act 1's stat card reads metrics, not a dataset sum.** 113,391 and 2,851,510 are already
+  `records:COUNT_RECORDS` on `graph_nodes` and `graph_edges`. Summing a serving table to recover a
+  number DSS already holds is redundant.
+- **`calibration_histograms` is dropped from A2.** It bins 670 numbers — a millisecond in the backend —
+  and bin count is a *rendering* decision that belongs to the chart. Freezing it into a dataset would
+  make changing the histogram a flow rebuild.
+
+A further caution found while measuring: `analyze-column` defaults to **top-10 values**, and
+`graph_edges.relation` has 18. There is a `--top-k` flag, but the default would silently have produced a
+ten-relation inventory on the one card whose claim is *"18 relations, here they all are."*
 
 ### 12.3 Linking charts back to their source
 
@@ -1150,4 +1241,278 @@ non-null value)` — the percentile rank of this gene's feature value **within t
 which is why the drawer says *"higher than 96% of candidates for this disease"* and not a global figure.
 The existing webapp backend computes it per request in its `/gene` endpoint; the mockup's numbers are
 placeholders until that endpoint is ported.
+
+
+---
+
+## 14. Flow migration — serving zones, the notebook zone, and when to prune
+
+Audited against the live project. 93 datasets across 13 zones; the lineage below comes from the recipe
+graph, notebook `Dataset(...)` calls and the webapp backend, not from the zone names.
+
+### 14.1 When to clean up — neither before nor after, but in three stages
+
+> **Build the serving layer before the backend. Build the notebook before the prune. Delete last.**
+
+Three reasons, in order of force.
+
+**The serving datasets are the backend's API.** If the backend is written against today's flow it gets
+written twice — once against `persona_candidates` and `novel_discovery_eval` in zone 41, and again
+against whatever replaces them. Creating the ~15 precomputed datasets first is **purely additive**:
+nothing is deleted, nothing breaks, and the backend is then written once against a contract that will
+not move.
+
+**Deletion is the only irreversible step, and it is the least valuable one.** An unread dataset costs
+storage, not correctness. Nothing about a messy flow blocks the webapp. So deletion earns last place on
+both counts — it has the highest risk and the lowest return.
+
+**And there is a specific trap in pruning early.** `safety_lift` and `tractability_lift` are read by
+**nothing today** — not a recipe, not a notebook, not the app — so a mechanical "delete what nothing
+reads" pass would remove them. They carry the **entire act 6 punch line**: membrane receptor 3.16× vs
+0.78×, LoF-intolerant 2.07× / 1.37×, liability 4.62×. Those numbers appear in the deck and **nothing
+guards them**. Prune before the act 5/6 notebook adopts them and you delete the evidence for the
+closing argument.
+
+| stage | what | risk | blocks the webapp? |
+|---|---|---|---|
+| **1** | Create the four serving zones and their datasets | none — additive | **yes, do first** |
+| **2** | Build the backend against them | none | — |
+| **3** | Write the act 5/6 notebook; it adopts `safety_lift`, `tractability_lift`, `lung_granularity_check` | none — additive | no, **parallel with 1–2** |
+| **4** | Move validation datasets into the notebook zone | low — a move, not a delete | no |
+| **5** | Delete, only what stage 3 proved unneeded | **irreversible** | no, **do last** |
+
+Stages 1 and 3 are independent and should run in parallel — the notebook has no dependency on the app.
+
+### 14.2 What the audit found
+
+| | count |
+|---|--:|
+| datasets | 93 |
+| **terminal** — nothing downstream in the flow | 27 |
+| read by a notebook | 20 |
+| read by the webapp backend | **3** |
+| **terminal AND read by neither** | **18** |
+
+Four of those 18 are not dead, and the distinction matters:
+
+- **`safety_lift`, `tractability_lift`** — the act 6 punch line, unguarded. **Adopt into the notebook
+  before touching them.**
+- **`lung_granularity_check`** — act 6's morphological-subtype limit. Same.
+- **`disease_hierarchy_annotation`** — reads as dead, but act 3's ontology indentation needs it.
+  **Promote to serving.**
+- **`dashboard_persona_trust`** — reads as dead because the backend reads `persona_candidates` from
+  zone 41 instead. That is the §3.3 containment defect. **Fix the reader, keep the dataset.**
+- **`breast_shortlist`** — a clinician review form, a deliverable to a person rather than a pipeline
+  artifact. **Archive, do not delete.**
+
+⚠ **A correction to §12 and the v3 mockup.** I specified act 2's AUC charts against
+`validation_auc_by_disease_2` and made much of its `level` filter being load-bearing. **That was the
+wrong table.** `validation_auc_by_disease` — no suffix — is 670 rows, one level, `auc_disease`, macro
+**0.8230** (NaN-skipping over the 668 that score), it is produced by a **visual Prepare recipe**, and it
+already feeds `compute_persona_candidates`. The `_2` variant is a 1,113-row two-level Python output that
+**nothing reads at all**. Point the serving layer at v1: the filter trap disappears because it was an
+artifact of picking the wrong source, and v1 also carries `hits_at_10/20/50` and `recall_at_20`, which
+act 3 wants.
+
+### 14.3 Target zone structure
+
+**Four serving zones, one per act.** Everything in them is precomputed, small, and read whole — no
+streaming, no per-request computation.
+
+| zone | datasets | rows |
+|---|---|--:|
+| **`A1 Evidence base (serving)`** | `graph_node_type_counts` · `graph_node_source_counts` · `graph_relation_counts` · `graph_ppi_provenance` · `graph_label_evidence` | 8 · 7 · 18 · 7 · 3 |
+| **`A2 Calibration (serving)`** | `disease_eligibility` · `pool_route_counts` · `split_audit_2` · `validation_auc_ci` · `shap_driver_frequency` · `persona_enrichment` | 3 · 4 · 3 · 670 · 14 · 670 |
+| **`A3 Therapeutic area (serving)`** | `family_panel` · `top50_membership` · `pairwise_overlap` · `disease_hierarchy_annotation` | ~1.1k · ~650 · ~1.5k · 27k |
+| **`A4 Shortlist (serving)`** | `dashboard_candidates` · `dashboard_persona_trust` | 129k · 13 |
+
+Every one is a **whole-table read at startup and cache**, except `dashboard_candidates`, which is the
+only dataset with a per-request `WHERE` and the only candidate for Snowflake (§12.2).
+
+**One notebook zone**, holding evidence that is *computed in code* rather than served:
+`90 Notebook — validation evidence`.
+
+**Unchanged pipeline zones:** `00` synced, `10`/`11`/`12` features, `20` annotations, `30` modelling and
+split, `31` training. These are how the model gets built; none of it is demo material and none of it
+moves.
+
+**Zones that empty out and are then retired:** `40`, `41`, `42`, `43`, `50`, `60`.
+
+### 14.4 Per-dataset disposition
+
+**→ A1–A4 serving (build new, all visual, all-disease per §13.1)**
+
+`graph_relation_counts` `graph_node_type_counts` `graph_node_source_counts` `graph_ppi_provenance`
+`graph_label_evidence` `disease_eligibility` `pool_route_counts` `validation_auc_ci`
+`shap_driver_frequency` `persona_enrichment` `family_panel` `top50_membership` `pairwise_overlap`
+
+**→ A1–A4 serving (move existing)**
+
+| dataset | from | note |
+|---|---|---|
+| `dashboard_candidates` | 60 | convert to parquet or Snowflake (§12.2) — it is CSV today |
+| `dashboard_persona_trust` | 60 | and **repoint the backend to it** |
+| `split_audit_2` | 42 | 3 rows, read as-is |
+| `disease_hierarchy_annotation` | 42 | act 3's indentation |
+| `filter_three_axes` | 41 | act 4's funnel |
+| `tractability_axis` | 41 | act 4's membrane depletion; also notebook-read |
+
+**→ 90 Notebook (move; the notebook recomputes or reads them)**
+
+`novel_discovery_eval` `drug_target_benchmark` `known_drug_truth` `persona_candidates`
+`pool_selection_bias` `pool_reachability` `breast_panel_metrics` `breast_panel_overlap`
+`family_auc_by_family` `validation_auc_by_disease` `scored_champion`
+
+**→ 90 Notebook (adopt FIRST — currently unguarded)**
+
+`safety_lift` `tractability_lift` `lung_granularity_check` `maturity_confound`
+
+**→ Delete, at stage 5 only**
+
+| dataset | why |
+|---|---|
+| `scored_m4` `scored_m5` `scored_m6` `scored_m8` | ablation ladder outputs; explicitly not demo material, and the ladder is reconstructable from `31 Model training` |
+| `model_comparison` | the ladder's comparison table, same |
+| `validation_auc_by_disease_2` | superseded by v1, read by nothing (§14.2) |
+| `drug_target_benchmark_staged` | staging intermediate |
+| `pool_unreachable_targets` `target_reachability` | subsumed by `pool_reachability`, which the notebook reads |
+| `family_top_genes_named` `family_auc_grouped` `family_gene_agg` `family_top_genes` `family_validation_ranked` `family_validation_scored` | zone 43's own description calls the five-recipe chain **over-built**; the deliverable is `family_auc_by_family` |
+| `llm_hx` | stray in Default, unreferenced |
+
+**→ Archive, not delete**
+
+`breast_shortlist` — a clinician review form. Export it and drop the dataset only once a copy exists
+outside the flow.
+
+### 14.5 The act 5 / 6 notebook
+
+`nb5_interrogation_and_close.py`, following the house pattern: read the most upstream dataset that still
+carries the number, compute in code, and **assert every figure**. It replaces acts 5 and 6 as flow
+objects and becomes the guard for numbers that currently have none.
+
+| section | reads | asserts |
+|---|---|---|
+| degree-matched enrichment | `tractability_axis` | pooled 3.29× @10, 2.42× @200; macro 3.11× @10; the estimator crossover |
+| hub-bias meter | `scored_champion` | 0.59 → 0.79 by degree quintile, 17.3% → 57.0% |
+| novel discovery | `novel_discovery_eval` | approved 16.88× @10, 5.04× @200; investigational 8.85× @10 |
+| ground-truth provenance | `raw_ot_known_drug`, `known_drug_truth` | 82% multi-target, 8% single-target survival; curated 21.32× |
+| orthogonality | `validation_auc_by_disease` × `drug_target_benchmark` | r = +0.002, R² = 0.0000 |
+| **the three refuted gates** | **`tractability_lift`, `safety_lift`** | **3.16× / 0.78×, 2.07× / 1.37×, 4.62× — currently unguarded** |
+| subtype limits | `lung_granularity_check`, `breast_panel_overlap` | 47/50 lung, 2/50 breast novel-only |
+| the lookup-table slide | `drug_target_benchmark` | 0.9354 vs the trained model |
+
+The last-but-one row is why this notebook is worth writing on its own merits, independent of the flow
+cleanup: **four of the deck's closing numbers are currently asserted by nothing.**
+
+### 14.6 Rules for the migration itself
+
+- **Never touch `compute_kg` or the graph zone**, and never use a recursive build type in
+  `KNOWLEDGE_GRAPH_PRIMEKG` — it walks up and renumbers every node.
+- Zone moves are metadata only and safe. **Do them in one pass, verify, then stop** — do not combine a
+  move with a delete.
+- Rebuild a zone from its **last** dataset with update-output-schemas and stop-at-zone-boundary; one job
+  with repeated `--target`.
+- After the moves, **rewrite every zone `shortDesc`.** They are demo-facing prose no index covers, three
+  of them still quote pre-champion numbers, and zone 41's still says *"11.4x at top-10"* and
+  *"2.4-2.9x"* — both wrong (§10.4, §12.11).
+- Re-run `tools/build_recipe_index.py --refresh` after the moves; the zone map is snapshotted there.
+- ⚠ **Never use `RECURSIVE_FORCED_BUILD` to build a serving table.** Targeting
+  `shap_driver_frequency` recursively queued **41 activities** — the whole feature pipeline, including
+  `compute_dwpc_go_metapaths` (the Class 2 recipe Phase 3 is sensitive to) and
+  `compute_enriched_rwr_score_1`. Aborted before damage; the two recipes that had started kept their
+  original build dates. Serving tables sit at the end of long chains, so build them
+  **`NON_RECURSIVE_FORCED_BUILD`, one link at a time**, or recursively with
+  `--stop-at-zone-boundary`. The CLAUDE.md warning about recursive builds is about the graph project;
+  this is a second, separate reason to distrust them.
+- `dku dataset count` scans the file — on `scored_champion` (478 MB CSV) it exceeds a two-minute
+  timeout. Use `dku dataset info`, which reads the cached row count and the last-build stamp.
+
+
+---
+
+## 15. Notebook review — nb1 to nb5 against the notebook principle
+
+**The principle:** a notebook reads the **most upstream** dataset that still carries the number and
+recomputes it in code. Reading a derived table and asserting its contents proves only that the recipe
+still runs — not that the number is right. That is due diligence in name only.
+
+### 15.1 The audit
+
+20 distinct datasets are read across the five notebooks. **Seven are upstream; thirteen are derived.**
+
+| notebook | upstream reads | derived reads | verdict |
+|---|---|---|---|
+| **nb3b** hub-bias meter | `scored_champion` | — | **exemplar.** Its own comment says it best: *"it has no recipe, so this notebook IS its artifact"* |
+| **nb5** data exploration | `graph_nodes`, `graph_edges`, `raw_disease_disease`, `enriched_graph_features_candidate_psplit` | `validation_auc_by_disease` | **near-exemplar.** Counts associations from raw edges rather than reading a summary |
+| **nb1** features & config | `psplit_train_set`, `scored_champion` | — | structurally clean, but **factually stale** — see §15.3 |
+| **nb2** splitting & pool | `enriched_graph_features_candidate_psplit` | `pool_reachability`, `pool_selection_bias`, `split_audit_2` | three of four reads are answers |
+| **nb3** validation | `scored_champion` | `validation_auc_by_disease`, `family_auc_by_family`, `drug_target_benchmark` | asserts three numbers it did not compute |
+| **nb4** results | `raw_ot_known_drug`, `scored_champion` | `breast_panel_metrics`, `breast_panel_overlap`, `filter_three_axes`, `known_drug_truth`, `novel_discovery_eval`, `persona_candidates`, `tractability_axis` | **worst offender** — seven derived reads, mostly read-and-assert |
+
+### 15.2 The refinement the migration forces
+
+A blanket "always recompute" is wrong once some of these tables are **served to the webapp**. The rule
+splits on destination:
+
+| the dataset is… | what the notebook does | what the assertion proves |
+|---|---|---|
+| **deleted** by the migration | compute from upstream; this code becomes the sole source of truth | the number is right |
+| **served to the webapp** | compute from upstream **and compare to the served table** | the number is right **and** the serving layer agrees — an independent reimplementation check |
+| an upstream input | read directly | n/a |
+
+The second row is the valuable one and it is currently absent everywhere. `validation_auc_ci`,
+`filter_three_axes`, `persona_enrichment`, `family_panel` and `top50_membership` will all be read by
+the app; a notebook that recomputes them from `scored_champion` and diffs against the served copy is
+the only thing standing between a broken recipe and a wrong number on screen in front of a customer.
+
+### 15.3 nb1 is pinned to the retired champion
+
+`nb1` declares `FEATS12` — twelve features — and a `REJ` list of rejected ones. **`prox_closest` and
+`prox_kernel` are in the champion's fourteen, and `nb1` has `prox_closest` in `REJ`.** The notebook is
+still describing `m3-f12`, two champions ago, and its null-rate and correlation sections therefore
+report on the wrong feature set.
+
+This is the same drift as the narrative's *"12 network-topology features"* (§12.11 item 2). Both trace
+to the same stale source. **Fix `nb1` first** — it is a four-line change and every claim in §4 of
+`TARGET_PRIORITIZER` rests on it.
+
+### 15.4 Per-notebook revision
+
+**nb1 — features & config.** Replace `FEATS12` with the champion's fourteen sourced from
+`tools/model_registry.json`, and move `prox_closest` / `prox_kernel` out of `REJ`. Re-derive the null
+gaps and correlations. Keep the 25% sampling — the comment explaining the OOM is correct and earned.
+
+**nb2 — splitting & pool.** Compute the split audit, reachability and selection bias from
+`enriched_graph_features_candidate_psplit` and the psplit sets rather than reading three summaries.
+`split_audit_2` stays as a serving dataset, so add the comparison. `pool_reachability` and
+`pool_selection_bias` are then deletable.
+
+**nb3 — validation.** Compute per-disease and per-family AUC directly from `scored_champion` — the
+Mann-Whitney form is eight lines and is already written in `compute_validation_auc_by_disease_2`. Then
+compare against the served `validation_auc_ci`. This turns three read-and-assert sections into three
+genuine checks, and it is what lets `validation_auc_by_disease_2` be deleted.
+
+**nb3b — hub-bias meter.** No change. It is the model the others should follow. Its content moves into
+`nb6` §5.2, and this file is retired once that lands.
+
+**nb4 — results.** The big one. Recompute the novel-discovery lift, the three-axis filter and the
+tractability axis from `scored_champion` plus the annotation tables, and keep only
+`raw_ot_known_drug` as an upstream read. `breast_panel_metrics` and `breast_panel_overlap` become
+comparisons against the generalised `family_panel` / `pairwise_overlap`, not sources. Acts 5 and 6
+leave for `nb6`, which removes roughly half of nb4's current body.
+
+**nb5 — data exploration.** Repoint its one derived read (`validation_auc_by_disease`) at the served
+`validation_auc_ci`, or compute it. Otherwise leave it alone.
+
+**nb6 — the interrogation and the close.** New, written (§14.5). It adopts `tractability_lift`,
+`safety_lift` and `lung_granularity_check`, which nothing currently reads, and asserts the three
+refuted gates. **Until it runs green the flow must not be pruned.**
+
+### 15.5 What the revision unlocks
+
+Once nb2, nb3 and nb4 compute rather than read, these become deletable without losing a guarantee:
+`pool_reachability`, `pool_selection_bias`, `validation_auc_by_disease_2`, `breast_panel_metrics`,
+`breast_panel_overlap`, `known_drug_truth`, `drug_target_benchmark`, and zone 43's five-recipe family
+chain. That is the cleanup in §14.4 made safe — **the notebooks stop depending on the datasets the
+migration wants to delete.**
 

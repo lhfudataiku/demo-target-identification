@@ -603,21 +603,6 @@
    "shared_pathway_count",
    "shared_pathway_frac"
   ],
-  "family_auc_by_family": [
-   "disease_family_id",
-   "target_rank_sum",
-   "n_pos",
-   "n_neg",
-   "auc_family",
-   "hits_at_10",
-   "hits_at_20",
-   "recall_at_20",
-   "hits_at_50",
-   "recall_at_50",
-   "n_diseases_in_family",
-   "n_distinct_genes",
-   "count"
-  ],
   "family_auc_grouped": [
    "disease_family_id",
    "target_rank_sum",
@@ -783,12 +768,32 @@
    "x_index",
    "y_index"
   ],
+  "graph_label_evidence": [
+   "datatypes",
+   "count"
+  ],
+  "graph_node_source_counts": [
+   "node_source",
+   "count"
+  ],
+  "graph_node_type_counts": [
+   "node_type",
+   "count"
+  ],
   "graph_nodes": [
    "node_id",
    "node_type",
    "node_name",
    "node_source",
    "node_index"
+  ],
+  "graph_ppi_provenance": [
+   "ppi_sources",
+   "count"
+  ],
+  "graph_relation_counts": [
+   "relation",
+   "count"
   ],
   "hetionet_disease_slim": [
    "doid"
@@ -954,32 +959,6 @@
    "prediction",
    "explanations",
    "top_shap_drivers"
-  ],
-  "persona_candidates": [
-   "disease",
-   "n_pos",
-   "auc_disease",
-   "rank_enrichment",
-   "auc_drug_targets",
-   "approved_to_find",
-   "approved_found50",
-   "approved_lift50",
-   "investigational_to_find",
-   "investigational_found50",
-   "investigational_lift50",
-   "n_criteria",
-   "disease_index",
-   "module_size",
-   "known_pct50",
-   "is_current",
-   "best_lift50",
-   "best_found50",
-   "recall_at_20",
-   "ok_size",
-   "ok_auc",
-   "ok_ranking",
-   "ok_discovery",
-   "ok_found"
   ],
   "pool_reachability": [
    "disease_index",
@@ -1601,19 +1580,6 @@
    "proba_1",
    "prediction"
   ],
-  "split_audit_2": [
-   "split",
-   "rows",
-   "positives",
-   "pos_rate_pct",
-   "n_diseases",
-   "n_split_keys",
-   "n_anchor_families",
-   "overlap_train_test_keys",
-   "overlap_train_val_keys",
-   "overlap_test_val_keys",
-   "straddling_split_keys"
-  ],
   "target_candidates_2": [
    "gene_index",
    "disease_index",
@@ -1871,17 +1837,6 @@
    "recall_at_20",
    "hits_at_50",
    "count"
-  ],
-  "validation_auc_by_disease_2": [
-   "disease_index",
-   "n_pos",
-   "n_neg",
-   "auc",
-   "hits_at_50",
-   "recall_at_50",
-   "level",
-   "split_key_name",
-   "pooled_auc"
   ],
   "validation_set_personas_2": [
    "gene_index",
@@ -2695,6 +2650,61 @@
   ],
   "type": "python"
  },
+ "compute_graph_label_evidence": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "edge_metadata"
+  ],
+  "outputs": [
+   "graph_label_evidence"
+  ],
+  "type": "grouping"
+ },
+ "compute_graph_node_source_counts": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "graph_nodes"
+  ],
+  "outputs": [
+   "graph_node_source_counts"
+  ],
+  "type": "grouping"
+ },
+ "compute_graph_node_type_counts": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "graph_nodes"
+  ],
+  "outputs": [
+   "graph_node_type_counts"
+  ],
+  "type": "grouping"
+ },
+ "compute_graph_ppi_provenance": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "edge_metadata"
+  ],
+  "outputs": [
+   "graph_ppi_provenance"
+  ],
+  "type": "grouping"
+ },
+ "compute_graph_relation_counts": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "graph_edges"
+  ],
+  "outputs": [
+   "graph_relation_counts"
+  ],
+  "type": "grouping"
+ },
  "compute_known_drug_truth": {
   "code": "# Map the curated `known_drug` label onto graph indices, and calibrate its score against the\n# join-based truth so a threshold can be chosen on evidence rather than by guess.\n#\n# OT's known_drug score rises with maximum clinical phase, so it spans approved pharmacology and\n# early trial evidence in one column. Rather than pick a cutoff arbitrarily, this compares the score\n# distribution of pairs that ARE in our approved join against those that are not.\n#\n# NODE_INDEX SAFETY: per-pair evaluation label. No nodes, no edges.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nkd = dataiku.Dataset(\"raw_ot_known_drug\").get_dataframe()\nnid = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_name\", \"node_type\"], infer_with_pandas=False)\nnid[\"node_index\"] = nid.node_index.astype(int)\nnid[\"node_id\"] = nid.node_id.astype(str)\nG = nid[nid.node_type == \"gene/protein\"]\nD = nid[nid.node_type == \"disease\"]\ngn = dataiku.Dataset(\"gene_names\").get_dataframe(columns=[\"symbol\", \"entrez_id\"])\n\n# symbol -> entrez -> gene_index, the same crosswalk the druggability chain uses\ngn = gn.dropna(subset=[\"entrez_id\"]).copy()\ngn[\"entrez\"] = gn.entrez_id.astype(\"int64\").astype(str)\nsym2idx = (gn.merge(G[[\"node_id\", \"node_index\"]].rename(columns={\"node_id\": \"entrez\"}), on=\"entrez\")\n           [[\"symbol\", \"node_index\"]].drop_duplicates(\"symbol\")\n           .rename(columns={\"node_index\": \"gene_index\"}))\n\n# OT diseaseId is MONDO_0005148 / EFO_xxxx; our disease node_id is bare-integer MONDO\nkd[\"mondo_bare\"] = kd.diseaseId.astype(str).str.extract(r\"^MONDO_0*(\\d+)$\")[0]\ndis2idx = D[[\"node_id\", \"node_index\"]].rename(\n    columns={\"node_id\": \"mondo_bare\", \"node_index\": \"disease_index\"})\n\nt = (kd.merge(sym2idx, on=\"symbol\", how=\"inner\")\n       .merge(dis2idx, on=\"mondo_bare\", how=\"inner\"))\nt = t.groupby([\"disease_index\", \"gene_index\"], as_index=False).score.max()\nprint(f\"known_drug pairs {len(kd):,} -> resolved onto the graph: {len(t):,}\")\nprint(f\"  ({t.disease_index.nunique():,} diseases, {t.gene_index.nunique():,} genes)\")\nprint(f\"  unresolved: {kd.mondo_bare.isna().sum():,} non-MONDO disease ids, \"\n      f\"{(~kd.symbol.isin(sym2idx.symbol)).sum():,} unmapped symbols\")\n\n# ---- calibrate against the join-based truth ----------------------------------\ndmap = dict(zip(D.node_id, D.node_index)); gmap = dict(zip(G.node_id, G.node_index))\ndd = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(infer_with_pandas=False)\ndp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\ngc, tc = (\"x_id\", \"y_id\") if (dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ndp[\"drug\"] = dp[gc].astype(str); dp[\"gene_index\"] = dp[tc].astype(str).map(gmap)\ndp = dp.dropna(subset=[\"gene_index\"])[[\"drug\", \"gene_index\"]]\n\n\ndef joined(rel):\n    sub = dd[dd.relation.astype(str).str.fullmatch(rel, case=False, na=False)].copy()\n    dc, xc = (\"x_id\", \"y_id\") if (sub.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\n    sub[\"drug\"] = sub[dc].astype(str); sub[\"disease_index\"] = sub[xc].astype(str).map(dmap)\n    return set(map(tuple, sub.dropna(subset=[\"disease_index\"])[[\"drug\", \"disease_index\"]]\n                   .merge(dp, on=\"drug\")[[\"disease_index\", \"gene_index\"]].astype(int).values))\n\n\nap, iv = joined(\"indication\"), joined(\"drug_investigated_for\")\nkeys = list(zip(t.disease_index.astype(int), t.gene_index.astype(int)))\nt[\"in_approved_join\"] = [1 if k in ap else 0 for k in keys]\nt[\"in_investig_join\"] = [1 if k in iv else 0 for k in keys]\n\nprint(f\"\\n=== overlap with the join-based truth ===\")\nprint(f\"  known_drug pairs also in the APPROVED join      : {int(t.in_approved_join.sum()):,} \"\n      f\"({t.in_approved_join.mean():.1%})\")\nprint(f\"  known_drug pairs also in the INVESTIGATIONAL join: {int(t.in_investig_join.sum()):,} \"\n      f\"({t.in_investig_join.mean():.1%})\")\nprint(f\"  APPROVED join pairs missing from known_drug      : \"\n      f\"{len(ap - set(keys)):,} of {len(ap):,}\")\n\nprint(f\"\\n=== score CALIBRATION: does the score separate approved from not? ===\")\nprint(f\"  {'bucket':16s}{'n':>9s}{'in approved join':>19s}{'in investig join':>19s}\")\nfor lo, hi in [(0, .1), (.1, .2), (.2, .4), (.4, .6), (.6, .8), (.8, 1.01)]:\n    m = (t.score >= lo) & (t.score < hi)\n    if not m.any():\n        continue\n    print(f\"  [{lo:.1f},{hi:.2f})\".ljust(16) + f\"{int(m.sum()):>9,}\"\n          f\"{t[m].in_approved_join.mean():>18.1%}{t[m].in_investig_join.mean():>19.1%}\")\nprint(\"\\n  A rising approved-share with score means the score is a usable phase proxy, so a\")\nprint(\"  threshold can stand in for 'approved' without needing the join at all.\")\n\ndataiku.Dataset(\"known_drug_truth\").write_with_schema(t)\n\n",
   "cypher": null,
@@ -2984,6 +2994,17 @@
    "validation_set_scored_windows"
   ],
   "type": "window"
+ },
+ "compute_ytvuniN8": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "DEMO_KG_LS.Lg8lbpl5"
+  ],
+  "outputs": [
+   "ytvuniN8"
+  ],
+  "type": "merge_folder"
  },
  "count_candidates_per_disease": {
   "code": null,

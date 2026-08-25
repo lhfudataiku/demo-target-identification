@@ -17,12 +17,15 @@ flags them as historical dropped.
 |---|--:|--:|--:|--:|
 | `.claude/skills/target-id/SKILL.md` | 0 | 0 | 6 | 6 |
 | `.claude/skills/target-id/references/number-update.md` | 0 | 1 | 5 | 6 |
+| `.codex/skills/target-id/SKILL.md` | 0 | 0 | 6 | 6 |
+| `.codex/skills/target-id/references/number-update.md` | 0 | 1 | 4 | 5 |
+| `AGENTS.md` | 0 | 1 | 8 | 9 |
 | `CLAUDE.md` | 0 | 1 | 8 | 9 |
 | `DECISIONS.md` | 2 | 53 | 356 | 411 |
 | `docs/README.md` | 0 | 0 | 1 | 1 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
-| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 46 | 181 | 227 |
+| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 58 | 200 | 258 |
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 14 | 20 | 35 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
@@ -33,15 +36,18 @@ flags them as historical dropped.
 | `docs/reference/DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
 | `docs/reference/RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
 | `notebooks/README.md` | 0 | 0 | 2 | 2 |
-| **total** | **49** | **227** | **1630** | **1906** |
+| **total** | **49** | **241** | **1667** | **1957** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**388 rows.** Of 1630 total orphans, these are the model-dependent ones: the numbers that move
+**393 rows.** Of 1667 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
 |---|---|--:|---|
+| `AGENTS.md:33` | - | 1,100 | Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `st |
+| `AGENTS.md:33` | - | 129,253 | Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `st |
+| `AGENTS.md:73` | - | 0.9354 | - **A benchmark a lookup table wins is measuring the lookup.** Drug-target AUC is dominate |
 | `CLAUDE.md:45` | - | 129,253 | `dashboard_persona_trust`, `drug_evidence_pairs` and `target_candidates_2` (129,253 ranked |
 | `docs/README.md:32` | - | 95.7 | \| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) \| **Current mockup.** |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:97` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
@@ -66,21 +72,23 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/DASHBOARD_DESIGN.md:381` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
 | `docs/demo/DASHBOARD_DESIGN.md:383` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
 | `docs/demo/DASHBOARD_DESIGN.md:383` | 4 | 4.0 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
-| `docs/demo/DASHBOARD_DESIGN.md:687` | 12.4 | 0.8962 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
-| `docs/demo/DASHBOARD_DESIGN.md:687` | 12.4 | 0.3359 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
-| `docs/demo/DASHBOARD_DESIGN.md:691` | 12.4 | 0.8962 | \| AUROC \| 0.8962 \| **0.8230** \| +7.3 pts — exactly the pooled overstatement the projec |
-| `docs/demo/DASHBOARD_DESIGN.md:692` | 12.4 | 0.3359 | \| AUPRC \| 0.3359 \| **0.1778** \| nearly 2× \| |
-| `docs/demo/DASHBOARD_DESIGN.md:692` | 12.4 | 0.1778 | \| AUPRC \| 0.3359 \| **0.1778** \| nearly 2× \| |
-| `docs/demo/DASHBOARD_DESIGN.md:697` | 12.4 | 0.0189 | candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion |
-| `docs/demo/DASHBOARD_DESIGN.md:697` | 12.4 | 0.1778 | candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion |
-| `docs/demo/DASHBOARD_DESIGN.md:749` | 12.6 | 129,253 | drivers for all 129,253 scored rows. Aggregating gives an empirical importance ranking ove |
-| `docs/demo/DASHBOARD_DESIGN.md:837` | 12.7 | 1.041 | **TNBC's upper bound is 1.041 — impossible for an AUC.** That single fact demonstrates the |
-| `docs/demo/DASHBOARD_DESIGN.md:930` | 12.11 | 2.9 | 1. **`2.9×` degree-matched at top-10 is unguarded and matches no current estimator.** The  |
-| `docs/demo/DASHBOARD_DESIGN.md:1027` | 13.4 | 0.06 | from a floor 312× higher than one at 0.06%. Comparing AUPRC across that population compare |
-| `docs/demo/DASHBOARD_DESIGN.md:1034` | 13.4 | 0.1778 | So the rule: **AUPRC only at a single fixed prevalence** (the pooled pool at 1.89%, where  |
-| `docs/demo/DASHBOARD_DESIGN.md:1035` | 13.4 | 0.0189 | a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which  |
-| `docs/demo/DASHBOARD_DESIGN.md:1035` | 13.4 | 9.4 | a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which  |
-| `docs/demo/DASHBOARD_DESIGN.md:1090` | 13.7 | 0.0001 | Every value agrees to ≤ 0.0001. The interval is therefore **pure arithmetic on `auc`, `n_p |
+| `docs/demo/DASHBOARD_DESIGN.md:778` | 12.4 | 0.8962 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
+| `docs/demo/DASHBOARD_DESIGN.md:778` | 12.4 | 0.3359 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
+| `docs/demo/DASHBOARD_DESIGN.md:782` | 12.4 | 0.8962 | \| AUROC \| 0.8962 \| **0.8230** \| +7.3 pts — exactly the pooled overstatement the projec |
+| `docs/demo/DASHBOARD_DESIGN.md:783` | 12.4 | 0.3359 | \| AUPRC \| 0.3359 \| **0.1778** \| nearly 2× \| |
+| `docs/demo/DASHBOARD_DESIGN.md:783` | 12.4 | 0.1778 | \| AUPRC \| 0.3359 \| **0.1778** \| nearly 2× \| |
+| `docs/demo/DASHBOARD_DESIGN.md:788` | 12.4 | 0.0189 | candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion |
+| `docs/demo/DASHBOARD_DESIGN.md:788` | 12.4 | 0.1778 | candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion |
+| `docs/demo/DASHBOARD_DESIGN.md:840` | 12.6 | 129,253 | drivers for all 129,253 scored rows. Aggregating gives an empirical importance ranking ove |
+| `docs/demo/DASHBOARD_DESIGN.md:928` | 12.7 | 1.041 | **TNBC's upper bound is 1.041 — impossible for an AUC.** That single fact demonstrates the |
+| `docs/demo/DASHBOARD_DESIGN.md:1021` | 12.11 | 2.9 | 1. **`2.9×` degree-matched at top-10 is unguarded and matches no current estimator.** The  |
+| `docs/demo/DASHBOARD_DESIGN.md:1118` | 13.4 | 0.06 | from a floor 312× higher than one at 0.06%. Comparing AUPRC across that population compare |
+| `docs/demo/DASHBOARD_DESIGN.md:1125` | 13.4 | 0.1778 | So the rule: **AUPRC only at a single fixed prevalence** (the pooled pool at 1.89%, where  |
+| `docs/demo/DASHBOARD_DESIGN.md:1126` | 13.4 | 0.0189 | a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which  |
+| `docs/demo/DASHBOARD_DESIGN.md:1126` | 13.4 | 9.4 | a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which  |
+| `docs/demo/DASHBOARD_DESIGN.md:1181` | 13.7 | 0.0001 | Every value agrees to ≤ 0.0001. The interval is therefore **pure arithmetic on `auc`, `n_p |
+| `docs/demo/DASHBOARD_DESIGN.md:1396` | 14.5 | 17.3 | \| hub-bias meter \| `scored_champion` \| 0.59 → 0.79 by degree quintile, 17.3% → 57.0% \| |
+| `docs/demo/DASHBOARD_DESIGN.md:1396` | 14.5 | 57.0 | \| hub-bias meter \| `scored_champion` \| 0.59 → 0.79 by degree quintile, 17.3% → 57.0% \| |
 | `docs/demo/DEMO_NARRATIVE.md:32` | - | 13,126 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
 | `docs/demo/DEMO_NARRATIVE.md:32` | - | 12,364 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
 | `docs/demo/DEMO_NARRATIVE.md:32` | - | 8,615 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
@@ -97,13 +105,8 @@ when the champion changes and that no notebook would catch.
 | `docs/prioritizer/FEATURE_AUDIT.md:71` | 3 | 0.646 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
 | `docs/prioritizer/FEATURE_AUDIT.md:71` | 3 | 0.567 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
 | `docs/prioritizer/FEATURE_AUDIT.md:71` | 3 | 0.328 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
-| `docs/prioritizer/FEATURE_AUDIT.md:76` | 3 | 0.857 | \| `gene_n_diseases` \| Cypher \| label-derived; single-feature AUC **0.857**, above the c |
-| `docs/prioritizer/FEATURE_AUDIT.md:77` | 3 | 1.000 | \| `degree`, `pagerank`, `triangles`, `eigenvector_centrality`, `clustering_coefficient` \ |
-| `docs/prioritizer/FEATURE_AUDIT.md:123` | 4 | 4.99 | \| null gap by label \| −4.99 pp \| **−3.94 pp** \| |
-| `docs/prioritizer/FEATURE_AUDIT.md:123` | 4 | 3.94 | \| null gap by label \| −4.99 pp \| **−3.94 pp** \| |
-| `docs/prioritizer/FEATURE_AUDIT.md:127` | 4 | 0.0022 | **63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0 |
 
-*328 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*333 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 
