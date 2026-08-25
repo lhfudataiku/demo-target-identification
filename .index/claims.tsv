@@ -843,6 +843,37 @@ docs/demo/DASHBOARD_DESIGN.md	2450	28.2	0.8046	VALUE_ONLY	nb3_validation_and_plo
 docs/demo/DASHBOARD_DESIGN.md	2454	28.2	0.8932	VALUE_ONLY	nb3_validation_and_plots.py:header pooled AUC	y		`HEADER|pooled=0.8932|per_split_key=0.8046|split_keys=441` — the pooled figure is **7.0 points above**
 docs/demo/DASHBOARD_DESIGN.md	2454	28.2	0.8046	VALUE_ONLY	nb3_validation_and_plots.py:header per-split-key AUC	y		`HEADER|pooled=0.8932|per_split_key=0.8046|split_keys=441` — the pooled figure is **7.0 points above**
 docs/demo/DASHBOARD_DESIGN.md	2455	28.2	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		the macro 0.8230, which is the overstatement §12.2 warns about, now measured rather than asserted.
+docs/demo/DASHBOARD_DESIGN.md	2547	30.2	0.78	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor assoc_lift			assertions (membrane receptor 0.78 / 3.16, ion channel 11.89, `lof_intolerant` 2.07 / 1.37, liability
+docs/demo/DASHBOARD_DESIGN.md	2547	30.2	3.16	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			assertions (membrane receptor 0.78 / 3.16, ion channel 11.89, `lof_intolerant` 2.07 / 1.37, liability
+docs/demo/DASHBOARD_DESIGN.md	2547	30.2	11.89	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 ion channel drug_lift			assertions (membrane receptor 0.78 / 3.16, ion channel 11.89, `lof_intolerant` 2.07 / 1.37, liability
+docs/demo/DASHBOARD_DESIGN.md	2547	30.2	2.07	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant assoc_lift			assertions (membrane receptor 0.78 / 3.16, ion channel 11.89, `lof_intolerant` 2.07 / 1.37, liability
+docs/demo/DASHBOARD_DESIGN.md	2547	30.2	1.37	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant drug_lift			assertions (membrane receptor 0.78 / 3.16, ion channel 11.89, `lof_intolerant` 2.07 / 1.37, liability
+docs/demo/DASHBOARD_DESIGN.md	2548	30.2	4.62	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			4.62) are **untouched** — which is the point. They were written against the recipe's output, so they
+docs/demo/DASHBOARD_DESIGN.md	2565	30.2	746,309	ORPHAN			hist	it is derived from the retired tables themselves, where `lof_intolerant` (746,309 + 107,600 + 53,337)
+docs/demo/DASHBOARD_DESIGN.md	2565	30.2	107,600	ORPHAN			hist	it is derived from the retired tables themselves, where `lof_intolerant` (746,309 + 107,600 + 53,337)
+docs/demo/DASHBOARD_DESIGN.md	2565	30.2	53,337	ORPHAN			hist	it is derived from the retired tables themselves, where `lof_intolerant` (746,309 + 107,600 + 53,337)
+docs/demo/DASHBOARD_DESIGN.md	2566	30.2	425,469	ORPHAN		y		and `ot_ab_tractable` (425,469 + 481,777) independently sum to 907,246. If the codified truth-table
+docs/demo/DASHBOARD_DESIGN.md	2566	30.2	481,777	ORPHAN		y		and `ot_ab_tractable` (425,469 + 481,777) independently sum to 907,246. If the codified truth-table
+docs/demo/DASHBOARD_DESIGN.md	2566	30.2	907,246	VALUE_ONLY	nb6_interrogation_and_close.py:6.0 lift base rows	y		and `ot_ab_tractable` (425,469 + 481,777) independently sum to 907,246. If the codified truth-table
+docs/demo/DASHBOARD_DESIGN.md	2568	30.2	905,651	ORPHAN				905,651 — 1,595 rows sit in groups under the `n>=2000` floor, dropped from the table, not the base.)
+docs/demo/DASHBOARD_DESIGN.md	2568	30.2	1,595	ORPHAN				905,651 — 1,595 rows sit in groups under the `n>=2000` floor, dropped from the table, not the base.)
+docs/demo/DASHBOARD_DESIGN.md	2581	30.3	0.78	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor assoc_lift			| membrane receptor `assoc_lift` | 0.78 | 0.78 |
+docs/demo/DASHBOARD_DESIGN.md	2582	30.3	3.16	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			| membrane receptor `drug_lift` | 3.16 | 3.16 |
+docs/demo/DASHBOARD_DESIGN.md	2583	30.3	11.89	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 ion channel drug_lift			| ion channel `drug_lift` | 11.89 | 11.89 |
+docs/demo/DASHBOARD_DESIGN.md	2584	30.3	2.07	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant assoc_lift			| `lof_intolerant` `assoc_lift` | 2.07 | 2.07 |
+docs/demo/DASHBOARD_DESIGN.md	2585	30.3	1.37	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant drug_lift			| `lof_intolerant` `drug_lift` | 1.37 | 1.37 |
+docs/demo/DASHBOARD_DESIGN.md	2586	30.3	4.62	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			| liability `drug_lift` | 4.62 | 4.62 |
+docs/demo/DASHBOARD_DESIGN.md	2588	30.3	907,246	VALUE_ONLY	nb6_interrogation_and_close.py:6.0 lift base rows	y		`6.0 lift base rows` hit 907,246 exactly, so the codified truth-table build and chunked read reproduce
+docs/demo/DASHBOARD_DESIGN.md	2616	30.5	3,958,921	ORPHAN				S3**, 3,958,921 rows × 45 columns. CSV has no column pruning, so `get_dataframe(columns=[...])` for
+docs/demo/DASHBOARD_DESIGN.md	2683	31.5	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		The chain behind the 0.8009 per-family AUC:
+docs/demo/DASHBOARD_DESIGN.md	2698	31.5	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		macro AUC = 0.8009` over 505 families, and nb3 asserts both.
+docs/demo/DASHBOARD_DESIGN.md	2727	31.7	907,246	VALUE_ONLY	nb6_interrogation_and_close.py:6.0 lift base rows			| `safety_lift` | `compute_safety_lift` | recomputed in nb6 §6.0; six lifts match to the digit, base populatio
+docs/demo/DASHBOARD_DESIGN.md	2736	31.7	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			| `family_auc_by_family` | only surviving copy of 0.8009 / 505 families; upstream chain never built (31.5) |
+docs/demo/DASHBOARD_DESIGN.md	2763	31.8	907,246	VALUE_ONLY	nb6_interrogation_and_close.py:6.0 lift base rows			| `safety_lift` → nb6 | six lifts to the digit; base population 907,246 exact |
+docs/demo/DASHBOARD_DESIGN.md	2766	31.8	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
+docs/demo/DASHBOARD_DESIGN.md	2766	31.8	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
+docs/demo/DASHBOARD_DESIGN.md	2766	31.8	0.6833	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
+docs/demo/DASHBOARD_DESIGN.md	2766	31.8	0.7335	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
 docs/demo/DEMO_NARRATIVE.md	18	-	129,253	ORPHAN				**The artifact.** `target_candidates_2` — **129,253 scored candidates across 13 diseases**, each row
 docs/demo/DEMO_NARRATIVE.md	26	-	0.82	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie
 docs/demo/DEMO_NARRATIVE.md	26	-	0.80	ASSERTED	nb3_validation_and_plots.py:header per-split-key AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie

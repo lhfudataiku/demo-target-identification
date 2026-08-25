@@ -2821,3 +2821,52 @@ now live in the scenario run log. For a harness rather than a deliverable, that 
   built and unreferenced here, so any reference check inside this project reads it as dead.
 - Dataset count corrected: `dku dataset list` returns **125**, all mapped to a zone. An earlier
   reading of 137 was wrong.
+
+## 33. The pruning pass — executed and verified
+
+**20 recipes and 21 datasets deleted.** 125 → 104 datasets. Verified by set membership, not by the
+`dku dataset list` count, which is unreliable — it reported 137, 125, 116 and 104 for this project
+within one session. Check whether specific names are present; do not trust the total.
+
+Pre-flight before deleting: for every recipe in the set, confirm **all** its outputs are also in the
+set. That is what protects a multi-output recipe like `compute_pool_reachability`, whose second output
+was removed earlier the same day but which still produces `pool_reachability` for nb2.
+
+Verified after: scenario run `2026-08-25-19-25-00-845` — **68 assertions, 0 failures** (nb1 6, nb2 19,
+nb3 9, nb6 34). The notebooks still assert clean against the pruned flow.
+
+### 33.1 The prune made the "nothing reads it" heuristic MORE dangerous
+
+`family_auc_by_family`, `tractability_axis` and `breast_panel_overlap` now have **zero recipe
+consumers**. Their real consumers are notebooks, and notebooks do not appear in the recipe graph — the
+verify recipes were the only things making them look referenced, and those are gone.
+
+So the next mechanical "delete what nothing reads" pass would flag exactly the datasets this one
+decided must survive. `docs/demo/PRUNING_MAP.md` and its KEEP flags are now the only record of why.
+**Read the map before pruning again.**
+
+### 33.2 Cascade — six more items now dead, not deleted
+
+Deleting `compute_model_comparison` orphaned `scored_m1`, `scored_m2`, `scored_m3` and their three
+scoring recipes. All retired-model debris, all now genuinely unreferenced. Left in place: they were
+not in the audited set, and a deletion that was not pre-flighted is how the wrong thing goes.
+
+### 33.3 The frozen reference masks stale mirrors
+
+After the prune, `build_recipe_index.py` flagged only 8 stale mirrors although **15** `dss_recipes/*.py`
+files corresponded to deleted recipes. The other 7 were labelled `MIRROR (graph-build project)`.
+
+The cause: `KNOWLEDGE_GRAPH_PRIMEKG` — the frozen reference — is an ancestor of this project and still
+holds recipes with the same names (`compute_tractability_lift`, `compute_model_comparison`,
+`compute_lung_granularity_check`, …). `mirror_status()` checks the sibling projects by **name**, so a
+collision with the frozen reference makes a mirror of a *deleted local* recipe look healthy.
+
+The 8 unambiguous files were removed (git history keeps them). The 7 masked ones were left in place:
+whether `dss_recipes/` should carry mirrors of the frozen reference at all is a call about intent, not
+a mechanical fix, and the tool cannot distinguish the two cases from the name alone.
+
+| left in place |
+|---|
+| `compute_gene_druggability.py`, `compute_drug_target_benchmark_staged.py`, `compute_lung_granularity_check.py`, `compute_model_comparison.py`, `compute_target_reachability.py`, `compute_tractability_lift.py`, `compute_validation_auc_by_disease_2.py` |
+
+Indexes rebuilt after the prune: **109 recipes, 98 assertions, 2,092 claims**.

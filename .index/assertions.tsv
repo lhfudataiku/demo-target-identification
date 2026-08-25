@@ -85,6 +85,7 @@ nb6_interrogation_and_close.py	5.3	5.3 investigational lift@10	8.85
 nb6_interrogation_and_close.py	5.5	5.5 drug-target macro AUC	0.6886
 nb6_interrogation_and_close.py	5.5	5.5 orthogonality R2	0.0
 nb6_interrogation_and_close.py	5.5	5.5 orthogonality pearson r	0.002
+nb6_interrogation_and_close.py	6.0	6.0 lift base rows	907246.0
 nb6_interrogation_and_close.py	6.1	6.1 ion channel drug_lift	11.89
 nb6_interrogation_and_close.py	6.1	6.1 liability drug_lift	4.62
 nb6_interrogation_and_close.py	6.1	6.1 lof_intolerant assoc_lift	2.07

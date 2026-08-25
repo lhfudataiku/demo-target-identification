@@ -25,7 +25,7 @@ flags them as historical dropped.
 | `docs/README.md` | 0 | 0 | 1 | 1 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
-| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 114 | 246 | 360 |
+| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 137 | 254 | 391 |
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 17 | 17 | 35 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
@@ -36,11 +36,11 @@ flags them as historical dropped.
 | `docs/reference/DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
 | `docs/reference/RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
 | `notebooks/README.md` | 0 | 2 | 2 | 4 |
-| **total** | **49** | **327** | **1685** | **2061** |
+| **total** | **49** | **350** | **1693** | **2092** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**405 rows.** Of 1685 total orphans, these are the model-dependent ones: the numbers that move
+**407 rows.** Of 1693 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -106,7 +106,7 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/DASHBOARD_DESIGN.md:2429` | 28.1 | 0.8197 | 1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, |
 | `docs/demo/DASHBOARD_DESIGN.md:2429` | 28.1 | 0.7976 | 1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, |
 
-*345 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*347 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 

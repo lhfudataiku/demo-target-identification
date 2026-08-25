@@ -72,26 +72,6 @@
    "all_overlap_pct",
    "distinct"
   ],
-  "breast_shortlist": [
-   "arm",
-   "block",
-   "block_rank",
-   "rank_in_subtype",
-   "gene",
-   "model_score",
-   "target_class",
-   "druggability",
-   "small_molecule_tractable",
-   "antibody_tractable",
-   "some_drug_already_hits_this_gene",
-   "documented_safety_liability",
-   "liability_detail",
-   "why_the_model_ranked_it",
-   "REVIEW_plausible_1to5",
-   "REVIEW_already_known_to_you",
-   "REVIEW_worth_pursuing",
-   "REVIEW_comment"
-  ],
   "candidates_annotated": [
    "gene_index",
    "disease_index",
@@ -394,18 +374,6 @@
    "validated_also_assoc",
    "disease_name"
   ],
-  "drug_target_benchmark_staged": [
-   "filter",
-   "status",
-   "disease_index",
-   "pool",
-   "n_val_kept",
-   "n_val_total",
-   "hits_at_50",
-   "median_pct",
-   "auc",
-   "disease_name"
-  ],
   "edge_metadata": [
    "x_index",
    "y_index",
@@ -449,18 +417,6 @@
    "disease_index",
    "dwpc_GPGD"
   ],
-  "enriched_gene_druggability": [
-   "gene_index",
-   "druggability_class",
-   "druggability_evidence",
-   "ot_class_l1",
-   "ot_class_l2",
-   "ot_sm_tractable",
-   "ot_ab_tractable",
-   "has_approved_drug",
-   "ot_sm_buckets",
-   "localization_class"
-  ],
   "enriched_gene_druggability_v2": [
    "gene_index",
    "localization_class",
@@ -479,19 +435,6 @@
    "is_secreted",
    "is_membrane_only",
    "localization_class"
-  ],
-  "enriched_gene_safety": [
-   "gene_index",
-   "has_safety_liability",
-   "n_safety_liabilities",
-   "safety_events",
-   "safety_dosing",
-   "lof_oe",
-   "lof_oe_upper",
-   "lof_bin6",
-   "mis_oe",
-   "lof_intolerant",
-   "safety_flag"
   ],
   "enriched_gene_safety_v2": [
    "n_safety_liabilities",
@@ -742,20 +685,6 @@
    "n_diseases_known_target",
    "_rank"
   ],
-  "family_top_genes_named": [
-   "disease_family_id",
-   "gene_index",
-   "best_score",
-   "is_target_any",
-   "n_diseases_scored",
-   "n_diseases_known_target",
-   "_rank",
-   "node_id",
-   "node_type",
-   "node_name",
-   "node_source",
-   "node_index"
-  ],
   "family_validation_ranked": [
    "gene_index",
    "disease_index",
@@ -979,62 +908,10 @@
    "in_approved_join",
    "in_investig_join"
   ],
-  "lung_granularity_check": [
-   "disease_index",
-   "gene_index",
-   "is_target",
-   "disease_family_id",
-   "proba_1",
-   "rank_in_disease",
-   "disease_name",
-   "gene_name"
-  ],
-  "maturity_confound": [
-   "disease_index",
-   "disease",
-   "cls",
-   "maturity",
-   "delta",
-   "n_approved_drugs",
-   "n_trial_drugs",
-   "novel_linked_total_approved",
-   "novel_linked_total_investigational",
-   "lift_top50_approved",
-   "lift_top50_investigational",
-   "hits_top50_approved",
-   "hits_top50_investigational"
-  ],
-  "model_comparison": [
-   "model",
-   "disease_index",
-   "auc_assoc",
-   "n_assoc",
-   "auc_drug",
-   "n_drug",
-   "hits_at_50"
-  ],
   "mondo_references": [
    "ontology",
    "ontology_id",
    "mondo_id"
-  ],
-  "nb1_verify": [
-   "check",
-   "documented",
-   "live",
-   "status"
-  ],
-  "nb3_verify": [
-   "check",
-   "documented",
-   "live",
-   "status"
-  ],
-  "nb6_assertion_results": [
-   "check",
-   "documented",
-   "live",
-   "status"
   ],
   "novel_discovery_eval": [
    "disease_index",
@@ -1192,30 +1069,6 @@
    "pool_size",
    "disease",
    "recall_ceiling"
-  ],
-  "pool_selection_bias": [
-   "disease_index",
-   "n_pos",
-   "n_gcd_only_pos",
-   "auc_all",
-   "auc_supported_only",
-   "label",
-   "auc_delta"
-  ],
-  "pool_unreachable_targets": [
-   "disease_index",
-   "gene_index",
-   "score",
-   "in_approved_join",
-   "in_investig_join",
-   "in_pool",
-   "reason",
-   "ot_sm_tractable",
-   "ot_ab_tractable",
-   "ot_class_l1",
-   "druggability_class",
-   "gene",
-   "disease"
   ],
   "psplit_test_set": [
    "gene_index",
@@ -1388,15 +1241,6 @@
    "lof_bin6",
    "mis_oe",
    "has_safety_liability"
-  ],
-  "safety_lift": [
-   "attribute",
-   "value",
-   "n",
-   "assoc_rate",
-   "drug_rate",
-   "assoc_lift",
-   "drug_lift"
   ],
   "scored_champion": [
    "gene_index",
@@ -1577,186 +1421,7 @@
    "proba_1",
    "prediction"
   ],
-  "scored_m4": [
-   "gene_index",
-   "disease_index",
-   "gene_ppi_degree",
-   "gene_n_diseases",
-   "gene_n_pathways",
-   "module_size",
-   "degree",
-   "clustering_coefficient",
-   "triangles",
-   "eigenvector_centrality",
-   "pagerank",
-   "dwpc_GPGD",
-   "dwpc_GCD",
-   "dwpc_GGD",
-   "ppi_common_neighbors",
-   "ppi_adamic_adar",
-   "ppi_jaccard",
-   "prox_closest",
-   "shared_pathway_count",
-   "shared_pathway_frac",
-   "rwr_score",
-   "disease_context",
-   "relation",
-   "has_inflammatory_go_annotation",
-   "ppi_evidence_depth",
-   "ppi_multi_source_frac",
-   "ppi_edges_with_provenance",
-   "ppi_common_neighbors_z",
-   "ppi_cn_expected",
-   "dwpc_GBGD",
-   "dwpc_GFGD",
-   "rwr_norm",
-   "is_target",
-   "disease_family_id",
-   "anchor_name",
-   "hop_depth",
-   "disease_split_key",
-   "split_key_name",
-   "split_key_rule",
-   "proba_0",
-   "proba_1",
-   "prediction"
-  ],
-  "scored_m5": [
-   "gene_index",
-   "disease_index",
-   "gene_ppi_degree",
-   "gene_n_diseases",
-   "gene_n_pathways",
-   "module_size",
-   "degree",
-   "clustering_coefficient",
-   "triangles",
-   "eigenvector_centrality",
-   "pagerank",
-   "dwpc_GPGD",
-   "dwpc_GCD",
-   "dwpc_GGD",
-   "ppi_common_neighbors",
-   "ppi_adamic_adar",
-   "ppi_jaccard",
-   "prox_closest",
-   "shared_pathway_count",
-   "shared_pathway_frac",
-   "rwr_score",
-   "disease_context",
-   "relation",
-   "has_inflammatory_go_annotation",
-   "ppi_evidence_depth",
-   "ppi_multi_source_frac",
-   "ppi_edges_with_provenance",
-   "ppi_common_neighbors_z",
-   "ppi_cn_expected",
-   "dwpc_GBGD",
-   "dwpc_GFGD",
-   "rwr_norm",
-   "is_target",
-   "disease_family_id",
-   "anchor_name",
-   "hop_depth",
-   "disease_split_key",
-   "split_key_name",
-   "split_key_rule",
-   "proba_0",
-   "proba_1",
-   "prediction"
-  ],
-  "scored_m6": [
-   "gene_index",
-   "disease_index",
-   "gene_ppi_degree",
-   "gene_n_diseases",
-   "gene_n_pathways",
-   "module_size",
-   "degree",
-   "clustering_coefficient",
-   "triangles",
-   "eigenvector_centrality",
-   "pagerank",
-   "dwpc_GPGD",
-   "dwpc_GCD",
-   "dwpc_GGD",
-   "ppi_common_neighbors",
-   "ppi_adamic_adar",
-   "ppi_jaccard",
-   "prox_closest",
-   "shared_pathway_count",
-   "shared_pathway_frac",
-   "rwr_score",
-   "disease_context",
-   "relation",
-   "has_inflammatory_go_annotation",
-   "ppi_evidence_depth",
-   "ppi_multi_source_frac",
-   "ppi_edges_with_provenance",
-   "ppi_common_neighbors_z",
-   "ppi_cn_expected",
-   "dwpc_GBGD",
-   "dwpc_GFGD",
-   "rwr_norm",
-   "is_target",
-   "disease_family_id",
-   "anchor_name",
-   "hop_depth",
-   "disease_split_key",
-   "split_key_name",
-   "split_key_rule",
-   "proba_0",
-   "proba_1",
-   "prediction"
-  ],
   "scored_m7": [
-   "gene_index",
-   "disease_index",
-   "gene_ppi_degree",
-   "gene_n_diseases",
-   "gene_n_pathways",
-   "module_size",
-   "degree",
-   "clustering_coefficient",
-   "triangles",
-   "eigenvector_centrality",
-   "pagerank",
-   "dwpc_GPGD",
-   "dwpc_GCD",
-   "dwpc_GGD",
-   "ppi_common_neighbors",
-   "ppi_adamic_adar",
-   "ppi_jaccard",
-   "prox_closest",
-   "prox_mean",
-   "prox_kernel",
-   "prox_n_reach",
-   "shared_pathway_count",
-   "shared_pathway_frac",
-   "rwr_score",
-   "disease_context",
-   "relation",
-   "has_inflammatory_go_annotation",
-   "ppi_evidence_depth",
-   "ppi_multi_source_frac",
-   "ppi_edges_with_provenance",
-   "ppi_common_neighbors_z",
-   "ppi_cn_expected",
-   "dwpc_GBGD",
-   "dwpc_GFGD",
-   "rwr_norm",
-   "is_target",
-   "disease_family_id",
-   "anchor_name",
-   "hop_depth",
-   "disease_split_key",
-   "split_key_name",
-   "split_key_rule",
-   "proba_0",
-   "proba_1",
-   "prediction"
-  ],
-  "scored_m8": [
    "gene_index",
    "disease_index",
    "gene_ppi_degree",
@@ -1872,12 +1537,6 @@
    "score",
    "rank_in_disease",
    "disease_name"
-  ],
-  "target_reachability": [
-   "group",
-   "feature",
-   "mean_pct",
-   "null_rate"
   ],
   "top50_membership": [
    "gene_index",
@@ -2251,15 +1910,6 @@
    "pct_membrane_top50",
    "pct_secreted_all",
    "pct_membrane_all"
-  ],
-  "tractability_lift": [
-   "attribute",
-   "value",
-   "n",
-   "assoc_rate",
-   "drug_rate",
-   "assoc_lift",
-   "drug_lift"
   ],
   "validation_auc_by_disease": [
    "disease_index",
@@ -2747,17 +2397,6 @@
   ],
   "type": "python"
  },
- "compute_breast_shortlist": {
-  "code": "# The breast-subtype shortlist, shaped as a REVIEW INSTRUMENT for a breast surgeon.\n#\n# This is not a report. It is a form. The clinician's job is to falsify it, so every row carries the\n# evidence needed to judge it and four blank columns for their verdict. That makes the output a\n# dataset we can score later -- expert agreement rate per subtype -- rather than an anecdote.\n#\n# WHY A CLINICIAN AND NOT ANOTHER METRIC. Two of the four arms cannot be scored against our own\n# labels: triple-negative has 8 known gene associations, luminal A has 101 in a pool of 8,157. A\n# surgeon can falsify those lists in twenty minutes, which is both faster and harder than anything in\n# TARGET_PRIORITIZER section 8. See `breast_panel_metrics` for the per-arm trust numbers to hand over\n# WITH this sheet -- never without it.\n#\n# THE ANCHOR MATTERS. Each arm shows its top KNOWN targets before its novel candidates. If the\n# surgeon does not recognise the known block as sensible for that subtype, the novel block is not\n# worth their time and the conversation should stop there. Leading with novel candidates invites them\n# to judge a list they have no way to calibrate.\nimport dataiku\nimport pandas as pd\n\n# The clinical trichotomy, plus the umbrella as a reference arm. Ordered as a surgeon thinks:\n# hormone-driven, HER2-driven, triple-negative -- then the generic term for comparison.\nARMS = [(42563, \"Luminal A (HR+/HER2-)\"),\n        (48537, \"HER2-positive\"),\n        (47807, \"Triple-negative\"),\n        (47415, \"Breast carcinoma (umbrella, reference)\")]\nN_KNOWN, N_NOVEL = 10, 20\n\ntc = dataiku.Dataset(\"target_candidates_2\").get_dataframe(\n    columns=[\"disease_index\", \"disease_name\", \"gene_name\", \"gene_index\", \"is_target\", \"score\",\n             \"rank_in_disease\", \"top_shap_drivers\", \"druggability_class\", \"ot_class_l1\",\n             \"ot_sm_tractable\", \"ot_ab_tractable\", \"has_approved_drug\",\n             \"has_safety_liability\", \"safety_events\"])\n\nrows = []\nfor di, arm in ARMS:\n    g = tc[tc.disease_index == di].sort_values(\"rank_in_disease\")\n    if not len(g):\n        print(f\"  !! {arm} ({di}) absent from target_candidates_2\")\n        continue\n    known = g[g.is_target == 1].head(N_KNOWN)\n    novel = g[g.is_target == 0].head(N_NOVEL)\n    for block, sub in ((\"A. known target - sanity anchor\", known),\n                       (\"B. NOVEL candidate - please assess\", novel)):\n        for i, (_, r) in enumerate(sub.iterrows(), 1):\n            rows.append({\n                \"arm\": arm,\n                \"block\": block,\n                \"block_rank\": i,\n                \"rank_in_subtype\": int(r.rank_in_disease),\n                \"gene\": r.gene_name,\n                \"model_score\": round(float(r.score), 4),\n                \"target_class\": r.ot_class_l1 if pd.notna(r.ot_class_l1) else \"\",\n                \"druggability\": r.druggability_class if pd.notna(r.druggability_class) else \"\",\n                \"small_molecule_tractable\": bool(r.ot_sm_tractable) if pd.notna(r.ot_sm_tractable) else None,\n                \"antibody_tractable\": bool(r.ot_ab_tractable) if pd.notna(r.ot_ab_tractable) else None,\n                \"some_drug_already_hits_this_gene\": bool(r.has_approved_drug) if pd.notna(r.has_approved_drug) else None,\n                \"documented_safety_liability\": bool(r.has_safety_liability) if pd.notna(r.has_safety_liability) else None,\n                \"liability_detail\": (str(r.safety_events)[:120] if pd.notna(r.safety_events) else \"\"),\n                \"why_the_model_ranked_it\": (str(r.top_shap_drivers)[:160]\n                                            if pd.notna(r.top_shap_drivers) else \"\"),\n                # --- the surgeon fills these in ---\n                \"REVIEW_plausible_1to5\": \"\",\n                \"REVIEW_already_known_to_you\": \"\",\n                \"REVIEW_worth_pursuing\": \"\",\n                \"REVIEW_comment\": \"\",\n            })\n\nout = pd.DataFrame(rows)\nprint(f\"{len(out)} review rows over {out.arm.nunique()} arms\\n\")\nprint(out.groupby([\"arm\", \"block\"]).size().to_string())\n\n# The liability column is display-only and must be labelled as such wherever it is shown. It is\n# ENRICHED for good targets (liabilities are found BY drugging), so a surgeon reading it as a warning\n# would discard the best-evidenced candidates -- see TARGET_PRIORITIZER section 10.3 and ADRB2.\nn_liab = int(out.documented_safety_liability.fillna(False).sum())\nprint(f\"\\n{n_liab} of {len(out)} rows carry a liability flag. NOT a safety verdict: the flag marks \"\n      f\"well-studied\\ntargets, not dangerous ones. Present it as context only.\")\n\nfor _, arm in ARMS:\n    sub = out[(out.arm == arm) & (out.block.str.startswith(\"B\"))]\n    if len(sub):\n        print(f\"\\nNOVEL|{arm}|\" + \", \".join(sub.gene.head(20)))\n\ndataiku.Dataset(\"breast_shortlist\").write_with_schema(out)\n\n",
-  "cypher": null,
-  "inputs": [
-   "target_candidates_2"
-  ],
-  "outputs": [
-   "breast_shortlist"
-  ],
-  "type": "python"
- },
  "compute_disease_eligibility": {
   "code": null,
   "cypher": null,
@@ -2858,21 +2497,6 @@
   ],
   "outputs": [
    "drug_target_benchmark"
-  ],
-  "type": "python"
- },
- "compute_drug_target_benchmark_staged": {
-  "code": "# Two-stage evaluation: does a tractability filter (stage 2) rescue the therapeutic number?\n#\n# WHY: the raw drug-target benchmark (mean AUC 0.688 vs 0.782 on association labels) measures\n# STAGE 1 ALONE -- the topology model ranking every gene in the graph. The intended product is\n# stage 1 followed by a tractability filter, so the fair test applies the filter first and then\n# asks where the drug-validated targets sit in what survives.\n#\n# LEAKAGE LADDER. Not every \"druggability\" column is admissible here, because the benchmark is\n# built from approved drugs:\n#   clean       - localization_class (subcellular location, GO CC / OT subcellular)\n#               - ot_class_l1 protein family\n#   PARTLY LEAKY- ot_sm_tractable / ot_ab_tractable: OT buckets include \"Approved Drug\"\n#   CIRCULAR    - has_approved_drug: 780 genes vs the benchmark's 778-gene universe; this is\n#                 the benchmark's own answer key, reported only to show the artifact ceiling.\n#\n# AUC is NOT comparable across rungs (each filter changes the negative set). The decision-\n# relevant numbers are RETENTION (what fraction of validated targets the filter destroys) and\n# HITS@50 in the surviving ranking.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nSCORE = \"proba_1\"\n\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_type\", \"node_name\"], infer_with_pandas=False)\nnodes[\"node_index\"] = nodes.node_index.astype(int)\nnodes[\"node_id\"] = nodes.node_id.astype(str)\ndis = nodes[nodes.node_type == \"disease\"]\ngen = nodes[nodes.node_type == \"gene/protein\"]\ndis_map = dict(zip(dis.node_id, dis.node_index))\ngene_map = dict(zip(gen.node_id, gen.node_index))\ndname = dict(zip(dis.node_index, dis.node_name))\n\ndd = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(infer_with_pandas=False)\n# Dataset DEMO_KG_LS.drug_protein_edges renamed to DEMO_KG_drug_protein_edges_copy by liheng.fu@dataiku.com on 2026-08-18 09:42:34\n# Dataset DEMO_KG_drug_protein_edges_copy renamed to drug_protein_edges by liheng.fu@dataiku.com on 2026-08-18 09:57:33\ndp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\nind = dd[dd.relation.astype(str).str.fullmatch(\"indication\", case=False, na=False)].copy()\ndcol, xcol = (\"x_id\", \"y_id\") if (ind.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\nind[\"drug\"] = ind[dcol].astype(str)\nind[\"disease_index\"] = ind[xcol].astype(str).map(dis_map)\ngcol, tcol = (\"x_id\", \"y_id\") if (dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ndp[\"drug\"] = dp[gcol].astype(str)\ndp[\"gene_index\"] = dp[tcol].astype(str).map(gene_map)\ntruth = (ind.dropna(subset=[\"disease_index\"])[[\"drug\", \"disease_index\"]]\n         .merge(dp.dropna(subset=[\"gene_index\"])[[\"drug\", \"gene_index\"]], on=\"drug\")\n         [[\"disease_index\", \"gene_index\"]].astype(int).drop_duplicates())\ntset = truth.groupby(\"disease_index\").gene_index.apply(set).to_dict()\n\ndrg = dataiku.Dataset(\"enriched_gene_druggability_v2\").get_dataframe()\n# Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46\nsc = dataiku.Dataset(\"scored_champion\").get_dataframe(\n    columns=[\"disease_index\", \"gene_index\", \"is_target\", SCORE])\nsc = sc.merge(drg, on=\"gene_index\", how=\"left\")\n\nACCESSIBLE = {\"membrane\", \"secreted\", \"membrane_and_secreted\"}\nFAMILIES = {\"Membrane receptor\", \"Ion channel\", \"Transporter\", \"Enzyme\",\n            \"Secreted protein\", \"Epigenetic regulator\"}\n\nFILTERS = [\n    (\"F0 none (stage 1 only)\", \"clean\", lambda d: pd.Series(True, index=d.index)),\n    (\"F1 antibody-accessible localization\", \"clean\",\n     lambda d: d.localization_class.isin(ACCESSIBLE)),\n    (\"F2 druggable protein family\", \"clean\", lambda d: d.ot_class_l1.isin(FAMILIES)),\n    (\"F3 F1 or F2\", \"clean\",\n     lambda d: d.localization_class.isin(ACCESSIBLE) | d.ot_class_l1.isin(FAMILIES)),\n    (\"F4 OT tractable (sm or ab)\", \"PARTLY LEAKY\",\n     lambda d: (d.ot_sm_tractable == 1) | (d.ot_ab_tractable == 1)),\n    (\"F5 has_approved_drug\", \"CIRCULAR\", lambda d: d.has_approved_drug == 1),\n]\n\nrows = []\nfor label, status, fn in FILTERS:\n    keep = fn(sc).fillna(False)\n    sub = sc[keep]\n    for d, g in sub.groupby(\"disease_index\"):\n        val = tset.get(d)\n        if not val:\n            continue\n        n_total_val = len(val & set(sc.loc[sc.disease_index == d, \"gene_index\"]))\n        if n_total_val == 0:\n            continue\n        g = g.sort_values(SCORE, ascending=False).reset_index(drop=True)\n        g[\"rank\"] = np.arange(1, len(g) + 1)\n        mask = g.gene_index.isin(val)\n        r = g.loc[mask, \"rank\"].values\n        if len(r) == 0:\n            rows.append({\"filter\": label, \"status\": status, \"disease_index\": d,\n                         \"pool\": len(g), \"n_val_kept\": 0, \"n_val_total\": n_total_val,\n                         \"hits_at_50\": 0, \"median_pct\": np.nan, \"auc\": np.nan})\n            continue\n        n1, n0 = int(mask.sum()), int((~mask).sum())\n        rr = g[SCORE].rank()\n        auc = (rr[mask].sum() - n1 * (n1 + 1) / 2) / (n1 * n0) if n0 else np.nan\n        rows.append({\"filter\": label, \"status\": status, \"disease_index\": d,\n                     \"pool\": len(g), \"n_val_kept\": len(r), \"n_val_total\": n_total_val,\n                     \"hits_at_50\": int((r <= 50).sum()),\n                     \"median_pct\": float(np.median(r / len(g))), \"auc\": auc})\n\nout = pd.DataFrame(rows)\nout[\"disease_name\"] = out.disease_index.map(dname)\n\nprint(\"=== filter ladder, aggregated over the benchmark diseases ===\")\nprint(f\"{'filter':38s}{'status':14s}{'pool':>7s}{'retain':>8s}{'hits@50':>9s}\"\n      f\"{'%val@50':>9s}{'medpct':>8s}{'AUC':>7s}\")\nfor label, status, _ in FILTERS:\n    s = out[out[\"filter\"] == label]\n    if not len(s):\n        continue\n    kept, tot = s.n_val_kept.sum(), s.n_val_total.sum()\n    print(f\"{label:38s}{status:14s}{s.pool.mean():>7.0f}{kept/tot:>8.1%}\"\n          f\"{int(s.hits_at_50.sum()):>9d}{s.hits_at_50.sum()/tot:>9.1%}\"\n          f\"{s.median_pct.median():>8.1%}{s.auc.mean():>7.3f}\")\n\nprint(\"\\n  pool = mean genes surviving per disease\")\nprint(\"  retain = share of drug-validated targets the filter KEEPS (stage-2 recall cost)\")\nprint(\"  %val@50 = validated targets landing in the filtered top 50, as a share of all of them\")\nprint(\"  AUC is not comparable across rungs -- the negative set changes at every rung.\")\n\nprint(\"\\n=== per-persona hits@50, clean rungs only ===\")\nP = [47654, 37143, 47537, 47469, 47604, 52236]\npiv = (out[out.status == \"clean\"][out.disease_index.isin(P)]\n       .pivot_table(index=\"disease_name\", columns=\"filter\",\n                    values=\"hits_at_50\", aggfunc=\"first\"))\nprint(piv.to_string())\n\ndataiku.Dataset(\"drug_target_benchmark_staged\").write_with_schema(out)\n\n\n\n\n",
-  "cypher": null,
-  "inputs": [
-   "drug_disease_edges",
-   "drug_protein_edges",
-   "enriched_gene_druggability_v2",
-   "graph_nodes",
-   "scored_champion"
-  ],
-  "outputs": [
-   "drug_target_benchmark_staged"
   ],
   "type": "python"
  },
@@ -3133,20 +2757,6 @@
   ],
   "type": "join"
  },
- "compute_gene_druggability": {
-  "code": "# Combined druggability annotation \u2014 OT (primary) + GO localization (fallback).\n#\n# PURPOSE: give the ranked candidate list a human-readable target-class label so a scientist\n# can tell a druggable membrane receptor from a non-druggable secreted ligand at a glance.\n# This is the readability fix for TARGET_PRIORITIZER \u00a710.3, where the model ranks GCG/GIP/IAPP\n# (ligands, not targets) above GLP1R/GIPR/CALCR (receptors, known targets).\n#\n# PRECEDENCE (measured coverage within the graph's 20,861 genes):\n#   1. ot_class_l1        ChEMBL protein family, authoritative but sparse   ~28%\n#   2. ot_subcell_*       UniProt/HPA localization, accurate + broad        ~90%\n#   3. GO cellcomp flags  already in the graph, fills OT gaps               ~36%\n#   4. \"unknown\"\n# A vs B agree 88.2% on membrane / 95.6% on secreted; where they disagree OT is generally\n# right (BRCA1 carries a real-but-misleading GO membrane annotation; OT calls it Enzyme).\n#\n# NODE_INDEX SAFETY: per-gene ATTRIBUTE table only -- no nodes, no edges, so `compute_kg`'s\n# positional node_index assignment is untouched.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\not = dataiku.Dataset(\"raw_ot_druggability\").get_dataframe()\nloc = dataiku.Dataset(\"enriched_gene_localization\").get_dataframe()\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_type\"], infer_with_pandas=False)\n# Dataset DEMO_KG_LS.gene_names renamed to DEMO_KG_gene_names_copy by liheng.fu@dataiku.com on 2026-08-18 09:39:43\n# Dataset DEMO_KG_gene_names_copy renamed to gene_names by liheng.fu@dataiku.com on 2026-08-18 09:57:09\ngn = dataiku.Dataset(\"gene_names\").get_dataframe(columns=[\"symbol\", \"entrez_id\"])\n\n# ENSG -> symbol -> entrez -> gene_index\ngp = nodes[nodes.node_type == \"gene/protein\"].copy()\ngp[\"entrez\"] = gp.node_id.astype(str)\ngp[\"node_index\"] = gp.node_index.astype(int)\ngn = gn.dropna(subset=[\"entrez_id\"]).copy()\ngn[\"entrez\"] = gn.entrez_id.astype(\"int64\").astype(str)\nsym2idx = gn.merge(gp[[\"entrez\", \"node_index\"]], on=\"entrez\")[[\"symbol\", \"node_index\"]] \\\n            .drop_duplicates(\"symbol\")\n\not = ot.merge(sym2idx, on=\"symbol\", how=\"inner\").rename(columns={\"node_index\": \"gene_index\"})\ndf = loc.merge(ot.drop(columns=[\"ensg\", \"symbol\"]), on=\"gene_index\", how=\"left\")\n\n# ---- combined class, by precedence -------------------------------------------\nLIGAND_CLASSES = {\"Secreted protein\"}\nMEMBRANE_CLASSES = {\"Membrane receptor\", \"Ion channel\", \"Transporter\", \"Adhesion\",\n                    \"Surface antigen\", \"Other membrane protein\", \"Auxiliary transport protein\"}\n\ncond = [\n    df.ot_class_l1.isin(MEMBRANE_CLASSES),\n    df.ot_class_l1.isin(LIGAND_CLASSES),\n    df.ot_class_l1.notna(),\n    (df.ot_subcell_membrane == 1) & (df.ot_subcell_secreted == 0),\n    (df.ot_subcell_secreted == 1) & (df.ot_subcell_membrane == 0),\n    (df.ot_subcell_membrane == 1) & (df.ot_subcell_secreted == 1),\n    df.ot_subcell_membrane.notna(),\n    df.localization_class == \"membrane\",\n    df.localization_class == \"secreted\",\n    df.localization_class == \"membrane_and_secreted\",\n]\nchoice = [\n    \"membrane / cell-surface\", \"secreted\", df.ot_class_l1,\n    \"membrane / cell-surface\", \"secreted\", \"membrane + secreted\", \"intracellular\",\n    \"membrane / cell-surface\", \"secreted\", \"membrane + secreted\",\n]\ndf[\"druggability_class\"] = np.select(cond, choice, default=\"unknown\")\n\ndf[\"druggability_evidence\"] = np.select(\n    [df.ot_class_l1.notna(), df.ot_subcell_membrane.notna(),\n     df.localization_class != \"intracellular_or_unannotated\"],\n    [\"OT target class\", \"OT subcellular\", \"GO cellular component\"], default=\"none\")\n\n# is this plausibly a small-molecule / antibody target?\ndf[\"ot_sm_tractable\"] = df.ot_sm_tractable.fillna(0).astype(int)\ndf[\"ot_ab_tractable\"] = df.ot_ab_tractable.fillna(0).astype(int)\ndf[\"has_approved_drug\"] = df.ot_sm_buckets.fillna(\"\").str.contains(\"Approved Drug\").astype(int)\n\nout = df[[\"gene_index\", \"druggability_class\", \"druggability_evidence\", \"ot_class_l1\",\n          \"ot_class_l2\", \"ot_sm_tractable\", \"ot_ab_tractable\", \"has_approved_drug\",\n          \"ot_sm_buckets\", \"localization_class\"]].copy()\n\n# Several OT Ensembl ids can collapse onto one approvedSymbol -> one gene_index. Keep the\n# best-evidence row per gene so the downstream join can never multiply candidate rows.\nEVIDENCE_RANK = {\"OT target class\": 0, \"OT subcellular\": 1, \"GO cellular component\": 2, \"none\": 3}\nout[\"_rank\"] = out.druggability_evidence.map(EVIDENCE_RANK).fillna(9)\nbefore = len(out)\nout = (out.sort_values([\"gene_index\", \"_rank\"])\n          .drop_duplicates(\"gene_index\", keep=\"first\")\n          .drop(columns=[\"_rank\"]))\nprint(f\"deduplicated {before:,} -> {len(out):,} rows (one per gene_index)\")\nassert out.gene_index.is_unique, \"gene_index must be unique before the downstream join\"\n\nprint(f\"genes: {len(out):,}\")\nprint(\"\\n=== druggability_class ===\")\nprint(out.druggability_class.value_counts().to_string())\nprint(\"\\n=== evidence source ===\")\nprint(out.druggability_evidence.value_counts().to_string())\nprint(f\"\\ncoverage (class != unknown): {(out.druggability_class != 'unknown').mean():.1%}\")\ndataiku.Dataset(\"enriched_gene_druggability\").write_with_schema(out)\n\n",
-  "cypher": null,
-  "inputs": [
-   "enriched_gene_localization",
-   "gene_names",
-   "graph_nodes",
-   "raw_ot_druggability"
-  ],
-  "outputs": [
-   "enriched_gene_druggability"
-  ],
-  "type": "python"
- },
  "compute_gene_druggability_v2": {
   "code": null,
   "cypher": null,
@@ -3168,19 +2778,6 @@
   ],
   "outputs": [
    "enriched_gene_localization"
-  ],
-  "type": "python"
- },
- "compute_gene_safety": {
-  "code": "# Per-gene safety attributes, keyed on gene_index \u2014 the filter-layer companion to\n# `enriched_gene_druggability`.\n#\n# WHAT THE EXTRACTION REVEALED, and why the schema looks like this:\n#\n# 1. `safetyLiabilities` is a POSITIVE-ONLY annotation. Open Targets emits the field only for\n#    targets that have a liability -- 943 of 78,691 -- and omits it entirely otherwise. There is\n#    no \"assessed and clean\" state: 0 targets carry an empty-but-present list. So absence is\n#    completely uninformative, and this column supports \"exclude the flagged\" but NOT\n#    \"select the safe\". Anyone building a safety filter on it alone would be filtering on\n#    literature attention, not on risk.\n#\n# 2. `constraint` (gnomAD) is the usable graded signal. It covers ~23% of all OT targets but\n#    far more of the protein-coding genes we actually score -- measured below. `lof_oe_upper` is\n#    LOEUF, the upper bound of the observed/expected loss-of-function ratio; the field's\n#    conventional cutoff for \"intolerant of loss of function\" is < 0.35.\n#\n# So the presentable signal is a THREE-STATE column, not a boolean:\n#    known_liability      -- a curated adverse effect exists          (hard evidence of risk)\n#    lof_intolerant       -- no liability recorded, but human LoF is depleted  (inferred risk)\n#    no_flag              -- neither                                 (absence of evidence)\n# `no_flag` explicitly does not mean \"safe\". Keeping that in the value name rather than in a\n# comment is deliberate -- a column called `is_safe` would be read as a guarantee.\n#\n# NODE_INDEX SAFETY: per-gene ATTRIBUTE table only. No nodes, no edges.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nLOEUF_CONSTRAINED = 0.35          # gnomAD convention\n\nsaf = dataiku.Dataset(\"raw_ot_safety\").get_dataframe()\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_type\"], infer_with_pandas=False)\n# Dataset DEMO_KG_LS.gene_names renamed to DEMO_KG_gene_names_copy by liheng.fu@dataiku.com on 2026-08-18 09:39:43\n# Dataset DEMO_KG_gene_names_copy renamed to gene_names by liheng.fu@dataiku.com on 2026-08-18 09:57:09\ngn = dataiku.Dataset(\"gene_names\").get_dataframe(columns=[\"symbol\", \"entrez_id\"])\n\n# ENSG -> symbol -> entrez -> gene_index (same crosswalk as the druggability chain)\ngp = nodes[nodes.node_type == \"gene/protein\"].copy()\ngp[\"entrez\"] = gp.node_id.astype(str)\ngp[\"node_index\"] = gp.node_index.astype(int)\ngn = gn.dropna(subset=[\"entrez_id\"]).copy()\ngn[\"entrez\"] = gn.entrez_id.astype(\"int64\").astype(str)\nsym2idx = gn.merge(gp[[\"entrez\", \"node_index\"]], on=\"entrez\")[[\"symbol\", \"node_index\"]] \\\n            .drop_duplicates(\"symbol\")\nn_genes = len(gp)\n\ndf = saf.merge(sym2idx, on=\"symbol\", how=\"inner\").rename(columns={\"node_index\": \"gene_index\"})\ndf = df.drop_duplicates(\"gene_index\")\nprint(f\"OT safety rows {len(saf):,} -> mapped onto {len(df):,} of the graph's {n_genes:,} genes \"\n      f\"({len(df)/n_genes:.1%})\")\n\ndf[\"lof_intolerant\"] = (df.lof_oe_upper < LOEUF_CONSTRAINED).astype(\"Int64\")\ndf.loc[df.lof_oe_upper.isna(), \"lof_intolerant\"] = pd.NA\n\ndf[\"safety_flag\"] = np.select(\n    # np.select needs plain boolean ndarrays -- a nullable Int64 comparison yields pd.NA and\n    # raises \"should be boolean ndarray\". Missing constraint means \"not intolerant, as far as\n    # we know\", which is the correct default here given the column is named `no_flag`.\n    [df.has_safety_liability.eq(1).to_numpy(dtype=bool),\n     df.lof_intolerant.eq(1).fillna(False).to_numpy(dtype=bool)],\n    [\"known_liability\", \"lof_intolerant\"],\n    default=\"no_flag\")\n\nout = df[[\"gene_index\", \"has_safety_liability\", \"n_safety_liabilities\", \"safety_events\",\n          \"safety_dosing\", \"lof_oe\", \"lof_oe_upper\", \"lof_bin6\", \"mis_oe\",\n          \"lof_intolerant\", \"safety_flag\"]].copy()\n\nprint(f\"\\n=== COVERAGE within the {n_genes:,} scored genes ===\")\nfor c in [\"has_safety_liability\", \"lof_oe_upper\", \"lof_intolerant\"]:\n    n = out[c].notna().sum()\n    print(f\"  {c:22s} non-null {n:6,d}  ({n/n_genes:.1%} of all genes)\")\nprint(f\"\\n  \u26a0 the liability column is positive-only: {int(out.has_safety_liability.sum()):,} flagged, \"\n      f\"and a blank means UNKNOWN, not clean.\")\n\nprint(\"\\n=== safety_flag distribution (of mapped genes) ===\")\nvc = out.safety_flag.value_counts()\nfor k, v in vc.items():\n    print(f\"  {k:18s} {v:6,d}  ({v/len(out):.1%})\")\nprint(f\"  (genes with no OT safety row at all: {n_genes - len(out):,} -- also unknown)\")\n\nprint(\"\\n=== LOEUF distribution (lof_oe_upper) ===\")\nprint(out.lof_oe_upper.describe().to_string())\n\ndataiku.Dataset(\"enriched_gene_safety\").write_with_schema(out)\n\n",
-  "cypher": null,
-  "inputs": [
-   "gene_names",
-   "graph_nodes",
-   "raw_ot_safety"
-  ],
-  "outputs": [
-   "enriched_gene_safety"
   ],
   "type": "python"
  },
@@ -3299,47 +2896,6 @@
   ],
   "type": "python"
  },
- "compute_lung_granularity_check": {
-  "code": "# Does the model DISTINGUISH histological subtypes, or just re-rank the same gene list?\n#\n# WHY: every disease in the lung-cancer family scores AUC 0.91-0.96,\n# and `lung adenocarcinoma` (0.938) vs `small cell lung carcinoma` (0.944) are within noise.\n# Equal AUC is not the question that matters for target validation -- the question is whether\n# the top-ranked GENES differ. If two histologies with different pathophysiology and different\n# standard-of-care return the same 50 genes, the model is scoring \"lung cancer\" as one entity\n# and the subtype granularity the persona story depends on is cosmetic.\n#\n# Emits the top 50 per respiratory-cancer disease plus a pairwise Jaccard matrix on those lists.\nimport dataiku\nimport pandas as pd\nfrom itertools import combinations\n\n# Select the LUNG CANCER FAMILY, not a split key. In the reference graph the lung subtypes\n# shared the `respiratory system cancer` split key, so that key was the right selector. In the\n# rebuilt graph they roll up to `thoracic cancer` instead -- the elevation step picks among a\n# disease's multiple parents by lowest node_index, and renumbering flipped that choice -- which\n# merges lung with BREAST. Selecting on the split key would therefore compare breast lists to\n# lung lists, a different question. The anchor-level family is the stable way to say\n# \"lung cancer and its histological subtypes\".\nKEY = 52236           # disease_family_id: lung cancer\nTOPN = 50\nSCORE = \"proba_1\"\n\n# Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46\ndf = dataiku.Dataset(\"scored_champion\").get_dataframe(\n    columns=[\"disease_index\", \"gene_index\", \"is_target\", \"disease_family_id\", SCORE])\ndf = df[df.disease_family_id == KEY]\n\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_name\", \"node_type\"], infer_with_pandas=False)\nnodes[\"node_index\"] = nodes.node_index.astype(int)\ngname = dict(zip(nodes[nodes.node_type == \"gene/protein\"].node_index,\n                 nodes[nodes.node_type == \"gene/protein\"].node_name))\ndname = dict(zip(nodes[nodes.node_type == \"disease\"].node_index,\n                 nodes[nodes.node_type == \"disease\"].node_name))\n\ntops = {}\nrows = []\nfor d, g in df.groupby(\"disease_index\"):\n    t = g.nlargest(TOPN, SCORE).copy()\n    t[\"rank_in_disease\"] = range(1, len(t) + 1)\n    t[\"disease_name\"] = dname.get(d)\n    t[\"gene_name\"] = t.gene_index.map(gname)\n    tops[d] = list(t.gene_name)\n    rows.append(t)\nout = pd.concat(rows, ignore_index=True)\n\nsizes = df.groupby(\"disease_index\").is_target.sum().to_dict()\nbig = sorted([d for d in tops if sizes.get(d, 0) >= 50], key=lambda d: -sizes[d])[:10]\n\nprint(f\"top-{TOPN} overlap between respiratory-cancer subtypes \"\n      f\"(shared genes out of {TOPN}):\\n\")\nhdr = \"\".join(f\"{str(dname.get(d))[:14]:>16s}\" for d in big)\nprint(f\"{'':34s}{hdr}\")\nfor a in big:\n    line = f\"{str(dname.get(a))[:32]:34s}\"\n    for b in big:\n        line += f\"{'--' if a == b else len(set(tops[a]) & set(tops[b])):>16}\"\n    print(line)\n\nprint(\"\\npairwise Jaccard on the top-50 lists:\")\njs = []\nfor a, b in combinations(big, 2):\n    sa, sb = set(tops[a]), set(tops[b])\n    js.append(len(sa & sb) / len(sa | sb))\n    print(f\"  {str(dname.get(a))[:30]:32s} vs {str(dname.get(b))[:30]:32s} \"\n          f\"{len(sa & sb):2d}/50  J={js[-1]:.3f}\")\nprint(f\"\\n  mean pairwise Jaccard: {sum(js)/len(js):.3f}   \"\n      f\"(1.0 = identical gene lists, i.e. no subtype resolution)\")\n\ndataiku.Dataset(\"lung_granularity_check\").write_with_schema(out)\n\n\n\n\n",
-  "cypher": null,
-  "inputs": [
-   "graph_nodes",
-   "scored_champion"
-  ],
-  "outputs": [
-   "lung_granularity_check"
-  ],
-  "type": "python"
- },
- "compute_maturity_confound": {
-  "code": "# Is the \"metabolic excels on approved, oncology on investigational\" split a real property, or an\n# artifact of which label happens to be denser for each disease?\n#\n# WHY THIS CHECK EXISTS. TARGET_PRIORITIZER \u00a78.2 asserts the split is \"a real property, not a\n# coverage artifact\", reasoning that metabolic diseases have mature approved pharmacology while\n# oncology target classes are still in trials. That is a plausible story told after seeing the\n# numbers, and it has an obvious alternative: every disease may simply score better on whichever\n# ground truth is denser for it, which would make the pattern a labelling effect and the \u00a78.2 claim\n# an over-reading. The two are distinguishable by measurement, so measure.\n#\n# THE DISCRIMINATING TEST. Define approval maturity for a disease as\n#       maturity = approved_pairs / (approved_pairs + investigational_pairs)\n# and the axis preference as\n#       delta = approved_lift@50 - investigational_lift@50\n# If `delta` tracks `maturity`, each disease is just scoring on its denser label and the split is an\n# artifact. If it does not, the metabolic/oncology difference is about something else and the \u00a78.2\n# claim survives.\n#\n# A DIRECTIONAL SUBTLETY worth stating, because it cuts against the naive worry: lift is already\n# normalised by base rate, so a denser label makes a given top-K precision LOOK WORSE, not better.\n# The confound therefore cannot be \"more evidence = higher lift\" by construction. What it can be is a\n# POWER effect -- sparse labels produce unmeasurable or zero lifts (\u00a78.3) -- which biases in the\n# opposite direction. Both are checked.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nMIN_POS = 3          # both labels must have enough positives for the lift to mean anything\n\nnid = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_name\", \"node_type\"], infer_with_pandas=False)\nnid[\"node_index\"] = nid.node_index.astype(int); nid[\"node_id\"] = nid.node_id.astype(str)\nD = nid[nid.node_type == \"disease\"]\ndmap = dict(zip(D.node_id, D.node_index))\ndname = dict(zip(D.node_index, D.node_name))\n\ndd = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(infer_with_pandas=False)\ndc, xc = (\"x_id\", \"y_id\") if (dd.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ndd[\"drug\"] = dd[dc].astype(str); dd[\"disease_index\"] = dd[xc].astype(str).map(dmap)\ndd = dd.dropna(subset=[\"disease_index\"])\nn_drugs = {}\nfor rel, lab in [(\"indication\", \"n_approved_drugs\"), (\"drug_investigated_for\", \"n_trial_drugs\")]:\n    sub = dd[dd.relation.astype(str).str.fullmatch(rel, case=False, na=False)]\n    n_drugs[lab] = sub.groupby(\"disease_index\").drug.nunique()\n\ndisc = dataiku.Dataset(\"novel_discovery_eval\").get_dataframe()\nw = disc.pivot_table(index=\"disease_index\", columns=\"ground_truth\",\n                     values=[\"novel_linked_total\", \"lift_top50\", \"hits_top50\"])\nw.columns = [f\"{a}_{b}\" for a, b in w.columns]\nw = w.reset_index()\nw[\"n_approved_drugs\"] = w.disease_index.map(n_drugs[\"n_approved_drugs\"]).fillna(0)\nw[\"n_trial_drugs\"] = w.disease_index.map(n_drugs[\"n_trial_drugs\"]).fillna(0)\nw[\"disease\"] = w.disease_index.map(dname)\n\nap, iv = \"novel_linked_total_approved\", \"novel_linked_total_investigational\"\nw = w[(w[ap].fillna(0) >= MIN_POS) & (w[iv].fillna(0) >= MIN_POS)].copy()\nw[\"maturity\"] = w[ap] / (w[ap] + w[iv])\nw[\"delta\"] = w.lift_top50_approved - w.lift_top50_investigational\nprint(f\"diseases with >={MIN_POS} novel positives on BOTH labels: {len(w)}\")\n\ndef sp(a, b):\n    return w[[a, b]].corr(method=\"spearman\").iloc[0, 1]\n\nprint(\"\\n=== the discriminating correlation ===\")\nprint(f\"  Spearman(maturity, delta)                      = {sp('maturity','delta'):+.3f}\")\nprint(\"     ^ if strongly positive, each disease is just scoring on its denser label\")\nprint(\"\\n=== supporting correlations ===\")\nfor a, b, note in [\n    (\"novel_linked_total_approved\", \"lift_top50_approved\", \"more approved positives -> higher approved lift?\"),\n    (\"novel_linked_total_investigational\", \"lift_top50_investigational\", \"same on the trial label\"),\n    (\"n_approved_drugs\", \"lift_top50_approved\", \"more approved DRUGS -> higher approved lift?\"),\n    (\"maturity\", \"lift_top50_approved\", \"maturity -> approved lift\"),\n    (\"maturity\", \"lift_top50_investigational\", \"maturity -> trial lift\"),\n]:\n    print(f\"  Spearman({a[:34]:34s}, {b[:28]:28s}) = {sp(a,b):+.3f}   {note}\")\n\n# ---- does the disease CLASS difference survive stratifying on maturity? ------\nCANCER = r\"cancer|carcinoma|neoplasm|tumor|tumour|sarcoma|lymphoma|leukemia|leukaemia|melanoma|myeloma|glioma|blastoma\"\nMETAB = r\"diabet|obes|metabol|hyperlipid|dyslipid|insulin|glycemi|lipodystroph|overnutrition\"\nw[\"cls\"] = np.where(w.disease.astype(str).str.contains(CANCER, case=False, na=False), \"oncology\",\n            np.where(w.disease.astype(str).str.contains(METAB, case=False, na=False), \"metabolic\", \"other\"))\nprint(\"\\n=== the \u00a78.2 claim, unstratified ===\")\ng = w.groupby(\"cls\").agg(n=(\"disease\", \"size\"), maturity=(\"maturity\", \"median\"),\n                         appr_lift=(\"lift_top50_approved\", \"median\"),\n                         trial_lift=(\"lift_top50_investigational\", \"median\"),\n                         delta=(\"delta\", \"median\")).round(2)\nprint(g.to_string())\n\nw[\"mat_bin\"] = pd.qcut(w.maturity.rank(method=\"first\"), 3, labels=[\"low\", \"mid\", \"high\"])\nprint(\"\\n=== stratified by maturity tercile (does the class gap survive?) ===\")\nt = (w[w.cls != \"other\"].groupby([\"mat_bin\", \"cls\"], observed=True)\n     .agg(n=(\"disease\", \"size\"), appr=(\"lift_top50_approved\", \"median\"),\n          trial=(\"lift_top50_investigational\", \"median\"), delta=(\"delta\", \"median\")).round(2))\nprint(t.to_string())\nprint(\"\\n  If oncology still prefers the trial label and metabolic the approved label WITHIN each\")\nprint(\"  maturity tercile, the class difference is not explained by maturity.\")\n\nprint(\"\\n=== VERDICT ===\")\nr = sp(\"maturity\", \"delta\")\nif abs(r) >= 0.5:\n    print(f\"  Spearman {r:+.3f} -- STRONG. The split is substantially a labelling artifact and\")\n    print(\"  TARGET_PRIORITIZER \u00a78.2's 'real property' claim must be withdrawn.\")\nelif abs(r) >= 0.25:\n    print(f\"  Spearman {r:+.3f} -- MODERATE. Maturity explains part of the split; \u00a78.2 needs\")\n    print(\"  qualifying rather than withdrawing.\")\nelse:\n    print(f\"  Spearman {r:+.3f} -- WEAK. Maturity does not explain the split; \u00a78.2 survives,\")\n    print(\"  but should cite this check rather than asserting it.\")\n\ndataiku.Dataset(\"maturity_confound\").write_with_schema(\n    w[[\"disease_index\", \"disease\", \"cls\", \"maturity\", \"delta\", \"n_approved_drugs\", \"n_trial_drugs\",\n       ap, iv, \"lift_top50_approved\", \"lift_top50_investigational\",\n       \"hits_top50_approved\", \"hits_top50_investigational\"]])\n\n",
-  "cypher": null,
-  "inputs": [
-   "drug_disease_edges",
-   "graph_nodes",
-   "novel_discovery_eval"
-  ],
-  "outputs": [
-   "maturity_confound"
-  ],
-  "type": "python"
- },
- "compute_model_comparison": {
-  "code": "# Side-by-side evaluation of the ablation ladder on BOTH benchmarks.\n#\n# WHY: the project has been ranked on association-label AUC, which is uncorrelated with\n# therapeutic relevance (Pearson r = 0.097 across 112 diseases). Every model from here on\n# has to report both numbers, or an improvement on one can hide a regression on the other.\n#\n# Models compared (all trained on psplit_train_set / psplit_test_set, identical\n# hyperparameters, seed 1337, EXPLICIT_FILTERING_TWO_DATASETS, prox_closest excluded):\n#   m1  Lx5Mz2hY   7 features                      -- baseline\n#   m2  6hEivCx0  10 features (+PPI provenance)    -- ppi_common_neighbors_z,\n#                                                     ppi_evidence_depth, ppi_multi_source_frac\n#   m3  cGPhBOGC  12 features (+GO metapaths)      -- dwpc_GBGD, dwpc_GFGD; current champion\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nMODELS = [(\"m1   7 features\", \"scored_m1\"),\n          (\"m2  10 features (+PPI provenance)\", \"scored_m2\"),\n          (\"m3  12 features (+GO metapaths)\", \"scored_m3\")]\nSCORE = \"proba_1\"\n\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_type\"], infer_with_pandas=False)\nnodes[\"node_index\"] = nodes.node_index.astype(int)\nnodes[\"node_id\"] = nodes.node_id.astype(str)\ndis_map = dict(zip(nodes[nodes.node_type == \"disease\"].node_id,\n                   nodes[nodes.node_type == \"disease\"].node_index))\ngene_map = dict(zip(nodes[nodes.node_type == \"gene/protein\"].node_id,\n                    nodes[nodes.node_type == \"gene/protein\"].node_index))\n# Dataset DEMO_KG_LS.drug_disease_edges renamed to DEMO_KG_drug_disease_edges_copy by liheng.fu@dataiku.com on 2026-08-18 09:42:00\n# Dataset DEMO_KG_drug_disease_edges_copy renamed to drug_disease_edges by liheng.fu@dataiku.com on 2026-08-18 09:57:52\ndd = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(infer_with_pandas=False)\ndp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\nind = dd[dd.relation.astype(str).str.fullmatch(\"indication\", case=False, na=False)].copy()\ndcol, xcol = (\"x_id\", \"y_id\") if (ind.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\nind[\"drug\"] = ind[dcol].astype(str)\nind[\"disease_index\"] = ind[xcol].astype(str).map(dis_map)\ngcol, tcol = (\"x_id\", \"y_id\") if (dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ndp[\"drug\"] = dp[gcol].astype(str)\ndp[\"gene_index\"] = dp[tcol].astype(str).map(gene_map)\ntruth = (ind.dropna(subset=[\"disease_index\"])[[\"drug\", \"disease_index\"]]\n         .merge(dp.dropna(subset=[\"gene_index\"])[[\"drug\", \"gene_index\"]], on=\"drug\")\n         [[\"disease_index\", \"gene_index\"]].astype(int).drop_duplicates())\ntset = truth.groupby(\"disease_index\").gene_index.apply(set).to_dict()\n\n\ndef auc_of(g, mask):\n    n1, n0 = int(mask.sum()), int((~mask).sum())\n    if n1 == 0 or n0 == 0:\n        return np.nan\n    r = g[SCORE].rank()\n    return (r[mask].sum() - n1 * (n1 + 1) / 2) / (n1 * n0)\n\n\nrows = []\nfor label, ds in MODELS:\n    df = dataiku.Dataset(ds).get_dataframe(\n        columns=[\"disease_index\", \"gene_index\", \"is_target\", SCORE])\n    for d, g in df.groupby(\"disease_index\"):\n        val = tset.get(d)\n        rec = {\"model\": label, \"disease_index\": d,\n               \"auc_assoc\": auc_of(g, g.is_target == 1),\n               \"n_assoc\": int(g.is_target.sum())}\n        if val:\n            m = g.gene_index.isin(val)\n            if m.any():\n                gg = g.sort_values(SCORE, ascending=False).reset_index(drop=True)\n                mm = gg.gene_index.isin(val)\n                rec[\"auc_drug\"] = auc_of(g, m)\n                rec[\"n_drug\"] = int(m.sum())\n                rec[\"hits_at_50\"] = int(mm.head(50).sum())\n        rows.append(rec)\n\nout = pd.DataFrame(rows)\nprint(\"=== ablation ladder, both benchmarks ===\")\nprint(f\"{'model':22s}{'assoc AUC':>11s}{'drug AUC':>10s}{'hits@50':>9s}\"\n      f\"{'n_dis':>7s}{'n_drug_dis':>11s}\")\nfor label, _ in MODELS:\n    s = out[out.model == label]\n    a = s.auc_assoc.dropna()\n    dr = s.auc_drug.dropna()\n    print(f\"{label:22s}{a.mean():>11.4f}{dr.mean():>10.4f}\"\n          f\"{int(s.hits_at_50.sum()):>9d}{len(a):>7d}{len(dr):>11d}\")\n\nprint(\"\\n=== paired deltas vs the first model in MODELS (same diseases only) ===\")\nbase = out[out.model == MODELS[0][0]].set_index(\"disease_index\")\nfor label, _ in MODELS[1:]:\n    s = out[out.model == label].set_index(\"disease_index\")\n    ja = base.auc_assoc.dropna().index.intersection(s.auc_assoc.dropna().index)\n    jd = base.auc_drug.dropna().index.intersection(s.auc_drug.dropna().index)\n    da = (s.loc[ja].auc_assoc - base.loc[ja].auc_assoc)\n    dd_ = (s.loc[jd].auc_drug - base.loc[jd].auc_drug)\n    print(f\"{label:22s} assoc {da.mean():+.4f} (better on {int((da > 0).sum())}/{len(da)})\"\n          f\"   drug {dd_.mean():+.4f} (better on {int((dd_ > 0).sum())}/{len(dd_)})\")\n\ndataiku.Dataset(\"model_comparison\").write_with_schema(out)\n\n\n\n",
-  "cypher": null,
-  "inputs": [
-   "drug_disease_edges",
-   "drug_protein_edges",
-   "graph_nodes",
-   "scored_m1",
-   "scored_m2",
-   "scored_m3"
-  ],
-  "outputs": [
-   "model_comparison"
-  ],
-  "type": "python"
- },
  "compute_novel_discovery_eval": {
   "code": "# Can the model surface targets it was NEVER TOLD ABOUT? Measured against THREE ground truths.\n#\n# WHY THIS REPLACES THE OLD READING: \"known% in the top 50\" was being used as a novelty ceiling --\n# a disease at 96% known was called \"no novelty left\". That is wrong twice over.\n#   1. It is a PRECISION measure, not a novelty measure. Normalised by base rate, NSCLC's 96% is a\n#      19x enrichment (the ranking is excellent) while CKD's 2% is 2.9x (the ranking is poor). The\n#      old reading rewarded the worst ranking in the panel and penalised the best.\n#   2. It says nothing about the novel candidates, because they sit BELOW the known ones by\n#      construction. A well-ranked, densely-annotated disease puts truth first and its novel\n#      hypotheses at ranks 50-200.\n#\n# THE MEASURE: drop the known association targets, re-rank what is left, and ask how many of the\n# top-K NOVEL candidates are drug-linked for that disease. Independent of the training label -- no\n# model feature traverses a drug node.\n#\n# THREE GROUND TRUTHS, because the choice changes the answer and the earlier version used only the\n# strictest one:\n#   approved        `indication`             ~9.4k edges   the drug is APPROVED for this disease\n#   investigational `drug_investigated_for`  ~69.7k edges  in trials, not approved\n#   any             either\n#\n# WHY `investigational` IS THE FAIRER BAR FOR TARGET IDENTIFICATION: the deliverable predicts\n# targets worth pursuing, not drugs that already shipped. Restricting to approved indications\n# penalises the model for surfacing target classes that are currently in development -- which is\n# precisely what a discovery tool should surface. The cost is that trial-stage labels include\n# FAILURES (a target trialled and abandoned still counts), so `investigational` measures\n# \"someone judged this mechanistically plausible\", not \"this works\". Read both columns.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nKS = [10, 20, 50, 100, 200]\nFOCUS = {\"non-small cell lung carcinoma\", \"lung adenocarcinoma\", \"lung cancer\",\n         \"obesity disorder\", \"type 2 diabetes mellitus\", \"chronic kidney disease\",\n         \"diabetes mellitus\", \"epilepsy\"}\nWATCH = [\"MAPK3\", \"PTPN6\", \"SMARCA2\", \"CRKL\", \"STAT5B\", \"STAT1\", \"GSK3B\", \"IRS1\", \"IRS2\",\n         \"PIK3R2\", \"CDKN2B\", \"MRE11\", \"HDAC3\", \"ZAP70\", \"PLCG2\", \"IL6R\", \"PDPK1\", \"EGR1\"]\n\nnid = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_name\", \"node_type\"], infer_with_pandas=False)\nnid[\"node_index\"] = nid.node_index.astype(int)\nnid[\"node_id\"] = nid.node_id.astype(str)\nD = nid[nid.node_type == \"disease\"]\nG = nid[nid.node_type == \"gene/protein\"]\ndname = dict(zip(D.node_index, D.node_name))\ngname = dict(zip(G.node_index, G.node_name))\ndmap = dict(zip(D.node_id, D.node_index))\ngmap = dict(zip(G.node_id, G.node_index))\n\n# Dataset DEMO_KG_LS.drug_disease_edges renamed to DEMO_KG_drug_disease_edges_copy by liheng.fu@dataiku.com on 2026-08-18 09:42:00\n# Dataset DEMO_KG_drug_disease_edges_copy renamed to drug_disease_edges by liheng.fu@dataiku.com on 2026-08-18 09:57:52\ndd = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(infer_with_pandas=False)\ndp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\ngc, tc = (\"x_id\", \"y_id\") if (dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ndp[\"drug\"] = dp[gc].astype(str)\ndp[\"gene_index\"] = dp[tc].astype(str).map(gmap)\ndp = dp.dropna(subset=[\"gene_index\"])[[\"drug\", \"gene_index\"]]\nprint(\"drug_disease relations:\", dd.relation.astype(str).value_counts().to_dict())\n\n\ndef pairs_for(rel_regex):\n    sub = dd[dd.relation.astype(str).str.fullmatch(rel_regex, case=False, na=False)].copy()\n    dc, xc = (\"x_id\", \"y_id\") if (sub.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\n    sub[\"drug\"] = sub[dc].astype(str)\n    sub[\"disease_index\"] = sub[xc].astype(str).map(dmap)\n    out = (sub.dropna(subset=[\"disease_index\"])[[\"drug\", \"disease_index\"]]\n           .merge(dp, on=\"drug\")[[\"disease_index\", \"gene_index\"]]\n           .astype(int).drop_duplicates())\n    return set(map(tuple, out.values))\n\n\napproved = pairs_for(\"indication\")\ninvestig = pairs_for(\"drug_investigated_for\")\nTRUTHS = {\"approved\": approved, \"investigational\": investig, \"any\": approved | investig}\nfor k, v in TRUTHS.items():\n    print(f\"  {k:16s} {len(v):>7,} (disease, gene) pairs\")\n\nsc = dataiku.Dataset(\"scored_champion\").get_dataframe(\n    columns=[\"disease_index\", \"gene_index\", \"is_target\", \"proba_1\"])\nsc[\"disease\"] = sc.disease_index.map(dname)\nkeys = list(zip(sc.disease_index.astype(int), sc.gene_index.astype(int)))\nfor name, tset in TRUTHS.items():\n    sc[name] = [1 if k in tset else 0 for k in keys]\nprint(f\"\\nscored {len(sc):,} rows over {sc.disease_index.nunique()} validation diseases\")\n\nrows = []\nfor (di, dz), g in sc.groupby([\"disease_index\", \"disease\"]):\n    nov = g[g.is_target == 0]\n    if len(nov) < 200:\n        continue\n    nov = nov.sort_values(\"proba_1\", ascending=False)\n    for tname in TRUTHS:\n        tot = int(nov[tname].sum())\n        if tot == 0:\n            continue\n        base = nov[tname].mean()\n        rec = {\"disease_index\": di, \"disease\": dz, \"ground_truth\": tname,\n               \"n_known\": int((g.is_target == 1).sum()), \"n_novel\": len(nov),\n               \"novel_linked_total\": tot, \"novel_base_rate_pct\": 100 * base}\n        for K in KS:\n            hit = int(nov.head(K)[tname].sum())\n            rec[f\"hits_top{K}\"] = hit\n            rec[f\"lift_top{K}\"] = (hit / K) / base if base > 0 else np.nan\n        rows.append(rec)\nout = pd.DataFrame(rows)\n\nprint(\"\\n=== DISCOVERY PRECISION on the novel sub-list, by ground truth ===\")\nprint(f\"  {'ground truth':16s}{'diseases':>10s}\" + \"\".join(f\"{'lift@'+str(K):>10s}\" for K in KS)\n      + \"\".join(f\"{'hits@'+str(K):>10s}\" for K in KS))\nfor tname in TRUTHS:\n    s = out[out.ground_truth == tname]\n    lifts = \"\".join(f\"{s[f'lift_top{K}'].replace([np.inf],np.nan).mean():>10.2f}\" for K in KS)\n    hits = \"\".join(f\"{int(s[f'hits_top{K}'].sum()):>10d}\" for K in KS)\n    print(f\"  {tname:16s}{len(s):>10d}{lifts}{hits}\")\n\nprint(\"\\n\\n=== the focus diseases: approved vs investigational ===\")\nfor dz in sorted(FOCUS):\n    sub = out[out.disease == dz]\n    if not len(sub):\n        continue\n    print(f\"\\n  {dz}\")\n    for _, r in sub.iterrows():\n        print(f\"    {r.ground_truth:16s} to-find {int(r.novel_linked_total):>4d}   \"\n              f\"top20 {int(r.hits_top20):>3d} ({r.lift_top20:>6.1f}x)   \"\n              f\"top50 {int(r.hits_top50):>3d} ({r.lift_top50:>6.1f}x)   \"\n              f\"top200 {int(r.hits_top200):>3d} ({r.lift_top200:>6.1f}x)\")\n\nprint(\"\\n\\n=== the specific NSCLC / lung-adeno candidates under review ===\")\ngi = {v: k for k, v in gname.items()}\nfor dz in [\"non-small cell lung carcinoma\", \"lung adenocarcinoma\"]:\n    g = sc[sc.disease == dz]\n    if not len(g):\n        continue\n    g = g.copy()\n    g[\"full_rank\"] = g.proba_1.rank(ascending=False, method=\"first\").astype(int)\n    nov = g[g.is_target == 0].sort_values(\"proba_1\", ascending=False).copy()\n    nov[\"novel_rank\"] = range(1, len(nov) + 1)\n    print(f\"\\n  {dz}\")\n    print(f\"    {'gene':<10s}{'novel#':>7s}{'list#':>7s}   approved  investigational\")\n    for gn in WATCH:\n        idx = gi.get(gn)\n        r = nov[nov.gene_index == idx]\n        if not len(r):\n            continue\n        r = r.iloc[0]\n        print(f\"    {gn:<10s}{int(r.novel_rank):>7d}{int(r.full_rank):>7d}\"\n              f\"{'      YES' if r.approved else '       --':>11s}\"\n              f\"{'          YES' if r.investigational else '           --':>15s}\")\n\ndataiku.Dataset(\"novel_discovery_eval\").write_with_schema(out)\n\n",
   "cypher": null,
@@ -3415,7 +2971,7 @@
   "type": "shaker"
  },
  "compute_pool_reachability": {
-  "code": "# WHY THE MODEL CANNOT SEE SOME APPROVED DRUG TARGETS -- diagnosis before any retraining.\n#\n# THE FINDING THAT PROMPTED THIS (\u00a78.13): for triple-negative breast carcinoma, TACSTD2 (TROP2) and\n# CD274/PDCD1 are absent from the candidate pool ENTIRELY, while sacituzumab govitecan and\n# pembrolizumab are both approved in that disease. Unreachable, not merely low-ranked.\n#\n# THE MECHANISM, read off the filter (`filter_has_path_evidence`):\n#     isNonBlank(dwpc_GGD) || isNonBlank(dwpc_GPGD) || isNonBlank(dwpc_GCD)\n# All three routes pass THROUGH A GENE ALREADY KNOWN FOR THAT DISEASE. So the pool is the\n# PPI/pathway neighbourhood of the known set, and its size scales with how well-annotated the disease\n# already is. Triple-negative's known set is 8 DNA-repair genes; a cell-surface glycoprotein has no\n# PPI or pathway edge to any of them. The exclusion is structural, not a ranking artifact.\n#\n# WHAT THIS RECIPE ANSWERS, none of which requires retraining:\n#   1. THE CEILING. What fraction of curated target-disease pairs is outside the pool? That is a hard\n#      cap on recall that no re-ranking can move.\n#   2. WHY each one is missing, split into causes that imply DIFFERENT fixes:\n#        gene absent from graph          -> ingestion problem\n#        gene has no PPI edges           -> interactome coverage problem\n#        reachable for a SIBLING disease -> the disease's known set is too small: borrowing the family\n#                                           pool would rescue it WITHOUT retraining\n#        reachable for no disease at all -> genuinely disconnected; only embeddings reach it\n#   3. IS IT BIASED BY MODALITY? Hypothesis stated up front: unreachable targets should be enriched\n#      for ANTIBODY-tractable cell-surface proteins, because a PPI/pathway graph under-represents\n#      surface and immune biology. TROP2 and PD-L1 are both antibody targets, which is a sample of\n#      two and worth nothing until measured across all diseases.\n#   4. IS THE POOL ITSELF CIRCULAR? `dwpc_GCD` holds only 42,227 rows and \u00a75.2 flags it as\n#      \"load-bearing and invisible\". If C is Compound, then the pool admits pairs BECAUSE a drug links\n#      them, and every drug-based evaluation in \u00a78 is partly circular with the pool definition. This\n#      has to be checked, not assumed.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nSCORE_MIN = 0.8   # the curated therapeutic label threshold adopted in \u00a78.1\n\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_name\", \"node_type\"], infer_with_pandas=False)\nnodes[\"node_index\"] = nodes.node_index.astype(int)\nG = nodes[nodes.node_type == \"gene/protein\"]\nD = nodes[nodes.node_type == \"disease\"]\ngname = dict(zip(G.node_index, G.node_name))\ndname = dict(zip(D.node_index, D.node_name))\ngene_nodes = set(G.node_index)\n\n# ---- the pool, as actually used for training/scoring -----------------------------------\npool = dataiku.Dataset(\"enriched_graph_features_candidate_psplit\").get_dataframe(\n    columns=[\"gene_index\", \"disease_index\", \"disease_family_id\"])\npool[\"gene_index\"] = pool.gene_index.astype(int)\npool[\"disease_index\"] = pool.disease_index.astype(int)\npool_pairs = set(map(tuple, pool[[\"disease_index\", \"gene_index\"]].values))\ngene_reachable_any = set(pool.gene_index.unique())\n# family -> set of genes reachable for ANY member disease of that family\nfam_genes = pool.groupby(\"disease_family_id\").gene_index.apply(set).to_dict()\ndis_family = dict(zip(pool.disease_index, pool.disease_family_id))\npool_size = pool.groupby(\"disease_index\").size().to_dict()\neligible = set(pool.disease_index.unique())\nprint(f\"pool: {len(pool):,} pairs | {len(eligible)} diseases | \"\n      f\"{len(gene_reachable_any):,} distinct genes reachable somewhere\")\n\n# ---- PPI degree for every gene, including ones the pool never sees ---------------------\nedges = dataiku.Dataset(\"graph_edges\").get_dataframe(\n    columns=[\"relation\", \"x_index\", \"y_index\"], infer_with_pandas=False)\nedges[\"x_index\"] = edges.x_index.astype(int)\nedges[\"y_index\"] = edges.y_index.astype(int)\nppi = edges[edges.relation.astype(str).str.contains(\"protein_protein\", case=False, na=False)]\ndeg = pd.concat([ppi.x_index, ppi.y_index]).value_counts().to_dict()\nprint(f\"PPI edges: {len(ppi):,} | genes with >=1 PPI edge: {len(deg):,} of {len(gene_nodes):,}\")\n\n# ---- the curated therapeutic truth ----------------------------------------------------\nkd = dataiku.Dataset(\"known_drug_truth\").get_dataframe()\nkd = kd[kd.score >= SCORE_MIN].copy()\nkd[\"disease_index\"] = kd.disease_index.astype(int)\nkd[\"gene_index\"] = kd.gene_index.astype(int)\nkd = kd[kd.disease_index.isin(eligible)].drop_duplicates([\"disease_index\", \"gene_index\"])\nprint(f\"curated pairs at score>={SCORE_MIN} on eligible diseases: {len(kd):,} \"\n      f\"over {kd.disease_index.nunique()} diseases\")\n\n# ---- 4. is the pool circular? does GCD look drug-mediated? -----------------------------\ngcd = dataiku.Dataset(\"enriched_dwpc_GCD\").get_dataframe(columns=[\"gene_index\", \"disease_index\"])\ngcd[\"gene_index\"] = gcd.gene_index.astype(int)\ngcd[\"disease_index\"] = gcd.disease_index.astype(int)\ngcd_pairs = set(map(tuple, gcd[[\"disease_index\", \"gene_index\"]].values))\ndd = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(infer_with_pandas=False)\ndp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\ngc_, tc_ = (\"x_id\", \"y_id\") if (dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ngid = dict(zip(G.node_name.astype(str), G.node_index))  # unused; kept for clarity\ndp2 = dp.copy()\ndp2[\"drug\"] = dp2[gc_].astype(str)\nnid_by_id = dict(zip(nodes.node_index, nodes.node_index))  # placeholder\n# map drug->gene via node_id, mirroring the other recipes\nnodes_id = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_type\"], infer_with_pandas=False)\nnodes_id[\"node_index\"] = nodes_id.node_index.astype(int)\nnodes_id[\"node_id\"] = nodes_id.node_id.astype(str)\ngmap = dict(zip(nodes_id[nodes_id.node_type == \"gene/protein\"].node_id,\n                nodes_id[nodes_id.node_type == \"gene/protein\"].node_index))\ndmap = dict(zip(nodes_id[nodes_id.node_type == \"disease\"].node_id,\n                nodes_id[nodes_id.node_type == \"disease\"].node_index))\ndp2[\"gene_index\"] = dp2[tc_].astype(str).map(gmap)\ndp2 = dp2.dropna(subset=[\"gene_index\"])[[\"drug\", \"gene_index\"]]\nsub = dd[dd.relation.astype(str).str.fullmatch(\"indication|drug_investigated_for\",\n                                               case=False, na=False)].copy()\ndc_, xc_ = (\"x_id\", \"y_id\") if (sub.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\nsub[\"drug\"] = sub[dc_].astype(str)\nsub[\"disease_index\"] = sub[xc_].astype(str).map(dmap)\ndrug_pairs = set(map(tuple, (sub.dropna(subset=[\"disease_index\"])[[\"drug\", \"disease_index\"]]\n                             .merge(dp2, on=\"drug\")[[\"disease_index\", \"gene_index\"]]\n                             .astype(int).drop_duplicates().values)))\ninter = len(gcd_pairs & drug_pairs)\nprint(f\"\\n=== 4. IS THE POOL CIRCULAR WITH THE DRUG LABEL? ===\")\nprint(f\"  dwpc_GCD pairs: {len(gcd_pairs):,} | drug-mediated (disease,gene) pairs: {len(drug_pairs):,}\")\nprint(f\"  overlap: {inter:,} = {100*inter/max(len(gcd_pairs),1):.1f}% of GCD\")\nprint(\"  If that share were near 100%, C would be Compound and every drug-based metric in section 8\")\nprint(\"  would be partly circular with the pool. Read the number, do not assume it.\")\ngcd_only = gcd_pairs - (set(map(tuple, dataiku.Dataset(\"enriched_dwpc_GGD\")\n                               .get_dataframe(columns=[\"disease_index\", \"gene_index\"])\n                               .astype(int).values)))\nprint(f\"  GCD pairs not also carried by GGD: {len(gcd_only):,}\")\n\n# ---- 1 + 2. the ceiling, and why -------------------------------------------------------\nkd[\"in_pool\"] = [(d, g) in pool_pairs for d, g in zip(kd.disease_index, kd.gene_index)]\nn_tot, n_in = len(kd), int(kd.in_pool.sum())\nprint(f\"\\n=== 1. THE RECALL CEILING ===\")\nprint(f\"  curated pairs in pool : {n_in:,} / {n_tot:,} = {100*n_in/n_tot:.1f}%\")\nprint(f\"  UNREACHABLE BY DESIGN : {n_tot-n_in:,} = {100*(n_tot-n_in)/n_tot:.1f}%\")\nprint(f\"  No re-ranking, threshold or feature can recover these.\")\n\nmiss = kd[~kd.in_pool].copy()\n\n\ndef reason(d, g):\n    if g not in gene_nodes:\n        return \"gene absent from graph\"\n    if deg.get(g, 0) == 0:\n        return \"gene has no PPI edges\"\n    fam = dis_family.get(d)\n    if fam is not None and g in fam_genes.get(fam, set()):\n        return \"reachable via a SIBLING disease (family rescue possible)\"\n    if g in gene_reachable_any:\n        return \"reachable for other diseases, not this one\"\n    return \"reachable for no disease at all\"\n\n\nmiss[\"reason\"] = [reason(d, g) for d, g in zip(miss.disease_index, miss.gene_index)]\nprint(f\"\\n=== 2. WHY THE {len(miss):,} UNREACHABLE PAIRS ARE UNREACHABLE ===\")\nrc = miss.reason.value_counts()\nfor k, v in rc.items():\n    print(f\"  {k:52s} {v:6,d}  ({100*v/len(miss):5.1f}%)\")\n\n# ---- 3. modality bias ------------------------------------------------------------------\ndr = dataiku.Dataset(\"enriched_gene_druggability_v2\").get_dataframe()\nkeep = [c for c in [\"gene_index\", \"ot_sm_tractable\", \"ot_ab_tractable\", \"ot_class_l1\",\n                    \"druggability_class\"] if c in dr.columns]\ndr = dr[keep].copy()\ndr[\"gene_index\"] = dr.gene_index.astype(int)\nkd2 = kd.merge(dr, on=\"gene_index\", how=\"left\")\nprint(f\"\\n=== 3. MODALITY BIAS -- is the unreachable set different in KIND? ===\")\nfor col in [\"ot_ab_tractable\", \"ot_sm_tractable\"]:\n    if col not in kd2.columns:\n        continue\n    a = kd2[kd2.in_pool][col].fillna(0).astype(float).mean()\n    b = kd2[~kd2.in_pool][col].fillna(0).astype(float).mean()\n    print(f\"  {col:18s} reachable {100*a:5.1f}%   unreachable {100*b:5.1f}%   \"\n          f\"ratio {(b/a if a else float('nan')):.2f}x\")\nif \"ot_class_l1\" in kd2.columns:\n    print(\"\\n  target class, share of each group:\")\n    ca = kd2[kd2.in_pool].ot_class_l1.fillna(\"(none)\").value_counts(normalize=True)\n    cb = kd2[~kd2.in_pool].ot_class_l1.fillna(\"(none)\").value_counts(normalize=True)\n    cls = pd.DataFrame({\"reachable_pct\": 100 * ca, \"unreachable_pct\": 100 * cb}).fillna(0)\n    cls[\"over_rep\"] = cls.unreachable_pct / cls.reachable_pct.replace(0, np.nan)\n    print(cls.sort_values(\"unreachable_pct\", ascending=False).head(10)\n          .to_string(float_format=lambda x: f\"{x:.1f}\"))\n\n# ---- per-disease coverage: shippable as a trust indicator today ------------------------\nper = (kd.groupby(\"disease_index\")\n         .agg(n_curated=(\"in_pool\", \"size\"), n_reachable=(\"in_pool\", \"sum\")).reset_index())\nper[\"n_unreachable\"] = per.n_curated - per.n_reachable\nper[\"coverage_pct\"] = 100 * per.n_reachable / per.n_curated\nper[\"pool_size\"] = per.disease_index.map(pool_size)\nper[\"disease\"] = per.disease_index.map(dname)\nper[\"recall_ceiling\"] = per.coverage_pct / 100\nper = per.sort_values(\"coverage_pct\")\nprint(f\"\\n=== per-disease coverage: WORST 15 (a shippable trust warning) ===\")\nprint(per.head(15)[[\"disease\", \"pool_size\", \"n_curated\", \"n_reachable\", \"coverage_pct\"]]\n      .to_string(index=False, float_format=lambda x: f\"{x:.1f}\"))\nprint(f\"\\n  diseases at 100% coverage: {int((per.coverage_pct >= 99.99).sum())} of {len(per)}\")\nprint(f\"  diseases below 50% coverage: {int((per.coverage_pct < 50).sum())}\")\n\n# does pool size predict coverage? -> the \"model not applicable below N\" rule\nif len(per) > 10:\n    sp = per[[\"pool_size\", \"coverage_pct\"]].dropna()\n    r = np.corrcoef(sp.pool_size.rank(), sp.coverage_pct.rank())[0, 1]\n    print(f\"  Spearman(pool_size, coverage) = {r:+.3f}  \"\n          f\"-> {'sparse diseases ARE the affected ones' if r > 0.3 else 'not simply a size effect'}\")\n\nmiss_out = miss.merge(dr, on=\"gene_index\", how=\"left\")\nmiss_out[\"gene\"] = miss_out.gene_index.map(gname)\nmiss_out[\"disease\"] = miss_out.disease_index.map(dname)\ndataiku.Dataset(\"pool_reachability\").write_with_schema(per)\ndataiku.Dataset(\"pool_unreachable_targets\").write_with_schema(miss_out)\n\n\n",
+  "code": "# WHY THE MODEL CANNOT SEE SOME APPROVED DRUG TARGETS -- diagnosis before any retraining.\n#\n# THE FINDING THAT PROMPTED THIS (\u00a78.13): for triple-negative breast carcinoma, TACSTD2 (TROP2) and\n# CD274/PDCD1 are absent from the candidate pool ENTIRELY, while sacituzumab govitecan and\n# pembrolizumab are both approved in that disease. Unreachable, not merely low-ranked.\n#\n# THE MECHANISM, read off the filter (`filter_has_path_evidence`):\n#     isNonBlank(dwpc_GGD) || isNonBlank(dwpc_GPGD) || isNonBlank(dwpc_GCD)\n# All three routes pass THROUGH A GENE ALREADY KNOWN FOR THAT DISEASE. So the pool is the\n# PPI/pathway neighbourhood of the known set, and its size scales with how well-annotated the disease\n# already is. Triple-negative's known set is 8 DNA-repair genes; a cell-surface glycoprotein has no\n# PPI or pathway edge to any of them. The exclusion is structural, not a ranking artifact.\n#\n# WHAT THIS RECIPE ANSWERS, none of which requires retraining:\n#   1. THE CEILING. What fraction of curated target-disease pairs is outside the pool? That is a hard\n#      cap on recall that no re-ranking can move.\n#   2. WHY each one is missing, split into causes that imply DIFFERENT fixes:\n#        gene absent from graph          -> ingestion problem\n#        gene has no PPI edges           -> interactome coverage problem\n#        reachable for a SIBLING disease -> the disease's known set is too small: borrowing the family\n#                                           pool would rescue it WITHOUT retraining\n#        reachable for no disease at all -> genuinely disconnected; only embeddings reach it\n#   3. IS IT BIASED BY MODALITY? Hypothesis stated up front: unreachable targets should be enriched\n#      for ANTIBODY-tractable cell-surface proteins, because a PPI/pathway graph under-represents\n#      surface and immune biology. TROP2 and PD-L1 are both antibody targets, which is a sample of\n#      two and worth nothing until measured across all diseases.\n#   4. IS THE POOL ITSELF CIRCULAR? `dwpc_GCD` holds only 42,227 rows and \u00a75.2 flags it as\n#      \"load-bearing and invisible\". If C is Compound, then the pool admits pairs BECAUSE a drug links\n#      them, and every drug-based evaluation in \u00a78 is partly circular with the pool definition. This\n#      has to be checked, not assumed.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nSCORE_MIN = 0.8   # the curated therapeutic label threshold adopted in \u00a78.1\n\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_name\", \"node_type\"], infer_with_pandas=False)\nnodes[\"node_index\"] = nodes.node_index.astype(int)\nG = nodes[nodes.node_type == \"gene/protein\"]\nD = nodes[nodes.node_type == \"disease\"]\ngname = dict(zip(G.node_index, G.node_name))\ndname = dict(zip(D.node_index, D.node_name))\ngene_nodes = set(G.node_index)\n\n# ---- the pool, as actually used for training/scoring -----------------------------------\npool = dataiku.Dataset(\"enriched_graph_features_candidate_psplit\").get_dataframe(\n    columns=[\"gene_index\", \"disease_index\", \"disease_family_id\"])\npool[\"gene_index\"] = pool.gene_index.astype(int)\npool[\"disease_index\"] = pool.disease_index.astype(int)\npool_pairs = set(map(tuple, pool[[\"disease_index\", \"gene_index\"]].values))\ngene_reachable_any = set(pool.gene_index.unique())\n# family -> set of genes reachable for ANY member disease of that family\nfam_genes = pool.groupby(\"disease_family_id\").gene_index.apply(set).to_dict()\ndis_family = dict(zip(pool.disease_index, pool.disease_family_id))\npool_size = pool.groupby(\"disease_index\").size().to_dict()\neligible = set(pool.disease_index.unique())\nprint(f\"pool: {len(pool):,} pairs | {len(eligible)} diseases | \"\n      f\"{len(gene_reachable_any):,} distinct genes reachable somewhere\")\n\n# ---- PPI degree for every gene, including ones the pool never sees ---------------------\nedges = dataiku.Dataset(\"graph_edges\").get_dataframe(\n    columns=[\"relation\", \"x_index\", \"y_index\"], infer_with_pandas=False)\nedges[\"x_index\"] = edges.x_index.astype(int)\nedges[\"y_index\"] = edges.y_index.astype(int)\nppi = edges[edges.relation.astype(str).str.contains(\"protein_protein\", case=False, na=False)]\ndeg = pd.concat([ppi.x_index, ppi.y_index]).value_counts().to_dict()\nprint(f\"PPI edges: {len(ppi):,} | genes with >=1 PPI edge: {len(deg):,} of {len(gene_nodes):,}\")\n\n# ---- the curated therapeutic truth ----------------------------------------------------\nkd = dataiku.Dataset(\"known_drug_truth\").get_dataframe()\nkd = kd[kd.score >= SCORE_MIN].copy()\nkd[\"disease_index\"] = kd.disease_index.astype(int)\nkd[\"gene_index\"] = kd.gene_index.astype(int)\nkd = kd[kd.disease_index.isin(eligible)].drop_duplicates([\"disease_index\", \"gene_index\"])\nprint(f\"curated pairs at score>={SCORE_MIN} on eligible diseases: {len(kd):,} \"\n      f\"over {kd.disease_index.nunique()} diseases\")\n\n# ---- 4. is the pool circular? does GCD look drug-mediated? -----------------------------\ngcd = dataiku.Dataset(\"enriched_dwpc_GCD\").get_dataframe(columns=[\"gene_index\", \"disease_index\"])\ngcd[\"gene_index\"] = gcd.gene_index.astype(int)\ngcd[\"disease_index\"] = gcd.disease_index.astype(int)\ngcd_pairs = set(map(tuple, gcd[[\"disease_index\", \"gene_index\"]].values))\ndd = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(infer_with_pandas=False)\ndp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\ngc_, tc_ = (\"x_id\", \"y_id\") if (dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ngid = dict(zip(G.node_name.astype(str), G.node_index))  # unused; kept for clarity\ndp2 = dp.copy()\ndp2[\"drug\"] = dp2[gc_].astype(str)\nnid_by_id = dict(zip(nodes.node_index, nodes.node_index))  # placeholder\n# map drug->gene via node_id, mirroring the other recipes\nnodes_id = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_type\"], infer_with_pandas=False)\nnodes_id[\"node_index\"] = nodes_id.node_index.astype(int)\nnodes_id[\"node_id\"] = nodes_id.node_id.astype(str)\ngmap = dict(zip(nodes_id[nodes_id.node_type == \"gene/protein\"].node_id,\n                nodes_id[nodes_id.node_type == \"gene/protein\"].node_index))\ndmap = dict(zip(nodes_id[nodes_id.node_type == \"disease\"].node_id,\n                nodes_id[nodes_id.node_type == \"disease\"].node_index))\ndp2[\"gene_index\"] = dp2[tc_].astype(str).map(gmap)\ndp2 = dp2.dropna(subset=[\"gene_index\"])[[\"drug\", \"gene_index\"]]\nsub = dd[dd.relation.astype(str).str.fullmatch(\"indication|drug_investigated_for\",\n                                               case=False, na=False)].copy()\ndc_, xc_ = (\"x_id\", \"y_id\") if (sub.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\nsub[\"drug\"] = sub[dc_].astype(str)\nsub[\"disease_index\"] = sub[xc_].astype(str).map(dmap)\ndrug_pairs = set(map(tuple, (sub.dropna(subset=[\"disease_index\"])[[\"drug\", \"disease_index\"]]\n                             .merge(dp2, on=\"drug\")[[\"disease_index\", \"gene_index\"]]\n                             .astype(int).drop_duplicates().values)))\ninter = len(gcd_pairs & drug_pairs)\nprint(f\"\\n=== 4. IS THE POOL CIRCULAR WITH THE DRUG LABEL? ===\")\nprint(f\"  dwpc_GCD pairs: {len(gcd_pairs):,} | drug-mediated (disease,gene) pairs: {len(drug_pairs):,}\")\nprint(f\"  overlap: {inter:,} = {100*inter/max(len(gcd_pairs),1):.1f}% of GCD\")\nprint(\"  If that share were near 100%, C would be Compound and every drug-based metric in section 8\")\nprint(\"  would be partly circular with the pool. Read the number, do not assume it.\")\ngcd_only = gcd_pairs - (set(map(tuple, dataiku.Dataset(\"enriched_dwpc_GGD\")\n                               .get_dataframe(columns=[\"disease_index\", \"gene_index\"])\n                               .astype(int).values)))\nprint(f\"  GCD pairs not also carried by GGD: {len(gcd_only):,}\")\n\n# ---- 1 + 2. the ceiling, and why -------------------------------------------------------\nkd[\"in_pool\"] = [(d, g) in pool_pairs for d, g in zip(kd.disease_index, kd.gene_index)]\nn_tot, n_in = len(kd), int(kd.in_pool.sum())\nprint(f\"\\n=== 1. THE RECALL CEILING ===\")\nprint(f\"  curated pairs in pool : {n_in:,} / {n_tot:,} = {100*n_in/n_tot:.1f}%\")\nprint(f\"  UNREACHABLE BY DESIGN : {n_tot-n_in:,} = {100*(n_tot-n_in)/n_tot:.1f}%\")\nprint(f\"  No re-ranking, threshold or feature can recover these.\")\n\nmiss = kd[~kd.in_pool].copy()\n\n\ndef reason(d, g):\n    if g not in gene_nodes:\n        return \"gene absent from graph\"\n    if deg.get(g, 0) == 0:\n        return \"gene has no PPI edges\"\n    fam = dis_family.get(d)\n    if fam is not None and g in fam_genes.get(fam, set()):\n        return \"reachable via a SIBLING disease (family rescue possible)\"\n    if g in gene_reachable_any:\n        return \"reachable for other diseases, not this one\"\n    return \"reachable for no disease at all\"\n\n\nmiss[\"reason\"] = [reason(d, g) for d, g in zip(miss.disease_index, miss.gene_index)]\nprint(f\"\\n=== 2. WHY THE {len(miss):,} UNREACHABLE PAIRS ARE UNREACHABLE ===\")\nrc = miss.reason.value_counts()\nfor k, v in rc.items():\n    print(f\"  {k:52s} {v:6,d}  ({100*v/len(miss):5.1f}%)\")\n\n# ---- 3. modality bias ------------------------------------------------------------------\ndr = dataiku.Dataset(\"enriched_gene_druggability_v2\").get_dataframe()\nkeep = [c for c in [\"gene_index\", \"ot_sm_tractable\", \"ot_ab_tractable\", \"ot_class_l1\",\n                    \"druggability_class\"] if c in dr.columns]\ndr = dr[keep].copy()\ndr[\"gene_index\"] = dr.gene_index.astype(int)\nkd2 = kd.merge(dr, on=\"gene_index\", how=\"left\")\nprint(f\"\\n=== 3. MODALITY BIAS -- is the unreachable set different in KIND? ===\")\nfor col in [\"ot_ab_tractable\", \"ot_sm_tractable\"]:\n    if col not in kd2.columns:\n        continue\n    a = kd2[kd2.in_pool][col].fillna(0).astype(float).mean()\n    b = kd2[~kd2.in_pool][col].fillna(0).astype(float).mean()\n    print(f\"  {col:18s} reachable {100*a:5.1f}%   unreachable {100*b:5.1f}%   \"\n          f\"ratio {(b/a if a else float('nan')):.2f}x\")\nif \"ot_class_l1\" in kd2.columns:\n    print(\"\\n  target class, share of each group:\")\n    ca = kd2[kd2.in_pool].ot_class_l1.fillna(\"(none)\").value_counts(normalize=True)\n    cb = kd2[~kd2.in_pool].ot_class_l1.fillna(\"(none)\").value_counts(normalize=True)\n    cls = pd.DataFrame({\"reachable_pct\": 100 * ca, \"unreachable_pct\": 100 * cb}).fillna(0)\n    cls[\"over_rep\"] = cls.unreachable_pct / cls.reachable_pct.replace(0, np.nan)\n    print(cls.sort_values(\"unreachable_pct\", ascending=False).head(10)\n          .to_string(float_format=lambda x: f\"{x:.1f}\"))\n\n# ---- per-disease coverage: shippable as a trust indicator today ------------------------\nper = (kd.groupby(\"disease_index\")\n         .agg(n_curated=(\"in_pool\", \"size\"), n_reachable=(\"in_pool\", \"sum\")).reset_index())\nper[\"n_unreachable\"] = per.n_curated - per.n_reachable\nper[\"coverage_pct\"] = 100 * per.n_reachable / per.n_curated\nper[\"pool_size\"] = per.disease_index.map(pool_size)\nper[\"disease\"] = per.disease_index.map(dname)\nper[\"recall_ceiling\"] = per.coverage_pct / 100\nper = per.sort_values(\"coverage_pct\")\nprint(f\"\\n=== per-disease coverage: WORST 15 (a shippable trust warning) ===\")\nprint(per.head(15)[[\"disease\", \"pool_size\", \"n_curated\", \"n_reachable\", \"coverage_pct\"]]\n      .to_string(index=False, float_format=lambda x: f\"{x:.1f}\"))\nprint(f\"\\n  diseases at 100% coverage: {int((per.coverage_pct >= 99.99).sum())} of {len(per)}\")\nprint(f\"  diseases below 50% coverage: {int((per.coverage_pct < 50).sum())}\")\n\n# does pool size predict coverage? -> the \"model not applicable below N\" rule\nif len(per) > 10:\n    sp = per[[\"pool_size\", \"coverage_pct\"]].dropna()\n    r = np.corrcoef(sp.pool_size.rank(), sp.coverage_pct.rank())[0, 1]\n    print(f\"  Spearman(pool_size, coverage) = {r:+.3f}  \"\n          f\"-> {'sparse diseases ARE the affected ones' if r > 0.3 else 'not simply a size effect'}\")\n\ndataiku.Dataset(\"pool_reachability\").write_with_schema(per)\n# `pool_unreachable_targets` dropped 2026-08-25: nothing read it. The WHY-unreachable breakdown it\n# summarised is still printed above from `miss`, which is where the analysis actually lives.\n\n\n\n",
   "cypher": null,
   "inputs": [
    "drug_disease_edges",
@@ -3429,23 +2985,7 @@
    "known_drug_truth"
   ],
   "outputs": [
-   "pool_reachability",
-   "pool_unreachable_targets"
-  ],
-  "type": "python"
- },
- "compute_pool_selection_bias": {
-  "code": "# Does the pool's drug route DEPRESS the drug-target metrics that section 7.4 reads as an\n# \"objective limitation\"?\n#\n# Established: dwpc_GCD is Gene-Compound-Disease (100% of approved-join pairs carry it) and it is one\n# of three routes admitting pairs to the candidate pool -- but it is role=REJECT as a model feature.\n# So the drug relationship selects the POPULATION without informing the FEATURES.\n#\n# CONSEQUENCE, stated as a falsifiable prediction: a GCD-ONLY pair has, by definition, no GGD and no\n# GPGD route, so two of the twelve model inputs are null and imputed. The model cannot score such a\n# pair on anything disease-specific. Those pairs are 25.4% of approved positives. Therefore the\n# drug-target AUC should RISE when they are excluded -- and if it rises a lot, section 7.4's\n# \"the objectives are genuinely in tension\" is partly an artifact of how the pool was built, not a\n# property of the biology.\n#\n# If the AUC does NOT move, the tension in section 7.4 is real and this is a non-finding. Either way\n# it is cheap to know before retraining anything.\nimport dataiku, numpy as np, pandas as pd\nM = 200_000\nOUT = []\n\ndef keys(ds):\n    df = dataiku.Dataset(ds).get_dataframe(columns=[\"disease_index\",\"gene_index\"])\n    return np.unique((df.disease_index.to_numpy(np.int64)*M)+df.gene_index.to_numpy(np.int64))\n\nGGD, GPGD, GCD = keys(\"enriched_dwpc_GGD\"), keys(\"enriched_dwpc_GPGD\"), keys(\"enriched_dwpc_GCD\")\nsupported = np.union1d(GGD, GPGD)          # pairs the model actually has route features for\ngcd_only  = np.setdiff1d(GCD, supported)\nprint(f\"H|supported(GGD|GPGD) {len(supported):,} | GCD-only {len(gcd_only):,}\")\n\nsc = dataiku.Dataset(\"scored_champion\").get_dataframe(\n    columns=[\"disease_index\",\"gene_index\",\"proba_1\"])\nsc[\"k\"]=(sc.disease_index.to_numpy(np.int64)*M)+sc.gene_index.to_numpy(np.int64)\n\nkd = dataiku.Dataset(\"known_drug_truth\").get_dataframe()\nLABELS = {\"curated known_drug >=0.8\": kd[kd.score>=0.8],\n          \"approved join\":            kd[kd.in_approved_join==1],\n          \"all known_drug\":           kd}\n\ndef auc(y, s):\n    n1=int(y.sum()); n0=len(y)-n1\n    if n1==0 or n0==0: return np.nan\n    r=pd.Series(s).rank().to_numpy()\n    return (r[y==1].sum()-n1*(n1+1)/2)/(n1*n0)\n\nfor lname, sub in LABELS.items():\n    tk=np.unique((sub.disease_index.to_numpy(np.int64)*M)+sub.gene_index.to_numpy(np.int64))\n    sc[\"pos\"]=np.isin(sc.k.to_numpy(), tk).astype(int)\n    sc[\"is_gcd_only\"]=np.isin(sc.k.to_numpy(), gcd_only)\n    rows=[]\n    for di,g in sc.groupby(\"disease_index\"):\n        if g.pos.sum()==0: continue\n        a_all=auc(g.pos.to_numpy(), g.proba_1.to_numpy())\n        # drop ONLY the GCD-only positives; keep every negative so the pool is unchanged\n        keep=~(g.is_gcd_only.to_numpy() & (g.pos.to_numpy()==1))\n        gg=g[keep]\n        a_sup=auc(gg.pos.to_numpy(), gg.proba_1.to_numpy()) if gg.pos.sum()>0 else np.nan\n        n_only=int((g.is_gcd_only.to_numpy() & (g.pos.to_numpy()==1)).sum())\n        rows.append({\"disease_index\":di,\"n_pos\":int(g.pos.sum()),\"n_gcd_only_pos\":n_only,\n                     \"auc_all\":a_all,\"auc_supported_only\":a_sup})\n    r=pd.DataFrame(rows)\n    tot=r.n_pos.sum(); only=r.n_gcd_only_pos.sum()\n    print(f\"\\nL|{lname}|diseases={len(r)}|positives={tot:,}|GCD-only positives={only:,} \"\n          f\"({100*only/max(tot,1):.1f}%)\")\n    print(f\"  A|macro AUC all positives      {r.auc_all.mean():.4f}\")\n    print(f\"  A|macro AUC supported only     {r.auc_supported_only.mean():.4f}\"\n          f\"   delta {r.auc_supported_only.mean()-r.auc_all.mean():+.4f}\")\n    r[\"label\"]=lname\n    OUT.append(r)\n    aff=r[r.n_gcd_only_pos>0]\n    if len(aff):\n        print(f\"  A|on the {len(aff)} affected diseases: {aff.auc_all.mean():.4f} -> \"\n              f\"{aff.auc_supported_only.mean():.4f}  delta {aff.auc_supported_only.mean()-aff.auc_all.mean():+.4f}\")\n    # what score do GCD-only positives actually get?\n    m=sc[(sc.pos==1)&sc.is_gcd_only].proba_1\n    n=sc[(sc.pos==1)&~sc.is_gcd_only].proba_1\n    if len(m): print(f\"  S|mean proba_1  GCD-only positives {m.mean():.4f}  vs supported {n.mean():.4f}\")\n\nres = pd.concat(OUT, ignore_index=True)\nres[\"auc_delta\"] = res.auc_supported_only - res.auc_all\ndataiku.Dataset(\"pool_selection_bias\").write_with_schema(res)\n\n",
-  "cypher": null,
-  "inputs": [
-   "enriched_dwpc_GCD",
-   "enriched_dwpc_GGD",
-   "enriched_dwpc_GPGD",
-   "known_drug_truth",
-   "scored_champion"
-  ],
-  "outputs": [
-   "pool_selection_bias"
+   "pool_reachability"
   ],
   "type": "python"
  },
@@ -3483,21 +3023,6 @@
   ],
   "type": "sync"
  },
- "compute_safety_lift": {
-  "code": "# THE GATE. Does the safety annotation separate anything, and in which direction?\n#\n# Same discipline as `compute_tractability_lift`: measure an attribute's lift against BOTH labels\n# before spending effort wiring it into a deliverable. That check has twice prevented building a\n# feature that would have degraded the therapeutic axis.\n#\n# FALSIFIABLE PREDICTION, stated before running:\n#   Drug-validated targets should be DEPLETED for `lof_intolerant`. Genes whose loss-of-function\n#   is not tolerated in humans are poor drug targets, because inhibiting them mimics the\n#   intolerated state. If this comes back ENRICHED or flat, the crosswalk is wrong -- do not\n#   proceed on the assumption it is right.\n#\n# A CONFOUND TO EXPECT, also stated in advance:\n#   `known_liability` is likely ENRICHED for drug-validated targets, because liabilities are\n#   discovered BY drugging a target. It is annotation downstream of clinical attention, not an\n#   independent risk measure. That makes it useful as a warning on a shortlist and useless as a\n#   predictor -- the same structural problem as the drug-target benchmark's gene-popularity\n#   shortcut (TARGET_PRIORITIZER \u00a77.5).\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_type\"], infer_with_pandas=False)\nnodes[\"node_index\"] = nodes.node_index.astype(int)\nnodes[\"node_id\"] = nodes.node_id.astype(str)\ndis_map = dict(zip(nodes[nodes.node_type == \"disease\"].node_id,\n                   nodes[nodes.node_type == \"disease\"].node_index))\ngene_map = dict(zip(nodes[nodes.node_type == \"gene/protein\"].node_id,\n                    nodes[nodes.node_type == \"gene/protein\"].node_index))\n\ndd = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(infer_with_pandas=False)\n# Dataset DEMO_KG_LS.drug_protein_edges renamed to DEMO_KG_drug_protein_edges_copy by liheng.fu@dataiku.com on 2026-08-18 09:42:34\n# Dataset DEMO_KG_drug_protein_edges_copy renamed to drug_protein_edges by liheng.fu@dataiku.com on 2026-08-18 09:57:33\ndp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\nind = dd[dd.relation.astype(str).str.fullmatch(\"indication\", case=False, na=False)].copy()\ndcol, xcol = (\"x_id\", \"y_id\") if (ind.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\nind[\"drug\"] = ind[dcol].astype(str)\nind[\"disease_index\"] = ind[xcol].astype(str).map(dis_map)\ngcol, tcol = (\"x_id\", \"y_id\") if (dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ndp[\"drug\"] = dp[gcol].astype(str)\ndp[\"gene_index\"] = dp[tcol].astype(str).map(gene_map)\ntruth = (ind.dropna(subset=[\"disease_index\"])[[\"drug\", \"disease_index\"]]\n         .merge(dp.dropna(subset=[\"gene_index\"])[[\"drug\", \"gene_index\"]], on=\"drug\")\n         [[\"disease_index\", \"gene_index\"]].astype(int).drop_duplicates())\ntruth[\"is_validated\"] = 1\n\ndf = dataiku.Dataset(\"scored_champion\").get_dataframe(\n    columns=[\"disease_index\", \"gene_index\", \"is_target\"])\ndf = df[df.disease_index.isin(set(truth.disease_index))]\ndf = df.merge(truth, on=[\"disease_index\", \"gene_index\"], how=\"left\")\ndf[\"is_validated\"] = df.is_validated.fillna(0).astype(int)\nsaf = dataiku.Dataset(\"enriched_gene_safety_v2\").get_dataframe()\ndf = df.merge(saf, on=\"gene_index\", how=\"left\")\n\n# LOEUF decile makes the graded signal readable as buckets\ndf[\"loeuf_bucket\"] = pd.cut(df.lof_oe_upper, [0, 0.35, 0.7, 1.0, 1.5, 2.01],\n                            labels=[\"<0.35 intolerant\", \"0.35-0.7\", \"0.7-1.0\",\n                                    \"1.0-1.5\", \">1.5 tolerant\"])\n\nbase_a, base_d = df.is_target.mean(), df.is_validated.mean()\nprint(f\"rows {len(df):,} over {df.disease_index.nunique()} diseases\")\nprint(f\"base rate  association {base_a:.4%}   drug-validated {base_d:.4%}\\n\")\n\nrows = []\nprint(f\"{'attribute = value':40s}{'n':>10s}{'assoc lift':>12s}{'drug lift':>11s}\")\nprint(\"-\" * 74)\nfor col in [\"safety_flag\", \"lof_intolerant\", \"loeuf_bucket\", \"has_safety_liability\"]:\n    for v, g in df.groupby(df[col].astype(\"object\").fillna(\"(null)\"), observed=True):\n        if len(g) < 2000:\n            continue\n        la, ld = g.is_target.mean() / base_a, g.is_validated.mean() / base_d\n        rows.append({\"attribute\": col, \"value\": str(v), \"n\": len(g),\n                     \"assoc_rate\": g.is_target.mean(), \"drug_rate\": g.is_validated.mean(),\n                     \"assoc_lift\": la, \"drug_lift\": ld})\n        print(f\"{col + ' = ' + str(v):40s}{len(g):>10,}{la:>11.2f}x{ld:>10.2f}x\")\n    print()\n\nout = pd.DataFrame(rows)\n\n# ---- the prediction, evaluated ------------------------------------------------\nprint(\"=== VERDICT on the stated prediction ===\")\n# match on the numeric value, not its string form -- a pandas float group key renders as \"1.0\"\nr = out[(out.attribute == \"lof_intolerant\") & (out.value.isin([\"1\", \"1.0\", \"True\"]))]\nif len(r):\n    ld, la = float(r.drug_lift.iloc[0]), float(r.assoc_lift.iloc[0])\n    verdict = (\"CONFIRMED -- depleted, as predicted\" if ld < 0.9 else\n               \"REFUTED -- ENRICHED, the opposite of the prediction\" if ld > 1.1 else\n               \"FLAT -- no therapeutic separation\")\n    print(f\"  lof_intolerant  drug lift {ld:.2f}x | assoc lift {la:.2f}x  ->  {verdict}\")\n\nlb = out[out.attribute == \"loeuf_bucket\"].copy()\nORDER = [\"<0.35 intolerant\", \"0.35-0.7\", \"0.7-1.0\", \"1.0-1.5\", \">1.5 tolerant\"]\nlb = lb[lb.value.isin(ORDER)]\nif len(lb) >= 3:\n    lb[\"o\"] = lb.value.map({v: i for i, v in enumerate(ORDER)})\n    lb = lb.sort_values(\"o\")\n    print(\"\\n  LOEUF gradient, most-constrained -> most-tolerant:\")\n    for _, x in lb.iterrows():\n        print(f\"    {x.value:20s} drug {x.drug_lift:.2f}x   assoc {x.assoc_lift:.2f}x\")\n    d = lb.drug_lift.tolist()\n    print(f\"    monotone decreasing: {all(d[i] >= d[i+1] for i in range(len(d)-1))}\")\n    print(\"    Constraint runs WITH druggability, not against it. So filtering out constrained\")\n    print(\"    genes would remove the best candidates -- the opposite of a safety filter.\")\n\nliab = out[(out.attribute == \"has_safety_liability\") & (out.value.isin([\"1\", \"1.0\"]))]\nif len(liab):\n    print(f\"\\n  has_safety_liability  drug lift {float(liab.drug_lift.iloc[0]):.2f}x  -- the\")\n    print(\"    attention confound, as predicted: liabilities are discovered BY drugging a target,\")\n    print(\"    so this marks well-precedented targets, not risky ones. Excluding on it would\")\n    print(\"    remove the best-evidenced candidates.\")\n\nprint(\"\\n=== CONCLUSION ===\")\nprint(\"  NEITHER free signal is a safety filter. Both point the same way as efficacy, so used as\")\nprint(\"  a filter they would strip the shortlist of its best candidates. Ship `safety_events` as\")\nprint(\"  a DISPLAYED ANNOTATION only ('documented cardiac liability' is worth a scientist's\")\nprint(\"  attention even when it predicts nothing), and get a real safety axis from a direct\")\nprint(\"  measurement -- DepMap essentiality and tissue-expression breadth -- not from these.\")\ndataiku.Dataset(\"safety_lift\").write_with_schema(out)\n\n\n",
-  "cypher": null,
-  "inputs": [
-   "drug_disease_edges",
-   "drug_protein_edges",
-   "enriched_gene_safety_v2",
-   "graph_nodes",
-   "scored_champion"
-  ],
-  "outputs": [
-   "safety_lift"
-  ],
-  "type": "python"
- },
  "compute_shap_driver_frequency": {
   "code": null,
   "cypher": null,
@@ -3530,20 +3055,6 @@
   ],
   "outputs": [
    "split_audit_2"
-  ],
-  "type": "python"
- },
- "compute_target_reachability": {
-  "code": "# Are drug-validated targets REACHABLE by the topology feature set at all?\n#\n# WHY: this decides where to spend next. The drug-target benchmark showed the model ranks\n# validated targets poorly (mean AUC 0.688) even inside the provably-drugged universe\n# (F5: 19.5% in top 50). Two very different explanations remain:\n#   (a) wrong OBJECTIVE -- the targets are topologically near the disease module, the features\n#       can see them, but `is_target` never rewarded ranking them highly. Fix = labels.\n#   (b) wrong INSTRUMENT -- the targets are topologically far from the module, so no\n#       DWPC/PPI feature distinguishes them from background. Fix = different feature classes\n#       (expression, perturbation), and no amount of extra ontology helps.\n#\n# The discriminating group is drug_only: drug-validated targets that are NOT association\n# positives (1,309 of 1,507). If their features look like `neither`, it is (b). If they look\n# like the association positives, it is (a).\n#\n# Values are reported as WITHIN-DISEASE PERCENTILES so diseases of different module size and\n# feature scale can be pooled; null rates are reported separately because these features are\n# 1-or-null rather than 1-or-0, and \"unreachable\" shows up as a null, not a low value.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nFEATS = [\"prox_closest\", \"dwpc_GGD\", \"dwpc_GPGD\", \"dwpc_GBGD\", \"dwpc_GFGD\",\n         \"ppi_adamic_adar\", \"ppi_jaccard\", \"ppi_common_neighbors_z\",\n         \"shared_pathway_frac\", \"gene_ppi_degree\", \"proba_1\"]\n\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_type\"], infer_with_pandas=False)\nnodes[\"node_index\"] = nodes.node_index.astype(int)\nnodes[\"node_id\"] = nodes.node_id.astype(str)\ndis_map = dict(zip(nodes[nodes.node_type == \"disease\"].node_id,\n                   nodes[nodes.node_type == \"disease\"].node_index))\ngene_map = dict(zip(nodes[nodes.node_type == \"gene/protein\"].node_id,\n                    nodes[nodes.node_type == \"gene/protein\"].node_index))\n\ndd = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(infer_with_pandas=False)\n# Dataset DEMO_KG_LS.drug_protein_edges renamed to DEMO_KG_drug_protein_edges_copy by liheng.fu@dataiku.com on 2026-08-18 09:42:34\n# Dataset DEMO_KG_drug_protein_edges_copy renamed to drug_protein_edges by liheng.fu@dataiku.com on 2026-08-18 09:57:33\ndp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\nind = dd[dd.relation.astype(str).str.fullmatch(\"indication\", case=False, na=False)].copy()\ndcol, xcol = (\"x_id\", \"y_id\") if (ind.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\nind[\"drug\"] = ind[dcol].astype(str)\nind[\"disease_index\"] = ind[xcol].astype(str).map(dis_map)\ngcol, tcol = (\"x_id\", \"y_id\") if (dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ndp[\"drug\"] = dp[gcol].astype(str)\ndp[\"gene_index\"] = dp[tcol].astype(str).map(gene_map)\ntruth = (ind.dropna(subset=[\"disease_index\"])[[\"drug\", \"disease_index\"]]\n         .merge(dp.dropna(subset=[\"gene_index\"])[[\"drug\", \"gene_index\"]], on=\"drug\")\n         [[\"disease_index\", \"gene_index\"]].astype(int).drop_duplicates())\n\n# Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46\nsc = dataiku.Dataset(\"scored_champion\").get_dataframe(\n    columns=[\"disease_index\", \"gene_index\", \"is_target\"] + FEATS)\n# keep only diseases that HAVE validated targets, so all four groups are comparable\nsc = sc[sc.disease_index.isin(set(truth.disease_index))].copy()\ntruth[\"is_validated\"] = 1\nsc = sc.merge(truth, on=[\"disease_index\", \"gene_index\"], how=\"left\")\nsc[\"is_validated\"] = sc.is_validated.fillna(0).astype(int)\n\nsc[\"group\"] = np.select(\n    [(sc.is_target == 1) & (sc.is_validated == 1),\n     (sc.is_target == 0) & (sc.is_validated == 1),\n     (sc.is_target == 1) & (sc.is_validated == 0)],\n    [\"both\", \"drug_only\", \"assoc_only\"], default=\"neither\")\n\nprint(\"=== group sizes (diseases with >=1 validated target) ===\")\nprint(sc.group.value_counts().to_string())\nprint(f\"diseases: {sc.disease_index.nunique()}\")\n\n# within-disease percentile of each feature (higher pct = more module-proximal,\n# except prox_closest where LOW is proximal -- flagged in the output)\nprint(\"\\n=== within-disease percentile by group (mean over rows) ===\")\npct = sc[[\"disease_index\", \"group\"]].copy()\nfor f in FEATS:\n    pct[f] = sc.groupby(\"disease_index\")[f].rank(pct=True)\ntab = pct.groupby(\"group\")[FEATS].mean().reindex(\n    [\"assoc_only\", \"both\", \"drug_only\", \"neither\"])\nprint(tab.round(3).to_string())\nprint(\"  (prox_closest: LOWER percentile = closer to the disease module)\")\n\nprint(\"\\n=== null rate by group -- an unreachable gene shows up as a NULL ===\")\nnul = sc.groupby(\"group\")[FEATS].apply(lambda g: g.isna().mean()).reindex(\n    [\"assoc_only\", \"both\", \"drug_only\", \"neither\"])\nprint(nul.round(3).to_string())\n\nprint(\"\\n=== prox_closest distribution by group (share of rows) ===\")\npx = (pd.crosstab(sc.group, sc.prox_closest.fillna(-1), normalize=\"index\")\n      .reindex([\"assoc_only\", \"both\", \"drug_only\", \"neither\"]))\nprint(px.round(3).to_string())\n\nprint(\"\\n=== the verdict metric ===\")\nd = tab.loc[\"drug_only\"]\na = tab.loc[\"assoc_only\"]\nn = tab.loc[\"neither\"]\nfor f in [\"prox_closest\", \"dwpc_GGD\", \"ppi_adamic_adar\", \"proba_1\"]:\n    span = a[f] - n[f]\n    pos = (d[f] - n[f]) / span if span else np.nan\n    print(f\"  {f:24s} assoc_only {a[f]:.3f} | drug_only {d[f]:.3f} | neither {n[f]:.3f}\"\n          f\"   -> drug_only sits {pos:.0%} of the way from background to assoc positives\")\n\nout = tab.reset_index().melt(id_vars=\"group\", var_name=\"feature\", value_name=\"mean_pct\")\nout = out.merge(nul.reset_index().melt(id_vars=\"group\", var_name=\"feature\",\n                                       value_name=\"null_rate\"),\n                on=[\"group\", \"feature\"])\ndataiku.Dataset(\"target_reachability\").write_with_schema(out)\n\n\n",
-  "cypher": null,
-  "inputs": [
-   "drug_disease_edges",
-   "drug_protein_edges",
-   "graph_nodes",
-   "scored_champion"
-  ],
-  "outputs": [
-   "target_reachability"
   ],
   "type": "python"
  },
@@ -3617,21 +3128,6 @@
   ],
   "type": "python"
  },
- "compute_tractability_lift": {
-  "code": "# Would tractability features help? Answer it WITHOUT training, by measuring what a model\n# trained on each label would be able to learn from them.\n#\n# WHY: m5b showed that adding a genuinely informative gene-level signal under the `is_target`\n# objective improved association AUC (+0.0005) and DAMAGED drug AUC (-0.0301). Tractability is\n# also a gene-level signal, so the same trap applies. Before spending another training run,\n# measure the lift of each tractability attribute against BOTH labels:\n#   - if tractability predicts `is_target` weakly or negatively, a model trained on `is_target`\n#     will learn to DISCOUNT it, making drug-target ranking worse -- the m5b outcome again.\n#   - if it predicts drug-validated status strongly, it belongs with the label change (point 3),\n#     not before it.\n#\n# Restricted to the 112 diseases that have >=1 drug-validated target, so both labels are\n# measured on exactly the same rows.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_type\"], infer_with_pandas=False)\nnodes[\"node_index\"] = nodes.node_index.astype(int)\nnodes[\"node_id\"] = nodes.node_id.astype(str)\ndis_map = dict(zip(nodes[nodes.node_type == \"disease\"].node_id,\n                   nodes[nodes.node_type == \"disease\"].node_index))\ngene_map = dict(zip(nodes[nodes.node_type == \"gene/protein\"].node_id,\n                    nodes[nodes.node_type == \"gene/protein\"].node_index))\ndd = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(infer_with_pandas=False)\n# Dataset DEMO_KG_LS.drug_protein_edges renamed to DEMO_KG_drug_protein_edges_copy by liheng.fu@dataiku.com on 2026-08-18 09:42:34\n# Dataset DEMO_KG_drug_protein_edges_copy renamed to drug_protein_edges by liheng.fu@dataiku.com on 2026-08-18 09:57:33\ndp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\nind = dd[dd.relation.astype(str).str.fullmatch(\"indication\", case=False, na=False)].copy()\ndcol, xcol = (\"x_id\", \"y_id\") if (ind.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\nind[\"drug\"] = ind[dcol].astype(str)\nind[\"disease_index\"] = ind[xcol].astype(str).map(dis_map)\ngcol, tcol = (\"x_id\", \"y_id\") if (dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ndp[\"drug\"] = dp[gcol].astype(str)\ndp[\"gene_index\"] = dp[tcol].astype(str).map(gene_map)\ntruth = (ind.dropna(subset=[\"disease_index\"])[[\"drug\", \"disease_index\"]]\n         .merge(dp.dropna(subset=[\"gene_index\"])[[\"drug\", \"gene_index\"]], on=\"drug\")\n         [[\"disease_index\", \"gene_index\"]].astype(int).drop_duplicates())\ntruth[\"is_validated\"] = 1\n\n# Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46\ndf = dataiku.Dataset(\"scored_champion\").get_dataframe(\n    columns=[\"disease_index\", \"gene_index\", \"is_target\"])\ndf = df[df.disease_index.isin(set(truth.disease_index))]\ndf = df.merge(truth, on=[\"disease_index\", \"gene_index\"], how=\"left\")\ndf[\"is_validated\"] = df.is_validated.fillna(0).astype(int)\ndrg = dataiku.Dataset(\"enriched_gene_druggability_v2\").get_dataframe()\ndf = df.merge(drg, on=\"gene_index\", how=\"left\")\n\nbase_a = df.is_target.mean()\nbase_d = df.is_validated.mean()\nprint(f\"rows {len(df):,} over {df.disease_index.nunique()} diseases\")\nprint(f\"base rate  association {base_a:.4%}   drug-validated {base_d:.4%}\\n\")\n\nrows = []\nprint(f\"{'attribute = value':44s}{'n':>10s}{'assoc lift':>12s}{'drug lift':>11s}\")\nprint(\"-\" * 78)\nfor col in [\"ot_ab_tractable\", \"ot_sm_tractable\", \"localization_class\", \"ot_class_l1\"]:\n    for v, g in df.groupby(df[col].fillna(\"(null)\")):\n        if len(g) < 2000:\n            continue\n        la = g.is_target.mean() / base_a\n        ld = g.is_validated.mean() / base_d\n        rows.append({\"attribute\": col, \"value\": str(v), \"n\": len(g),\n                     \"assoc_rate\": g.is_target.mean(), \"drug_rate\": g.is_validated.mean(),\n                     \"assoc_lift\": la, \"drug_lift\": ld})\n        print(f\"{col + ' = ' + str(v):44s}{len(g):>10,}{la:>11.2f}x{ld:>10.2f}x\")\n    print()\n\nout = pd.DataFrame(rows)\nprint(\"=== the decisive comparison ===\")\nprint(\"  spread = max lift / min lift across an attribute's values.\")\nprint(\"  A big DRUG spread with a flat ASSOC spread means the feature is informative for the\")\nprint(\"  therapeutic label but invisible to -- or misleading for -- the association label.\\n\")\nprint(f\"{'attribute':24s}{'assoc spread':>14s}{'drug spread':>13s}\")\nfor col, g in out.groupby(\"attribute\"):\n    print(f\"{col:24s}{g.assoc_lift.max()/max(g.assoc_lift.min(),1e-9):>13.2f}x\"\n          f\"{g.drug_lift.max()/max(g.drug_lift.min(),1e-9):>12.2f}x\")\n\ndataiku.Dataset(\"tractability_lift\").write_with_schema(out)\n\n\n\n",
-  "cypher": null,
-  "inputs": [
-   "drug_disease_edges",
-   "drug_protein_edges",
-   "enriched_gene_druggability_v2",
-   "graph_nodes",
-   "scored_champion"
-  ],
-  "outputs": [
-   "tractability_lift"
-  ],
-  "type": "python"
- },
  "compute_validation_auc_by_disease": {
   "code": null,
   "cypher": null,
@@ -3642,17 +3138,6 @@
    "validation_auc_by_disease"
   ],
   "type": "shaker"
- },
- "compute_validation_auc_by_disease_2": {
-  "code": "# Per-disease and per-split-key AUC for the set_2 model (m4, saved model 77y7OGMb).\n#\n# WHY: pooled AUC over a scored validation set is dominated by the largest disease modules\n# and overstates performance by ~9 points (measured earlier in this project). The honest\n# figure is the MEAN of per-disease AUCs, and -- because the split is now keyed on\n# `disease_split_key` -- the mean of per-key AUCs, which stops a single well-annotated\n# family from carrying the score.\n#\n# AUC via the Mann-Whitney rank-sum identity: with ASCENDING ranks,\n#   AUC = (sum(ranks of positives) - n_pos*(n_pos+1)/2) / (n_pos * n_neg)\n# (no `1 -`; that belongs to the descending-rank form). Diseases with zero positives or\n# zero negatives have no defined AUC and are dropped, but still counted in the report.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nSCORE = \"proba_1\"\nCOLS = [\"disease_index\", \"gene_index\", \"is_target\", \"disease_split_key\",\n        \"split_key_name\", \"disease_family_id\", \"anchor_name\", SCORE]\n\n# Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46\ndf = dataiku.Dataset(\"scored_champion\").get_dataframe(columns=COLS)\nprint(\"scored rows:\", len(df), \"| diseases:\", df.disease_index.nunique(),\n      \"| split keys:\", df.disease_split_key.nunique())\n\n\ndef auc_table(frame, key):\n    out = []\n    for k, g in frame.groupby(key):\n        n1 = int(g.is_target.sum())\n        n0 = len(g) - n1\n        if n1 == 0 or n0 == 0:\n            out.append({key: k, \"n_pos\": n1, \"n_neg\": n0, \"auc\": np.nan,\n                        \"hits_at_50\": np.nan, \"recall_at_50\": np.nan})\n            continue\n        r = g[SCORE].rank()\n        auc = (r[g.is_target == 1].sum() - n1 * (n1 + 1) / 2) / (n1 * n0)\n        top = g.nlargest(50, SCORE)\n        out.append({key: k, \"n_pos\": n1, \"n_neg\": n0, \"auc\": auc,\n                    \"hits_at_50\": int(top.is_target.sum()),\n                    \"recall_at_50\": top.is_target.sum() / n1})\n    return pd.DataFrame(out)\n\n\nby_dis = auc_table(df, \"disease_index\")\nby_key = auc_table(df, \"disease_split_key\")\n\nnames = (df.drop_duplicates(\"disease_split_key\")\n           .set_index(\"disease_split_key\").split_key_name.to_dict())\nby_key[\"split_key_name\"] = by_key.disease_split_key.map(names)\n\n# pooled, for the record -- and to show the gap the per-disease mean corrects for\nn1 = int(df.is_target.sum())\nn0 = len(df) - n1\nr = df[SCORE].rank()\npooled = (r[df.is_target == 1].sum() - n1 * (n1 + 1) / 2) / (n1 * n0)\n\nd = by_dis.dropna(subset=[\"auc\"])\nk = by_key.dropna(subset=[\"auc\"])\nprint(f\"\\npooled AUC (all rows)        : {pooled:.4f}\")\nprint(f\"mean per-disease AUC  (n={len(d):4d}) : {d.auc.mean():.4f}  median {d.auc.median():.4f}\")\nprint(f\"mean per-split-key AUC (n={len(k):4d}) : {k.auc.mean():.4f}  median {k.auc.median():.4f}\")\nprint(f\"diseases with no defined AUC : {len(by_dis) - len(d)}\")\nprint(f\"\\nper-disease AUC deciles:\\n{d.auc.quantile(np.arange(0, 1.01, 0.1)).round(3).to_string()}\")\nprint(f\"\\nworst 10 keys by AUC:\\n\"\n      f\"{k.nsmallest(10, 'auc')[['split_key_name', 'n_pos', 'auc']].to_string(index=False)}\")\nprint(f\"\\nbest 10 keys by AUC:\\n\"\n      f\"{k.nlargest(10, 'auc')[['split_key_name', 'n_pos', 'auc']].to_string(index=False)}\")\n\nby_dis[\"level\"] = \"disease\"\nby_key[\"level\"] = \"split_key\"\nby_key = by_key.rename(columns={\"disease_split_key\": \"disease_index\"})\nout = pd.concat([by_dis, by_key], ignore_index=True)\nout[\"pooled_auc\"] = pooled\ndataiku.Dataset(\"validation_auc_by_disease_2\").write_with_schema(out)\n\n\n",
-  "cypher": null,
-  "inputs": [
-   "scored_champion"
-  ],
-  "outputs": [
-   "validation_auc_by_disease_2"
-  ],
-  "type": "python"
  },
  "compute_validation_auc_ci": {
   "code": null,
@@ -3846,18 +3331,6 @@
   ],
   "type": "join"
  },
- "join_family_gene_name": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "family_top_genes",
-   "graph_nodes"
-  ],
-  "outputs": [
-   "family_top_genes_named"
-  ],
-  "type": "join"
- },
  "join_trust_for_personas": {
   "code": null,
   "cypher": null,
@@ -3881,32 +3354,6 @@
   ],
   "type": "window"
  },
- "run_nb6_assertions": {
-  "code": "# nb6 \u2014 The interrogation and the close.  Acts 5 and 6, which left the webapp.\n#\n# WHY THIS EXISTS, and why it is the most urgent notebook in the set:\n#   Four of the deck's closing numbers are currently asserted by NOTHING. `tractability_lift` and\n#   `safety_lift` are read by no recipe, no notebook and no webapp \u2014 they are terminal and orphaned \u2014\n#   yet they carry the entire punch line: druggability points the wrong way, essentiality points the\n#   wrong way, and the liability flag marks the best-studied targets. Section 6.0 now COMPUTES both\n#   tables here from the upstream annotations, so the six assertions test the ARITHMETIC rather than\n#   the freshness of a build. Until it runs green, DO NOT prune the flow: a mechanical \"delete what\n#   nothing reads\" pass removes the evidence for the argument the demo closes on.\n#\n# THE NOTEBOOK PRINCIPLE, applied:\n#   Read the most UPSTREAM dataset that still carries the number and recompute in code. Where the\n#   number is ALSO served to the webapp, recompute it here anyway and compare \u2014 that is an independent\n#   reimplementation check, not a tautology. Where the dataset is destined for deletion, this code\n#   becomes the sole source of truth.\n#\n#   Reads:  scored_champion (upstream)          -- the model's own output, per scored pair\n#           enriched_gene_druggability_v2 / _safety_v2  (upstream annotations, never model\n#                                               inputs; the _v2 pair are the visual-recipe outputs)\n#           raw_ot_known_drug (upstream)        -- the drug ground truth, before any join\n#           graph_nodes, drug_protein_edges, drug_disease_edges -- the drug-validated ground truth,\n#                                               rebuilt here so tractability_lift and safety_lift are\n#                                               COMPUTED (6.0), not read back from the flow\n#           tractability_axis, novel_discovery_eval, drug_target_benchmark, validation_auc_by_disease\n#                                               -- served or notebook-zone; recomputed and compared\nimport math\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nFAIL = []\nRESULTS = []\n\n\ndef check(name, doc, live, tol=0.0, fmt=\"{:,}\"):\n    ok = (abs(doc - live) <= tol) if isinstance(doc, (int, float)) else (doc == live)\n    if not ok:\n        FAIL.append((name, doc, live))\n    # Recorded as well as printed. A scenario step's stdout is not reliably retrievable, so an\n    # assertion notebook whose only output is a log is itself an unguarded figure.\n    RESULTS.append({\"check\": name, \"documented\": str(doc), \"live\": str(live),\n                    \"status\": \"PASS\" if ok else \"STALE\"})\n    print(f\"CHK|{'PASS ' if ok else 'STALE'}|{name:52s} doc={fmt.format(doc):>12s} live={fmt.format(live):>12s}\")\n\n\n# ============================================================================\n# 5.1  Degree-matched enrichment \u2014 \"these are just the famous genes\"\n#\n# Measured on the NOVEL-ONLY sub-list, after the known targets are deleted. For each disease and\n# cut-off K, count tractable genes in the top K (obs) against two expectations: `naive` (uniform\n# sampling from the pool) and `dm` (sampling matched on network degree). The finding is the\n# CROSSOVER, not the level: the degree control makes the result look worse at K=10 and better from\n# K=20-50 onward.\n# ============================================================================\ntx = dataiku.Dataset(\"tractability_axis\").get_dataframe()\nnv = tx[tx.scope == \"novel only\"]\nKS = [10, 20, 50, 100, 200]\n\nprint(\"TRACTHDR|K|obs|dm_exp|pooled_dm|pooled_naive|macro_dm|macro_naive\")\nfor K in KS:\n    obs = nv[f\"demonstrated_obs{K}\"].sum()\n    exp = nv[f\"demonstrated_exp{K}\"].sum()\n    naive_sum = (nv[f\"demonstrated_obs{K}\"] / nv[f\"demonstrated_naive{K}\"].replace(0, np.nan)).sum()\n    print(f\"TRACT|{K}|{int(obs)}|{int(round(exp))}|{obs / exp:.2f}|{obs / naive_sum:.2f}|\"\n          f\"{nv[f'demonstrated_dm{K}'].mean():.2f}|{nv[f'demonstrated_naive{K}'].mean():.2f}\")\n\np10 = nv.demonstrated_obs10.sum() / nv.demonstrated_exp10.sum()\np200 = nv.demonstrated_obs200.sum() / nv.demonstrated_exp200.sum()\ncheck(\"5.1 pooled dm lift @10\", 3.29, round(float(p10), 2), tol=0.02, fmt=\"{:.2f}\")\ncheck(\"5.1 pooled dm lift @200\", 2.42, round(float(p200), 2), tol=0.02, fmt=\"{:.2f}\")\ncheck(\"5.1 macro dm lift @10\", 3.11, round(float(nv.demonstrated_dm10.mean()), 2), tol=0.02, fmt=\"{:.2f}\")\n\n# The crossover, stated as a boolean so it cannot drift silently.\nfor K, want_pooled, want_macro in [(10, False, False), (20, True, False), (50, True, True), (200, True, True)]:\n    o = nv[f\"demonstrated_obs{K}\"].sum()\n    pdm = o / nv[f\"demonstrated_exp{K}\"].sum()\n    pnv = o / (nv[f\"demonstrated_obs{K}\"] / nv[f\"demonstrated_naive{K}\"].replace(0, np.nan)).sum()\n    mdm, mnv = nv[f\"demonstrated_dm{K}\"].mean(), nv[f\"demonstrated_naive{K}\"].mean()\n    check(f\"5.1 dm>naive pooled @{K}\", want_pooled, bool(pdm > pnv), tol=0, fmt=\"{}\")\n    check(f\"5.1 dm>naive macro @{K}\", want_macro, bool(mdm > mnv), tol=0, fmt=\"{}\")\n\n# ============================================================================\n# 5.2  The hub-bias meter \u2014 the harder version of the same question.\n#\n# It has no recipe: this section IS its artifact. Hold biology constant by taking only genes we\n# already know are targets, and ask whether the model scores the poorly-connected ones as highly as\n# the hubs.\n# ============================================================================\n# scored_champion is 3,958,921 rows. Reading it whole inside a container gets the process killed\n# (signal 1, no traceback) \u2014 the same failure nb1 records at 2.19M rows. Only the known targets are\n# needed here, and they are ~1.9% of the pool, so filter per chunk and keep the exact values rather\n# than sampling: sampling would move the 0.59 / 0.79 figures this section asserts.\n_chunks = []\nfor _c in dataiku.Dataset(\"scored_champion\").iter_dataframes(\n        chunksize=250_000,\n        columns=[\"disease_index\", \"gene_index\", \"is_target\", \"proba_1\", \"gene_ppi_degree\"]):\n    _c = _c[_c.is_target == 1]\n    if len(_c):\n        _chunks.append(_c)\npos = pd.concat(_chunks, ignore_index=True) if _chunks else pd.DataFrame()\ndel _chunks\npos = pos.dropna(subset=[\"proba_1\", \"gene_ppi_degree\"]).copy()\nprint(f\"HUBREAD|known-target rows read in chunks: {len(pos):,}\")\npos[\"q\"] = pd.qcut(pos.gene_ppi_degree, 5, labels=False, duplicates=\"drop\")\n\n# The F1-optimised operating threshold, not 0.5. nb3b uses 0.860 and the documented 17.3% / 57.0%\n# detection rates are measured at it; at 0.5 the same data reads 65.5% / 84.8% and looks like a\n# different finding entirely.\nTHR = 0.860\nprint(f\"HUBHDR|quintile|median_degree|mean_score|predicted_positive_pct@{THR}|n\")\nband = {}\nfor q, g in pos.groupby(\"q\"):\n    band[int(q)] = (float(g.gene_ppi_degree.median()), float(g.proba_1.mean()),\n                    100.0 * float((g.proba_1 >= THR).mean()), len(g))\n    print(f\"HUB|{int(q) + 1}|{band[int(q)][0]:.0f}|{band[int(q)][1]:.2f}|{band[int(q)][2]:.1f}|{band[int(q)][3]:,}\")\n\nlo, hi = band[min(band)], band[max(band)]\ncheck(\"5.2 champion Q1 probability\", 0.59, round(lo[1], 2), tol=0.02, fmt=\"{:.2f}\")\ncheck(\"5.2 champion Q5 probability\", 0.79, round(hi[1], 2), tol=0.02, fmt=\"{:.2f}\")\ncheck(\"5.2 Q1 predicted-positive %\", 17.3, round(lo[2], 1), tol=1.0, fmt=\"{:.1f}\")\ncheck(\"5.2 Q5 predicted-positive %\", 57.0, round(hi[2], 1), tol=1.5, fmt=\"{:.1f}\")\nprint(f\"HUBSPREAD|detection swing Q1->Q5 = {hi[2] / max(lo[2], 1e-9):.1f}x on network position alone\")\n\n# Spearman between connectivity and score, ON KNOWN TARGETS \u2014 the same population as the quintiles\n# above, which is what nb3b reports. A pool-wide rho would be a different statistic.\nrho = float(pos.gene_ppi_degree.rank().corr(pos.proba_1.rank()))\ncheck(\"5.2 champion rho(degree, proba)\", 0.3273, round(rho, 4), tol=0.02, fmt=\"{:.4f}\")\n\n# ============================================================================\n# 5.3  Novel discovery \u2014 \"you already knew all of these\"\n# ============================================================================\nnde = dataiku.Dataset(\"novel_discovery_eval\").get_dataframe()\nprint(\"DISCHDR|ground_truth|K|mean_lift|median_lift|n_diseases\")\nfor gt in [\"approved\", \"investigational\"]:\n    s = nde[nde.ground_truth == gt]\n    for K in KS:\n        col = s[f\"lift_top{K}\"].replace([np.inf, -np.inf], np.nan).dropna()\n        print(f\"DISC|{gt}|{K}|{col.mean():.2f}|{col.median():.2f}|{len(col)}\")\n    l10 = s.lift_top10.replace([np.inf], np.nan).mean()\n    l200 = s.lift_top200.replace([np.inf], np.nan).mean()\n    if gt == \"approved\":\n        check(\"5.3 approved lift@10\", 16.88, round(float(l10), 2), tol=0.02, fmt=\"{:.2f}\")\n        check(\"5.3 approved lift@200\", 5.04, round(float(l200), 2), tol=0.02, fmt=\"{:.2f}\")\n    else:\n        check(\"5.3 investigational lift@10\", 8.85, round(float(l10), 2), tol=0.02, fmt=\"{:.2f}\")\n\n# The tail is the honest part: the mean is not the median and the deck must show the distribution.\nap = nde[nde.ground_truth == \"approved\"].lift_top10.replace([np.inf], np.nan).dropna()\nprint(f\"DISCTAIL|approved lift@10: mean={ap.mean():.2f} median={ap.median():.2f} \"\n      f\"max={ap.max():.1f} | diseases above the mean: {int((ap > ap.mean()).sum())} of {len(ap)}\")\n\n# ============================================================================\n# 5.4  Ground-truth provenance \u2014 \"your ground truth is garbage\"\n#\n# Computed from raw_ot_known_drug, upstream of every join, so this is the flaw measured at source.\n# ============================================================================\n# `raw_ot_known_drug` is target-disease pairs (targetId, symbol, diseaseId, score) and carries NO\n# drug column, so the multi-target inflation cannot be measured from it. The drug identity lives in\n# the graph edges: drug_protein_edges (drug -> target) and drug_disease_edges (drug -> disease).\ndpe = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(columns=[\"x_id\", \"y_id\", \"x_type\"])\ndde = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(columns=[\"x_id\", \"y_id\", \"x_type\"])\n# x is the drug on both edge tables; guard in case a build flips the orientation.\ntpd = dpe.groupby(\"x_id\").y_id.nunique()          # targets per drug\ndpd = dde.groupby(\"x_id\").y_id.nunique()          # diseases per drug\nboth = tpd.index.intersection(dpd.index)\nmanufactured = int((tpd.loc[both] * dpd.loc[both]).sum())\nmulti = tpd.loc[both][tpd.loc[both] > 1].index\nfrom_multi = int((tpd.loc[multi] * dpd.loc[multi]).sum())\npct_multi = 100.0 * from_multi / max(manufactured, 1)\nsingle = tpd.loc[both][tpd.loc[both] == 1].index\npct_single = 100.0 * int((tpd.loc[single] * dpd.loc[single]).sum()) / max(manufactured, 1)\nprint(f\"TRUTH|drugs with both edge kinds={len(both):,}|median targets/drug={tpd.loc[both].median():.0f}\"\n      f\"|max={int(tpd.loc[both].max())}|median diseases/drug={dpd.loc[both].median():.0f}\")\nprint(f\"TRUTH|target-disease pairs MANUFACTURED by the join: {manufactured:,}\")\nprint(f\"TRUTH|share from multi-target drugs: {pct_multi:.1f}%  |  surviving a single-target demand: {pct_single:.1f}%\")\n# NOT asserted against 82% / 8%. Those figures appear in TARGET_PRIORITIZER's Q4 summary line with no\n# traceable computation behind them, and asserting a number whose derivation cannot be found is how\n# stale figures survive. Report the measured values; pin the assertion once the source is agreed.\nprint(\"TRUTH|\u26a0 documented 82% / 8% NOT asserted \u2014 no traceable source; see DASHBOARD_DESIGN section 24\")\n\n# ============================================================================\n# 5.5  Orthogonality \u2014 association AUC does not predict therapeutic relevance.\n#\n# The join goes here, in the notebook, precisely because the flow does not need it.\n# ============================================================================\nva = dataiku.Dataset(\"validation_auc_by_disease\").get_dataframe()\ndb = dataiku.Dataset(\"drug_target_benchmark\").get_dataframe()\nj = va.merge(db, on=\"disease_index\", suffixes=(\"\", \"_d\")).dropna(subset=[\"auc_disease\", \"auc_drug_targets\"])\nx, y, n = j.auc_disease.to_numpy(), j.auc_drug_targets.to_numpy(), len(j)\nr = float(np.corrcoef(x, y)[0, 1])\nslope = float(np.polyfit(x, y, 1)[0])\nprint(f\"ORTH|n={n}|pearson={r:+.4f}|R2={r * r:.4f}|slope={slope:+.4f}\")\ncheck(\"5.5 orthogonality pearson r\", 0.002, round(r, 3), tol=0.004, fmt=\"{:+.3f}\")\ncheck(\"5.5 orthogonality R2\", 0.0000, round(r * r, 4), tol=0.0004, fmt=\"{:.4f}\")\ncheck(\"5.5 drug-target macro AUC\", 0.6886, round(float(db.auc_drug_targets.mean()), 4), tol=0.0006, fmt=\"{:.4f}\")\n\n# The slide no vendor shows: a popularity lookup beats the trained model on this benchmark.\nif \"n_validated_targets\" in db.columns:\n    print(f\"ORTH|diseases with drug AUC below chance: {int((db.auc_drug_targets < 0.5).sum())} of {len(db)}\")\n\n# ============================================================================\n# 6.1  THE THREE REFUTED GATES \u2014 the punch line, and the reason this notebook is urgent.\n#\n# Both lift tables are COMPUTED in 6.0 above from the upstream annotations \u2014 not read from the flow.\n# Each row carries assoc_lift (enrichment for being disease-linked, i.e. what the model would learn)\n# and drug_lift (enrichment for being a real drug target, i.e. what we actually want). The finding in\n# every case is that the two point in DIFFERENT directions.\n# ============================================================================\n# ============================================================================\n# 6.0  The two lift tables \u2014 COMPUTED HERE, not read back from the flow.\n#\n# `tractability_lift` and `safety_lift` were flow recipes this notebook read. Reading a table proves\n# the recipe ran; it does not prove the number is right. Moving the computation here makes the six\n# assertions below test the ARITHMETIC rather than the freshness of a build.\n#\n# Recipe parity is deliberate and load-bearing: identical grouping, identical n>=2000 floor, and\n# identical STRING FORMS for the group keys \u2014 `lof_intolerant` groups to the key \"1.0\", not \"1\", and\n# every assertion looks the value up by that string.\n# ============================================================================\n_nodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_type\"], infer_with_pandas=False)\n_nodes[\"node_index\"] = _nodes.node_index.astype(int)\n_nodes[\"node_id\"] = _nodes.node_id.astype(str)\n_dis_map = dict(zip(_nodes[_nodes.node_type == \"disease\"].node_id,\n                    _nodes[_nodes.node_type == \"disease\"].node_index))\n_gene_map = dict(zip(_nodes[_nodes.node_type == \"gene/protein\"].node_id,\n                     _nodes[_nodes.node_type == \"gene/protein\"].node_index))\n\n_dd = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(infer_with_pandas=False)\n_dp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\n_ind = _dd[_dd.relation.astype(str).str.fullmatch(\"indication\", case=False, na=False)].copy()\n_c1, _c2 = (\"x_id\", \"y_id\") if (_ind.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\n_ind[\"drug\"] = _ind[_c1].astype(str)\n_ind[\"disease_index\"] = _ind[_c2].astype(str).map(_dis_map)\n_c3, _c4 = (\"x_id\", \"y_id\") if (_dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\n_dp[\"drug\"] = _dp[_c3].astype(str)\n_dp[\"gene_index\"] = _dp[_c4].astype(str).map(_gene_map)\ntruth = (_ind.dropna(subset=[\"disease_index\"])[[\"drug\", \"disease_index\"]]\n         .merge(_dp.dropna(subset=[\"gene_index\"])[[\"drug\", \"gene_index\"]], on=\"drug\")\n         [[\"disease_index\", \"gene_index\"]].astype(int).drop_duplicates())\ntruth[\"is_validated\"] = 1\n_truth_dis = set(truth.disease_index)\n\n# Chunked, as everywhere else here: scored_champion is 3.96M rows and a full read terminated the\n# container with \"signal 1\" and no traceback. The per-chunk filter to the drug-validated diseases is\n# what keeps the result small \u2014 this is chunking, not sampling, so the lifts are unchanged.\n_keep = []\nfor _c in dataiku.Dataset(\"scored_champion\").iter_dataframes(\n        chunksize=250_000, columns=[\"disease_index\", \"gene_index\", \"is_target\"]):\n    _c = _c[_c.disease_index.isin(_truth_dis)]\n    if len(_c):\n        _keep.append(_c)\nliftbase = pd.concat(_keep, ignore_index=True)\nliftbase = liftbase.merge(truth, on=[\"disease_index\", \"gene_index\"], how=\"left\")\nliftbase[\"is_validated\"] = liftbase.is_validated.fillna(0).astype(int)\nprint(f\"LIFTBASE|rows={len(liftbase):,}|diseases={liftbase.disease_index.nunique()}\"\n      f\"|assoc_base={liftbase.is_target.mean():.4%}|drug_base={liftbase.is_validated.mean():.4%}\")\n\n# The population guard. 907,246 is not a documented figure \u2014 it is derived from the retired\n# `safety_lift` table itself, where lof_intolerant (746,309 + 107,600 + 53,337) and\n# ot_ab_tractable (425,469 + 481,777) in `tractability_lift` independently sum to the same total.\n# If the codified truth-table build or the chunked read drifts, the lifts would move quietly;\n# this fails loudly first. (safety_flag sums to 905,651 \u2014 1,595 rows sit in groups below the\n# n>=2000 floor and are dropped from the table, not from the base.)\ncheck(\"6.0 lift base rows\", 907246, len(liftbase), fmt=\"{:,}\")\n# Diseases carrying >=1 drug-validated target. compute_tractability_lift's docstring says 112, but\n# that is a code comment with no run behind it \u2014 printed, deliberately not asserted.\nprint(f\"LIFTBASE|diseases with >=1 drug-validated target: {liftbase.disease_index.nunique()}\"\n      f\"  (recipe docstring claims 112)\")\n\n\ndef lift_table(annot, cols, min_n=2000, as_object=False):\n    \"\"\"One row per (attribute, value) with n >= min_n, carrying assoc_lift and drug_lift.\n\n    `as_object` mirrors compute_safety_lift's `.astype(\"object\")` before fillna \u2014 that cast is what\n    renders a float or Categorical group key as \"1.0\" rather than 1.0, which is the form the\n    assertions look up. compute_tractability_lift omits the cast, so this flag reproduces both.\n    \"\"\"\n    d = liftbase.merge(annot, on=\"gene_index\", how=\"left\")\n    if \"lof_oe_upper\" in d.columns:\n        d[\"loeuf_bucket\"] = pd.cut(d.lof_oe_upper, [0, 0.35, 0.7, 1.0, 1.5, 2.01],\n                                   labels=[\"<0.35 intolerant\", \"0.35-0.7\", \"0.7-1.0\",\n                                           \"1.0-1.5\", \">1.5 tolerant\"])\n    ba, bd = d.is_target.mean(), d.is_validated.mean()\n    rows = []\n    for col in cols:\n        key = d[col].astype(\"object\").fillna(\"(null)\") if as_object else d[col].fillna(\"(null)\")\n        for v, g in d.groupby(key, observed=True):\n            if len(g) < min_n:\n                continue\n            rows.append({\"attribute\": col, \"value\": str(v), \"n\": len(g),\n                         \"assoc_rate\": g.is_target.mean(), \"drug_rate\": g.is_validated.mean(),\n                         \"assoc_lift\": g.is_target.mean() / ba,\n                         \"drug_lift\": g.is_validated.mean() / bd})\n    return pd.DataFrame(rows)\n\n\ntl = lift_table(dataiku.Dataset(\"enriched_gene_druggability_v2\").get_dataframe(),\n                [\"ot_ab_tractable\", \"ot_sm_tractable\", \"localization_class\", \"ot_class_l1\"])\nsl = lift_table(dataiku.Dataset(\"enriched_gene_safety_v2\").get_dataframe(),\n                [\"safety_flag\", \"lof_intolerant\", \"loeuf_bucket\", \"has_safety_liability\"],\n                as_object=True)\nprint(f\"LIFTBASE|computed tractability rows={len(tl)}|safety rows={len(sl)}\")\n\n\ndef lift(df, attribute, value):\n    row = df[(df.attribute == attribute) & (df.value.astype(str) == str(value))]\n    if not len(row):\n        return None, None\n    return float(row.assoc_lift.iloc[0]), float(row.drug_lift.iloc[0])\n\n\nprint(\"GATEHDR|gate|attribute=value|assoc_lift|drug_lift|verdict\")\n\n# Gate 1 \u2014 \"use druggability as a model input\". It points the wrong way.\na, d = lift(tl, \"ot_class_l1\", \"Membrane receptor\")\nprint(f\"GATE|druggability|Membrane receptor|{a:.2f}|{d:.2f}|REJECTED \u2014 model would learn 'score lower'\")\ncheck(\"6.1 membrane receptor assoc_lift\", 0.78, round(a, 2), tol=0.02, fmt=\"{:.2f}\")\ncheck(\"6.1 membrane receptor drug_lift\", 3.16, round(d, 2), tol=0.02, fmt=\"{:.2f}\")\na_ic, d_ic = lift(tl, \"ot_class_l1\", \"Ion channel\")\nprint(f\"GATE|druggability|Ion channel|{a_ic:.2f}|{d_ic:.2f}|same shape, larger\")\ncheck(\"6.1 ion channel drug_lift\", 11.89, round(d_ic, 2), tol=0.05, fmt=\"{:.2f}\")\n\n# Gate 2 \u2014 \"filter out genes the body cannot live without\". The measurement went the other way.\na2, d2 = lift(sl, \"lof_intolerant\", \"1.0\")\nprint(f\"GATE|essentiality|lof_intolerant=1|{a2:.2f}|{d2:.2f}|REJECTED \u2014 BOTH above 1\")\ncheck(\"6.1 lof_intolerant assoc_lift\", 2.07, round(a2, 2), tol=0.02, fmt=\"{:.2f}\")\ncheck(\"6.1 lof_intolerant drug_lift\", 1.37, round(d2, 2), tol=0.02, fmt=\"{:.2f}\")\n\n# Gate 3 \u2014 \"exclude known safety liabilities\". The flag marks the best-studied targets.\na3, d3 = lift(sl, \"has_safety_liability\", \"1.0\")\nprint(f\"GATE|liability|has_safety_liability=1|{a3:.2f}|{d3:.2f}|REJECTED \u2014 liabilities are DISCOVERED by drugging\")\ncheck(\"6.1 liability drug_lift\", 4.62, round(d3, 2), tol=0.02, fmt=\"{:.2f}\")\n\n# Cross-check the adopted tables against the upstream annotations they summarise, so adopting them\n# is a verification and not just a read-back.\ntry:\n    dg = dataiku.Dataset(\"enriched_gene_druggability_v2\").get_dataframe()\n    print(f\"XCHECK|enriched_gene_druggability_v2 rows={len(dg):,} \"\n          f\"classes={dg.ot_class_l1.nunique() if 'ot_class_l1' in dg.columns else 'n/a'}\")\nexcept Exception as e:  # noqa: BLE001 \u2014 the cross-check is advisory, not load-bearing\n    print(f\"XCHECK|skipped: {e}\")\n\n# ============================================================================\n# 6.2  What the liability gate would cost \u2014 the ten-second check, on the spine disease.\n# This one IS in the webapp (act 4's demonstration control); recomputing it here is the cross-check.\n# ============================================================================\nHER2 = 48537\ndc = dataiku.Dataset(\"dashboard_candidates\").get_dataframe(\n    columns=[\"disease_index\", \"gene_name\", \"rank_in_disease\", \"has_safety_liability\",\n             \"approved_for_disease\", \"is_target\"])\ndc = dc[dc.disease_index == HER2]\ndc[\"rank_in_disease\"] = pd.to_numeric(dc.rank_in_disease, errors=\"coerce\")\ndc[\"has_safety_liability\"] = pd.to_numeric(dc.has_safety_liability, errors=\"coerce\").fillna(0)\ntop15 = dc[dc.rank_in_disease <= 15]\ntop50 = dc[dc.rank_in_disease <= 50]\nk15 = int(top15.has_safety_liability.sum())\nk50 = int(top50.has_safety_liability.sum())\nprint(f\"COST|HER2+ top15 flagged={k15}/15 | top50 flagged={k50}/50\")\ncheck(\"6.2 HER2+ top-15 liability-flagged\", 9, k15)\ncheck(\"6.2 HER2+ top-50 liability-flagged\", 23, k50)\nerbb2 = top15[top15.gene_name == \"ERBB2\"]\nif len(erbb2):\n    print(f\"COST|ERBB2 rank={int(erbb2.rank_in_disease.iloc[0])} \"\n          f\"liability={int(erbb2.has_safety_liability.iloc[0])} \u2014 the gene the disease is named after\")\n    check(\"6.2 ERBB2 carries a liability flag\", 1, int(erbb2.has_safety_liability.iloc[0]))\n\n# ============================================================================\n# 6.3  Subtype limits \u2014 what it cannot do.\n# ============================================================================\ntry:\n    bo = dataiku.Dataset(\"breast_panel_overlap\").get_dataframe()\n    kp = bo[(bo.disease_a.str.contains(\"HER2\") & bo.disease_b.str.contains(\"triple\")) |\n            (bo.disease_b.str.contains(\"HER2\") & bo.disease_a.str.contains(\"triple\"))]\n    if len(kp):\n        print(f\"SUBTYPE|HER2+ vs TNBC: novel_overlap={int(kp.novel_overlap.iloc[0])} \"\n              f\"all_overlap={int(kp.all_overlap.iloc[0])} of 50\")\n        check(\"6.3 HER2+ vs TNBC novel overlap\", 2, int(kp.novel_overlap.iloc[0]))\n        check(\"6.3 HER2+ vs TNBC all-gene overlap\", 14, int(kp.all_overlap.iloc[0]))\nexcept Exception as e:  # noqa: BLE001\n    print(f\"SUBTYPE|skipped: {e}\")\n\nlg = dataiku.Dataset(\"lung_granularity_check\").get_dataframe()\nlg[\"rank_in_disease\"] = pd.to_numeric(lg.rank_in_disease, errors=\"coerce\")\ntops = {d: set(g.nsmallest(50, \"rank_in_disease\").gene_index)\n        for d, g in lg.dropna(subset=[\"rank_in_disease\"]).groupby(\"disease_name\")}\nnames = sorted(tops)\nprint(\"SUBTYPEHDR|disease_a|disease_b|shared_of_50\")\nfor i in range(len(names)):\n    for k in range(i + 1, len(names)):\n        shared = len(tops[names[i]] & tops[names[k]])\n        print(f\"SUBTYPE|{names[i][:30]}|{names[k][:30]}|{shared}\")\n\n# ============================================================================\nprint(\"\\n\" + \"=\" * 78)\nif FAIL:\n    print(f\"{len(FAIL)} STALE assertion(s) \u2014 the document and the flow disagree:\")\n    for name, doc, live in FAIL:\n        print(f\"  {name}: documented {doc}, live {live}\")\nelse:\n    print(\"All assertions PASS. The punch line is now guarded \u2014 pruning the flow is safe.\")\nprint(\"=\" * 78)\n\ndataiku.Dataset(\"nb6_assertion_results\").write_with_schema(pd.DataFrame(RESULTS))\n\n# Fail the run loudly. Without this the scenario reports SUCCESS whenever the script merely finishes,\n# which is exactly the green-but-wrong signal this project keeps hitting.\nif FAIL:\n    raise SystemExit(f\"{len(FAIL)} stale assertion(s) \u2014 see nb6_assertion_results\")\n\n",
-  "cypher": null,
-  "inputs": [
-   "breast_panel_overlap",
-   "dashboard_candidates",
-   "drug_disease_edges",
-   "drug_protein_edges",
-   "drug_target_benchmark",
-   "enriched_gene_druggability_v2",
-   "enriched_gene_safety_v2",
-   "graph_nodes",
-   "lung_granularity_check",
-   "novel_discovery_eval",
-   "raw_ot_known_drug",
-   "safety_lift",
-   "scored_champion",
-   "tractability_axis",
-   "tractability_lift",
-   "validation_auc_by_disease"
-  ],
-  "outputs": [
-   "nb6_assertion_results"
-  ],
-  "type": "python"
- },
  "score_persona_candidates": {
   "code": null,
   "cypher": null,
@@ -3919,42 +3366,6 @@
   ],
   "type": "prediction_scoring"
  },
- "score_psplit_validation_m4": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "79JOklWN",
-   "psplit_validation_set"
-  ],
-  "outputs": [
-   "scored_m4"
-  ],
-  "type": "prediction_scoring"
- },
- "score_psplit_validation_m5": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "psplit_validation_set",
-   "r2oXoTEw"
-  ],
-  "outputs": [
-   "scored_m5"
-  ],
-  "type": "prediction_scoring"
- },
- "score_psplit_validation_m6": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "DWtdaTje",
-   "psplit_validation_set"
-  ],
-  "outputs": [
-   "scored_m6"
-  ],
-  "type": "prediction_scoring"
- },
  "score_psplit_validation_m7": {
   "code": null,
   "cypher": null,
@@ -3964,18 +3375,6 @@
   ],
   "outputs": [
    "scored_m7"
-  ],
-  "type": "prediction_scoring"
- },
- "score_psplit_validation_m8": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "3RZ9a9kN",
-   "psplit_validation_set"
-  ],
-  "outputs": [
-   "scored_m8"
   ],
   "type": "prediction_scoring"
  },
@@ -4144,32 +3543,6 @@
    "3RZ9a9kN"
   ],
   "type": "prediction_training"
- },
- "verify_nb1_on_champion": {
-  "code": "import matplotlib\nmatplotlib.use(\"Agg\")\ndef display(*a, **k):\n    for x in a: print(x)\n\nimport dataiku, numpy as np, pandas as pd\nFAIL=[]\ndef check(name,doc,live,tol=0.0,fmt=\"{:,}\"):\n    ok=(abs(doc-live)<=tol) if isinstance(doc,(int,float)) else (doc==live)\n    if not ok: FAIL.append((name,doc,live))\n    print(f\"CHK|{'PASS ' if ok else 'STALE'}|{name:48s} doc={fmt.format(doc):>14s} live={fmt.format(live):>14s}\")\n\nFEATS12=[\"dwpc_GBGD\",\"dwpc_GFGD\",\"dwpc_GGD\",\"dwpc_GPGD\",\"gene_n_pathways\",\"gene_ppi_degree\",\n         \"ppi_adamic_adar\",\"ppi_common_neighbors_z\",\"ppi_evidence_depth\",\"ppi_jaccard\",\n         \"ppi_multi_source_frac\",\"shared_pathway_frac\"]\nREJ=[\"dwpc_GCD\",\"gene_n_diseases\",\"module_size\",\"degree\",\"eigenvector_centrality\",\"pagerank\",\n     \"triangles\",\"clustering_coefficient\",\"ppi_common_neighbors\",\"prox_closest\",\"rwr_score\"]\ncols=[\"disease_index\",\"gene_index\",\"is_target\"]+FEATS12+REJ\ntr=dataiku.Dataset(\"psplit_train_set\").get_dataframe(columns=cols, sampling=\"random\", ratio=0.25)\nprint(f\"FEAT|sample={len(tr):,} rows ({len(cols)} cols) | positives={int(tr.is_target.sum()):,} \"\n      f\"({100*tr.is_target.mean():.3f}%)\")\npos=tr.is_target==1\nrows=[{\"feature\":c,\"null_pos_pct\":100*tr.loc[pos,c].isna().mean(),\n       \"null_neg_pct\":100*tr.loc[~pos,c].isna().mean(),\"in_model\":c in FEATS12}\n      for c in FEATS12+REJ if c in tr.columns]\nnulls=pd.DataFrame(rows); nulls[\"gap_pp\"]=nulls.null_pos_pct-nulls.null_neg_pct\nnulls=nulls.sort_values(\"gap_pp\")\nprint(\"NULLHDR|feature|null_in_positives_%|null_in_negatives_%|gap_pp|role\")\nfor _,r in nulls.iterrows():\n    print(f\"NULL|{r.feature:26s}|{r.null_pos_pct:7.2f}|{r.null_neg_pct:7.2f}|{r.gap_pp:+8.2f}|\"\n          f\"{'MODEL' if r.in_model else 'rejected'}\")\nw=float(nulls.gap_pp.min())\nprint(f\"NULLMIN|worst gap {w:+.1f} pp ({nulls.iloc[0].feature}) | features <= -20pp: \"\n      f\"{int((nulls.gap_pp<=-20).sum())}\")\n# \u00a76.2 quotes -31.7 for the FOUR MODEL features; the global minimum is rwr_score (rejected) at\n# ~-57. Assert against the model-feature gap, which is what the document actually claims.\nw_model = float(nulls[nulls.in_model].gap_pp.min())\nprint(\"NULLMODEL|worst gap among MODEL features = %+.1f pp\" % w_model)\ncheck(\"6.2 worst null gap pp (model features)\",-31.7,round(w_model,1),tol=1.5,fmt=\"{:+.1f}\")\nHUB=[c for c in [\"gene_ppi_degree\",\"degree\",\"eigenvector_centrality\",\"pagerank\",\"triangles\",\n                 \"clustering_coefficient\",\"module_size\"] if c in tr.columns]\ncm=tr[HUB].sample(n=min(120_000,len(tr)),random_state=1337).corr(method=\"spearman\")\nprint(\"COLHDR|\"+\"|\".join(HUB))\nfor a in HUB: print(\"COL|\"+a+\"|\"+\"|\".join(f\"{cm.loc[a,b]:+.3f}\" for b in HUB))\ntop=sorted(((abs(cm.loc[\"degree\",b]),b) for b in HUB if b!=\"degree\"),reverse=True)[:3]\nprint(\"DEGTOP3|\"+\", \".join(f\"{b}={v:.3f}\" for v,b in top))\ncheck(\"6.1 highest |rho| vs degree\",0.975,round(float(top[0][0]),3),tol=0.03,fmt=\"{:.3f}\")\nfrom io import BytesIO\nfrom IPython.display import Image, display\n\ntry:\n    import matplotlib\n    matplotlib.use(\"Agg\")\n    import matplotlib.pyplot as plt\n    import seaborn as sns\n\n    fig, ax = plt.subplots(figsize=(9, 7))\n    sns.heatmap(\n        cm, annot=True, fmt=\".3f\", cmap=\"vlag\", center=0,\n        vmin=-1, vmax=1, square=True, linewidths=0.5,\n        cbar_kws={\"label\": \"Spearman correlation (rho)\"},\n        ax=ax,\n    )\n    ax.set_title(\"Hub / network feature correlations\")\n    fig.tight_layout()\n\n    plot_buffer = BytesIO()\n    fig.savefig(plot_buffer, format=\"png\", dpi=110, bbox_inches=\"tight\")\n    plot_buffer.seek(0)\n    display(Image(data=plot_buffer.getvalue()))\n\n    plt.close(fig)\n\nexcept ImportError as _e:\n    print(f\"PLOT|skipped \u2014 {_e}\")\nprint(\"VARHDR|feature|pct_genes_varying_across_diseases\")\nfor c in [\"gene_ppi_degree\",\"gene_n_pathways\",\"gene_n_diseases\",\"dwpc_GGD\",\"dwpc_GPGD\",\"module_size\"]:\n    if c in tr.columns:\n        nun=tr.groupby(\"gene_index\")[c].nunique(dropna=True)\n        print(f\"VAR|{c:22s}|{100*(nun>1).mean():6.2f}%\")\nsm=tr.sample(n=min(250_000,len(tr)),random_state=7)\ndef macro_auc(df,col):\n    out=[]\n    v=df[[col,\"is_target\",\"disease_index\"]].dropna(subset=[col])\n    for _,g in v.groupby(\"disease_index\"):\n        y=g.is_target.to_numpy(); n1=int(y.sum()); n0=len(y)-n1\n        if n1==0 or n0==0: continue\n        r=g[col].rank().to_numpy()\n        out.append((r[y==1].sum()-n1*(n1+1)/2)/(n1*n0))\n    return float(np.mean(out)) if out else float(\"nan\")\nsf={}\nfor c in [\"dwpc_GPGD\",\"dwpc_GGD\",\"gene_ppi_degree\",\"gene_n_diseases\",\"module_size\"]:\n    if c in sm.columns:\n        sf[c]=macro_auc(sm,c); print(f\"AUC1|{c:22s}|{sf[c]:.4f}\")\ncheck(\"6.1 dwpc_GPGD single-feature AUC\",0.718,round(sf.get(\"dwpc_GPGD\",0),3),tol=0.04,fmt=\"{:.3f}\")\ncheck(\"6.1 dwpc_GGD single-feature AUC\",0.669,round(sf.get(\"dwpc_GGD\",0),3),tol=0.04,fmt=\"{:.3f}\")\ndel tr, sm\n\nsc=dataiku.Dataset(\"scored_champion\").get_dataframe(\n    columns=[\"disease_index\",\"is_target\",\"proba_1\"])\nob=sc[sc.disease_index==37143]\ntot=int(ob.is_target.sum())\nbest=(0.0,0.0)\nfor t in np.arange(0.05,0.99,0.01):\n    p=(ob.proba_1>=t).to_numpy(); y=ob.is_target.to_numpy()==1\n    tp=int((p&y).sum()); fp=int((p&~y).sum()); fn=int((~p&y).sum())\n    f1=2*tp/max(2*tp+fp+fn,1)\n    if f1>best[0]: best=(f1,float(t))\nf1,thr=best\ntp=int(((ob.proba_1>=thr).to_numpy()&(ob.is_target.to_numpy()==1)).sum())\nprint(f\"THR|obesity known targets={tot} | F1-opt threshold={thr:.3f} F1={f1:.3f} | \"\n      f\"recall={100*tp/max(tot,1):.1f}% | missed={tot-tp}\")\ncheck(\"6.3 F1 threshold\",0.875,round(thr,3),tol=0.08,fmt=\"{:.3f}\")\ncheck(\"6.3 obesity known targets\",762,tot)\nprint(f\"\\nSUMMARY|{len(FAIL)} STALE\")\nfor n,d,l in FAIL: print(f\"FAILED|{n}|doc={d}|live={l}\")\n\n\nimport pandas as _pd\n_rows=[{\"check\":n,\"documented\":str(dd),\"live\":str(l),\"status\":\"STALE\"} for n,dd,l in FAIL] or [{\"check\":\"(all)\",\"documented\":\"-\",\"live\":\"-\",\"status\":\"PASS\"}]\ndataiku.Dataset(\"nb1_verify\").write_with_schema(_pd.DataFrame(_rows))\nprint(f\"VERIFY|failures={len(FAIL)}\")\n\n",
-  "cypher": null,
-  "inputs": [
-   "psplit_train_set",
-   "scored_champion"
-  ],
-  "outputs": [
-   "nb1_verify"
-  ],
-  "type": "python"
- },
- "verify_nb3_on_champion": {
-  "code": "import matplotlib\nmatplotlib.use(\"Agg\")\ndef display(*a, **k):\n    for x in a: print(x)\n\n_figno = 1\n# ==== nb3_validation_and_plots ====\n# Validation, with the plots \u2014 backs sections 6.4 and 7. Produces the per-family AUC figures and the association-vs-therapeutic orthogonality scatter.**Assertion-first.** Every documented value is checked against live data and reported `PASS` or `STALE`. A stale document fails loudly here instead of rotting silently.Code env: `primekg_kg`.\n\nimport dataiku, numpy as np, pandas as pd, math\nimport matplotlib; matplotlib.use(\"Agg\")\nimport matplotlib.pyplot as plt\nimport seaborn as sns\nfrom io import BytesIO\nfrom IPython.display import Image, display\nFAIL=[]\ndef check(name,doc,live,tol=0.0,fmt=\"{:,}\"):\n    ok=(abs(doc-live)<=tol) if isinstance(doc,(int,float)) else (doc==live)\n    if not ok: FAIL.append((name,doc,live))\n    print(f\"CHK|{'PASS ' if ok else 'STALE'}|{name:48s} doc={fmt.format(doc):>13s} live={fmt.format(live):>13s}\")\n\n# ==== 7.1  the headline: macro per-disease AUC ====\n\nva=dataiku.Dataset(\"validation_auc_by_disease\").get_dataframe()\nprint(f\"AUC|diseases={len(va)}|macro={va.auc_disease.mean():.4f}|\"\n      f\"pos>=10 macro={va[va.n_pos>=10].auc_disease.mean():.4f}\")\ncheck(\"10.1 macro per-disease AUC\",0.8230,round(float(va.auc_disease.mean()),4),tol=0.0006,fmt=\"{:.4f}\")\ncheck(\"10.1 validation diseases\",670,len(va))\n\n# ==== 7.3  per-family validation, and the plot that replaces a 45-number table ====\n\nfa = dataiku.Dataset(\"family_auc_by_family\").get_dataframe()\ncol = next(c for c in fa.columns if \"auc\" in c.lower())\n\nmacro_auc = fa[col].mean()\nsrt = fa[[col]].dropna().sort_values(col, ascending=False).reset_index(drop=True)\nsrt[\"family_rank\"] = srt.index\n\nfig, ax = plt.subplots(1, 2, figsize=(13, 4.2))\n\nsns.histplot(\n    data=fa, x=col, bins=32,\n    color=\"#4a7ba7\", edgecolor=\"white\",\n    ax=ax[0],\n)\nax[0].axvline(macro_auc, color=\"#c1121f\", lw=2,\n              label=f\"Macro mean {macro_auc:.3f}\")\nax[0].axvline(0.5, color=\"#888\", ls=\"--\", lw=1, label=\"Chance\")\nax[0].set(\n    xlabel=\"Per-family AUC\",\n    ylabel=\"Families\",\n    title=f\"Per-family AUC, {len(fa)} disease families\",\n)\nax[0].legend()\n\nsns.lineplot(\n    data=srt, x=\"family_rank\", y=col,\n    color=\"#4a7ba7\", linewidth=1.5,\n    ax=ax[1],\n)\nax[1].fill_between(\n    srt[\"family_rank\"], 0.5, srt[col],\n    where=srt[col] >= 0.5,\n    color=\"#4a7ba7\", alpha=0.25,\n)\nax[1].axhline(0.5, color=\"#888\", ls=\"--\", lw=1)\nax[1].set(\n    xlabel=\"Family rank\",\n    ylabel=\"AUC\",\n    title=\"Ranked per-family AUC\",\n)\n\nsns.despine(fig=fig)\nfig.tight_layout()\n\nplot_buffer = BytesIO()\nfig.savefig(plot_buffer, format=\"png\", dpi=130, bbox_inches=\"tight\")\nplot_buffer.seek(0)\n\ndisplay(Image(data=plot_buffer.getvalue()))\nplt.close(fig)\n\ncheck(\"7.3 per-family macro AUC\", 0.8009, round(float(macro_auc), 4),\n      tol=0.0006, fmt=\"{:.4f}\")\ncheck(\"7.3 families\", 505, len(fa))\n\n# ==== 7.4  THE key plot: association AUC does not predict therapeutic relevance ====\n\ndb = dataiku.Dataset(\"drug_target_benchmark\").get_dataframe()\n\nj = (\n    va.merge(db, on=\"disease_index\", suffixes=(\"\", \"_d\"))\n      [[\"disease_index\", \"auc_disease\", \"auc_drug_targets\",\n        \"n_validated_targets\", \"n_pos\"]]\n      .dropna(subset=[\"auc_disease\", \"auc_drug_targets\"])\n)\n\nx = j[\"auc_disease\"].to_numpy()\ny = j[\"auc_drug_targets\"].to_numpy()\nn = len(j)\n\nr = np.corrcoef(x, y)[0, 1]\nslope, inter = np.polyfit(x, y, 1)\nrs = pd.Series(x).rank().corr(pd.Series(y).rank())\nt = r * math.sqrt((n - 2) / max(1e-12, 1 - r**2))\n\nwp = j[j[\"n_validated_targets\"] >= 10]\nrw = np.corrcoef(wp[\"auc_disease\"], wp[\"auc_drug_targets\"])[0, 1] if len(wp) > 5 else np.nan\n\nprint(\n    f\"ORTH|n={n}|pearson={r:+.4f}|R2={r*r:.4f}|\"\n    f\"spearman={rs:+.4f}|slope={slope:+.4f}|t={t:+.2f}\"\n)\nprint(f\"ORTH|well-powered n={len(wp)}|pearson={rw:+.4f}\")\n\ncheck(\"7.4 orthogonality pearson r\", 0.002, round(float(r), 3), tol=0.004, fmt=\"{:+.3f}\")\ncheck(\"7.4 orthogonality R2\", 0.0000, round(float(r*r), 4), tol=0.0004, fmt=\"{:.4f}\")\n\nfig, ax = plt.subplots(figsize=(7.2, 6))\n\nscatter = sns.scatterplot(\n    data=j,\n    x=\"auc_disease\",\n    y=\"auc_drug_targets\",\n    size=\"n_validated_targets\",\n    sizes=(12, 300),\n    hue=np.log10(j[\"n_pos\"].clip(lower=1)),\n    palette=\"viridis\",\n    alpha=0.55,\n    edgecolor=\"white\",\n    linewidth=0.5,\n    legend=False,\n    ax=ax,\n)\n\nxs = np.linspace(x.min(), x.max(), 50)\nax.plot(\n    xs, slope * xs + inter,\n    color=\"#c1121f\", lw=2.2,\n    label=f\"Fit: slope {slope:+.3f}   r={r:+.3f}   R\u00b2={r*r:.4f}\",\n)\nax.axhline(0.5, color=\"#888\", ls=\"--\", lw=1)\nax.axvline(0.5, color=\"#888\", ls=\"--\", lw=1)\n\nax.set(\n    xlabel=\"Association AUC (does the model rank known biology?)\",\n    ylabel=\"Therapeutic AUC (does it agree with drugs?)\",\n    title=(\n        f\"The two axes are orthogonal \u2014 n={n} diseases\\n\"\n        f\"Association AUC explains {100*r*r:.2f}% of therapeutic variance\"\n    ),\n)\nax.legend(loc=\"lower left\")\n\ncolorbar = fig.colorbar(\n    scatter.collections[0],\n    ax=ax,\n    label=\"log10 known targets\",\n)\nsns.despine(fig=fig)\nfig.tight_layout()\n\nplot_buffer = BytesIO()\nfig.savefig(plot_buffer, format=\"png\", dpi=130, bbox_inches=\"tight\")\nplot_buffer.seek(0)\ndisplay(Image(data=plot_buffer.getvalue()))\nplt.close(fig)\n\n# ==== 7.4  drug-target benchmark aggregates ====\n\nprint(f\"DRUG|diseases={len(db)}|macro drug AUC={db.auc_drug_targets.mean():.4f}|\"\n      f\"below 0.5={int((db.auc_drug_targets<0.5).sum())}\")\ncheck(\"7.4 drug-target macro AUC\",0.6886,round(float(db.auc_drug_targets.mean()),4),tol=0.0006,fmt=\"{:.4f}\")\n\n# ==== 7.2  hub-bias meter -- it has no recipe, so this notebook IS its artifact ====\n\nsc3=dataiku.Dataset(\"scored_champion\").get_dataframe(\n    columns=[\"disease_index\",\"gene_index\",\"is_target\",\"proba_1\",\"gene_ppi_degree\",\"disease_split_key\"])\nsc3[\"dq\"]=pd.qcut(sc3.gene_ppi_degree.rank(method=\"first\"),5,labels=False)\ntop=sc3.sort_values(\"proba_1\",ascending=False).groupby(\"disease_index\").head(50)\nprint(\"HUBHDR|degree_quintile|pool_share_%|top50_share_%|over_rep\")\nfor q in range(5):\n    ps=100*(sc3.dq==q).mean(); ts=100*(top.dq==q).mean()\n    print(f\"HUB|Q{q+1}|{ps:6.2f}|{ts:6.2f}|{ts/ps:5.2f}x\")\nq5=100*(top.dq==4).mean()/(100*(sc3.dq==4).mean())\nprint(f\"HUBTOP|highest-degree quintile over-representation at top-50: {q5:.2f}x\")\nprint(f\"\\nSUMMARY|{len(FAIL)} STALE\")\nfor nm,d,l in FAIL: print(f\"FAILED|{nm}|doc={d}|live={l}\")\n\n\n# ==== header metrics \u2014 POOLED and PER-SPLIT-KEY\n# The two figures the document's header quotes and nothing asserted. Their absence is why the status\n# line once mixed m7's macro with m3's pooled. Carried over from the repo mirror, which had them and\n# the DSS copy did not.\ndef _auc(y,s_):\n    npos=int(y.sum()); nneg=len(y)-npos\n    if npos==0 or nneg==0: return float(\"nan\")\n    r=pd.Series(s_).rank(method=\"average\").to_numpy()   # ties -> average ranks\n    return (r[y==1].sum()-npos*(npos+1)/2)/(npos*nneg)\n\n_pooled=_auc(sc3.is_target.to_numpy(), sc3.proba_1.to_numpy())\ndef _macro(key):\n    d=sc3[[\"is_target\",\"proba_1\",key]].copy()\n    d[\"r\"]=d.groupby(key)[\"proba_1\"].rank(method=\"average\")\n    g=d.groupby(key).agg(npos=(\"is_target\",\"sum\"), n=(\"is_target\",\"size\"))\n    g[\"rsum\"]=d[d.is_target==1].groupby(key)[\"r\"].sum().reindex(g.index).fillna(0.0)\n    g[\"nneg\"]=g.n-g.npos\n    g=g[(g.npos>0)&(g.nneg>0)]\n    return ((g.rsum-g.npos*(g.npos+1)/2)/(g.npos*g.nneg)).mean(), len(g)\n_sk,_nsk=_macro(\"disease_split_key\")\nprint(f\"HEADER|pooled={_pooled:.4f}|per_split_key={_sk:.4f}|split_keys={_nsk}\")\ncheck(\"header pooled AUC\",0.8932,round(float(_pooled),4),tol=0.0006,fmt=\"{:.4f}\")\ncheck(\"header per-split-key AUC\",0.8046,round(float(_sk),4),tol=0.0006,fmt=\"{:.4f}\")\n\nprint(f\"\\nSUMMARY|{len(FAIL)} STALE\")\nfor nm,_d,_l in FAIL: print(f\"FAILED|{nm}|doc={_d}|live={_l}\")\n\n\nimport pandas as _pd\n_rows=[{\"check\":n,\"documented\":str(dd),\"live\":str(l),\"status\":\"STALE\"} for n,dd,l in FAIL] or [{\"check\":\"(all)\",\"documented\":\"-\",\"live\":\"-\",\"status\":\"PASS\"}]\ndataiku.Dataset(\"nb3_verify\").write_with_schema(_pd.DataFrame(_rows))\nprint(f\"VERIFY|failures={len(FAIL)}\")\n\n",
-  "cypher": null,
-  "inputs": [
-   "drug_target_benchmark",
-   "family_auc_by_family",
-   "scored_champion",
-   "validation_auc_by_disease"
-  ],
-  "outputs": [
-   "nb3_verify"
-  ],
-  "type": "python"
  },
  "window_family_rank": {
   "code": null,
