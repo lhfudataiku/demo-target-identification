@@ -37,23 +37,58 @@ for gt in ["approved","investigational","any"]:
 # ==== 8.3  FIGURE 1 — discovery lift vs K, by ground truth ====
 # Replaces the per-K table in section 8.3: the shape (monotone decay toward a ~4x floor) is the point,
 # and a table of 30 numbers hides it.
-fig,ax=plt.subplots(1,2,figsize=(13,4.4))
-for gt,c in [("approved","#c1121f"),("investigational","#4a7ba7"),("any","#6b9080")]:
-    s_=nde[nde.ground_truth==gt]
-    if not len(s_): continue
-    lifts=[s_[f"lift_top{K}"].replace([np.inf],np.nan).mean() for K in KS]
-    hits=[int(s_[f"hits_top{K}"].sum()) for K in KS]
-    ax[0].plot(KS,lifts,"o-",color=c,label=f"{gt} (n={len(s_)})")
-    ax[1].plot(KS,hits,"o-",color=c,label=gt)
-ax[0].axhline(1,color="#888",ls="--",lw=1,label="chance")
-ax[0].set_xscale("log"); ax[0].set_xticks(KS); ax[0].set_xticklabels(KS)
-ax[0].set_xlabel("top-K novel candidates"); ax[0].set_ylabel("lift over novel base rate")
-ax[0].set_title("Discovery lift decays toward a ~4x floor"); ax[0].legend()
-ax[1].set_xscale("log"); ax[1].set_xticks(KS); ax[1].set_xticklabels(KS)
-ax[1].set_xlabel("top-K novel candidates"); ax[1].set_ylabel("drug-linked targets recovered")
-ax[1].set_title("Absolute recovery keeps rising"); ax[1].legend()
-plt.tight_layout(); plt.savefig("/tmp/nb4_fig1_discovery_lift.png",dpi=110)
-print("PLOT|nb4_fig1_discovery_lift.png")
+from io import BytesIO
+from IPython.display import Image, display
+
+fig, ax = plt.subplots(1, 2, figsize=(13, 4.4))
+
+for gt, c in [
+    ("approved", "#c1121f"),
+    ("investigational", "#4a7ba7"),
+    ("any", "#6b9080"),
+]:
+    s_ = nde[nde["ground_truth"] == gt]
+    if s_.empty:
+        continue
+
+    lifts = [
+        s_[f"lift_top{K}"].replace([np.inf, -np.inf], np.nan).mean()
+        for K in KS
+    ]
+    hits = [int(s_[f"hits_top{K}"].sum()) for K in KS]
+
+    ax[0].plot(KS, lifts, "o-", color=c, label=f"{gt} (n={len(s_)})")
+    ax[1].plot(KS, hits, "o-", color=c, label=gt)
+
+ax[0].axhline(1, color="#888", ls="--", lw=1, label="chance")
+ax[0].set_xscale("log")
+ax[0].set_xticks(KS)
+ax[0].set_xticklabels(KS)
+ax[0].set(
+    xlabel="Top-K novel candidates",
+    ylabel="Lift over novel base rate",
+    title="Discovery lift decays toward a ~4× floor",
+)
+ax[0].legend()
+
+ax[1].set_xscale("log")
+ax[1].set_xticks(KS)
+ax[1].set_xticklabels(KS)
+ax[1].set(
+    xlabel="Top-K novel candidates",
+    ylabel="Drug-linked targets recovered",
+    title="Absolute recovery keeps rising",
+)
+ax[1].legend()
+
+fig.tight_layout()
+
+plot_buffer = BytesIO()
+fig.savefig(plot_buffer, format="png", dpi=130, bbox_inches="tight")
+plot_buffer.seek(0)
+display(Image(data=plot_buffer.getvalue()))
+
+plt.close(fig)
 
 # ==== 8.3  the ADOPTED label row, recomputed on the recipe's own methodology ====
 # This row of the section 8.3 table (curated known_drug >= 0.8) had NO source: compute_novel_discovery_eval

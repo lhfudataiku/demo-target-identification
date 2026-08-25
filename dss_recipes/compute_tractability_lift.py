@@ -41,12 +41,12 @@ truth = (ind.dropna(subset=["disease_index"])[["drug", "disease_index"]]
 truth["is_validated"] = 1
 
 # Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46
-df = dataiku.Dataset("scored_m3").get_dataframe(
+df = dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target"])
 df = df[df.disease_index.isin(set(truth.disease_index))]
 df = df.merge(truth, on=["disease_index", "gene_index"], how="left")
 df["is_validated"] = df.is_validated.fillna(0).astype(int)
-drg = dataiku.Dataset("enriched_gene_druggability").get_dataframe()
+drg = dataiku.Dataset("enriched_gene_druggability_v2").get_dataframe()
 df = df.merge(drg, on="gene_index", how="left")
 
 base_a = df.is_target.mean()

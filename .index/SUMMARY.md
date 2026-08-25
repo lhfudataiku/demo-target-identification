@@ -21,26 +21,26 @@ flags them as historical dropped.
 | `.codex/skills/target-id/references/number-update.md` | 0 | 1 | 4 | 5 |
 | `AGENTS.md` | 0 | 1 | 8 | 9 |
 | `CLAUDE.md` | 0 | 1 | 8 | 9 |
-| `DECISIONS.md` | 2 | 53 | 356 | 411 |
+| `DECISIONS.md` | 2 | 59 | 350 | 411 |
 | `docs/README.md` | 0 | 0 | 1 | 1 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
-| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 58 | 200 | 258 |
-| `docs/demo/DEMO_NARRATIVE.md` | 1 | 14 | 20 | 35 |
+| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 114 | 246 | 360 |
+| `docs/demo/DEMO_NARRATIVE.md` | 1 | 17 | 17 | 35 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
 | `docs/platform/DSS_CHEATSHEET.md` | 0 | 1 | 6 | 7 |
-| `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 18 | 104 | 122 |
+| `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 19 | 103 | 122 |
 | `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 16 | 49 | 65 |
-| `docs/prioritizer/TARGET_PRIORITIZER.md` | 46 | 60 | 658 | 764 |
+| `docs/prioritizer/TARGET_PRIORITIZER.md` | 46 | 78 | 640 | 764 |
 | `docs/reference/DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
 | `docs/reference/RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
-| `notebooks/README.md` | 0 | 0 | 2 | 2 |
-| **total** | **49** | **241** | **1667** | **1957** |
+| `notebooks/README.md` | 0 | 2 | 2 | 4 |
+| **total** | **49** | **327** | **1685** | **2061** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**393 rows.** Of 1667 total orphans, these are the model-dependent ones: the numbers that move
+**405 rows.** Of 1685 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -66,8 +66,6 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/DASHBOARD_DESIGN.md:317` | 4 | 11,673 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
 | `docs/demo/DASHBOARD_DESIGN.md:317` | 4 | 7,951 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
 | `docs/demo/DASHBOARD_DESIGN.md:317` | 4 | 7,274 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
-| `docs/demo/DASHBOARD_DESIGN.md:371` | 4 | 17.3 | \| The harder version \| known targets only, by connectivity quintile: score 0.59 → 0.79,  |
-| `docs/demo/DASHBOARD_DESIGN.md:371` | 4 | 57.0 | \| The harder version \| known targets only, by connectivity quintile: score 0.59 → 0.79,  |
 | `docs/demo/DASHBOARD_DESIGN.md:381` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
 | `docs/demo/DASHBOARD_DESIGN.md:381` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
 | `docs/demo/DASHBOARD_DESIGN.md:383` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
@@ -87,26 +85,28 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/DASHBOARD_DESIGN.md:1126` | 13.4 | 0.0189 | a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which  |
 | `docs/demo/DASHBOARD_DESIGN.md:1126` | 13.4 | 9.4 | a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which  |
 | `docs/demo/DASHBOARD_DESIGN.md:1181` | 13.7 | 0.0001 | Every value agrees to ≤ 0.0001. The interval is therefore **pure arithmetic on `auc`, `n_p |
-| `docs/demo/DASHBOARD_DESIGN.md:1396` | 14.5 | 17.3 | \| hub-bias meter \| `scored_champion` \| 0.59 → 0.79 by degree quintile, 17.3% → 57.0% \| |
-| `docs/demo/DASHBOARD_DESIGN.md:1396` | 14.5 | 57.0 | \| hub-bias meter \| `scored_champion` \| 0.59 → 0.79 by degree quintile, 17.3% → 57.0% \| |
-| `docs/demo/DEMO_NARRATIVE.md:32` | - | 13,126 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
-| `docs/demo/DEMO_NARRATIVE.md:32` | - | 12,364 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
-| `docs/demo/DEMO_NARRATIVE.md:32` | - | 8,615 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
-| `docs/demo/DEMO_NARRATIVE.md:32` | - | 7,877 | 13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200  |
-| `docs/demo/DEMO_NARRATIVE.md:265` | 7 | 66.0 | **66.0%** (ranks 1–10) → **48.0%** (41–50). **That is calibration evidence, not a novelty  |
-| `docs/demo/DEMO_NARRATIVE.md:265` | 7 | 48.0 | **66.0%** (ranks 1–10) → **48.0%** (41–50). **That is calibration evidence, not a novelty  |
-| `docs/overview/PROJECT_CONTEXT.md:106` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
-| `docs/overview/PROJECT_CONTEXT.md:228` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `docs/overview/PROJECT_CONTEXT.md:228` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `docs/overview/PROJECT_CONTEXT.md:229` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `docs/overview/PROJECT_CONTEXT.md:229` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `docs/overview/PROJECT_CONTEXT.md:240` | 4.6 | 129,253 | solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying |
-| `docs/overview/PROJECT_CONTEXT.md:273` | 4.6 | 1,802 | \| 2026-08-17 \| **Discovery adopted as a third reported axis, and it is the strongest res |
-| `docs/prioritizer/FEATURE_AUDIT.md:71` | 3 | 0.646 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
-| `docs/prioritizer/FEATURE_AUDIT.md:71` | 3 | 0.567 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
-| `docs/prioritizer/FEATURE_AUDIT.md:71` | 3 | 0.328 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
+| `docs/demo/DASHBOARD_DESIGN.md:1946` | 21.5 | 0.8623 | \| `validation_auc_by_disease` \| 670 rows, 668 scored, **macro 0.8230, median 0.8623** —  |
+| `docs/demo/DASHBOARD_DESIGN.md:2089` | 23.2 | 0.6911 | And `models.tsv`: **m3-f12 = 0.6911, m7-f14 (champion) = 0.6886.** |
+| `docs/demo/DASHBOARD_DESIGN.md:2110` | 23.3 | 0.6911 | \| `nb1`'s three figures \| the assertion values pinned to the champion (0.6886, not 0.691 |
+| `docs/demo/DASHBOARD_DESIGN.md:2149` | 24.2 | 3,958,921 | **1. `scored_champion` cannot be read whole in a container.** 3,958,921 rows killed the pr |
+| `docs/demo/DASHBOARD_DESIGN.md:2288` | 26.1 | 0.8197 | \| 10.1 macro per-disease AUC \| 0.8197 \| **0.8230** \| **m3-f12** (`models.tsv` assoc_au |
+| `docs/demo/DASHBOARD_DESIGN.md:2289` | 26.1 | 0.7976 | \| 7.3 per-family macro AUC \| 0.7976 \| **0.8009** \| m3-era \| |
+| `docs/demo/DASHBOARD_DESIGN.md:2290` | 26.1 | 0.024 | \| 7.4 orthogonality pearson r \| +0.024 \| **+0.002** \| m3-era \| |
+| `docs/demo/DASHBOARD_DESIGN.md:2291` | 26.1 | 0.0006 | \| 7.4 orthogonality R² \| 0.0006 \| **0.0000** \| m3-era \| |
+| `docs/demo/DASHBOARD_DESIGN.md:2297` | 26.1 | 0.641 | \| 6.1 dwpc_GPGD single-feature AUC \| 0.641 \| **0.702** \| \| |
+| `docs/demo/DASHBOARD_DESIGN.md:2297` | 26.1 | 0.702 | \| 6.1 dwpc_GPGD single-feature AUC \| 0.641 \| **0.702** \| \| |
+| `docs/demo/DASHBOARD_DESIGN.md:2298` | 26.1 | 0.601 | \| 6.1 dwpc_GGD single-feature AUC \| 0.601 \| **0.674** \| \| |
+| `docs/demo/DASHBOARD_DESIGN.md:2298` | 26.1 | 0.674 | \| 6.1 dwpc_GGD single-feature AUC \| 0.601 \| **0.674** \| \| |
+| `docs/demo/DASHBOARD_DESIGN.md:2371` | 27.2 | 0.8197 | \| 3 \| `0.8197` → **`0.8230`** \| the *documented value* in `check("10.1 macro per-diseas |
+| `docs/demo/DASHBOARD_DESIGN.md:2371` | 27.2 | 0.0006 | \| 3 \| `0.8197` → **`0.8230`** \| the *documented value* in `check("10.1 macro per-diseas |
+| `docs/demo/DASHBOARD_DESIGN.md:2372` | 27.2 | 0.7976 | \| 5 \| `0.7976` → **`0.8009`** \| `check("7.3 per-family macro AUC", …)` \| |
+| `docs/demo/DASHBOARD_DESIGN.md:2373` | 27.2 | 0.024 | \| 7 \| `0.024` → **`0.002`** \| `check("7.4 orthogonality pearson r", …)` \| |
+| `docs/demo/DASHBOARD_DESIGN.md:2375` | 27.2 | 0.6911 | \| 9 \| `0.6911` → **`0.6886`** \| `check("7.4 drug-target macro AUC", …)`; its `tol=0.000 |
+| `docs/demo/DASHBOARD_DESIGN.md:2375` | 27.2 | 0.0006 | \| 9 \| `0.6911` → **`0.6886`** \| `check("7.4 drug-target macro AUC", …)`; its `tol=0.000 |
+| `docs/demo/DASHBOARD_DESIGN.md:2429` | 28.1 | 0.8197 | 1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, |
+| `docs/demo/DASHBOARD_DESIGN.md:2429` | 28.1 | 0.7976 | 1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, |
 
-*333 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*345 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 

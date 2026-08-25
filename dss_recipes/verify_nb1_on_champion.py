@@ -1,7 +1,8 @@
-# nb1 — Feature engineering & model configuration.  Backs sections 4.1, 4.2, 6.1, 6.2, 6.3.
-# Sampled deliberately: the full 2.19M x 31 frame plus a Spearman matrix OOM-killed the kernel
-# (exit 137). A 25% random sample resolves null rates to ~0.1pp and correlations to ~0.005, which is
-# far finer than any claim in the document.
+import matplotlib
+matplotlib.use("Agg")
+def display(*a, **k):
+    for x in a: print(x)
+
 import dataiku, numpy as np, pandas as pd
 FAIL=[]
 def check(name,doc,live,tol=0.0,fmt="{:,}"):
@@ -18,8 +19,6 @@ cols=["disease_index","gene_index","is_target"]+FEATS12+REJ
 tr=dataiku.Dataset("psplit_train_set").get_dataframe(columns=cols, sampling="random", ratio=0.25)
 print(f"FEAT|sample={len(tr):,} rows ({len(cols)} cols) | positives={int(tr.is_target.sum()):,} "
       f"({100*tr.is_target.mean():.3f}%)")
-
-# ==== 4.1 / 4.2  null rate by label class -- the leak-2 channel ====
 pos=tr.is_target==1
 rows=[{"feature":c,"null_pos_pct":100*tr.loc[pos,c].isna().mean(),
        "null_neg_pct":100*tr.loc[~pos,c].isna().mean(),"in_model":c in FEATS12}
@@ -38,8 +37,6 @@ print(f"NULLMIN|worst gap {w:+.1f} pp ({nulls.iloc[0].feature}) | features <= -2
 w_model = float(nulls[nulls.in_model].gap_pp.min())
 print("NULLMODEL|worst gap among MODEL features = %+.1f pp" % w_model)
 check("6.2 worst null gap pp (model features)",-31.7,round(w_model,1),tol=1.5,fmt="{:+.1f}")
-
-# ==== 6.1  collinearity: the hub cluster ====
 HUB=[c for c in ["gene_ppi_degree","degree","eigenvector_centrality","pagerank","triangles",
                  "clustering_coefficient","module_size"] if c in tr.columns]
 cm=tr[HUB].sample(n=min(120_000,len(tr)),random_state=1337).corr(method="spearman")
@@ -48,33 +45,39 @@ for a in HUB: print("COL|"+a+"|"+"|".join(f"{cm.loc[a,b]:+.3f}" for b in HUB))
 top=sorted(((abs(cm.loc["degree",b]),b) for b in HUB if b!="degree"),reverse=True)[:3]
 print("DEGTOP3|"+", ".join(f"{b}={v:.3f}" for v,b in top))
 check("6.1 highest |rho| vs degree",0.975,round(float(top[0][0]),3),tol=0.03,fmt="{:.3f}")
+from io import BytesIO
+from IPython.display import Image, display
 
-# FIGURE — the hub cluster as a heatmap. Brought across from the DSS notebook, which is ahead of this
-# mirror on presentation: a 7x7 correlation matrix reads far better as a picture than as 21 printed
-# pairs, and the section's whole point is that these features are near-duplicates of each other.
 try:
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import seaborn as sns
+
     fig, ax = plt.subplots(figsize=(9, 7))
-    sns.heatmap(cm, annot=True, fmt=".3f", cmap="vlag", center=0, vmin=-1, vmax=1,
-                square=True, linewidths=0.5,
-                cbar_kws={"label": "Spearman correlation (rho)"}, ax=ax)
+    sns.heatmap(
+        cm, annot=True, fmt=".3f", cmap="vlag", center=0,
+        vmin=-1, vmax=1, square=True, linewidths=0.5,
+        cbar_kws={"label": "Spearman correlation (rho)"},
+        ax=ax,
+    )
     ax.set_title("Hub / network feature correlations")
-    plt.tight_layout(); plt.savefig("/tmp/nb1_hub_corr.png", dpi=110)
-    print("PLOT|nb1_hub_corr.png")
+    fig.tight_layout()
+
+    plot_buffer = BytesIO()
+    fig.savefig(plot_buffer, format="png", dpi=110, bbox_inches="tight")
+    plot_buffer.seek(0)
+    display(Image(data=plot_buffer.getvalue()))
+
+    plt.close(fig)
+
 except ImportError as _e:
     print(f"PLOT|skipped — {_e}")
-
-# ==== 6.1  gene-only vs pair-level: can the feature answer "for THIS disease"? ====
 print("VARHDR|feature|pct_genes_varying_across_diseases")
 for c in ["gene_ppi_degree","gene_n_pathways","gene_n_diseases","dwpc_GGD","dwpc_GPGD","module_size"]:
     if c in tr.columns:
         nun=tr.groupby("gene_index")[c].nunique(dropna=True)
         print(f"VAR|{c:22s}|{100*(nun>1).mean():6.2f}%")
-
-# ==== 6.1  single-feature within-disease AUC ====
 sm=tr.sample(n=min(250_000,len(tr)),random_state=7)
 def macro_auc(df,col):
     out=[]
@@ -93,7 +96,6 @@ check("6.1 dwpc_GPGD single-feature AUC",0.718,round(sf.get("dwpc_GPGD",0),3),to
 check("6.1 dwpc_GGD single-feature AUC",0.669,round(sf.get("dwpc_GGD",0),3),tol=0.04,fmt="{:.3f}")
 del tr, sm
 
-# ==== 6.3  the threshold is not the ranking ====
 sc=dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index","is_target","proba_1"])
 ob=sc[sc.disease_index==37143]
@@ -112,3 +114,10 @@ check("6.3 F1 threshold",0.875,round(thr,3),tol=0.08,fmt="{:.3f}")
 check("6.3 obesity known targets",762,tot)
 print(f"\nSUMMARY|{len(FAIL)} STALE")
 for n,d,l in FAIL: print(f"FAILED|{n}|doc={d}|live={l}")
+
+
+import pandas as _pd
+_rows=[{"check":n,"documented":str(dd),"live":str(l),"status":"STALE"} for n,dd,l in FAIL] or [{"check":"(all)","documented":"-","live":"-","status":"PASS"}]
+dataiku.Dataset("nb1_verify").write_with_schema(_pd.DataFrame(_rows))
+print(f"VERIFY|failures={len(FAIL)}")
+

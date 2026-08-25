@@ -153,8 +153,11 @@ def refresh():
     # A python recipe that is not mirrored in dss_recipes/ is invisible to review AND was invisible
     # to this scan until the snapshot started carrying `code`. compute_enriched_rwr_score_1 carries a
     # gate and was missed for exactly that reason.
+    # `_sibling_recipes` is a LIST and `_models` / `_schemas` are dicts, so the meta keys must be
+    # skipped before calling .get() -- otherwise --refresh dies with AttributeError AFTER the
+    # snapshot has already been written, leaving the index half-refreshed and the exit code 0.
     unmirrored = [n for n, r in sorted(snap.items())
-                  if r.get("code") and not os.path.exists(
+                  if not n.startswith("_") and r.get("code") and not os.path.exists(
                       os.path.join(ROOT, "dss_recipes", n + ".py"))]
     for n in unmirrored:
         open(os.path.join(ROOT, "dss_recipes", n + ".py"), "w").write(snap[n]["code"])
@@ -166,7 +169,7 @@ def refresh():
     os.makedirs(CYPHER_DIR, exist_ok=True)
     n_cy = 0
     for name, r in sorted(snap.items()):
-        if not r.get("cypher"):
+        if name.startswith("_") or not r.get("cypher"):
             continue
         body = r["cypher"].replace("\\n", "\n")
         hdr = ("// MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:\n"

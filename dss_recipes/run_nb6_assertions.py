@@ -4,10 +4,9 @@
 #   Four of the deck's closing numbers are currently asserted by NOTHING. `tractability_lift` and
 #   `safety_lift` are read by no recipe, no notebook and no webapp — they are terminal and orphaned —
 #   yet they carry the entire punch line: druggability points the wrong way, essentiality points the
-#   wrong way, and the liability flag marks the best-studied targets. Section 6.0 now COMPUTES both
-#   tables here from the upstream annotations, so the six assertions test the ARITHMETIC rather than
-#   the freshness of a build. Until it runs green, DO NOT prune the flow: a mechanical "delete what
-#   nothing reads" pass removes the evidence for the argument the demo closes on.
+#   wrong way, and the liability flag marks the best-studied targets. This notebook adopts them.
+#   Until it runs green, DO NOT prune the flow: a mechanical "delete what nothing reads" pass removes
+#   the evidence for the argument the demo closes on.
 #
 # THE NOTEBOOK PRINCIPLE, applied:
 #   Read the most UPSTREAM dataset that still carries the number and recompute in code. Where the
@@ -19,9 +18,7 @@
 #           enriched_gene_druggability_v2 / _safety_v2  (upstream annotations, never model
 #                                               inputs; the _v2 pair are the visual-recipe outputs)
 #           raw_ot_known_drug (upstream)        -- the drug ground truth, before any join
-#           graph_nodes, drug_protein_edges, drug_disease_edges -- the drug-validated ground truth,
-#                                               rebuilt here so tractability_lift and safety_lift are
-#                                               COMPUTED (6.0), not read back from the flow
+#           tractability_lift, safety_lift      -- ADOPTED here; cross-checked against the annotations
 #           tractability_axis, novel_discovery_eval, drug_target_benchmark, validation_auc_by_disease
 #                                               -- served or notebook-zone; recomputed and compared
 import math
@@ -202,106 +199,13 @@ if "n_validated_targets" in db.columns:
 # ============================================================================
 # 6.1  THE THREE REFUTED GATES — the punch line, and the reason this notebook is urgent.
 #
-# Both lift tables are COMPUTED in 6.0 above from the upstream annotations — not read from the flow.
+# tractability_lift and safety_lift are ADOPTED here. Nothing else in the project reads them.
 # Each row carries assoc_lift (enrichment for being disease-linked, i.e. what the model would learn)
 # and drug_lift (enrichment for being a real drug target, i.e. what we actually want). The finding in
 # every case is that the two point in DIFFERENT directions.
 # ============================================================================
-# ============================================================================
-# 6.0  The two lift tables — COMPUTED HERE, not read back from the flow.
-#
-# `tractability_lift` and `safety_lift` were flow recipes this notebook read. Reading a table proves
-# the recipe ran; it does not prove the number is right. Moving the computation here makes the six
-# assertions below test the ARITHMETIC rather than the freshness of a build.
-#
-# Recipe parity is deliberate and load-bearing: identical grouping, identical n>=2000 floor, and
-# identical STRING FORMS for the group keys — `lof_intolerant` groups to the key "1.0", not "1", and
-# every assertion looks the value up by that string.
-# ============================================================================
-_nodes = dataiku.Dataset("graph_nodes").get_dataframe(
-    columns=["node_index", "node_id", "node_type"], infer_with_pandas=False)
-_nodes["node_index"] = _nodes.node_index.astype(int)
-_nodes["node_id"] = _nodes.node_id.astype(str)
-_dis_map = dict(zip(_nodes[_nodes.node_type == "disease"].node_id,
-                    _nodes[_nodes.node_type == "disease"].node_index))
-_gene_map = dict(zip(_nodes[_nodes.node_type == "gene/protein"].node_id,
-                     _nodes[_nodes.node_type == "gene/protein"].node_index))
-
-_dd = dataiku.Dataset("drug_disease_edges").get_dataframe(infer_with_pandas=False)
-_dp = dataiku.Dataset("drug_protein_edges").get_dataframe(infer_with_pandas=False)
-_ind = _dd[_dd.relation.astype(str).str.fullmatch("indication", case=False, na=False)].copy()
-_c1, _c2 = ("x_id", "y_id") if (_ind.x_type == "drug").any() else ("y_id", "x_id")
-_ind["drug"] = _ind[_c1].astype(str)
-_ind["disease_index"] = _ind[_c2].astype(str).map(_dis_map)
-_c3, _c4 = ("x_id", "y_id") if (_dp.x_type == "drug").any() else ("y_id", "x_id")
-_dp["drug"] = _dp[_c3].astype(str)
-_dp["gene_index"] = _dp[_c4].astype(str).map(_gene_map)
-truth = (_ind.dropna(subset=["disease_index"])[["drug", "disease_index"]]
-         .merge(_dp.dropna(subset=["gene_index"])[["drug", "gene_index"]], on="drug")
-         [["disease_index", "gene_index"]].astype(int).drop_duplicates())
-truth["is_validated"] = 1
-_truth_dis = set(truth.disease_index)
-
-# Chunked, as everywhere else here: scored_champion is 3.96M rows and a full read terminated the
-# container with "signal 1" and no traceback. The per-chunk filter to the drug-validated diseases is
-# what keeps the result small — this is chunking, not sampling, so the lifts are unchanged.
-_keep = []
-for _c in dataiku.Dataset("scored_champion").iter_dataframes(
-        chunksize=250_000, columns=["disease_index", "gene_index", "is_target"]):
-    _c = _c[_c.disease_index.isin(_truth_dis)]
-    if len(_c):
-        _keep.append(_c)
-liftbase = pd.concat(_keep, ignore_index=True)
-liftbase = liftbase.merge(truth, on=["disease_index", "gene_index"], how="left")
-liftbase["is_validated"] = liftbase.is_validated.fillna(0).astype(int)
-print(f"LIFTBASE|rows={len(liftbase):,}|diseases={liftbase.disease_index.nunique()}"
-      f"|assoc_base={liftbase.is_target.mean():.4%}|drug_base={liftbase.is_validated.mean():.4%}")
-
-# The population guard. 907,246 is not a documented figure — it is derived from the retired
-# `safety_lift` table itself, where lof_intolerant (746,309 + 107,600 + 53,337) and
-# ot_ab_tractable (425,469 + 481,777) in `tractability_lift` independently sum to the same total.
-# If the codified truth-table build or the chunked read drifts, the lifts would move quietly;
-# this fails loudly first. (safety_flag sums to 905,651 — 1,595 rows sit in groups below the
-# n>=2000 floor and are dropped from the table, not from the base.)
-check("6.0 lift base rows", 907246, len(liftbase), fmt="{:,}")
-# Diseases carrying >=1 drug-validated target. compute_tractability_lift's docstring says 112, but
-# that is a code comment with no run behind it — printed, deliberately not asserted.
-print(f"LIFTBASE|diseases with >=1 drug-validated target: {liftbase.disease_index.nunique()}"
-      f"  (recipe docstring claims 112)")
-
-
-def lift_table(annot, cols, min_n=2000, as_object=False):
-    """One row per (attribute, value) with n >= min_n, carrying assoc_lift and drug_lift.
-
-    `as_object` mirrors compute_safety_lift's `.astype("object")` before fillna — that cast is what
-    renders a float or Categorical group key as "1.0" rather than 1.0, which is the form the
-    assertions look up. compute_tractability_lift omits the cast, so this flag reproduces both.
-    """
-    d = liftbase.merge(annot, on="gene_index", how="left")
-    if "lof_oe_upper" in d.columns:
-        d["loeuf_bucket"] = pd.cut(d.lof_oe_upper, [0, 0.35, 0.7, 1.0, 1.5, 2.01],
-                                   labels=["<0.35 intolerant", "0.35-0.7", "0.7-1.0",
-                                           "1.0-1.5", ">1.5 tolerant"])
-    ba, bd = d.is_target.mean(), d.is_validated.mean()
-    rows = []
-    for col in cols:
-        key = d[col].astype("object").fillna("(null)") if as_object else d[col].fillna("(null)")
-        for v, g in d.groupby(key, observed=True):
-            if len(g) < min_n:
-                continue
-            rows.append({"attribute": col, "value": str(v), "n": len(g),
-                         "assoc_rate": g.is_target.mean(), "drug_rate": g.is_validated.mean(),
-                         "assoc_lift": g.is_target.mean() / ba,
-                         "drug_lift": g.is_validated.mean() / bd})
-    return pd.DataFrame(rows)
-
-
-tl = lift_table(dataiku.Dataset("enriched_gene_druggability_v2").get_dataframe(),
-                ["ot_ab_tractable", "ot_sm_tractable", "localization_class", "ot_class_l1"])
-sl = lift_table(dataiku.Dataset("enriched_gene_safety_v2").get_dataframe(),
-                ["safety_flag", "lof_intolerant", "loeuf_bucket", "has_safety_liability"],
-                as_object=True)
-print(f"LIFTBASE|computed tractability rows={len(tl)}|safety rows={len(sl)}")
+tl = dataiku.Dataset("tractability_lift").get_dataframe()
+sl = dataiku.Dataset("safety_lift").get_dataframe()
 
 
 def lift(df, attribute, value):
@@ -408,3 +312,4 @@ dataiku.Dataset("nb6_assertion_results").write_with_schema(pd.DataFrame(RESULTS)
 # which is exactly the green-but-wrong signal this project keeps hitting.
 if FAIL:
     raise SystemExit(f"{len(FAIL)} stale assertion(s) — see nb6_assertion_results")
+

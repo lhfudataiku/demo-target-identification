@@ -149,7 +149,7 @@ for k, v in rc.items():
     print(f"  {k:52s} {v:6,d}  ({100*v/len(miss):5.1f}%)")
 
 # ---- 3. modality bias ------------------------------------------------------------------
-dr = dataiku.Dataset("enriched_gene_druggability").get_dataframe()
+dr = dataiku.Dataset("enriched_gene_druggability_v2").get_dataframe()
 keep = [c for c in ["gene_index", "ot_sm_tractable", "ot_ab_tractable", "ot_class_l1",
                     "druggability_class"] if c in dr.columns]
 dr = dr[keep].copy()
@@ -199,3 +199,4 @@ miss_out["gene"] = miss_out.gene_index.map(gname)
 miss_out["disease"] = miss_out.disease_index.map(dname)
 dataiku.Dataset("pool_reachability").write_with_schema(per)
 dataiku.Dataset("pool_unreachable_targets").write_with_schema(miss_out)
+

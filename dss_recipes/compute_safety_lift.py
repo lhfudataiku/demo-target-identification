@@ -45,12 +45,12 @@ truth = (ind.dropna(subset=["disease_index"])[["drug", "disease_index"]]
          [["disease_index", "gene_index"]].astype(int).drop_duplicates())
 truth["is_validated"] = 1
 
-df = dataiku.Dataset("scored_m3").get_dataframe(
+df = dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target"])
 df = df[df.disease_index.isin(set(truth.disease_index))]
 df = df.merge(truth, on=["disease_index", "gene_index"], how="left")
 df["is_validated"] = df.is_validated.fillna(0).astype(int)
-saf = dataiku.Dataset("enriched_gene_safety").get_dataframe()
+saf = dataiku.Dataset("enriched_gene_safety_v2").get_dataframe()
 df = df.merge(saf, on="gene_index", how="left")
 
 # LOEUF decile makes the graded signal readable as buckets

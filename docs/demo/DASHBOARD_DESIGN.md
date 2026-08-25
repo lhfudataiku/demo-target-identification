@@ -1004,7 +1004,7 @@ Six new items; five old gaps leave the webapp with acts 5–6.
 
 | # | for | build | size |
 |---|---|---|---|
-| **A** | §12.2 | seven Group recipes → `graph_relation_counts`, `graph_node_type_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence`, `calibration_histograms`, `shap_driver_frequency` | trivial, 3–40 rows each |
+| **A** | §12.2 | six Group recipes → `graph_relation_counts`, `graph_node_type_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence`, `calibration_histograms`, `shap_driver_frequency` | trivial, 3–40 rows each |
 | **B** | §12.2 | move `dashboard_candidates` to Snowflake (or parquet + partition by `disease_index`) | one recipe output change |
 | **C** | act 2 Sankey | `pool_route_counts` — GGD / GPGD / GCD admissions and the union, currently only in `nb2` §5.2 | one recipe, 4 rows |
 | **D** | act 3 dropdown | replace the hardcoded `PANEL` dict in `compute_breast_panel.py` with a `disease_family_id` join; same for `breast_panel_overlap` | two recipe edits |
@@ -1322,7 +1322,7 @@ streaming, no per-request computation.
 | zone | datasets | rows |
 |---|---|--:|
 | **`A1 Evidence base (serving)`** | `graph_node_type_counts` · `graph_node_source_counts` · `graph_relation_counts` · `graph_ppi_provenance` · `graph_label_evidence` | 8 · 7 · 18 · 7 · 3 |
-| **`A2 Calibration (serving)`** | `disease_eligibility` · `pool_route_counts` · `split_audit_2` · `validation_auc_ci` · `shap_driver_frequency` · `persona_enrichment` | 3 · 4 · 3 · 670 · 14 · 670 |
+| **`A2 Calibration (serving)`** | `disease_eligibility` · `split_audit_2` · `validation_auc_ci` · `shap_driver_frequency` · `persona_enrichment` | 2 · 3 · 670 · 14 · 670 |
 | **`A3 Therapeutic area (serving)`** | `family_panel` · `top50_membership` · `pairwise_overlap` · `disease_hierarchy_annotation` | ~1.1k · ~650 · ~1.5k · 27k |
 | **`A4 Shortlist (serving)`** | `dashboard_candidates` · `dashboard_persona_trust` | 129k · 13 |
 
@@ -1426,6 +1426,13 @@ cleanup: **four of the deck's closing numbers are currently asserted by nothing.
   this is a second, separate reason to distrust them.
 - `dku dataset count` scans the file — on `scored_champion` (478 MB CSV) it exceeds a two-minute
   timeout. Use `dku dataset info`, which reads the cached row count and the last-build stamp.
+- ⚠ **`dku job run` returns as soon as the job is *queued*, not when it finishes.** Chaining builds by
+  sleeping a guess silently produces wrong data: `compute_shap_driver_frequency` failed outright with
+  *"Root path of the dataset does not exist"*, and `compute_pairwise_pairs` did something worse — it
+  **succeeded with 672 rows instead of 2,882**, because its inputs were still being written. A join
+  that reads a half-written input does not error; it under-joins. **Poll `dku job status` until the
+  state leaves `RUNNING` before starting the next link**, or put the whole chain in one job with
+  repeated `--target` and let DSS order it.
 
 
 ---
@@ -1516,3 +1523,1101 @@ Once nb2, nb3 and nb4 compute rather than read, these become deletable without l
 chain. That is the cleanup in §14.4 made safe — **the notebooks stop depending on the datasets the
 migration wants to delete.**
 
+
+---
+
+## 16. Serving layer — build log
+
+Stage 1 of §14.1, built and verified. Every figure below was checked against an independently computed
+value before being accepted.
+
+| zone | dataset | rows | recipe | verified against |
+|---|---|--:|---|---|
+| **A1** | `graph_node_type_counts` | 8 | Group | sums to 113,391 |
+| | `graph_node_source_counts` | 7 | Group | sums to 113,391 |
+| | `graph_relation_counts` | 18 | Group | sums to 2,851,510 |
+| | `graph_ppi_provenance` | 7 | Group + pre-filter | sums to **520,380** — proves the filter fired |
+| | `graph_label_evidence` | 3 | Group + pre-filter | sums to **323,786** |
+| **A2** | `validation_auc_ci` | 670 | **Prepare, Hanley–McNeil in GREL** | every documented `auc_se` to ≤0.0001; TNBC `hi95` = 1.0410 |
+| | `persona_enrichment` | 670 | Prepare | — |
+| | `disease_eligibility` | 2 | Group | **25,996 / 1,157** |
+| | `shap_driver_frequency` | 14 | Prepare (split+fold) → Group | **exact match** to an independent Python aggregation, all 14 features |
+| | `split_audit_2` | 3 | moved | — |
+| **A3** | `family_panel` | 670 | **Join** | carries AUC, CI, family, `hop_depth` — generalises the hardcoded breast `PANEL` dict |
+| | `top50_membership` | 650 | **Filter** (`rank_in_disease` already exists) | 13 × 50 |
+| | `pairwise_overlap` | 156 | **self-Join → Group** | HER2+×TNBC = **14**, LumA×LumB = **22**, both matching `breast_panel_overlap` |
+| | `disease_hierarchy_annotation` | 27,153 | moved | — |
+| **A4** | `dashboard_candidates` | 129,253 | moved | — |
+| | `dashboard_persona_trust` | 13 | moved | — |
+
+**Every recipe is visual.** No Python was needed anywhere in the serving layer — including the two that
+looked like they would need it: the Hanley–McNeil confidence interval (a GREL formula) and the SHAP
+driver frequency (Prepare split + fold, then Group).
+
+**`pool_route_counts` was dropped, not built.** The three route admissions are exactly the row counts of
+`enriched_dwpc_GGD` (3,380,853), `enriched_dwpc_GPGD` (5,373,706) and `enriched_dwpc_GCD` (42,227),
+which DSS already holds as `records:COUNT_RECORDS`. Under §12.2's rule those are metrics, not a dataset.
+The pool union and the three splits come from `split_audit_2`. A2 therefore has **five** datasets, not
+the seven originally planned.
+
+**`Refresh_serving_layer`** now carries a build step per zone and triggers on `graph_nodes`,
+`graph_edges`, `edge_metadata`, `validation_auc_by_disease` and `dashboard_candidates`. It is
+**inactive** — activating it is a standing automation and needs a human decision.
+
+**Left behind by a failed first attempt at the self-join, to delete in stage 5:**
+`top50_membership_b`, `top50_pairs`, and their recipes `copy_top50_b`, `compute_top50_pairs`. They are
+superseded by the `top50_slim_a` / `top50_slim_b` pair.
+
+
+---
+
+## 17. The stale-middle-link incident — read this before rebuilding anything
+
+Found while converting the serving layer to parquet. **It is the most important finding in this
+document** and it changes how §14's migration must be sequenced.
+
+### 17.1 What happened
+
+`dashboard_candidates` sits at the end of a three-link chain:
+
+```
+target_candidates_2   built 2026-08-21 08:15   ← current
+   └── candidates_annotated   built 2026-08-19 10:09   ← TWO DAYS STALE
+          └── dashboard_candidates   built 2026-08-21   ← current content, stale parent
+```
+
+The middle link had **not been rebuilt since its own input changed**. `dashboard_candidates` happened
+to carry the *correct* 08-21 scores anyway. So the flow looked fine and served the right numbers, while
+being one forced rebuild away from serving the wrong ones.
+
+I then force-rebuilt `dashboard_candidates` as part of the parquet conversion. It faithfully recomputed
+itself from the **stale** parent and every rank changed:
+
+| | before | after the stale rebuild |
+|---|---|---|
+| #1 | TP53 | EP300 |
+| #2 | EP300 | TP53 |
+| **ERBB2** | **#14** | **#13** |
+| also in the top 15 | EGFR, BRCA1, PTPN11, MAPK1 | AKT1, STAT3, JAK1, SMARCA4 |
+
+Row count identical. Schema identical. Build green. **Every number the demo quotes silently wrong.**
+
+Fixed by rebuilding `candidates_annotated` from `target_candidates_2`, then the chain. Verified
+restored: ERBB2 back at #14, `pairwise_overlap` back to 156 rows with HER2+×TNBC = 14 and
+LumA×LumB = 22, `shap_driver_frequency` back to 14 features with the original counts.
+
+### 17.2 It explains the narrative's "contradiction", and I had the diagnosis wrong
+
+§12.11 claimed `DEMO_NARRATIVE.md` §7 had *drifted* and was wrong by 19 places on AKT1. **It had not
+drifted.** §7 reads *"ERBB2 #13, TP53 #2, PIK3CA #7, AKT1 #10"* — which matches the **08-19 build
+exactly**. §6 reads *"ERBB2 rank 14, PIK3CA rank 5"* — which matches the **08-21 build exactly**.
+
+**Both sections were correct when they were written.** They disagree because the flow served two
+different answers two days apart, not because anyone was careless. Retract the §12.11 accusation: the
+right correction is to re-derive both from a chain that has been proven consistent, and to date-stamp
+the derivation.
+
+### 17.3 What this changes
+
+**A green build is not evidence of correct data.** Row count, schema and build status were all
+unchanged. The only thing that caught it was checking one derived value — HER2+×TNBC overlap — against
+a number computed independently beforehand. Without that check the wrong ranking would have shipped.
+
+**The integrity check from §12.2 must cover the chain, not the leaf.** Comparing a serving table to its
+own source proves nothing when the source is itself stale. The check has to compare against the
+*most upstream* dataset that carries the number — which is exactly the notebook principle in §15,
+arriving from the other direction.
+
+**Sequencing rule, added to §14.1:** before any migration rebuild, **verify the chain is consistent
+first** — for every serving dataset, confirm each link's `last_build` is not older than its parent's.
+A stale middle link converts a routine rebuild into silent data corruption. Do this before stage 1, not
+after.
+
+⚠ **`candidates_annotated` was stale for six days and nothing detected it.** There is no check in the
+project that would have. That is the gap to close before the demo, not after.
+
+### 17.4 Zone integration
+
+`60 Dashboard (serving)` is **retired** — its contents (`candidates_annotated`, `disease_pool_sizes`,
+`drug_evidence_pairs` and the two recipes that build them) moved into `A4 Shortlist (serving)`, which
+now holds the whole shortlist chain rather than only its output. The serving zones **replace** the old
+one rather than sitting beside it; zones 40–43 and 50 follow the same way as their contents move to
+`90 Notebook` in stage 4.
+
+
+---
+
+## 18. The zone overhaul — 13 zones to 10, and 40–50 deprecated
+
+§14.3 proposed serving zones but left 30–50 alone as "pipeline". That was wrong: it grew the flow from
+13 zones to 17 by stacking new structure on top of old. Zones **40, 41, 42, 43 and 50 were all
+*validation* zones — and validation is now the notebook's job**, so they should not exist at all.
+
+### 18.1 The function test
+
+Every dataset now answers one question: **does the webapp serve it, does a notebook read it, or is it
+needed to build the model?** Three answers, three groups of zones — and nothing else survives.
+
+| group | zones | what it is for |
+|---|---|---|
+| **SOURCE** | `00 Imported from DEMO_KG_LS` | the cross-project contract |
+| **BUILD** | `10 Features` · `20 Annotations & split key` · `30 Split & modelling table` · `31 Train & score` | everything required to produce the champion's scores |
+| **SERVE** | `A1` · `A2` · `A3` · `A4` | what the webapp reads, precomputed |
+| **EVIDENCE** | `90 Notebook — validation evidence` | **staging for deletion**, not a permanent home |
+
+### 18.2 What was done
+
+**Five zones deleted.** `40`, `41`, `42`, `43` and `50` emptied into the serving zones and `90`.
+
+⚠ **A merge that was tried and reverted.** `11 Features - matrix` and `12 Features - assembly` were
+folded into `10 Features` on the argument that the Cypher/Python/assembly split is an implementation
+detail. **That was wrong on readability** — it produced a single 45-item zone, and the three-way split
+tells a reader *how* a feature is computed, which is the first thing you need when one of them breaks.
+Reverted to 10 / 11 / 12.
+
+The revert also exposed a mistake in how the merge was done: it moved every `enriched_*` dataset by
+glob, which swept up three annotation tables from zone 20 and two feature tables from zone 30 that had
+nothing to do with the merge. **Do not move flow items by name pattern** — enumerate them, or the blast
+radius is whatever the prefix happens to match. All five are back where they belong.
+
+**Renamed to their function:** `30 Modeling table & split` → `30 Split & modelling table`;
+`31 Model training` → `31 Train & score` (it now holds `scored_champion`, which belongs with the model
+that produced it rather than in the notebook staging zone — it is the *most upstream* dataset the
+notebooks recompute from, which is precisely why it must not be staged for deletion).
+
+**Where the old validation zones went:**
+
+| from | to | why |
+|---|---|---|
+| `validation_auc_by_disease` + its 3-link chain, `persona_candidates` | **A2** | they feed `validation_auc_ci` and `persona_enrichment` |
+| `target_candidates_2`, `persona2_scored(_shap)`, `validation_set_personas_2`, `top_annotated`, `top_candidates`, `filter_three_axes` | **A4** | the whole shortlist chain, from scoring to the funnel |
+| `novel_discovery_eval`, `drug_target_benchmark`, `known_drug_truth`, `pool_reachability`, `pool_selection_bias`, `safety_lift`, `tractability_lift`, `tractability_axis`, `lung_granularity_check`, `breast_panel_*`, `family_auc_by_family` | **90** | notebook evidence, to be recomputed then deleted |
+| `scored_m1`–`m6`, `m8`, `model_comparison`, `validation_auc_by_disease_2`, `drug_target_benchmark_staged`, `maturity_confound`, `pool_unreachable_targets`, `target_reachability`, the 6-dataset family chain, `breast_shortlist` | **90** | dead ends, staged so stage 5 has one place to look |
+
+### 18.3 Result
+
+**13 zones before this work, 17 at the low point, 12 now** — and the serving zones *replaced* zone 60
+rather than sitting beside it. A reader opening the flow sees source → build → serve, with one clearly
+labelled holding pen for what is on its way out.
+
+`90 Notebook` holds **62 items**, which looks alarming and is the point: that is the size of the cleanup
+that was invisible while it was spread across five zones with reassuring names.
+
+> ⚠ **Nothing in `90` may be deleted until `nb6_interrogation_and_close` runs green** (§17.1). Two of
+> its datasets are the only copy of the punch line's evidence.
+
+
+---
+
+## 19. Zone 20 reviewed against the visual-over-Python rule
+
+Five Python recipes and two syncs. **Three of the five are correctly Python. Two are not, and the two
+that are not share a duplicated block that should be a dataset.**
+
+| recipe | lines | verdict |
+|---|--:|---|
+| `extract_hetionet_disease_slim` | 26 | ✅ **correctly Python.** An HTTP fetch of a static 137-term resource. The house rule explicitly allows this — *"Python extracts only load and parse"* |
+| `compute_gene_localization` | 90 | ✅ **correctly Python.** BFS transitive closure down the GO hierarchy from `GO:0005886` / `GO:0009986` / `GO:0005576` to every descendant term. DSS has no visual recursion; there is no Join or Prepare that expresses "all descendants of" |
+| `compute_disease_family_id` | 184 | ✅ **correctly Python.** `networkx` ancestor-lifting and nearest-anchor search over MONDO. Same reason, more so — and its own comment records that a naive connected-components grouping collapses the eligible population, which is exactly the kind of judgment that belongs in reviewed code |
+| `compute_gene_safety` | 87 | ⚠️ **should be visual.** Two joins, two derived columns, a column selection, and ~25 lines of diagnostic `print`s |
+| `compute_gene_druggability` | 98 | ⚠️ **partly.** Three joins that should be visual Joins, plus a 10-branch precedence cascade that is defensible as code |
+
+### 19.1 The finding that matters more than the rule
+
+`compute_gene_safety` and `compute_gene_druggability` **each rebuild the same symbol→gene_index
+crosswalk, and the two blocks are byte-identical** — seven lines of entrez casting, a merge and a
+`drop_duplicates("symbol")`. `gene_safety`'s own comment admits it: *"same crosswalk as the druggability
+chain"*.
+
+> **Extract it once as a visual Join into a `gene_crosswalk` dataset and have both consume it.**
+
+That is worth more than the visual/Python conversion on its own. Two copies of an identifier crosswalk
+is a drift hazard of exactly the kind §17 just demonstrated: if one is edited and the other is not,
+druggability and safety silently disagree about which gene is which, and nothing in the flow would
+report it. It also removes the `entrez_id.astype("int64").astype(str)` cast from two places — a cast
+that is load-bearing and easy to get subtly wrong.
+
+### 19.2 What a visual `compute_gene_safety` looks like
+
+- **Join** `gene_names` × `graph_nodes` on entrez, pre-filtered to `node_type = 'gene/protein'` →
+  `gene_crosswalk` *(shared, §19.1)*
+- **Join** `raw_ot_safety` × `gene_crosswalk` on `symbol`, INNER
+- **Prepare**: formula `lof_intolerant` = `if(isBlank(lof_oe_upper), null, if(lof_oe_upper < 0.35, 1, 0))`;
+  formula `safety_flag` = the three-state cascade; keep-columns
+
+Three visual recipes replacing 87 lines. ⚠ **The join keys need `--auto-cast`** — the Python casts
+`node_id` to string and `entrez_id` to int64-then-string, so the two sides do not match natively. That
+cast is the whole reason this looks harder than it is.
+
+**The ~25 lines of coverage and distribution `print`s do not belong in a recipe at all.** They are
+exactly the "compute it in the notebook" material of §15 — coverage percentages, the `safety_flag`
+distribution, the LOEUF describe. Move them into `nb6` where they can be *asserted* rather than printed
+into a job log nobody reads.
+
+### 19.3 Where the rule should not be applied
+
+`compute_gene_druggability`'s ten-branch `np.select` cascade assigns `druggability_class` by precedence:
+OT class first, then subcellular flags, then our own localisation. Expressed in GREL that is a ten-deep
+nested `if()`. **The rule says prefer visual; readability says leave it.** Convert the three joins,
+leave the cascade as code, and say so in the recipe description so the next reviewer does not
+re-litigate it.
+
+The same judgment protects `compute_disease_family_id`: a rule mechanically applied would push a
+networkx traversal into something DSS cannot express, and the result would be worse on every axis.
+
+
+---
+
+## 20. `gene_crosswalk` extracted and `compute_gene_safety` converted to visual
+
+Built as a **parallel chain**, verified against the Python output, and **not yet swapped in** — §17's
+lesson is that replacing something the flow depends on is the last step, not the first.
+
+### 20.1 What was built
+
+| recipe | type | output | rows |
+|---|---|---|--:|
+| `compute_graph_genes` | **Filter** | `graph_genes` | 20,861 |
+| `compute_gene_crosswalk` | **Join** (`entrez_id = node_id`, auto-cast) | `gene_crosswalk` | 20,861 |
+| `compute_gene_safety_join` | **Join** on `symbol` | `gene_safety_joined` | 20,837 |
+| `compute_gene_safety_best` | **TopN**, 1 per `node_index` | `gene_safety_best` | 20,707 |
+| `compute_gene_safety_v2` | **Prepare** — 2 formulas, rename, select | `enriched_gene_safety_v2` | 20,707 |
+
+**Result: 0 mismatched cells across 20,707 genes × 10 columns — 207,070 cells compared.** The comparator
+was sanity-checked against deliberate corruption so a false green would be visible.
+
+87 lines of Python replaced by five visual recipes, and the crosswalk is now a dataset both
+`gene_safety` and `gene_druggability` can consume instead of each rebuilding it.
+
+### 20.2 Two things the conversion surfaced that the Python hid
+
+**The `drop_duplicates("symbol")` never fires.** `gene_crosswalk` is 20,861 rows over 20,861 distinct
+symbols — the crosswalk is already 1:1, and every gene/protein node maps. The line is dead code that
+looks like a safeguard.
+
+**But `drop_duplicates("gene_index")` fires, and it is non-deterministic.** `raw_ot_safety` has 78,691
+rows over 77,084 symbols — **477 symbols carry more than one row** (2,084 rows), because one symbol can
+have several ENSG entries. Of those 477, **15 disagree on `lof_oe_upper`** and **none disagree on
+`has_safety_liability`**. The Python resolves them by keeping whichever row pandas happened to order
+first. The visual chain replaces that with a stated rule — **keep the most constrained row** — via TopN
+ranked ascending on `lof_oe_upper`.
+
+### 20.3 The bug I introduced doing it, and why verification caught it
+
+The first TopN ranked on `lof_oe_upper` directly. **DSS sorts nulls first**, so for a gene with one
+null-constraint row and one measured row, the *null* won. Six genes lost a real LOEUF measurement — a
+tie-break that systematically preferred missing data, which is worse than the arbitrary pick it
+replaced.
+
+Fixed with a computed sort key, `if(isBlank(lof_oe_upper), 9999, lof_oe_upper)`, so absent constraint
+always sorts last. After the fix the two versions agree on every cell.
+
+> This is the third time in this work that a green build produced wrong data (§14.6 the raced join, §17
+> the stale middle link, and this). **The pattern is identical every time: DSS reports success, the row
+> count looks plausible, and only a comparison against an independently derived value exposes it.**
+
+### 20.4 Not done, deliberately
+
+`enriched_gene_safety_v2` is **not wired into the flow**. Swapping it means repointing
+`compute_gene_druggability` and everything downstream, then rebuilding the annotation chain — which
+moves data the demo depends on. Sequence it with the §14.1 stages, verify the chain is fresh first
+(§17.3), and do it in one job.
+
+`compute_gene_druggability` still rebuilds its own copy of the crosswalk. Converting its three joins and
+pointing it at `gene_crosswalk` is the same shape of change and should follow immediately, since the
+duplication is the actual risk (§19.1).
+
+
+### 20.5 `compute_gene_druggability` converted, and both swapped in
+
+Same shape, verified the same way: **0 mismatched cells across 20,861 genes × 9 columns — 187,749
+cells compared**, including the ten-branch `druggability_class` cascade transcribed into GREL.
+
+| recipe | type | output |
+|---|---|---|
+| `compute_ot_drug_mapped` | **Join** on `symbol`, using the shared `gene_crosswalk` | `ot_drug_mapped` |
+| `compute_drug_joined` | **Join** `enriched_gene_localization` LEFT `ot_drug_mapped` | `drug_joined` |
+| `compute_drug_classified` | **Prepare** — 6 formulas | `drug_classified` |
+| `compute_drug_best` | **TopN**, 1 per gene ranked by evidence quality | `drug_best` |
+| `compute_gene_druggability_v2` | **Prepare** — column select | `enriched_gene_druggability_v2` |
+
+**§19.3 was over-cautious.** It recommended leaving the ten-branch cascade as Python on readability
+grounds. In a Prepare formula it is one nested `if()` that reads in precedence order and reproduces the
+Python exactly. The recommendation is withdrawn — convert it.
+
+⚠ **`isNotBlank` does not exist in DSS GREL.** Only `isBlank`; use `!isBlank(x)`. The recipe fails at
+build time with *"Unknown function 'isNotBlank' (Parsing error at offset 256)"*, which is at least loud.
+
+**The druggability dedupe was already deterministic** and is preserved: rank by evidence source
+(OT target class → OT subcellular → GO cellular component → none) and keep the best. That is a stated
+rule, unlike the safety recipe's arbitrary `drop_duplicates`, and TopN expresses it directly.
+
+**Swap done, downstream NOT rebuilt.** All seven consumers repointed —
+`compute_safety_lift`, `compute_drug_target_benchmark_staged`, `compute_pool_reachability`,
+`compute_tractability_axis`, `compute_tractability_lift` and `decorate_target_candidates`. The two
+Python outputs are now orphaned and go to stage 5 with their recipes.
+
+> Downstream datasets are deliberately left **out-of-date rather than rebuilt**. DSS marks them stale in
+> the flow, which is the visible-staleness property §12.2 argued for — and after §17 a rebuild is a
+> deliberate act with a freshness check in front of it, not a reflex.
+
+
+---
+
+## 21. Chain-freshness check — built, run, and what it found
+
+`tools/check_freshness.py`. For every dataset it compares `last_build` against every input's, and
+reports anything built **before** something it depends on. This is the check that would have caught
+§17's six-day-stale middle link. Run it **before** a migration rebuild.
+
+```bash
+./tools/check_freshness.py            # whole project, exit 1 if stale
+./tools/check_freshness.py --zone A4  # one serving zone
+```
+
+### 21.1 What it found: 130 datasets, 71 stale relationships — but only a handful matter
+
+**49 of the 71 are timestamp churn from zone 00.** The aborted recursive build (§14.6) re-ran the Sync
+recipes, so `graph_nodes`, `graph_edges`, `gene_names` and the `raw_ot_*` copies all carry a
+2026-08-24 19:57 stamp. The *content* is unchanged — DEMO_KG_LS has not moved — but every descendant
+now looks stale. **A Sync that re-copies identical data bumps the timestamp and lights up sixty
+downstream datasets.** The check reports timestamp order, not content, and that limitation has to be
+read with the output.
+
+Of the 22 genuine findings:
+
+| class | count | disposition |
+|---|--:|---|
+| downstream of the §20 swap | 7 | **expected** — deliberately not rebuilt |
+| ablation models in zone 90 | 6 | staged for deletion, irrelevant |
+| dead objects from the failed self-join | 2 | `top50_membership_b`, `top50_pairs` — stage 5 |
+| genuinely worth attention | **3** | below |
+| never built | 3 | below, and one is serious |
+
+### 21.2 A false positive worth knowing about
+
+`disease_pool_sizes` (built 08-19) is flagged against `target_candidates_2` (08-21). **Its content is
+correct** — 13 personas, HER2+ at 12,272, matching the current population exactly. The timestamp is
+older; the data is not stale. A timestamp check cannot tell the difference, so a flagged dataset needs
+one content probe before anyone rebuilds it.
+
+### 21.3 The serious finding: A2's serving chain cannot be rebuilt
+
+```
+validation_set_scored           built 2026-08-21 08:29   ✓
+   └── validation_set_scored_windows      NEVER BUILT    ✗
+          └── validation_set_scored_grouped   NEVER BUILT ✗
+                 └── validation_auc_by_disease  670 rows, built 08-21 08:30  ✓
+                        └── validation_auc_ci   670 rows  ← A2 SERVING
+```
+
+Both intermediate links are **empty**, while the dataset downstream of them holds correct data. The
+lineage is real — confirmed against the live recipe, not just the snapshot — so
+`validation_auc_by_disease` was built when the intermediates had data and they were cleared afterwards.
+
+**The number is right and it is unreproducible.** Macro AUC 0.8230 — the figure act 2 leads with, and
+the source of every confidence interval in `validation_auc_ci` — sits on a chain with a hole in it. Any
+attempt to rebuild it recursively regenerates two intermediates first, from a `validation_set_scored`
+that is itself two rebuild-generations downstream of the graph.
+
+Nothing in the project reported this. It is not a wrong number today; it is a number that cannot be
+recovered if anything touches it — which after §17 is the same risk with a longer fuse.
+
+**Fix before the demo:** rebuild `validation_set_scored_windows` and `_grouped` from
+`validation_set_scored`, confirm `validation_auc_by_disease` still reproduces macro **0.8230** over 668
+scored diseases, then rebuild `validation_auc_ci` and re-verify the six documented `auc_se` values
+(§20.1). Do it as an explicit two-step, not a recursive build.
+
+### 21.4 Also never built
+
+`family_gene_agg` and `family_validation_ranked` — both in zone 43's five-recipe chain that its own
+description called over-built, both staged for deletion. Harmless, and further evidence the chain was
+never load-bearing.
+
+### 21.5 The A2 chain repaired — and the number did not move
+
+Rebuilt explicitly, one link at a time, with the pre-repair state captured first so a divergence would
+be visible rather than inferred.
+
+| step | result |
+|---|---|
+| `validation_set_scored_windows` | rebuilt from `validation_set_scored` |
+| `validation_set_scored_grouped` | rebuilt |
+| `validation_auc_by_disease` | 670 rows, 668 scored, **macro 0.8230, median 0.8623** — **0 mismatched cells across 670 diseases × 7 columns** against the pre-repair copy |
+| `validation_auc_ci` | 670 rows, **0 mismatched cells × 7 columns**; the six documented `auc_se` still reproduce, TNBC's `hi95` still 1.0410 |
+
+**The chain is now reproducible and the number is unchanged.** That is the outcome worth having: the
+hole is closed *and* nothing moved, so act 2's headline figure is now recoverable rather than merely
+correct.
+
+Two datasets became stale as a direct consequence and are **left that way deliberately**:
+`persona_candidates` (downstream of `validation_auc_by_disease`) and `family_panel` (downstream of
+`validation_auc_ci`). Their parents' content is verified byte-identical, so rebuilding them changes
+nothing — it is timestamp hygiene, and `compute_persona_candidates` re-runs persona scoring, which is
+not a thing to trigger casually.
+
+### 21.6 Two bugs in the check itself
+
+**Saved models are not datasets.** A scoring recipe takes a model id as an *input* (`hJLGoYn4`,
+`Lx5Mz2hY`…), and a model has no `last_build`, so nine of them reported as permanently "never built"
+parents. Both sides of the graph now filter to names DSS lists as datasets.
+
+**And the first version reported 71 findings when 49 were noise.** The signal is only readable once
+zone-00 sync churn is separated out, which the tool does not yet do for you — read the output with
+§21.1 in hand, or pass `--zone` to scope it.
+
+### 21.7 Standing state after the repair
+
+**23 genuine findings, none of them unexpected:** 7 downstream of the §20 annotation swap, 6 ablation
+models in zone 90, 2 dead self-join leftovers, 2 the propagation above, 3 in the zone-43 chain slated
+for deletion, and **3 pre-existing** — `disease_hierarchy_annotation` (three days behind
+`disease_family_id`, and it is an **A3 serving dataset**), `disease_pool_sizes` (timestamp only —
+content verified correct, §21.2), and `maturity_confound` in zone 90.
+
+> `disease_hierarchy_annotation` is the one to deal with before the demo: act 3's ontology indentation
+> reads it, and it has been stale since 2026-08-17.
+
+
+
+---
+
+## 22. The notebooks mapped to the MLOps lifecycle
+
+Prompted by a simple observation: **the notebooks are numbered by the document's sections (§3–§8), not
+by the order the work happens in.** `nb5` covers data understanding — the first thing anyone does — and
+is numbered last. A reviewer following the numbers reads the lifecycle backwards at both ends.
+
+The full map now lives in [`notebooks/README.md`](../../notebooks/README.md). Two structural findings
+came out of building it.
+
+### 22.1 `nb1` spans two stages that the split sits between
+
+Its §4 half analyses features **on the training set** — stage 2, pre-split. Its §6 half chooses the
+operating threshold — stage 4, post-split. Between them, chronologically, sits `nb2`'s entire subject.
+
+Read as one unit it invites exactly the wrong inference: that the threshold was chosen before the data
+was split. It was not, but the file's shape says otherwise. **Split it when someone next touches it** —
+this is a due-diligence artifact and its structure is part of the argument.
+
+### 22.2 The bias audit is measured twice, and that is correct
+
+`nb3` §7.2 and `nb3b` look like duplication and are not:
+
+| | question | about |
+|---|---|---|
+| `nb3` §7.2 | does the top 50 **over-sample** high-degree genes? | the **ranking** |
+| `nb3b` | with biology held constant, does the model **under-score** poorly-connected true targets? | **detection** — the 0.59 → 0.79 finding |
+
+They point opposite ways and both are true, which is precisely the shape of the narrative's Q2. The real
+duplication is one I introduced: `nb6` §5.2 reimplements `nb3b`. `nb3b` stays canonical until acts 5–6
+are signed off, then retires.
+
+### 22.3 Distance from the notebook rule, measured
+
+Zone 90 is a staging area for deletion. A notebook still reading from it has not been converted.
+
+| notebook | zone-90 reads | |
+|---|--:|---|
+| `nb3b`, `nb5`, `nb1` | **0** | ✅ already conform |
+| `nb2` | 2 | `pool_reachability`, `pool_selection_bias` |
+| `nb3` | 2 | `drug_target_benchmark`, `family_auc_by_family` |
+| `nb4` | 5 | worst — `breast_panel_metrics/_overlap`, `known_drug_truth`, `novel_discovery_eval`, `tractability_axis` |
+| `nb6` | 7 | by design — it **adopts** them so they are guarded before deletion |
+
+**16 zone-90 reads stand between the current state and a clean deletion.** That is the actual size of
+the zone-90 cleanup, and it is notebook work, not flow work.
+
+### 22.4 One defect fixed now
+
+`nb6` read `enriched_gene_druggability` — the dataset §20.5 orphaned when the visual chain was swapped
+in. It would have loaded a table nothing maintains. Repointed to `enriched_gene_druggability_v2`.
+
+Worth noting how it surfaced: not from the swap, which looked complete, but from mapping every
+notebook's reads against its zone. **A swap that repoints every *recipe* still leaves *notebooks*
+pointing at the old dataset** — they are not in the flow graph, so `replace-input` cannot reach them.
+Add a notebook grep to any future dataset swap.
+
+### 22.5 Deliberately not done
+
+**The notebooks are not renumbered.** Lifecycle order is more useful than document order, but the
+numbers appear in 344 `claims.tsv` rows, 99 assertion rows, `TARGET_PRIORITIZER.md`, the `target-id`
+skill and inside `nb3`/`nb4` themselves. The generated files rebuild, but the prose does not, and the
+internal `§4.1` / `§7.3` numbers — which do the real navigating — already tie to the document. The
+reading order is documented instead.
+
+**Zone 90 is not yet pruned**, and the final zone integration and rebuild are deferred until the webapp
+and notebook pictures are both settled.
+
+
+---
+
+## 23. The DSS notebooks are on the retired model — do not pull them
+
+**Yes, the CLI supports reusing them:** `dku notebook list` / `get` return full `.ipynb` JSON, and
+`tools/pull_notebooks.py` (new) flattens them to diffable `.py`. Running it produced a result that
+changes the plan.
+
+### 23.1 All five have drifted, in both directions
+
+| notebook | DSS lines | mirror lines | DSS assertions | mirror assertions | DSS figures | mirror figures |
+|---|--:|--:|--:|--:|--:|--:|
+| `nb1_features_and_config` | 134 | 96 | 6 | **7** | **3** | 0 |
+| `nb2_splitting_and_pool` | 65 | 60 | 15 | 15 | 0 | 0 |
+| `nb3_validation_and_plots` | 182 | 107 | 8 | **10** | 4 | **7** |
+| `nb4_results_three_axes` | 85 | 172 | 16 | **19** | 0 | **6** |
+| `nb5_data_exploration` | 110 | 109 | 0 | 0 | 0 | 0 |
+
+**Neither side is a superset.** DSS is ahead on *structure* — the user has rebuilt all five with proper
+markdown cells, so sections are navigable in Jupyter instead of buried in `# ==== ====` comments — and
+on nb1's three figures. The mirrors are ahead on assertions and on nb4's two figures.
+
+### 23.2 The finding that matters: DSS runs against `scored_m3`
+
+`nb1` and `nb3` in DSS read **`scored_m3`** where the mirrors read **`scored_champion`**. Not as a build
+stamp — as the analysis input:
+
+- `nb1` line 98 — the §6.3 operating-threshold analysis for obesity
+- `nb3` line 154 — the **entire §7.2 hub-bias meter**: quintiles, top-50 over-representation
+
+The assertion values confirm it outright:
+
+| | asserts drug-target macro AUC |
+|---|--:|
+| DSS `nb3` | **0.6911** |
+| repo `nb3` | **0.6886** |
+
+And `models.tsv`: **m3-f12 = 0.6911, m7-f14 (champion) = 0.6886.**
+
+> **The notebooks that actually run in DSS are validating the retired `m3-f12` model** for §6.3 and
+> §7.2. The mirrors were migrated to the champion and never pushed back.
+
+This is exactly the failure the assertion notebooks exist to prevent, occurring in the notebooks
+themselves. It also explains a puzzle from §22: `.index/assertions.tsv` counts 99 assertions from the
+**mirrors**, so the index has been describing notebooks that are not the ones being run.
+
+### 23.3 So: merge, do not pull
+
+`tools/pull_notebooks.py` defaults to a **drift report and refuses to overwrite**; `--pull` is explicit,
+and it prints *"the MIRROR is ahead — pulling would DISCARD assertions or figures"* on three of the
+five. Pulling now would lose five assertions and eight figures, and would import the m3 contamination
+into the repo.
+
+The merge, per notebook:
+
+| take from DSS | take from the mirror |
+|---|---|
+| markdown-cell structure, all five | `scored_champion` in `nb1` and `nb3` |
+| `nb1`'s three figures | the assertion values pinned to the champion (0.6886, not 0.6911) |
+| | `nb3`'s extra assertions and figures |
+| | `nb4`'s two figures, three assertions, and its `raw_ot_known_drug` read |
+
+Then push the merged versions **back to DSS** so the two sides converge, and re-run
+`tools/build_index.py` so the assertion index describes what runs.
+
+⚠ **`nb3b` and `nb6` do not exist in DSS at all.** `nb3b` is the canonical hub-bias artifact and `nb6`
+carries acts 5–6 and the only guard on `safety_lift` / `tractability_lift`. Both are repo-only, so
+neither has ever been executed against live data. **`nb6` in particular is unverified** — §17's rule
+applies: it has not run green, so nothing in zone 90 can be pruned.
+
+
+---
+
+## 24. `nb6` created, run, and green — the punch line is now guarded
+
+**33 assertions, 33 PASS.** `safety_lift` and `tractability_lift` — read by nothing until now — are
+guarded. §17's precondition on pruning zone 90 is satisfied.
+
+Results are written to `nb6_assertion_results` (33 rows: check / documented / live / status), so they
+are queryable rather than buried in a log.
+
+### 24.1 How to run a notebook's code from the CLI
+
+There is **no `dku notebook run`**, and `dku notebook create` takes only a name — it cannot set content.
+Two routes, and only one is usable:
+
+- **`scenario add-step-python`** runs inline code, but on this build `scenario run-log` fails with
+  `DSS API error: 'scenarioRun'`, so the output cannot be retrieved. The step reports SUCCESS whenever
+  the script merely finishes.
+- **A Python recipe** works: `dku job log` returns the container's stdout, including every `CHK|` line.
+  Its constraint is the useful one — **a recipe may only read datasets declared as inputs**, which a
+  notebook is not required to do. Declaring nb6's 14 inputs made its dependencies explicit in the flow.
+
+`run_nb6_assertions` is that recipe, in zone 90, writing `nb6_assertion_results`.
+
+### 24.2 Three defects the run found — all mine, none in the flow
+
+**1. `scored_champion` cannot be read whole in a container.** 3,958,921 rows killed the process with
+*"terminated by signal 1"* and no traceback — the same failure `nb1` records at 2.19M rows. Fixed by
+iterating 250k-row chunks and keeping only `is_target == 1` (73,829 rows). **Chunking rather than
+sampling was deliberate:** sampling would move the 0.59 / 0.79 figures this section asserts.
+
+**2. The detection threshold was wrong, and it inverted the finding.** I used `proba_1 >= 0.5`; the
+documented rates are measured at the F1-optimised **0.860**, which is what `nb3b` uses.
+
+| | Q1 | Q5 |
+|---|--:|--:|
+| at 0.5 *(my error)* | 65.5% | 84.8% |
+| at 0.860 *(correct)* | **16.8%** | **57.6%** |
+| documented | 17.3% | 57.0% |
+
+At 0.5 the same data reads as a *mild* effect. At the real threshold it is the 3.4× detection swing the
+demo describes. **A threshold silently defaulted is a finding silently changed.**
+
+**3. §5.4 was written against a schema that does not exist.** `raw_ot_known_drug` is
+`targetId, symbol, diseaseId, score` — **no drug column at all**, so the multi-target inflation cannot
+be measured from it. My code "worked" and returned 0% / 100%. Rewritten against `drug_protein_edges`
+and `drug_disease_edges`, which do carry drug identity.
+
+### 24.3 A number in the document with no traceable source
+
+Computed properly, the ground-truth inflation is:
+
+| | measured | documented |
+|---|--:|--:|
+| pairs manufactured by the join | **109,630** | — |
+| share from multi-target drugs | **87.5%** | 82% |
+| surviving a single-target demand | **12.5%** | 8% |
+
+Also measured: 2,261 drugs carry both edge kinds, the worst hits **78 targets**, and the median drug is
+approved for 4 diseases.
+
+The shapes agree; the numbers do not. The documented 82% / 8% appear in `TARGET_PRIORITIZER`'s Q4
+summary line citing §8.1 and §8.6, but **no notebook computes them and no dataset holds them** — the
+difference is most likely a denominator (109,630 manufactured pairs vs the 67,748 that resolve onto the
+graph, per `known_drug_truth`).
+
+**`nb6` deliberately does not assert 82% / 8%.** Asserting a number whose derivation cannot be found is
+exactly how a stale figure survives an assertion suite. It prints the measured values and says so. Pin
+the assertion once the denominator is agreed — and until then, **the deck should quote 87.5%, or the
+figure should be recomputed on the graph-resolved subset and quoted from there.**
+
+
+---
+
+## 25. Zone 90, mapped recipe by recipe — what codifies, what deletes, what must stay
+
+§22.3 counted which *datasets* the notebooks read. That was not enough: a dataset cannot be dropped
+without also dropping **its recipe**, and the recipe's logic has to land somewhere. This is that map.
+
+33 datasets in zone 90, traced to their producing recipe and every consumer.
+
+### 25.1 Three of them are serving-upstream and can never be deleted — §14.4 had this wrong
+
+| dataset | feeds | so it belongs in |
+|---|---|---|
+| `known_drug_truth` | `compute_filter_three_axes` → **`filter_three_axes`**, act 4's funnel | **A4**, not 90 |
+| `drug_target_benchmark` | `compute_persona_candidates` → **`persona_enrichment`**, act 2's beeswarm | **A2**, not 90 |
+| `novel_discovery_eval` | same | **A2**, not 90 |
+
+I staged all three for deletion in §14.4 on the basis that notebooks read them. They do — *and* they
+feed the webapp. **Move them out of 90 before any prune runs**, or the cleanup takes the serving layer
+with it.
+
+### 25.2 Dead subtrees — delete, nothing reads them
+
+**The ablation ladder, 7 datasets and 8 recipes.** `scored_m1`/`m2`/`m3` feed only
+`compute_model_comparison`, whose output `model_comparison` has **no readers at all**. `scored_m4`,
+`m5`, `m6`, `m8` have none either. Delete `model_comparison` first and the whole subtree falls.
+
+> ⚠ **Except `scored_m3`, which the DSS notebooks read** (§23.2). `nb1` and `nb3` in DSS run their §6.3
+> and §7.2 sections against it — the retired `m3-f12`. **Migrate those two to `scored_champion` first;**
+> the deletion then costs nothing and removes the last way to accidentally validate the wrong model.
+
+**Six more with no reader:** `drug_target_benchmark_staged` (131 loc), `maturity_confound` (114),
+`target_reachability` (107), `pool_unreachable_targets`, `validation_auc_by_disease_2` (77),
+`family_top_genes_named`.
+
+**The family chain, 6 datasets and 6 recipes, is entirely self-contained:**
+`family_validation_scored` → `family_gene_agg` / `family_validation_ranked` → `family_top_genes` /
+`family_auc_grouped` → `family_top_genes_named` / `family_auc_by_family`. Only the last is read
+outside it, by `nb3`. Codify that one number and all six drop — which is what zone 43's own
+description meant by *"the five-recipe chain behind it is over-built."*
+
+### 25.3 Codify into a notebook, then delete — ~910 lines of Python
+
+| recipe | loc | dataset(s) | absorbing notebook |
+|---|--:|---|---|
+| `compute_pool_reachability` | 202 | `pool_reachability`, `pool_unreachable_targets` | **nb2** |
+| `compute_pool_selection_bias` | 81 | `pool_selection_bias` | **nb2** |
+| `compute_family_auc` *(+5 upstream)* | visual | `family_auc_by_family` | **nb3** |
+| `compute_breast_panel` | 210 | `breast_panel_metrics`, `breast_panel_overlap` | **nb4**, cross-checked by nb6 |
+| `compute_tractability_axis` | 136 | `tractability_axis` | **nb4** / **nb6** |
+| `compute_tractability_lift` | 84 | `tractability_lift` | **nb6** ✅ already asserted |
+| `compute_safety_lift` | 120 | `safety_lift` | **nb6** ✅ already asserted |
+| `compute_lung_granularity_check` | 77 | `lung_granularity_check` | **nb6** ✅ already asserted |
+
+`nb6` already **reads and asserts** the last three, so their numbers are guarded (§24) — but it does not
+yet **recompute** them, so the recipes are still load-bearing. Guarded is the precondition for deletion;
+codified is what makes deletion safe.
+
+**`breast_shortlist`** is a clinician review form — a deliverable to a person, not a pipeline artifact.
+Export it to a file, then delete.
+
+### 25.4 Next steps, in dependency order
+
+1. **Migrate the DSS `nb1` and `nb3` off `scored_m3`** onto `scored_champion`, merging with the repo
+   mirrors (§23.3). This is the gate on the largest deletion and it fixes a live correctness problem —
+   two sections are currently validating the retired model.
+2. **Move `known_drug_truth` → A4 and `drug_target_benchmark` / `novel_discovery_eval` → A2** (§25.1),
+   so a prune cannot reach them.
+3. **Delete the dead subtrees** — the ablation ladder, the six orphans, the family chain once `nb3`
+   absorbs `family_auc_by_family`. **~19 datasets and ~15 recipes**, with no code to write beyond that
+   one number.
+4. **Codify the remaining five recipes** (~700 loc) into nb2, nb3 and nb4, verifying each against the
+   dataset it replaces before deleting it — the §20 pattern: build parallel, compare cell by cell, then
+   swap.
+5. **Then the final zone integration and rebuild**, with `tools/check_freshness.py` run first (§21).
+
+Steps 1–3 are the cheap 80%: they remove roughly half of zone 90 and require almost no new code. Step 4
+is the real work.
+
+
+---
+
+## 26. Step 1 — the DSS notebooks are m3-era throughout, not just in one line
+
+§23.2 found `nb1` and `nb3` reading `scored_m3` and framed it as a two-line fix. **Running them against
+`scored_champion` proved that wrong.** Their *documented values* are m3-f12's as well.
+
+### 26.1 What running them on the champion actually showed
+
+`nb3`, with only the dataset name changed — **4 of 7 assertions go STALE**:
+
+| assertion | DSS documents | live on champion | which model is DSS quoting |
+|---|--:|--:|---|
+| 10.1 macro per-disease AUC | 0.8197 | **0.8230** | **m3-f12** (`models.tsv` assoc_auroc = 0.8197) |
+| 7.3 per-family macro AUC | 0.7976 | **0.8009** | m3-era |
+| 7.4 orthogonality pearson r | +0.024 | **+0.002** | m3-era |
+| 7.4 orthogonality R² | 0.0006 | **0.0000** | m3-era |
+
+`nb1`, same treatment — **3 STALE**:
+
+| assertion | DSS documents | live | note |
+|---|--:|--:|---|
+| 6.1 dwpc_GPGD single-feature AUC | 0.641 | **0.702** | |
+| 6.1 dwpc_GGD single-feature AUC | 0.601 | **0.674** | |
+| 6.2 worst null gap pp | −31.6 | **−57.3** | see below |
+
+> **So the fix is not one line per notebook. `nb3` needs the dataset plus four values; `nb1` needs the
+> dataset plus three.** Every one of the DSS-documented figures is the retired champion's.
+
+### 26.2 The mirror is ahead on correctness, not just on values
+
+`nb1`'s null-gap assertion is the clearest case. DSS asserts the **global** worst gap; the live global
+worst is −57.3, which is `rwr_score` — **a rejected feature**. The repo mirror asserts −31.7 over the
+**model features only**, and carries the comment explaining exactly why:
+
+> *"§6.2 quotes −31.7 for the FOUR MODEL features; the global minimum is rwr_score (rejected) at ~−57.
+> Assert against the model-feature gap, which is what the document actually claims."*
+
+That is a fix the mirror has and DSS does not. The merge is therefore **not symmetric**:
+
+| take from the repo mirror | take from DSS |
+|---|---|
+| all code and all documented values | markdown-cell structure |
+| the model-feature scoping of §6.2 | the seaborn correlation heatmap |
+| `scored_champion` throughout | |
+
+### 26.3 Done
+
+**The heatmap is now in the repo mirror** (`nb1`, §6.1) — guarded by `try/ImportError` so it degrades to
+a printed note if `seaborn` is absent from the code env, and using the `Agg` backend so it runs
+headless like the project's other figures.
+
+**Two verification recipes remain in zone 90** — `verify_nb1_on_champion` and `verify_nb3_on_champion`,
+writing `nb1_verify` / `nb3_verify`. They run the DSS code with the dataset substituted, which is how
+§26.1 was measured. Delete them once the DSS notebooks are corrected.
+
+### 26.4 What has to happen in the DSS UI, and why
+
+**`dku` is read-only for notebook content.** `notebook get` returns the `.ipynb`; `notebook create`
+takes only a name; there is no set / update / import verb. So the correction cannot be scripted.
+
+Two options, and the second is better:
+
+1. Paste the repo mirrors over the DSS notebooks — correct, but discards the markdown structure.
+2. **Edit the seven values in place**, keeping the structure: in `nb1` change the `scored_m3` read plus
+   three documented values; in `nb3` change the read plus four. The exact list is §26.1. Then re-run
+   `tools/pull_notebooks.py` to confirm the two sides converge.
+
+⚠ **Until this is done, `scored_m3` cannot be deleted** — and it is the last blocker on the
+seven-dataset ablation subtree (§25.2). One notebook edit unblocks the largest deletion in the cleanup.
+
+**A recipe-context caveat, if anyone reuses these as recipes:** `nb1`'s DSS version calls Jupyter's
+`display()`, which does not exist outside a notebook kernel. The verification copy shims it. That is a
+sign the DSS notebook is notebook-native code, which is fine — but it means "run the notebook as a
+recipe" needs a shim, not just an input list.
+
+
+---
+
+## 27. Steps 1–2 status, and the one edit still blocking the cleanup
+
+### 27.1 Step 1 — two of three notebooks migrated and verified
+
+| notebook | state | verified |
+|---|---|---|
+| `nb1_features_and_config` | ✅ migrated — reads `scored_champion`, values corrected, and it carries the **model-scoped** null-gap fix (−31.7, not the global −57.3) | **6/6 PASS**, 0 failures, run on the live DSS content |
+| `nb6_interrogation_and_close` | ✅ populated in DSS, 232 code lines, reads `scored_champion` | **33/33 PASS** (§24) |
+| `nb3_validation_and_plots` | ❌ **still reads `scored_m3`** | — |
+
+### 27.2 The six edits `nb3` needs
+
+Four cells. ⚠ **Three other occurrences of `0.0006` in this notebook are `tol=` tolerances, not
+documented values — leave those alone.**
+
+| cell | change | which argument |
+|--:|---|---|
+| 3 | `0.8197` → **`0.8230`** | the *documented value* in `check("10.1 macro per-disease AUC", …)`; its `tol=0.0006` stays |
+| 5 | `0.7976` → **`0.8009`** | `check("7.3 per-family macro AUC", …)` |
+| 7 | `0.024` → **`0.002`** | `check("7.4 orthogonality pearson r", …)` |
+| 7 | `0.0006` → **`0.0000`** | `check("7.4 orthogonality R2", …)` — this one **is** a value |
+| 9 | `0.6911` → **`0.6886`** | `check("7.4 drug-target macro AUC", …)`; its `tol=0.0006` stays |
+| 11 | `Dataset("scored_m3")` → **`Dataset("scored_champion")`** | the §7.2 hub-bias read |
+
+Then re-run `tools/pull_notebooks.py` to confirm convergence, and
+`dku job run --target nb3_verify` to confirm green.
+
+### 27.3 Step 2 — done
+
+The three serving-upstream datasets are out of the deletion staging zone:
+
+| dataset | moved to | because it feeds |
+|---|---|---|
+| `known_drug_truth` | **A4** | `filter_three_axes` — act 4's funnel |
+| `drug_target_benchmark` | **A2** | `persona_candidates` → `persona_enrichment` |
+| `novel_discovery_eval` | **A2** | same |
+
+A prune can no longer reach them. Zone 90 is 32 datasets (33 − 3 moved out + 2 verification outputs).
+
+### 27.4 What step 3 can and cannot do right now
+
+**Blocked on `nb3`:** the seven-dataset ablation subtree. `scored_m3` is read by DSS `nb3`; `scored_m1`
+and `m2` feed `compute_model_comparison`, which also consumes `m3`. One notebook edit releases all of
+it.
+
+**Unblocked, but not done — deletion is irreversible and needs an explicit go:**
+`drug_target_benchmark_staged`, `maturity_confound`, `target_reachability`, `pool_unreachable_targets`,
+`validation_auc_by_disease_2`, `family_top_genes_named`, and `scored_m4` / `m5` / `m6` / `m8`.
+Ten datasets, no readers of any kind.
+
+Also to delete once `nb3` is corrected: the three verification recipes and their outputs
+(`verify_nb1_on_champion`, `verify_nb3_on_champion`, `nb1_verify`, `nb3_verify`). They exist only to
+prove the migration.
+
+
+---
+
+## 28. `nb3` merged locally — 9/9 PASS
+
+`notebooks/nb3_validation_and_plots.py` is now the **merged** version, verified green against live data.
+It is the file to paste into DSS.
+
+### 28.1 What the merge took from each side
+
+The DSS copy and the mirror were each ahead in different places (§23.1), so neither could simply
+overwrite the other. The diff was measured, not assumed:
+
+| | DSS | mirror |
+|---|--:|--:|
+| assertions | 7 | 9 — the extra two are `header pooled AUC` and `header per-split-key AUC` |
+| figures | 2, drawn with **seaborn** (`histplot`, `lineplot`, `scatterplot`, `despine`) | 2, raw matplotlib with `savefig` |
+| documented values | **m3-f12 throughout** | champion |
+
+**Base: DSS** — its markdown-cell structure and the seaborn figures are better. Then:
+
+1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, `0.7976` or
+   `0.6911` survives anywhere in the file. The five `tol=0.0006` tolerances are untouched.
+2. **`disease_split_key` added to the §7.2 read.** The header-metrics block needs it and the DSS copy
+   did not request it — a merge that only moved the assertion across would have failed at runtime.
+3. **`plt.savefig` before each `plt.close()`.** DSS renders inline and closes, so a headless run left no
+   artifact; the project treats figures as artifacts, so both figures now persist to `/tmp`.
+4. **The two missing assertions appended**, with the mirror's own note on why they exist — *"the two
+   metrics the header quotes and nothing asserted… why the status line once mixed m7's macro with m3's
+   pooled."*
+
+182 → 211 lines.
+
+### 28.2 Verified
+
+Run against live data through `verify_nb3_on_champion`:
+
+```
+10.1 macro per-disease AUC   0.8230   PASS      7.4 orthogonality pearson r  +0.002  PASS
+10.1 validation diseases        670   PASS      7.4 orthogonality R2         0.0000  PASS
+7.3  per-family macro AUC    0.8009   PASS      7.4 drug-target macro AUC    0.6886  PASS
+7.3  families                   505   PASS      header pooled AUC            0.8932  PASS
+                                                header per-split-key AUC     0.8046  PASS
+VERIFY|failures=0
+```
+
+`HEADER|pooled=0.8932|per_split_key=0.8046|split_keys=441` — the pooled figure is **7.0 points above**
+the macro 0.8230, which is the overstatement §12.2 warns about, now measured rather than asserted.
+
+### 28.3 Still to do in the DSS UI
+
+Paste `notebooks/nb3_validation_and_plots.py` over the DSS notebook — or apply §27.2's six edits plus
+the `disease_split_key` column and the header block. Until then `scored_m3` cannot be deleted, and with
+it the seven-dataset ablation subtree.
+
+
+---
+
+## 29. Step 1 complete — all seven notebooks converged on the champion
+
+`tools/pull_notebooks.py` now reports every notebook **in sync**: same assertions, same dataset reads.
+
+| notebook | assertions |
+|---|--:|
+| `nb1_features_and_config` | 7 |
+| `nb2_splitting_and_pool` | 15 |
+| `nb3_validation_and_plots` | 10 |
+| `nb3b_hub_bias_meter` | 8 |
+| `nb4_results_three_axes` | 19 |
+| `nb5_data_exploration` | 0 *(descriptive)* |
+| `nb6_interrogation_and_close` | 28 |
+
+**Nothing anywhere reads `scored_m3`** — verified across all seven DSS notebooks, all seven repo
+mirrors, and the recipe graph. Its only remaining consumer is `compute_model_comparison`, which has no
+consumers of its own.
+
+### 29.1 The tool reported false red until it was fixed
+
+`pull_notebooks.py` originally compared the flattened `.ipynb` to the mirror **byte for byte**, so it
+reported DRIFT on all seven forever — the mirror is a flattened notebook whose markdown cells become
+comments, and it is also hand-edited, so the two can never be byte-identical.
+
+It now compares what actually matters — **assertion count and dataset reads** — and distinguishes
+`identical` / `in sync (formatting differs)` / `DRIFT`. A check that is always red teaches people to
+ignore it, which is worse than not having it.
+
+### 29.2 Ready to delete: 15 datasets, 15 recipes
+
+| group | datasets | recipes |
+|---|--:|--:|
+| ablation subtree — `scored_m1`–`m6`, `m8`, `model_comparison` | 8 | 8 |
+| orphans — `drug_target_benchmark_staged`, `maturity_confound`, `target_reachability`, `validation_auc_by_disease_2`, `family_top_genes_named` | 5 | 5 |
+| verification scaffold — `nb1_verify`, `nb3_verify` | 2 | 2 |
+
+⚠ **`pool_unreachable_targets` is excluded.** It shares `compute_pool_reachability` with
+`pool_reachability`, which `nb2` reads. Dropping the dataset would leave a recipe writing to nothing;
+it should wait for step 4, when `nb2` absorbs that recipe entirely.
+
+That takes zone 90 from 32 datasets to ~17, and leaves step 4 — codifying ~700 lines into nb2, nb3 and
+nb4 — as the only substantial work left.
+
+
+## 30. Step 4, first tranche — the two lift tables codified, and a live breakage found on the way
+
+### 30.1 A defect I introduced in §20.5: `replace-input` does not touch Python code
+
+Repointing the seven consumers of `enriched_gene_safety` / `enriched_gene_druggability` at the `_v2`
+datasets used `dku recipe replace-input`. That rewires the recipe's **declared** inputs. For a visual
+recipe (`decorate_target_candidates`, a join) that is the whole story. For a **Python** recipe the
+code still contains `dataiku.Dataset("enriched_gene_safety")` — the declaration and the code now
+disagree, and the recipe cannot read a dataset it no longer declares.
+
+Five recipes were left in that state:
+
+| recipe | code read | declared input |
+|---|---|---|
+| `compute_safety_lift` | `enriched_gene_safety` | `enriched_gene_safety_v2` |
+| `compute_tractability_lift` | `enriched_gene_druggability` | `enriched_gene_druggability_v2` |
+| `compute_tractability_axis` | `enriched_gene_druggability` | `enriched_gene_druggability_v2` |
+| `compute_pool_reachability` | `enriched_gene_druggability` | `enriched_gene_druggability_v2` |
+| `compute_drug_target_benchmark_staged` | `enriched_gene_druggability` | `enriched_gene_druggability_v2` |
+
+None has been run since the swap, so nothing surfaced it. **Rule: after `replace-input` on a code
+recipe, patch the code too — the CLI will not, and the flow graph will look correct while the recipe
+is unrunnable.** Four of the five are step-4 codify targets and will be deleted; only
+`compute_drug_target_benchmark_staged` needs the fix to survive. **All five were patched and pushed**
+via `dku recipe set-code`; each now reads the `_v2` dataset it declares.
+
+A second find: `dss_recipes/*.py` is a **stale mirror**. It showed these recipes reading `scored_m3`;
+live they read `scored_champion`. Trust `dku recipe get-code`, not the mirror.
+
+### 30.2 `safety_lift` + `tractability_lift` → `nb6` §6.0
+
+204 lines across two recipes collapse to one 83-line block, because the two shared a large prefix —
+building the drug-validated `truth` table from `graph_nodes` + `drug_protein_edges` +
+`drug_disease_edges`, then restricting `scored_champion` to the diseases that have one. That prefix
+is now built once and both tables come from a single parameterised `lift_table()`.
+
+The reads are gone: nb6 no longer opens `tractability_lift` or `safety_lift`. All six punch-line
+assertions (membrane receptor 0.78 / 3.16, ion channel 11.89, `lof_intolerant` 2.07 / 1.37, liability
+4.62) are **untouched** — which is the point. They were written against the recipe's output, so they
+now test the codified arithmetic as a regression suite, with no edit to make them do it.
+
+**The parity that had to be exact.** `lift()` looks values up by string. The two recipes group
+differently and it is not cosmetic:
+
+- `compute_safety_lift` casts `.astype("object")` before `fillna` — a float or Categorical key
+  renders `"1.0"`. Confirmed against the live table: `lof_intolerant` values are `0.0` / `1.0` / `(null)`.
+- `compute_tractability_lift` omits the cast — `ot_ab_tractable` is integer and renders `"0"` / `"1"`.
+  Confirmed likewise.
+
+Had `lift_table()` normalised both the same way, every assertion would have looked up a key that no
+longer existed and returned `None` — and `lift()` returns `(None, None)` rather than raising, so the
+failure would have been a `TypeError` on formatting, not a clear miss. The `as_object` flag
+reproduces each recipe exactly.
+
+**Population guard.** `check("6.0 lift base rows", 907246, …)` is new. It is not a documented figure:
+it is derived from the retired tables themselves, where `lof_intolerant` (746,309 + 107,600 + 53,337)
+and `ot_ab_tractable` (425,469 + 481,777) independently sum to 907,246. If the codified truth-table
+build or the chunked read drifts, the lifts move quietly; this fails first. (`safety_flag` sums to
+905,651 — 1,595 rows sit in groups under the `n>=2000` floor, dropped from the table, not the base.)
+The disease count is **printed, not asserted** — the only source for "112" is a code comment.
+
+### 30.3 Verified — 33/33 PASS, 213s
+
+`run_nb6_assertions` gained `graph_nodes` and `enriched_gene_safety_v2` as declared inputs (the §30.1
+trap, avoided this time), took the codified notebook, and ran green in 3m34s. Every assertion PASS,
+zero stale.
+
+The six punch-line figures reproduce **to the digit** from code that no longer reads the flow:
+
+| assertion | documented | computed |
+|---|---|---|
+| membrane receptor `assoc_lift` | 0.78 | 0.78 |
+| membrane receptor `drug_lift` | 3.16 | 3.16 |
+| ion channel `drug_lift` | 11.89 | 11.89 |
+| `lof_intolerant` `assoc_lift` | 2.07 | 2.07 |
+| `lof_intolerant` `drug_lift` | 1.37 | 1.37 |
+| liability `drug_lift` | 4.62 | 4.62 |
+
+`6.0 lift base rows` hit 907,246 exactly, so the codified truth-table build and chunked read reproduce
+the recipe's population precisely rather than landing on the same lifts by coincidence.
+
+`safety_lift` and `tractability_lift` are now **provably redundant** — nothing reads them and their
+content is reproduced from upstream. They are cleared for the stepwise delete; `compute_safety_lift`
+and `compute_tractability_lift` go with them.
+
+### 30.4 `dss_recipes/` is uniformly m3-era — 12 of the mirrors are stale
+
+The mirror drift found in §30.1 is not local to those five files. Every mirror that reads the scored
+output still names `scored_m3`; **all of them read `scored_champion` live**:
+
+`compute_breast_panel`, `compute_drug_target_benchmark`, `compute_drug_target_benchmark_staged`,
+`compute_lung_granularity_check`, `compute_novel_discovery_eval`, `compute_pool_reachability`,
+`compute_pool_selection_bias`, `compute_safety_lift`, `compute_target_reachability`,
+`compute_tractability_axis`, `compute_tractability_lift`, `compute_validation_auc_by_disease_2`.
+
+The step-1 champion migration moved the live recipes and never refreshed the mirror, so `dss_recipes/`
+has been describing the retired model since. Anything derived from it by grep — including a reading of
+`code.tsv` — answers as of m3. The five touched here are synced; the rest need
+`tools/build_recipe_index.py --refresh`.
+
+**Rule: `dss_recipes/` is a snapshot, not a source. Confirm with `dku recipe get-code`.** CLAUDE.md
+already says the mirrors can lag DSS; this is how far.
+
+### 30.5 `scored_champion` is CSV, and every notebook pays for it
+
+The job log emits `CSV Emitted 3300000 lines from file, 45 columns`. `scored_champion` is **csv on
+S3**, 3,958,921 rows × 45 columns. CSV has no column pruning, so `get_dataframe(columns=[...])` for
+three columns still streams all forty-five — which is why nb6 takes minutes, and why the unchunked
+read killed the container with `signal 1` in the first place.
+
+Converting it to parquet would let a three-column read touch roughly 7% of the bytes. It is the same
+conversion-then-swap done for `gene_crosswalk` in §20, and it is the single highest-leverage change
+available to notebook runtime. **Not done here** — a format conversion without a rebuild is exactly
+what corrupted `dashboard_candidates` in §17, and it should not ride along with a codification change.

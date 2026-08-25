@@ -48,9 +48,9 @@ truth = (ind.dropna(subset=["disease_index"])[["drug", "disease_index"]]
          [["disease_index", "gene_index"]].astype(int).drop_duplicates())
 tset = truth.groupby("disease_index").gene_index.apply(set).to_dict()
 
-drg = dataiku.Dataset("enriched_gene_druggability").get_dataframe()
+drg = dataiku.Dataset("enriched_gene_druggability_v2").get_dataframe()
 # Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46
-sc = dataiku.Dataset("scored_m3").get_dataframe(
+sc = dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", SCORE])
 sc = sc.merge(drg, on="gene_index", how="left")
 

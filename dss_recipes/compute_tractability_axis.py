@@ -49,13 +49,13 @@ demo_genes = set(dp[tc].astype(str).map(gmap).dropna().astype(int))
 print(f"genes with a demonstrated drug-target edge: {len(demo_genes):,} of {len(G):,} "
       f"({len(demo_genes)/len(G):.1%})")
 
-drg = dataiku.Dataset("enriched_gene_druggability").get_dataframe()
+drg = dataiku.Dataset("enriched_gene_druggability_v2").get_dataframe()
 drg["assessed"] = ((drg.ot_sm_tractable == 1) | (drg.ot_ab_tractable == 1)).astype(int)
 drg["demonstrated"] = drg.gene_index.isin(demo_genes).astype(int)
 print(f"genes with an assessed tractability bucket : {int(drg.assessed.sum()):,} "
       f"({drg.assessed.mean():.1%})")
 
-sc = dataiku.Dataset("scored_m3").get_dataframe(
+sc = dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", "proba_1", "gene_ppi_degree"])
 sc = sc.merge(drg[["gene_index", "assessed", "demonstrated", "druggability_class"]],
               on="gene_index", how="left")
@@ -133,3 +133,4 @@ print("  Secreted over-represented at the head while membrane is under-represent
 print("  ligand-vs-receptor failure stated as a distribution rather than an anecdote.")
 
 dataiku.Dataset("tractability_axis").write_with_schema(out)
+

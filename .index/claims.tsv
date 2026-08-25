@@ -66,12 +66,12 @@ DECISIONS.md	43	-	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows	y
 DECISIONS.md	43	-	18.8	ORPHAN		y		| 2026-08-17 | **Rebuilt end to end on the shared graph — reconstruction CONFIRMED** (§10.1). Champion macro p
 DECISIONS.md	43	-	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		| 2026-08-17 | **Rebuilt end to end on the shared graph — reconstruction CONFIRMED** (§10.1). Champion macro p
 DECISIONS.md	46	-	99.7	ORPHAN		y		| 2026-08-17 | **Per-family tables reclassified as a view of the validation sample, not a property of the grap
-DECISIONS.md	47	-	0.78	ORPHAN		y	hist	| 2026-08-17 | **Druggability / target class REJECTED as a model input** (§10.2) — and not for the reason prev
-DECISIONS.md	47	-	3.16	ORPHAN		y	hist	| 2026-08-17 | **Druggability / target class REJECTED as a model input** (§10.2) — and not for the reason prev
+DECISIONS.md	47	-	0.78	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor assoc_lift	y	hist	| 2026-08-17 | **Druggability / target class REJECTED as a model input** (§10.2) — and not for the reason prev
+DECISIONS.md	47	-	3.16	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift	y	hist	| 2026-08-17 | **Druggability / target class REJECTED as a model input** (§10.2) — and not for the reason prev
 DECISIONS.md	47	-	0.98	ORPHAN		y	hist	| 2026-08-17 | **Druggability / target class REJECTED as a model input** (§10.2) — and not for the reason prev
-DECISIONS.md	49	-	1.37	ORPHAN		y	hist	| 2026-08-17 | **Safety/toxicity: the lift gate REFUTED the stated prediction and blocked the filter** (§10.2)
+DECISIONS.md	49	-	1.37	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant drug_lift	y	hist	| 2026-08-17 | **Safety/toxicity: the lift gate REFUTED the stated prediction and blocked the filter** (§10.2)
 DECISIONS.md	49	-	0.62	ORPHAN		y	hist	| 2026-08-17 | **Safety/toxicity: the lift gate REFUTED the stated prediction and blocked the filter** (§10.2)
-DECISIONS.md	49	-	4.62	ORPHAN		y	hist	| 2026-08-17 | **Safety/toxicity: the lift gate REFUTED the stated prediction and blocked the filter** (§10.2)
+DECISIONS.md	49	-	4.62	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift	y	hist	| 2026-08-17 | **Safety/toxicity: the lift gate REFUTED the stated prediction and blocked the filter** (§10.2)
 DECISIONS.md	51	-	63,020	ORPHAN		y	hist	| 2026-08-17 | **Deliverable changed from pre-cut to filterable** — the top-50 truncation replaced by a Window
 DECISIONS.md	51	-	76,465	ORPHAN		y	hist	| 2026-08-17 | **Deliverable changed from pre-cut to filterable** — the top-50 truncation replaced by a Window
 DECISIONS.md	52	-	1.42	ORPHAN		y	hist	| 2026-08-17 | **Filter validated per persona** (§8.6; measured in `filtered_shortlist_eval`, since deleted an
@@ -175,7 +175,7 @@ DECISIONS.md	95	-	0.718	VALUE_ONLY	nb1_features_and_config.py:6.1 dwpc_GPGD sing
 DECISIONS.md	95	-	0.601	ORPHAN		y		| 2026-08-19 | **CORRECTION — §6.1's third claim was wrong.** It read "≈0.5 for every gene-only feature"; `gen
 DECISIONS.md	95	-	0.669	VALUE_ONLY	nb1_features_and_config.py:6.1 dwpc_GGD single-feature AUC	y		| 2026-08-19 | **CORRECTION — §6.1's third claim was wrong.** It read "≈0.5 for every gene-only feature"; `gen
 DECISIONS.md	95	-	0.975	VALUE_ONLY	nb1_features_and_config.py:6.1 highest |rho| vs degree	y		| 2026-08-19 | **CORRECTION — §6.1's third claim was wrong.** It read "≈0.5 for every gene-only feature"; `gen
-DECISIONS.md	95	-	1.000	ORPHAN		y		| 2026-08-19 | **CORRECTION — §6.1's third claim was wrong.** It read "≈0.5 for every gene-only feature"; `gen
+DECISIONS.md	95	-	1.000	VALUE_ONLY	nb6_interrogation_and_close.py:6.2 ERBB2 carries a liability flag	y		| 2026-08-19 | **CORRECTION — §6.1's third claim was wrong.** It read "≈0.5 for every gene-only feature"; `gen
 DECISIONS.md	95	-	0.00	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 	y		| 2026-08-19 | **CORRECTION — §6.1's third claim was wrong.** It read "≈0.5 for every gene-only feature"; `gen
 DECISIONS.md	97	-	0.6516	ORPHAN		y	hist	| 2026-08-19 | **REFUTED — the champion does NOT improve under-studied targets** (§7.2, `nb3`). The section cl
 DECISIONS.md	97	-	0.5898	ORPHAN		y	hist	| 2026-08-19 | **REFUTED — the champion does NOT improve under-studied targets** (§7.2, `nb3`). The section cl
@@ -303,7 +303,7 @@ DECISIONS.md	128	-	0.216	ORPHAN		y	hist	| 2026-08-21 | **REFUTED — the graded 
 DECISIONS.md	128	-	0.104	ORPHAN		y	hist	| 2026-08-21 | **REFUTED — the graded proximity variants are NOT degree proxies; the MEAN is the degree-entang
 DECISIONS.md	129	-	0.982	ORPHAN		y		| 2026-08-21 | **`prox_n_reach` dropped before training: ρ = +0.982 with `prox_kernel` and single-feature AUC 
 DECISIONS.md	129	-	0.4864	ORPHAN		y		| 2026-08-21 | **`prox_n_reach` dropped before training: ρ = +0.982 with `prox_kernel` and single-feature AUC 
-DECISIONS.md	129	-	1.000	ORPHAN		y		| 2026-08-21 | **`prox_n_reach` dropped before training: ρ = +0.982 with `prox_kernel` and single-feature AUC 
+DECISIONS.md	129	-	1.000	VALUE_ONLY	nb6_interrogation_and_close.py:6.2 ERBB2 carries a liability flag	y		| 2026-08-21 | **`prox_n_reach` dropped before training: ρ = +0.982 with `prox_kernel` and single-feature AUC 
 DECISIONS.md	130	-	0.6499	ORPHAN		y		| 2026-08-21 | **`prox_kernel` chosen for m7 over `prox_mean`, accepting a worse discriminator to avoid feedin
 DECISIONS.md	130	-	0.6094	ORPHAN		y		| 2026-08-21 | **`prox_kernel` chosen for m7 over `prox_mean`, accepting a worse discriminator to avoid feedin
 DECISIONS.md	130	-	0.5956	ORPHAN		y		| 2026-08-21 | **`prox_kernel` chosen for m7 over `prox_mean`, accepting a worse discriminator to avoid feedin
@@ -561,8 +561,8 @@ docs/demo/DASHBOARD_DESIGN.md	369	4	2.7	ORPHAN				| Fair fight, not a rigged one
 docs/demo/DASHBOARD_DESIGN.md	369	4	2.4	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @200			| Fair fight, not a rigged one | **2.9× / 2.7× / 2.4×** at K=10/50/200 against **equally-connected** genes |
 docs/demo/DASHBOARD_DESIGN.md	371	4	0.59	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability	y		| The harder version | known targets only, by connectivity quintile: score 0.59 → 0.79, detection 17.3% → 57.0
 docs/demo/DASHBOARD_DESIGN.md	371	4	0.79	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability	y		| The harder version | known targets only, by connectivity quintile: score 0.59 → 0.79, detection 17.3% → 57.0
-docs/demo/DASHBOARD_DESIGN.md	371	4	17.3	ORPHAN		y		| The harder version | known targets only, by connectivity quintile: score 0.59 → 0.79, detection 17.3% → 57.0
-docs/demo/DASHBOARD_DESIGN.md	371	4	57.0	ORPHAN		y		| The harder version | known targets only, by connectivity quintile: score 0.59 → 0.79, detection 17.3% → 57.0
+docs/demo/DASHBOARD_DESIGN.md	371	4	17.3	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q1 predicted-positive %	y		| The harder version | known targets only, by connectivity quintile: score 0.59 → 0.79, detection 17.3% → 57.0
+docs/demo/DASHBOARD_DESIGN.md	371	4	57.0	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q5 predicted-positive %	y		| The harder version | known targets only, by connectivity quintile: score 0.59 → 0.79, detection 17.3% → 57.0
 docs/demo/DASHBOARD_DESIGN.md	371	4	3.3	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @10	y		| The harder version | known targets only, by connectivity quintile: score 0.59 → 0.79, detection 17.3% → 57.0
 docs/demo/DASHBOARD_DESIGN.md	381	4	12,272	ORPHAN		y		| Delete the answer key | 12,272 scored → 599 known → **11,673** re-ranked |
 docs/demo/DASHBOARD_DESIGN.md	381	4	11,673	ORPHAN		y		| Delete the answer key | 12,272 scored → 599 known → **11,673** re-ranked |
@@ -576,13 +576,13 @@ docs/demo/DASHBOARD_DESIGN.md	387	4	252.4	ORPHAN				distribution* — Sjögren s
 docs/demo/DASHBOARD_DESIGN.md	396	4	21.3	VALUE_ONLY	nb4_results_three_axes.py:8.3 curated>=0.8 lift@10			| Re-run on a curated source | **21.3×** vs 16.9× — the finding got **stronger** |
 docs/demo/DASHBOARD_DESIGN.md	396	4	16.9	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10			| Re-run on a curated source | **21.3×** vs 16.9× — the finding got **stronger** |
 docs/demo/DASHBOARD_DESIGN.md	397	4	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		| Association ≠ therapeutic relevance | one point per disease, association AUC × therapeutic AUC. **r = +0.002
-docs/demo/DASHBOARD_DESIGN.md	434	4	3.16	ORPHAN				| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
-docs/demo/DASHBOARD_DESIGN.md	434	4	0.78	ORPHAN				| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
-docs/demo/DASHBOARD_DESIGN.md	434	4	3.2	ORPHAN				| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
+docs/demo/DASHBOARD_DESIGN.md	434	4	3.16	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
+docs/demo/DASHBOARD_DESIGN.md	434	4	0.78	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor assoc_lift			| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
+docs/demo/DASHBOARD_DESIGN.md	434	4	3.2	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
 docs/demo/DASHBOARD_DESIGN.md	434	4	1.3	ORPHAN				| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
-docs/demo/DASHBOARD_DESIGN.md	435	4	2.07	ORPHAN				| "Filter out genes the body cannot live without" | intolerant genes: `assoc_lift` **2.07**, `drug_lift` **1.3
-docs/demo/DASHBOARD_DESIGN.md	435	4	1.37	ORPHAN				| "Filter out genes the body cannot live without" | intolerant genes: `assoc_lift` **2.07**, `drug_lift` **1.3
-docs/demo/DASHBOARD_DESIGN.md	436	4	4.62	ORPHAN				| "Exclude known safety liabilities" | flagged genes carry `drug_lift` **4.62** — liabilities are discovered *
+docs/demo/DASHBOARD_DESIGN.md	435	4	2.07	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant assoc_lift			| "Filter out genes the body cannot live without" | intolerant genes: `assoc_lift` **2.07**, `drug_lift` **1.3
+docs/demo/DASHBOARD_DESIGN.md	435	4	1.37	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant drug_lift			| "Filter out genes the body cannot live without" | intolerant genes: `assoc_lift` **2.07**, `drug_lift` **1.3
+docs/demo/DASHBOARD_DESIGN.md	436	4	4.62	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			| "Exclude known safety liabilities" | flagged genes carry `drug_lift` **4.62** — liabilities are discovered *
 docs/demo/DASHBOARD_DESIGN.md	439	4	0.9354	ORPHAN				| The slide no vendor shows you | a lookup table — *"how many diseases is this gene already a drug target for"
 docs/demo/DASHBOARD_DESIGN.md	450	4	2.6	ORPHAN				genetically supported targets are 2.6× more likely to survive the clinic *(Minikel et al., Nature 2024)*.
 docs/demo/DASHBOARD_DESIGN.md	479	6	252.4	ORPHAN				| `AVG(lift_top10)` in a chart | Sjögren is 252.4× and the notebook drops infinities first | the aggregate car
@@ -715,11 +715,11 @@ docs/demo/DASHBOARD_DESIGN.md	1179	13.7	0.0745	ORPHAN				| triple-negative | 8 |
 docs/demo/DASHBOARD_DESIGN.md	1179	13.7	0.0746	ORPHAN				| triple-negative | 8 | 0.0745 | 0.0746 |
 docs/demo/DASHBOARD_DESIGN.md	1181	13.7	0.0001	ORPHAN		y		Every value agrees to ≤ 0.0001. The interval is therefore **pure arithmetic on `auc`, `n_pos` and
 docs/demo/DASHBOARD_DESIGN.md	1224	13.9	12,272	ORPHAN				| show all pairs for the disease (12,272 rows, virtualised) | **add** — replaces the top-15 slice |
-docs/demo/DASHBOARD_DESIGN.md	1271	14.1	3.16	ORPHAN				reads" pass would remove them. They carry the **entire act 6 punch line**: membrane receptor 3.16× vs
-docs/demo/DASHBOARD_DESIGN.md	1272	14.1	0.78	ORPHAN				0.78×, LoF-intolerant 2.07× / 1.37×, liability 4.62×. Those numbers appear in the deck and **nothing
-docs/demo/DASHBOARD_DESIGN.md	1272	14.1	2.07	ORPHAN				0.78×, LoF-intolerant 2.07× / 1.37×, liability 4.62×. Those numbers appear in the deck and **nothing
-docs/demo/DASHBOARD_DESIGN.md	1272	14.1	1.37	ORPHAN				0.78×, LoF-intolerant 2.07× / 1.37×, liability 4.62×. Those numbers appear in the deck and **nothing
-docs/demo/DASHBOARD_DESIGN.md	1272	14.1	4.62	ORPHAN				0.78×, LoF-intolerant 2.07× / 1.37×, liability 4.62×. Those numbers appear in the deck and **nothing
+docs/demo/DASHBOARD_DESIGN.md	1271	14.1	3.16	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			reads" pass would remove them. They carry the **entire act 6 punch line**: membrane receptor 3.16× vs
+docs/demo/DASHBOARD_DESIGN.md	1272	14.1	0.78	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor assoc_lift			0.78×, LoF-intolerant 2.07× / 1.37×, liability 4.62×. Those numbers appear in the deck and **nothing
+docs/demo/DASHBOARD_DESIGN.md	1272	14.1	2.07	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant assoc_lift			0.78×, LoF-intolerant 2.07× / 1.37×, liability 4.62×. Those numbers appear in the deck and **nothing
+docs/demo/DASHBOARD_DESIGN.md	1272	14.1	1.37	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant drug_lift			0.78×, LoF-intolerant 2.07× / 1.37×, liability 4.62×. Those numbers appear in the deck and **nothing
+docs/demo/DASHBOARD_DESIGN.md	1272	14.1	4.62	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			0.78×, LoF-intolerant 2.07× / 1.37×, liability 4.62×. Those numbers appear in the deck and **nothing
 docs/demo/DASHBOARD_DESIGN.md	1311	14.2	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC			**0.8230** (NaN-skipping over the 668 that score), it is produced by a **visual Prepare recipe**, and it
 docs/demo/DASHBOARD_DESIGN.md	1312	14.2	1,113	ORPHAN				already feeds `compute_persona_candidates`. The `_2` variant is a 1,113-row two-level Python output that
 docs/demo/DASHBOARD_DESIGN.md	1395	14.5	3.29	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @10	y		| degree-matched enrichment | `tractability_axis` | pooled 3.29× @10, 2.42× @200; macro 3.11× @10; the estimat
@@ -727,20 +727,122 @@ docs/demo/DASHBOARD_DESIGN.md	1395	14.5	2.42	VALUE_ONLY	nb4_results_three_axes.p
 docs/demo/DASHBOARD_DESIGN.md	1395	14.5	3.11	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10	y		| degree-matched enrichment | `tractability_axis` | pooled 3.29× @10, 2.42× @200; macro 3.11× @10; the estimat
 docs/demo/DASHBOARD_DESIGN.md	1396	14.5	0.59	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability	y		| hub-bias meter | `scored_champion` | 0.59 → 0.79 by degree quintile, 17.3% → 57.0% |
 docs/demo/DASHBOARD_DESIGN.md	1396	14.5	0.79	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability	y		| hub-bias meter | `scored_champion` | 0.59 → 0.79 by degree quintile, 17.3% → 57.0% |
-docs/demo/DASHBOARD_DESIGN.md	1396	14.5	17.3	ORPHAN		y		| hub-bias meter | `scored_champion` | 0.59 → 0.79 by degree quintile, 17.3% → 57.0% |
-docs/demo/DASHBOARD_DESIGN.md	1396	14.5	57.0	ORPHAN		y		| hub-bias meter | `scored_champion` | 0.59 → 0.79 by degree quintile, 17.3% → 57.0% |
+docs/demo/DASHBOARD_DESIGN.md	1396	14.5	17.3	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q1 predicted-positive %	y		| hub-bias meter | `scored_champion` | 0.59 → 0.79 by degree quintile, 17.3% → 57.0% |
+docs/demo/DASHBOARD_DESIGN.md	1396	14.5	57.0	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q5 predicted-positive %	y		| hub-bias meter | `scored_champion` | 0.59 → 0.79 by degree quintile, 17.3% → 57.0% |
 docs/demo/DASHBOARD_DESIGN.md	1397	14.5	16.88	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10	y		| novel discovery | `novel_discovery_eval` | approved 16.88× @10, 5.04× @200; investigational 8.85× @10 |
 docs/demo/DASHBOARD_DESIGN.md	1397	14.5	5.04	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@200	y		| novel discovery | `novel_discovery_eval` | approved 16.88× @10, 5.04× @200; investigational 8.85× @10 |
 docs/demo/DASHBOARD_DESIGN.md	1397	14.5	8.85	VALUE_ONLY	nb4_results_three_axes.py:8.3 investigational lift@10	y		| novel discovery | `novel_discovery_eval` | approved 16.88× @10, 5.04× @200; investigational 8.85× @10 |
 docs/demo/DASHBOARD_DESIGN.md	1398	14.5	21.32	VALUE_ONLY	nb4_results_three_axes.py:8.3 curated>=0.8 lift@10			| ground-truth provenance | `raw_ot_known_drug`, `known_drug_truth` | 82% multi-target, 8% single-target survi
 docs/demo/DASHBOARD_DESIGN.md	1399	14.5	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		| orthogonality | `validation_auc_by_disease` × `drug_target_benchmark` | r = +0.002, R² = 0.0000 |
 docs/demo/DASHBOARD_DESIGN.md	1399	14.5	0.0000	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 	y		| orthogonality | `validation_auc_by_disease` × `drug_target_benchmark` | r = +0.002, R² = 0.0000 |
-docs/demo/DASHBOARD_DESIGN.md	1400	14.5	3.16	ORPHAN		y	hist	| **the three refuted gates** | **`tractability_lift`, `safety_lift`** | **3.16× / 0.78×, 2.07× / 1.37×, 4.62×
-docs/demo/DASHBOARD_DESIGN.md	1400	14.5	0.78	ORPHAN		y	hist	| **the three refuted gates** | **`tractability_lift`, `safety_lift`** | **3.16× / 0.78×, 2.07× / 1.37×, 4.62×
-docs/demo/DASHBOARD_DESIGN.md	1400	14.5	2.07	ORPHAN		y	hist	| **the three refuted gates** | **`tractability_lift`, `safety_lift`** | **3.16× / 0.78×, 2.07× / 1.37×, 4.62×
-docs/demo/DASHBOARD_DESIGN.md	1400	14.5	1.37	ORPHAN		y	hist	| **the three refuted gates** | **`tractability_lift`, `safety_lift`** | **3.16× / 0.78×, 2.07× / 1.37×, 4.62×
-docs/demo/DASHBOARD_DESIGN.md	1400	14.5	4.62	ORPHAN		y	hist	| **the three refuted gates** | **`tractability_lift`, `safety_lift`** | **3.16× / 0.78×, 2.07× / 1.37×, 4.62×
+docs/demo/DASHBOARD_DESIGN.md	1400	14.5	3.16	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift	y	hist	| **the three refuted gates** | **`tractability_lift`, `safety_lift`** | **3.16× / 0.78×, 2.07× / 1.37×, 4.62×
+docs/demo/DASHBOARD_DESIGN.md	1400	14.5	0.78	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor assoc_lift	y	hist	| **the three refuted gates** | **`tractability_lift`, `safety_lift`** | **3.16× / 0.78×, 2.07× / 1.37×, 4.62×
+docs/demo/DASHBOARD_DESIGN.md	1400	14.5	2.07	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant assoc_lift	y	hist	| **the three refuted gates** | **`tractability_lift`, `safety_lift`** | **3.16× / 0.78×, 2.07× / 1.37×, 4.62×
+docs/demo/DASHBOARD_DESIGN.md	1400	14.5	1.37	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant drug_lift	y	hist	| **the three refuted gates** | **`tractability_lift`, `safety_lift`** | **3.16× / 0.78×, 2.07× / 1.37×, 4.62×
+docs/demo/DASHBOARD_DESIGN.md	1400	14.5	4.62	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift	y	hist	| **the three refuted gates** | **`tractability_lift`, `safety_lift`** | **3.16× / 0.78×, 2.07× / 1.37×, 4.62×
 docs/demo/DASHBOARD_DESIGN.md	1402	14.5	0.9354	ORPHAN				| the lookup-table slide | `drug_target_benchmark` | 0.9354 vs the trained model |
+docs/demo/DASHBOARD_DESIGN.md	1432	14.6	2,882	ORPHAN				**succeeded with 672 rows instead of 2,882**, because its inputs were still being written. A join
+docs/demo/DASHBOARD_DESIGN.md	1536	16	113,391	ORPHAN				| **A1** | `graph_node_type_counts` | 8 | Group | sums to 113,391 |
+docs/demo/DASHBOARD_DESIGN.md	1537	16	113,391	ORPHAN				| | `graph_node_source_counts` | 7 | Group | sums to 113,391 |
+docs/demo/DASHBOARD_DESIGN.md	1538	16	2,851,510	ORPHAN				| | `graph_relation_counts` | 18 | Group | sums to 2,851,510 |
+docs/demo/DASHBOARD_DESIGN.md	1539	16	520,380	ORPHAN				| | `graph_ppi_provenance` | 7 | Group + pre-filter | sums to **520,380** — proves the filter fired |
+docs/demo/DASHBOARD_DESIGN.md	1540	16	323,786	ORPHAN				| | `graph_label_evidence` | 3 | Group + pre-filter | sums to **323,786** |
+docs/demo/DASHBOARD_DESIGN.md	1541	16	0.0001	ORPHAN				| **A2** | `validation_auc_ci` | 670 | **Prepare, Hanley–McNeil in GREL** | every documented `auc_se` to ≤0.00
+docs/demo/DASHBOARD_DESIGN.md	1541	16	1.0410	ORPHAN				| **A2** | `validation_auc_ci` | 670 | **Prepare, Hanley–McNeil in GREL** | every documented `auc_se` to ≤0.00
+docs/demo/DASHBOARD_DESIGN.md	1543	16	25,996	ORPHAN				| | `disease_eligibility` | 2 | Group | **25,996 / 1,157** |
+docs/demo/DASHBOARD_DESIGN.md	1543	16	1,157	ORPHAN				| | `disease_eligibility` | 2 | Group | **25,996 / 1,157** |
+docs/demo/DASHBOARD_DESIGN.md	1549	16	27,153	ORPHAN				| | `disease_hierarchy_annotation` | 27,153 | moved | — |
+docs/demo/DASHBOARD_DESIGN.md	1550	16	129,253	ORPHAN				| **A4** | `dashboard_candidates` | 129,253 | moved | — |
+docs/demo/DASHBOARD_DESIGN.md	1558	16	3,380,853	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GGD rows			`enriched_dwpc_GGD` (3,380,853), `enriched_dwpc_GPGD` (5,373,706) and `enriched_dwpc_GCD` (42,227),
+docs/demo/DASHBOARD_DESIGN.md	1558	16	5,373,706	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GPGD rows			`enriched_dwpc_GGD` (3,380,853), `enriched_dwpc_GPGD` (5,373,706) and `enriched_dwpc_GCD` (42,227),
+docs/demo/DASHBOARD_DESIGN.md	1558	16	42,227	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GCD rows			`enriched_dwpc_GGD` (3,380,853), `enriched_dwpc_GPGD` (5,373,706) and `enriched_dwpc_GCD` (42,227),
+docs/demo/DASHBOARD_DESIGN.md	1745	19.2	0.35	ORPHAN				- **Prepare**: formula `lof_intolerant` = `if(isBlank(lof_oe_upper), null, if(lof_oe_upper < 0.35, 1, 0))`;
+docs/demo/DASHBOARD_DESIGN.md	1780	20.1	20,861	ORPHAN				| `compute_graph_genes` | **Filter** | `graph_genes` | 20,861 |
+docs/demo/DASHBOARD_DESIGN.md	1781	20.1	20,861	ORPHAN				| `compute_gene_crosswalk` | **Join** (`entrez_id = node_id`, auto-cast) | `gene_crosswalk` | 20,861 |
+docs/demo/DASHBOARD_DESIGN.md	1782	20.1	20,837	ORPHAN				| `compute_gene_safety_join` | **Join** on `symbol` | `gene_safety_joined` | 20,837 |
+docs/demo/DASHBOARD_DESIGN.md	1783	20.1	20,707	ORPHAN				| `compute_gene_safety_best` | **TopN**, 1 per `node_index` | `gene_safety_best` | 20,707 |
+docs/demo/DASHBOARD_DESIGN.md	1784	20.1	20,707	ORPHAN				| `compute_gene_safety_v2` | **Prepare** — 2 formulas, rename, select | `enriched_gene_safety_v2` | 20,707 |
+docs/demo/DASHBOARD_DESIGN.md	1786	20.1	20,707	ORPHAN				**Result: 0 mismatched cells across 20,707 genes × 10 columns — 207,070 cells compared.** The comparator
+docs/demo/DASHBOARD_DESIGN.md	1786	20.1	207,070	ORPHAN				**Result: 0 mismatched cells across 20,707 genes × 10 columns — 207,070 cells compared.** The comparator
+docs/demo/DASHBOARD_DESIGN.md	1794	20.2	20,861	ORPHAN				**The `drop_duplicates("symbol")` never fires.** `gene_crosswalk` is 20,861 rows over 20,861 distinct
+docs/demo/DASHBOARD_DESIGN.md	1798	20.2	78,691	ORPHAN				**But `drop_duplicates("gene_index")` fires, and it is non-deterministic.** `raw_ot_safety` has 78,691
+docs/demo/DASHBOARD_DESIGN.md	1799	20.2	77,084	ORPHAN				rows over 77,084 symbols — **477 symbols carry more than one row** (2,084 rows), because one symbol can
+docs/demo/DASHBOARD_DESIGN.md	1799	20.2	2,084	ORPHAN				rows over 77,084 symbols — **477 symbols carry more than one row** (2,084 rows), because one symbol can
+docs/demo/DASHBOARD_DESIGN.md	1833	20.5	20,861	ORPHAN				Same shape, verified the same way: **0 mismatched cells across 20,861 genes × 9 columns — 187,749
+docs/demo/DASHBOARD_DESIGN.md	1833	20.5	187,749	ORPHAN				Same shape, verified the same way: **0 mismatched cells across 20,861 genes × 9 columns — 187,749
+docs/demo/DASHBOARD_DESIGN.md	1900	21.2	12,272	ORPHAN				correct** — 13 personas, HER2+ at 12,272, matching the current population exactly. The timestamp is
+docs/demo/DASHBOARD_DESIGN.md	1918	21.3	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		**The number is right and it is unreproducible.** Macro AUC 0.8230 — the figure act 2 leads with, and
+docs/demo/DASHBOARD_DESIGN.md	1927	21.3	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		`validation_set_scored`, confirm `validation_auc_by_disease` still reproduces macro **0.8230** over 668
+docs/demo/DASHBOARD_DESIGN.md	1946	21.5	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| `validation_auc_by_disease` | 670 rows, 668 scored, **macro 0.8230, median 0.8623** — **0 mismatched cells a
+docs/demo/DASHBOARD_DESIGN.md	1946	21.5	0.8623	ORPHAN		y		| `validation_auc_by_disease` | 670 rows, 668 scored, **macro 0.8230, median 0.8623** — **0 mismatched cells a
+docs/demo/DASHBOARD_DESIGN.md	1947	21.5	1.0410	ORPHAN				| `validation_auc_ci` | 670 rows, **0 mismatched cells × 7 columns**; the six documented `auc_se` still reprod
+docs/demo/DASHBOARD_DESIGN.md	2009	22.2	0.59	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability			| `nb3b` | with biology held constant, does the model **under-score** poorly-connected true targets? | **detec
+docs/demo/DASHBOARD_DESIGN.md	2009	22.2	0.79	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability			| `nb3b` | with biology held constant, does the model **under-score** poorly-connected true targets? | **detec
+docs/demo/DASHBOARD_DESIGN.md	2086	23.2	0.6911	ORPHAN				| DSS `nb3` | **0.6911** |
+docs/demo/DASHBOARD_DESIGN.md	2087	23.2	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| repo `nb3` | **0.6886** |
+docs/demo/DASHBOARD_DESIGN.md	2089	23.2	0.6911	ORPHAN		y		And `models.tsv`: **m3-f12 = 0.6911, m7-f14 (champion) = 0.6886.**
+docs/demo/DASHBOARD_DESIGN.md	2089	23.2	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		And `models.tsv`: **m3-f12 = 0.6911, m7-f14 (champion) = 0.6886.**
+docs/demo/DASHBOARD_DESIGN.md	2110	23.3	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| `nb1`'s three figures | the assertion values pinned to the champion (0.6886, not 0.6911) |
+docs/demo/DASHBOARD_DESIGN.md	2110	23.3	0.6911	ORPHAN		y		| `nb1`'s three figures | the assertion values pinned to the champion (0.6886, not 0.6911) |
+docs/demo/DASHBOARD_DESIGN.md	2149	24.2	3,958,921	ORPHAN		y		**1. `scored_champion` cannot be read whole in a container.** 3,958,921 rows killed the process with
+docs/demo/DASHBOARD_DESIGN.md	2151	24.2	73,829	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 known-target rows			iterating 250k-row chunks and keeping only `is_target == 1` (73,829 rows). **Chunking rather than
+docs/demo/DASHBOARD_DESIGN.md	2152	24.2	0.59	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability			sampling was deliberate:** sampling would move the 0.59 / 0.79 figures this section asserts.
+docs/demo/DASHBOARD_DESIGN.md	2152	24.2	0.79	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability			sampling was deliberate:** sampling would move the 0.59 / 0.79 figures this section asserts.
+docs/demo/DASHBOARD_DESIGN.md	2155	24.2	0.860	ORPHAN				documented rates are measured at the F1-optimised **0.860**, which is what `nb3b` uses.
+docs/demo/DASHBOARD_DESIGN.md	2159	24.2	65.5	ORPHAN				| at 0.5 *(my error)* | 65.5% | 84.8% |
+docs/demo/DASHBOARD_DESIGN.md	2159	24.2	84.8	ORPHAN				| at 0.5 *(my error)* | 65.5% | 84.8% |
+docs/demo/DASHBOARD_DESIGN.md	2160	24.2	0.860	ORPHAN				| at 0.860 *(correct)* | **16.8%** | **57.6%** |
+docs/demo/DASHBOARD_DESIGN.md	2160	24.2	16.8	ORPHAN				| at 0.860 *(correct)* | **16.8%** | **57.6%** |
+docs/demo/DASHBOARD_DESIGN.md	2160	24.2	57.6	ORPHAN				| at 0.860 *(correct)* | **16.8%** | **57.6%** |
+docs/demo/DASHBOARD_DESIGN.md	2161	24.2	17.3	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q1 predicted-positive %			| documented | 17.3% | 57.0% |
+docs/demo/DASHBOARD_DESIGN.md	2161	24.2	57.0	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q5 predicted-positive %			| documented | 17.3% | 57.0% |
+docs/demo/DASHBOARD_DESIGN.md	2163	24.2	3.4	ORPHAN				At 0.5 the same data reads as a *mild* effect. At the real threshold it is the 3.4× detection swing the
+docs/demo/DASHBOARD_DESIGN.md	2177	24.3	109,630	ORPHAN				| pairs manufactured by the join | **109,630** | — |
+docs/demo/DASHBOARD_DESIGN.md	2178	24.3	87.5	ORPHAN				| share from multi-target drugs | **87.5%** | 82% |
+docs/demo/DASHBOARD_DESIGN.md	2179	24.3	12.5	ORPHAN				| surviving a single-target demand | **12.5%** | 8% |
+docs/demo/DASHBOARD_DESIGN.md	2181	24.3	2,261	ORPHAN				Also measured: 2,261 drugs carry both edge kinds, the worst hits **78 targets**, and the median drug is
+docs/demo/DASHBOARD_DESIGN.md	2186	24.3	109,630	ORPHAN				difference is most likely a denominator (109,630 manufactured pairs vs the 67,748 that resolve onto the
+docs/demo/DASHBOARD_DESIGN.md	2186	24.3	67,748	VALUE_ONLY	nb4_results_three_axes.py:8.1 resolving onto graph			difference is most likely a denominator (109,630 manufactured pairs vs the 67,748 that resolve onto the
+docs/demo/DASHBOARD_DESIGN.md	2191	24.3	87.5	ORPHAN				the assertion once the denominator is agreed — and until then, **the deck should quote 87.5%, or the
+docs/demo/DASHBOARD_DESIGN.md	2288	26.1	0.8197	ORPHAN		y		| 10.1 macro per-disease AUC | 0.8197 | **0.8230** | **m3-f12** (`models.tsv` assoc_auroc = 0.8197) |
+docs/demo/DASHBOARD_DESIGN.md	2288	26.1	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| 10.1 macro per-disease AUC | 0.8197 | **0.8230** | **m3-f12** (`models.tsv` assoc_auroc = 0.8197) |
+docs/demo/DASHBOARD_DESIGN.md	2289	26.1	0.7976	ORPHAN		y		| 7.3 per-family macro AUC | 0.7976 | **0.8009** | m3-era |
+docs/demo/DASHBOARD_DESIGN.md	2289	26.1	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		| 7.3 per-family macro AUC | 0.7976 | **0.8009** | m3-era |
+docs/demo/DASHBOARD_DESIGN.md	2290	26.1	0.024	ORPHAN		y		| 7.4 orthogonality pearson r | +0.024 | **+0.002** | m3-era |
+docs/demo/DASHBOARD_DESIGN.md	2290	26.1	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		| 7.4 orthogonality pearson r | +0.024 | **+0.002** | m3-era |
+docs/demo/DASHBOARD_DESIGN.md	2291	26.1	0.0006	ORPHAN		y		| 7.4 orthogonality R² | 0.0006 | **0.0000** | m3-era |
+docs/demo/DASHBOARD_DESIGN.md	2291	26.1	0.0000	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 	y		| 7.4 orthogonality R² | 0.0006 | **0.0000** | m3-era |
+docs/demo/DASHBOARD_DESIGN.md	2297	26.1	0.641	ORPHAN		y		| 6.1 dwpc_GPGD single-feature AUC | 0.641 | **0.702** | |
+docs/demo/DASHBOARD_DESIGN.md	2297	26.1	0.702	ORPHAN		y		| 6.1 dwpc_GPGD single-feature AUC | 0.641 | **0.702** | |
+docs/demo/DASHBOARD_DESIGN.md	2298	26.1	0.601	ORPHAN		y		| 6.1 dwpc_GGD single-feature AUC | 0.601 | **0.674** | |
+docs/demo/DASHBOARD_DESIGN.md	2298	26.1	0.674	ORPHAN		y		| 6.1 dwpc_GGD single-feature AUC | 0.601 | **0.674** | |
+docs/demo/DASHBOARD_DESIGN.md	2366	27.2	0.0006	ORPHAN				Four cells. ⚠ **Three other occurrences of `0.0006` in this notebook are `tol=` tolerances, not
+docs/demo/DASHBOARD_DESIGN.md	2371	27.2	0.8197	ORPHAN		y		| 3 | `0.8197` → **`0.8230`** | the *documented value* in `check("10.1 macro per-disease AUC", …)`; its `tol=0
+docs/demo/DASHBOARD_DESIGN.md	2371	27.2	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| 3 | `0.8197` → **`0.8230`** | the *documented value* in `check("10.1 macro per-disease AUC", …)`; its `tol=0
+docs/demo/DASHBOARD_DESIGN.md	2371	27.2	0.0006	ORPHAN		y		| 3 | `0.8197` → **`0.8230`** | the *documented value* in `check("10.1 macro per-disease AUC", …)`; its `tol=0
+docs/demo/DASHBOARD_DESIGN.md	2372	27.2	0.7976	ORPHAN		y		| 5 | `0.7976` → **`0.8009`** | `check("7.3 per-family macro AUC", …)` |
+docs/demo/DASHBOARD_DESIGN.md	2372	27.2	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		| 5 | `0.7976` → **`0.8009`** | `check("7.3 per-family macro AUC", …)` |
+docs/demo/DASHBOARD_DESIGN.md	2373	27.2	0.024	ORPHAN		y		| 7 | `0.024` → **`0.002`** | `check("7.4 orthogonality pearson r", …)` |
+docs/demo/DASHBOARD_DESIGN.md	2373	27.2	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		| 7 | `0.024` → **`0.002`** | `check("7.4 orthogonality pearson r", …)` |
+docs/demo/DASHBOARD_DESIGN.md	2374	27.2	0.0006	ORPHAN				| 7 | `0.0006` → **`0.0000`** | `check("7.4 orthogonality R2", …)` — this one **is** a value |
+docs/demo/DASHBOARD_DESIGN.md	2374	27.2	0.0000	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 			| 7 | `0.0006` → **`0.0000`** | `check("7.4 orthogonality R2", …)` — this one **is** a value |
+docs/demo/DASHBOARD_DESIGN.md	2375	27.2	0.6911	ORPHAN		y		| 9 | `0.6911` → **`0.6886`** | `check("7.4 drug-target macro AUC", …)`; its `tol=0.0006` stays |
+docs/demo/DASHBOARD_DESIGN.md	2375	27.2	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		| 9 | `0.6911` → **`0.6886`** | `check("7.4 drug-target macro AUC", …)`; its `tol=0.0006` stays |
+docs/demo/DASHBOARD_DESIGN.md	2375	27.2	0.0006	ORPHAN		y		| 9 | `0.6911` → **`0.6886`** | `check("7.4 drug-target macro AUC", …)`; its `tol=0.0006` stays |
+docs/demo/DASHBOARD_DESIGN.md	2429	28.1	0.8197	ORPHAN		y		1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, `0.7976` or
+docs/demo/DASHBOARD_DESIGN.md	2429	28.1	0.7976	ORPHAN		y		1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, `0.7976` or
+docs/demo/DASHBOARD_DESIGN.md	2430	28.1	0.6911	ORPHAN				`0.6911` survives anywhere in the file. The five `tol=0.0006` tolerances are untouched.
+docs/demo/DASHBOARD_DESIGN.md	2430	28.1	0.0006	ORPHAN				`0.6911` survives anywhere in the file. The five `tol=0.0006` tolerances are untouched.
+docs/demo/DASHBOARD_DESIGN.md	2446	28.2	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		10.1 macro per-disease AUC 0.8230 PASS 7.4 orthogonality pearson r +0.002 PASS
+docs/demo/DASHBOARD_DESIGN.md	2446	28.2	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		10.1 macro per-disease AUC 0.8230 PASS 7.4 orthogonality pearson r +0.002 PASS
+docs/demo/DASHBOARD_DESIGN.md	2447	28.2	0.0000	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 			10.1 validation diseases 670 PASS 7.4 orthogonality R2 0.0000 PASS
+docs/demo/DASHBOARD_DESIGN.md	2448	28.2	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		7.3 per-family macro AUC 0.8009 PASS 7.4 drug-target macro AUC 0.6886 PASS
+docs/demo/DASHBOARD_DESIGN.md	2448	28.2	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		7.3 per-family macro AUC 0.8009 PASS 7.4 drug-target macro AUC 0.6886 PASS
+docs/demo/DASHBOARD_DESIGN.md	2449	28.2	0.8932	VALUE_ONLY	nb3_validation_and_plots.py:header pooled AUC	y		7.3 families 505 PASS header pooled AUC 0.8932 PASS
+docs/demo/DASHBOARD_DESIGN.md	2450	28.2	0.8046	VALUE_ONLY	nb3_validation_and_plots.py:header per-split-key AUC	y		header per-split-key AUC 0.8046 PASS
+docs/demo/DASHBOARD_DESIGN.md	2454	28.2	0.8932	VALUE_ONLY	nb3_validation_and_plots.py:header pooled AUC	y		`HEADER|pooled=0.8932|per_split_key=0.8046|split_keys=441` — the pooled figure is **7.0 points above**
+docs/demo/DASHBOARD_DESIGN.md	2454	28.2	0.8046	VALUE_ONLY	nb3_validation_and_plots.py:header per-split-key AUC	y		`HEADER|pooled=0.8932|per_split_key=0.8046|split_keys=441` — the pooled figure is **7.0 points above**
+docs/demo/DASHBOARD_DESIGN.md	2455	28.2	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		the macro 0.8230, which is the overstatement §12.2 warns about, now measured rather than asserted.
 docs/demo/DEMO_NARRATIVE.md	18	-	129,253	ORPHAN				**The artifact.** `target_candidates_2` — **129,253 scored candidates across 13 diseases**, each row
 docs/demo/DEMO_NARRATIVE.md	26	-	0.82	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie
 docs/demo/DEMO_NARRATIVE.md	26	-	0.80	ASSERTED	nb3_validation_and_plots.py:header per-split-key AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie
@@ -755,9 +857,9 @@ docs/demo/DEMO_NARRATIVE.md	81	2	2.9	ORPHAN				| Top 10 | **2.9×** |
 docs/demo/DEMO_NARRATIVE.md	82	2	2.7	ORPHAN				| Top 50 | **2.7×** |
 docs/demo/DEMO_NARRATIVE.md	83	2	2.4	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @200			| Top 200 | **2.4×** |
 docs/demo/DEMO_NARRATIVE.md	96	2	0.59	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability			| lowest fifth *(median 6 connections)* | **0.59** | **17.3%** |
-docs/demo/DEMO_NARRATIVE.md	96	2	17.3	ORPHAN				| lowest fifth *(median 6 connections)* | **0.59** | **17.3%** |
+docs/demo/DEMO_NARRATIVE.md	96	2	17.3	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q1 predicted-positive %			| lowest fifth *(median 6 connections)* | **0.59** | **17.3%** |
 docs/demo/DEMO_NARRATIVE.md	97	2	0.79	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability			| highest fifth *(median 155)* | **0.79** | **57.0%** |
-docs/demo/DEMO_NARRATIVE.md	97	2	57.0	ORPHAN				| highest fifth *(median 155)* | **0.79** | **57.0%** |
+docs/demo/DEMO_NARRATIVE.md	97	2	57.0	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q5 predicted-positive %			| highest fifth *(median 155)* | **0.79** | **57.0%** |
 docs/demo/DEMO_NARRATIVE.md	99	2	3.3	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @10			**A 3.3× detection swing on network position alone, with biology held constant.** Both things are true
 docs/demo/DEMO_NARRATIVE.md	122	2	12,310	ORPHAN				Take non-small cell lung cancer. The model scores **12,310** candidate genes. **621** are already
 docs/demo/DEMO_NARRATIVE.md	123	2	11,689	ORPHAN				known targets. We throw all 621 away and look at the remaining **11,689**.
@@ -769,7 +871,7 @@ docs/demo/DEMO_NARRATIVE.md	150	2	21.3	VALUE_ONLY	nb4_results_three_axes.py:8.3 
 docs/demo/DEMO_NARRATIVE.md	150	2	16.9	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10	y		on it. **The discovery result got stronger** — 21.3× instead of 16.9×.
 docs/demo/DEMO_NARRATIVE.md	160	2	0.80	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		Measured across **505 disease families**, average ranking quality holds at **0.80**. Headline number
 docs/demo/DEMO_NARRATIVE.md	161	2	0.82	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC			across 670 individual diseases: **0.82**.
-docs/demo/DEMO_NARRATIVE.md	184	3	3.2	ORPHAN				3.2× more likely to be real drug targets but 1.3× *less* likely to be disease-linked in our data, so
+docs/demo/DEMO_NARRATIVE.md	184	3	3.2	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			3.2× more likely to be real drug targets but 1.3× *less* likely to be disease-linked in our data, so
 docs/demo/DEMO_NARRATIVE.md	184	3	1.3	ORPHAN				3.2× more likely to be real drug targets but 1.3× *less* likely to be disease-linked in our data, so
 docs/demo/DEMO_NARRATIVE.md	196	3	0.935	ORPHAN				this gene already a drug target for"* — scores **0.935** and **beats our trained model**. So we refused
 docs/demo/DEMO_NARRATIVE.md	218	4	2.6	ORPHAN				targets are 2.6× more likely to survive the clinic *(Minikel et al., Nature 2024)*. **Your own graph is
@@ -952,7 +1054,7 @@ docs/prioritizer/FEATURE_AUDIT.md	71	3	0.567	ORPHAN		y		| **`prox_closest`** | P
 docs/prioritizer/FEATURE_AUDIT.md	71	3	0.328	ORPHAN		y		| **`prox_closest`** | Python | gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positive indicator at k = 1**
 docs/prioritizer/FEATURE_AUDIT.md	74	3	0.00	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 			| **`gene_ppi_degree` / `gene_n_pathways`** | Cypher | **0.00% cross-disease variation** (§6.1) | keep, but st
 docs/prioritizer/FEATURE_AUDIT.md	76	3	0.857	ORPHAN		y		| `gene_n_diseases` | Cypher | label-derived; single-feature AUC **0.857**, above the champion | **keep reject
-docs/prioritizer/FEATURE_AUDIT.md	77	3	1.000	ORPHAN		y		| `degree`, `pagerank`, `triangles`, `eigenvector_centrality`, `clustering_coefficient` | plugin | collinear w
+docs/prioritizer/FEATURE_AUDIT.md	77	3	1.000	VALUE_ONLY	nb6_interrogation_and_close.py:6.2 ERBB2 carries a liability flag	y		| `degree`, `pagerank`, `triangles`, `eigenvector_centrality`, `clustering_coefficient` | plugin | collinear w
 docs/prioritizer/FEATURE_AUDIT.md	121	4	6.57	ORPHAN				| pool NULL rate | 6.57% | **5.41%** |
 docs/prioritizer/FEATURE_AUDIT.md	121	4	5.41	ORPHAN				| pool NULL rate | 6.57% | **5.41%** |
 docs/prioritizer/FEATURE_AUDIT.md	122	4	1,114	ORPHAN				| pool diseases with prox coverage | 1,114 | **1,156 of 1,157** |
@@ -1245,7 +1347,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	514	6.1	0.00	VALUE_ONLY	nb2_splitting_and
 docs/prioritizer/TARGET_PRIORITIZER.md	515	6.1	81.94	ORPHAN				| `dwpc_GGD` | 81.94% | yes |
 docs/prioritizer/TARGET_PRIORITIZER.md	516	6.1	68.84	ORPHAN				| `dwpc_GPGD` | 68.84% | yes |
 docs/prioritizer/TARGET_PRIORITIZER.md	517	6.1	96.04	ORPHAN				| `module_size` | 96.04% | no |
-docs/prioritizer/TARGET_PRIORITIZER.md	527	6.1	1.000	ORPHAN				| `gene_ppi_degree` | **+1.000** |
+docs/prioritizer/TARGET_PRIORITIZER.md	527	6.1	1.000	VALUE_ONLY	nb6_interrogation_and_close.py:6.2 ERBB2 carries a liability flag			| `gene_ppi_degree` | **+1.000** |
 docs/prioritizer/TARGET_PRIORITIZER.md	528	6.1	0.981	ORPHAN		y		| `pagerank` | +0.981 |
 docs/prioritizer/TARGET_PRIORITIZER.md	529	6.1	0.934	ORPHAN				| `triangles` | +0.934 |
 docs/prioritizer/TARGET_PRIORITIZER.md	530	6.1	0.841	ORPHAN				| `eigenvector_centrality` | +0.841 |
@@ -1523,8 +1625,8 @@ docs/prioritizer/TARGET_PRIORITIZER.md	993	7.2	0.0855	ORPHAN			hist	**That recov
 docs/prioritizer/TARGET_PRIORITIZER.md	999	7.2	0.59	ASSERTED	nb3b_hub_bias_meter.py:7.2 champion Q1 probability			> 0.59-vs-0.79 gap is measured on current data and stands on its own. What does **not** stand is any
 docs/prioritizer/TARGET_PRIORITIZER.md	999	7.2	0.79	ASSERTED	nb3b_hub_bias_meter.py:7.2 champion Q5 probability			> 0.59-vs-0.79 gap is measured on current data and stands on its own. What does **not** stand is any
 docs/prioritizer/TARGET_PRIORITIZER.md	1004	7.2	0.860	ORPHAN				**Detection swing at the F1 threshold (0.860):** low-degree known targets are predicted positive
-docs/prioritizer/TARGET_PRIORITIZER.md	1005	7.2	17.3	ORPHAN				**17.3%** of the time, high-degree **57.0%** — a **3.3× swing on network position alone**, with biology
-docs/prioritizer/TARGET_PRIORITIZER.md	1005	7.2	57.0	ORPHAN				**17.3%** of the time, high-degree **57.0%** — a **3.3× swing on network position alone**, with biology
+docs/prioritizer/TARGET_PRIORITIZER.md	1005	7.2	17.3	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q1 predicted-positive %			**17.3%** of the time, high-degree **57.0%** — a **3.3× swing on network position alone**, with biology
+docs/prioritizer/TARGET_PRIORITIZER.md	1005	7.2	57.0	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q5 predicted-positive %			**17.3%** of the time, high-degree **57.0%** — a **3.3× swing on network position alone**, with biology
 docs/prioritizer/TARGET_PRIORITIZER.md	1005	7.2	3.3	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @10			**17.3%** of the time, high-degree **57.0%** — a **3.3× swing on network position alone**, with biology
 docs/prioritizer/TARGET_PRIORITIZER.md	1012	7.3	0.8009	ASSERTED	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		Same chain grouped by family: **505 families, macro 0.8009, median 0.8118, recall@20 0.1189.**
 docs/prioritizer/TARGET_PRIORITIZER.md	1012	7.3	0.8118	ORPHAN		y		Same chain grouped by family: **505 families, macro 0.8009, median 0.8118, recall@20 0.1189.**
@@ -1584,17 +1686,17 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1103	7.4	0.98	ORPHAN		y		| antibody-tract
 docs/prioritizer/TARGET_PRIORITIZER.md	1103	7.4	1.39	ORPHAN		y		| antibody-tractable *(as a separator)* | **0.98** — i.e. no signal | **1.39** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1104	7.4	1.23	ORPHAN		y		| small-molecule tractable | 1.23 | **2.21** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1104	7.4	2.21	ORPHAN		y		| small-molecule tractable | 1.23 | **2.21** |
-docs/prioritizer/TARGET_PRIORITIZER.md	1105	7.4	0.78	ORPHAN				| **`Membrane receptor`** class | **0.78** — *depleted* | **3.16** — 3× enriched |
-docs/prioritizer/TARGET_PRIORITIZER.md	1105	7.4	3.16	ORPHAN				| **`Membrane receptor`** class | **0.78** — *depleted* | **3.16** — 3× enriched |
+docs/prioritizer/TARGET_PRIORITIZER.md	1105	7.4	0.78	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor assoc_lift			| **`Membrane receptor`** class | **0.78** — *depleted* | **3.16** — 3× enriched |
+docs/prioritizer/TARGET_PRIORITIZER.md	1105	7.4	3.16	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			| **`Membrane receptor`** class | **0.78** — *depleted* | **3.16** — 3× enriched |
 docs/prioritizer/TARGET_PRIORITIZER.md	1106	7.4	1.60	ORPHAN				| `Ion channel` class | 1.60 | **11.9** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1107	7.4	1.45	ORPHAN				| `Structural protein` class | 1.45 | **12.3** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1108	7.4	0.90	ORPHAN				| `Secreted protein` class | 0.90 | 0.26 |
 docs/prioritizer/TARGET_PRIORITIZER.md	1108	7.4	0.26	ORPHAN				| `Secreted protein` class | 0.90 | 0.26 |
 docs/prioritizer/TARGET_PRIORITIZER.md	1114	7.4	0.76	ORPHAN			hist	The reference measured 0.76× / 3× for membrane receptors and 13× / 15.6× for ion channels and
 docs/prioritizer/TARGET_PRIORITIZER.md	1114	7.4	15.6	ORPHAN			hist	The reference measured 0.76× / 3× for membrane receptors and 13× / 15.6× for ion channels and
-docs/prioritizer/TARGET_PRIORITIZER.md	1115	7.4	0.78	ORPHAN				structural proteins; the rebuild gives 0.78× / 3.16× and 11.9× / 12.3×. Same direction, same order of
-docs/prioritizer/TARGET_PRIORITIZER.md	1115	7.4	3.16	ORPHAN				structural proteins; the rebuild gives 0.78× / 3.16× and 11.9× / 12.3×. Same direction, same order of
-docs/prioritizer/TARGET_PRIORITIZER.md	1115	7.4	11.9	ORPHAN				structural proteins; the rebuild gives 0.78× / 3.16× and 11.9× / 12.3×. Same direction, same order of
+docs/prioritizer/TARGET_PRIORITIZER.md	1115	7.4	0.78	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor assoc_lift			structural proteins; the rebuild gives 0.78× / 3.16× and 11.9× / 12.3×. Same direction, same order of
+docs/prioritizer/TARGET_PRIORITIZER.md	1115	7.4	3.16	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			structural proteins; the rebuild gives 0.78× / 3.16× and 11.9× / 12.3×. Same direction, same order of
+docs/prioritizer/TARGET_PRIORITIZER.md	1115	7.4	11.9	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 ion channel drug_lift			structural proteins; the rebuild gives 0.78× / 3.16× and 11.9× / 12.3×. Same direction, same order of
 docs/prioritizer/TARGET_PRIORITIZER.md	1115	7.4	12.3	ORPHAN				structural proteins; the rebuild gives 0.78× / 3.16× and 11.9× / 12.3×. Same direction, same order of
 docs/prioritizer/TARGET_PRIORITIZER.md	1130	7.5	13,573	ORPHAN				handling — only the label changes.** Train on a weak label (approved OR under investigation, 13,573
 docs/prioritizer/TARGET_PRIORITIZER.md	1136	7.5	0.6836	ORPHAN		y		| Mean per-disease **drug-target** AUC | 0.6836 | **0.9324** |
@@ -1698,7 +1800,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1353	8.4	20,861	ORPHAN				direct assertio
 docs/prioritizer/TARGET_PRIORITIZER.md	1354	8.4	5.3	ORPHAN				(5.3%). It had never been used to evaluate the model.
 docs/prioritizer/TARGET_PRIORITIZER.md	1360	8.4	5.3	ORPHAN				| **demonstrated** | a `drug_protein` edge exists | 5.3% | **2.2% → 14.0%** — strong |
 docs/prioritizer/TARGET_PRIORITIZER.md	1360	8.4	2.2	ORPHAN				| **demonstrated** | a `drug_protein` edge exists | 5.3% | **2.2% → 14.0%** — strong |
-docs/prioritizer/TARGET_PRIORITIZER.md	1360	8.4	14.0	ORPHAN				| **demonstrated** | a `drug_protein` edge exists | 5.3% | **2.2% → 14.0%** — strong |
+docs/prioritizer/TARGET_PRIORITIZER.md	1360	8.4	14.0	VALUE_ONLY	nb6_interrogation_and_close.py:6.3 HER2+ vs TNBC all-gene overlap			| **demonstrated** | a `drug_protein` edge exists | 5.3% | **2.2% → 14.0%** — strong |
 docs/prioritizer/TARGET_PRIORITIZER.md	1361	8.4	59.9	ORPHAN		y		| **assessed** | an OT tractability bucket is set | 59.9% | 62.4% → 72.9% — mild |
 docs/prioritizer/TARGET_PRIORITIZER.md	1361	8.4	62.4	ORPHAN		y		| **assessed** | an OT tractability bucket is set | 59.9% | 62.4% → 72.9% — mild |
 docs/prioritizer/TARGET_PRIORITIZER.md	1361	8.4	72.9	ORPHAN		y		| **assessed** | an OT tractability bucket is set | 59.9% | 62.4% → 72.9% — mild |
@@ -1779,7 +1881,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1546	8.7	29.0	ORPHAN		y		Also outstanding
 docs/prioritizer/TARGET_PRIORITIZER.md	1546	8.7	0.96	ORPHAN		y		Also outstanding on *both*: **myelofibrosis** (ranking 29.0×, drug AUC 0.96, approved 67.0×, JAK2 at
 docs/prioritizer/TARGET_PRIORITIZER.md	1546	8.7	67.0	ORPHAN		y		Also outstanding on *both*: **myelofibrosis** (ranking 29.0×, drug AUC 0.96, approved 67.0×, JAK2 at
 docs/prioritizer/TARGET_PRIORITIZER.md	1548	8.7	0.99	ORPHAN		y		polycythemia vera** (JAK2 at #3), **GIST** (drug AUC 0.99), **anaplastic large cell lymphoma** (drug
-docs/prioritizer/TARGET_PRIORITIZER.md	1549	8.7	1.00	ORPHAN		y		AUC 1.00).
+docs/prioritizer/TARGET_PRIORITIZER.md	1549	8.7	1.00	VALUE_ONLY	nb6_interrogation_and_close.py:6.2 ERBB2 carries a liability flag	y		AUC 1.00).
 docs/prioritizer/TARGET_PRIORITIZER.md	1557	8.7	2.9	ORPHAN		y		3. **Drop CKD** — below chance on discovery, 2.9× ranking. Its SLC-transporter list is biologically
 docs/prioritizer/TARGET_PRIORITIZER.md	1560	8.7	40.7	ORPHAN				or psoriatic arthritis (40.7× approved). Both break an all-oncology-plus-metabolic panel.
 docs/prioritizer/TARGET_PRIORITIZER.md	1568	8.8	13,126	ORPHAN				**699 of 13,126** (5.33 percentile, score 0.889) and is predicted negative at the F1 threshold.
@@ -1847,24 +1949,24 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1836	10.1	0.0049	ORPHAN				and was estima
 docs/prioritizer/TARGET_PRIORITIZER.md	1836	10.1	0.0031	ORPHAN				and was estimated at +0.0049. The observed −0.0031 is *smaller* than that estimate, so the two partly
 docs/prioritizer/TARGET_PRIORITIZER.md	1837	10.1	0.8197	ORPHAN				cancel. **Metric cross-validation holds:** visual chain and code recipe both give 0.8197, max
 docs/prioritizer/TARGET_PRIORITIZER.md	1838	10.1	1.9	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			difference 1.9×10⁻⁴.
-docs/prioritizer/TARGET_PRIORITIZER.md	1851	10.2	0.78	ORPHAN		y		lift of **0.78 (depleted)** and a drug-target lift of **3.16×**; antibody-tractability's 0.98
-docs/prioritizer/TARGET_PRIORITIZER.md	1851	10.2	3.16	ORPHAN		y		lift of **0.78 (depleted)** and a drug-target lift of **3.16×**; antibody-tractability's 0.98
+docs/prioritizer/TARGET_PRIORITIZER.md	1851	10.2	0.78	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor assoc_lift	y		lift of **0.78 (depleted)** and a drug-target lift of **3.16×**; antibody-tractability's 0.98
+docs/prioritizer/TARGET_PRIORITIZER.md	1851	10.2	3.16	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift	y		lift of **0.78 (depleted)** and a drug-target lift of **3.16×**; antibody-tractability's 0.98
 docs/prioritizer/TARGET_PRIORITIZER.md	1851	10.2	0.98	ORPHAN		y		lift of **0.78 (depleted)** and a drug-target lift of **3.16×**; antibody-tractability's 0.98
 docs/prioritizer/TARGET_PRIORITIZER.md	1857	10.2	0.98	ORPHAN		y		| antibody-tractable | 0.98 — no signal | 1.39× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1857	10.2	1.39	ORPHAN		y		| antibody-tractable | 0.98 — no signal | 1.39× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1858	10.2	1.23	ORPHAN		y		| small-molecule tractable | 1.23 | 2.21× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1858	10.2	2.21	ORPHAN		y		| small-molecule tractable | 1.23 | 2.21× |
-docs/prioritizer/TARGET_PRIORITIZER.md	1859	10.2	0.78	ORPHAN				| **`Membrane receptor`** | **0.78 — depleted** | **3.16×** |
-docs/prioritizer/TARGET_PRIORITIZER.md	1859	10.2	3.16	ORPHAN				| **`Membrane receptor`** | **0.78 — depleted** | **3.16×** |
+docs/prioritizer/TARGET_PRIORITIZER.md	1859	10.2	0.78	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor assoc_lift			| **`Membrane receptor`** | **0.78 — depleted** | **3.16×** |
+docs/prioritizer/TARGET_PRIORITIZER.md	1859	10.2	3.16	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			| **`Membrane receptor`** | **0.78 — depleted** | **3.16×** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1860	10.2	1.60	ORPHAN				| `Ion channel` | 1.60 | 11.9× |
-docs/prioritizer/TARGET_PRIORITIZER.md	1860	10.2	11.9	ORPHAN				| `Ion channel` | 1.60 | 11.9× |
+docs/prioritizer/TARGET_PRIORITIZER.md	1860	10.2	11.9	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 ion channel drug_lift			| `Ion channel` | 1.60 | 11.9× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1861	10.2	1.45	ORPHAN				| `Structural protein` | 1.45 | 12.3× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1861	10.2	12.3	ORPHAN				| `Structural protein` | 1.45 | 12.3× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1862	10.2	0.90	ORPHAN				| `Secreted protein` | 0.90 | 0.26× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1862	10.2	0.26	ORPHAN				| `Secreted protein` | 0.90 | 0.26× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1875	10.2	0.35	ORPHAN				| < 0.35 *(intolerant)* | **1.37×** | 2.07× |
-docs/prioritizer/TARGET_PRIORITIZER.md	1875	10.2	1.37	ORPHAN				| < 0.35 *(intolerant)* | **1.37×** | 2.07× |
-docs/prioritizer/TARGET_PRIORITIZER.md	1875	10.2	2.07	ORPHAN				| < 0.35 *(intolerant)* | **1.37×** | 2.07× |
+docs/prioritizer/TARGET_PRIORITIZER.md	1875	10.2	1.37	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant drug_lift			| < 0.35 *(intolerant)* | **1.37×** | 2.07× |
+docs/prioritizer/TARGET_PRIORITIZER.md	1875	10.2	2.07	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant assoc_lift			| < 0.35 *(intolerant)* | **1.37×** | 2.07× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1876	10.2	0.35	ORPHAN				| 0.35 – 0.7 | 1.33× | 1.36× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1876	10.2	1.33	ORPHAN				| 0.35 – 0.7 | 1.33× | 1.36× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1876	10.2	1.36	ORPHAN				| 0.35 – 0.7 | 1.33× | 1.36× |
@@ -1874,7 +1976,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1878	10.2	0.80	VALUE_ONLY	nb3_validation_
 docs/prioritizer/TARGET_PRIORITIZER.md	1878	10.2	0.60	ORPHAN				| 1.0 – 1.5 | 0.80× | 0.60× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1879	10.2	0.62	ORPHAN				| > 1.5 *(tolerant)* | **0.62×** | 0.40× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1879	10.2	0.40	ORPHAN				| > 1.5 *(tolerant)* | **0.62×** | 0.40× |
-docs/prioritizer/TARGET_PRIORITIZER.md	1882	10.2	4.62	ORPHAN				drugging — and a drug is not a germline knockout. Separately, **`has_safety_liability` is 4.62×
+docs/prioritizer/TARGET_PRIORITIZER.md	1882	10.2	4.62	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			drugging — and a drug is not a germline knockout. Separately, **`has_safety_liability` is 4.62×
 docs/prioritizer/TARGET_PRIORITIZER.md	1900	10.3	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		- **Report drug-target AUC stratified by route support** (§5.2.1) — 0.6886 all positives / **0.7471**
 docs/prioritizer/TARGET_PRIORITIZER.md	1900	10.3	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		- **Report drug-target AUC stratified by route support** (§5.2.1) — 0.6886 all positives / **0.7471**
 docs/prioritizer/TARGET_PRIORITIZER.md	1901	10.3	91.8	ORPHAN				route-supported. Removes the 91.8× outcome-selection bias from the *metric* without touching the
@@ -1954,5 +2056,7 @@ docs/reference/RESEARCH_NOTE.md	173	6	2504.08445	ORPHAN				| 2 | [KGE gene–dis
 docs/reference/RESEARCH_NOTE.md	175	6	2105.10578	ORPHAN				| 4 | [KG tensor factorization — arXiv 2022](https://arxiv.org/abs/2105.10578) | primary | deferred (KGE) |
 docs/reference/RESEARCH_NOTE.md	181	6	10.1186	ORPHAN		y		| 10 | [MultiXrank — *BMC Bioinf* 2024](https://link.springer.com/article/10.1186/s12859-024-05683-z) | primar
 docs/reference/RESEARCH_NOTE.md	193	6	10.3389	ORPHAN				| 22 | [BenevolentAI — *Front Pharmacol* 2021](https://www.frontiersin.org/journals/pharmacology/articles/10.3
-notebooks/README.md	34	-	0.8567	ORPHAN				- **The gene-popularity shortcut reaches the association axis**: `gene_n_diseases` alone scores 0.8567,
-notebooks/README.md	37	-	56.4	ORPHAN				the more specific term wins 56.4% of the time.
+notebooks/README.md	35	-	0.59	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability			under-score poorly-connected true targets?"* — about **detection**, and it is the source of the 0.59 →
+notebooks/README.md	36	-	0.79	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability			0.79 finding. They point opposite ways and both are true. `nb6` §5.2 carries `nb3b`'s version for the
+notebooks/README.md	83	-	0.8567	ORPHAN				- **The gene-popularity shortcut reaches the association axis**: `gene_n_diseases` alone scores 0.8567.
+notebooks/README.md	84	-	56.4	ORPHAN				- **§3.3's thesis was backwards** — over 259 parent-child pairs the more specific term wins 56.4%.
