@@ -20,6 +20,10 @@
   import { computed, onMounted, ref, watch } from 'vue'
   import { apiUrl } from '@/utils/api'
   import ActCard from '@/components/act/ActCard.vue'
+  import ActSay from '@/components/act/ActSay.vue'
+  import { EaSelect, EaEmpty } from '@/components/ui'
+  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+  import { ListFilter, ShieldAlert, FileCheck2 } from 'lucide-vue-next'
 
   defineOptions({ name: 'ShortlistView' })
 
@@ -33,6 +37,11 @@
 
   const diseases = ref<Disease[]>([])
   const selected = ref<number | undefined>()
+  // EaSelect models strings; disease_index is numeric.
+  const selectedStr = computed<string | undefined>({
+    get: () => (selected.value === undefined ? undefined : String(selected.value)),
+    set: (v) => { selected.value = v === undefined ? undefined : Number(v) },
+  })
   const data = ref<Payload | null>(null)
   const error = ref<string | null>(null)
   const loading = ref(false)
@@ -103,7 +112,7 @@
 
     <div class="grid grid-cols-12 gap-4">
       <!-- The contract, stated before the list appears. -->
-      <ActCard span="col-span-12" title="The contract"
+      <ActCard span="col-span-12" :icon="FileCheck2" accent="var(--chart-1)" title="The contract"
                desc="Stated before the list appears, because it is what makes the rest arguable.">
         <ul class="flex flex-col gap-1.5 text-[13px] leading-relaxed text-muted-foreground">
           <li><b class="text-foreground">Nothing is pre-filtered.</b> Every candidate the model scored is here; you cut it.</li>
@@ -119,14 +128,11 @@
                desc="Set the cut-offs a programme would actually apply. The funnel shows what each one costs."
                :src="['dashboard_candidates']">
         <div class="flex flex-wrap items-end gap-4">
-          <label class="flex min-w-56 flex-col gap-1 text-sm">
+          <label class="flex min-w-64 flex-col gap-1 text-sm">
             <span class="text-muted-foreground">Disease</span>
-            <select v-model="selected"
-                    class="rounded-md border border-input bg-background px-2 py-1.5 text-sm">
-              <option v-for="d in diseases" :key="d.disease_index" :value="d.disease_index">
-                {{ d.disease_name }} ({{ d.n_candidates.toLocaleString() }})
-              </option>
-            </select>
+            <EaSelect v-model="selectedStr" placeholder="— Select a disease —"
+                      :options="diseases.map((d) => ({ value: String(d.disease_index),
+                                 label: `${d.disease_name} (${d.n_candidates.toLocaleString()})` }))" />
           </label>
           <label class="flex items-center gap-2 text-sm"><input v-model="novelOnly" type="checkbox" class="size-4 accent-primary" /> Novel only</label>
           <label class="flex items-center gap-2 text-sm"><input v-model="tractableOnly" type="checkbox" class="size-4 accent-primary" /> Tractable</label>
@@ -152,7 +158,7 @@
       </ActCard>
 
       <!-- What a safety filter would cost. -->
-      <ActCard span="col-span-12 lg:col-span-5" title="What a safety filter would cost you"
+      <ActCard span="col-span-12 lg:col-span-5" :icon="ShieldAlert" accent="var(--chart-4)" title="What a safety filter would cost you"
                :chips="[['live', 'live']]"
                desc="The most obviously-right filter in drug discovery, and the measurement went the other way.">
         <p class="text-[13px] leading-relaxed text-muted-foreground">
@@ -160,11 +166,11 @@
           targets. Liabilities are discovered <i>by</i> drugging something, so the flag marks the
           best-studied targets rather than the dangerous ones.
         </p>
-        <p v-if="data" class="mt-3 rounded-md bg-secondary px-3 py-2 text-[13px]">
+        <ActSay v-if="data" class="mt-3">
           In this list, <b class="font-mono">{{ liabilityInTop15 }}</b> of the top 15 carry a
           liability flag. Filtering them out removes them from their own disease's shortlist —
           which is why the flag is shown and never filtered.
-        </p>
+        </ActSay>
       </ActCard>
 
       <!-- The ranked list. -->
@@ -173,25 +179,21 @@
                :desc="data ? `Showing ${data.returned} of ${data.funnel[data.funnel.length - 1].n.toLocaleString()} after your filters.` : undefined"
                :src="['dashboard_candidates']">
         <div v-if="data && data.rows.length" class="overflow-x-auto">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="border-b border-border text-left font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
-                <th class="py-2 pr-3 font-medium">Rank</th>
-                <th class="py-2 pr-3 font-medium">Gene</th>
-                <th class="py-2 pr-3 font-medium">Score</th>
-                <th class="py-2 pr-3 font-medium">Class</th>
-                <th class="py-2 pr-3 font-medium">Evidence</th>
-                <th class="py-2 font-medium">Top drivers</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="r in data.rows" :key="r.gene_name"
-                  class="border-b border-border/60 last:border-0 hover:bg-accent/40">
-                <td class="py-2 pr-3 font-mono tabular-nums text-muted-foreground">{{ r.rank_in_disease }}</td>
-                <td class="py-2 pr-3 font-mono font-medium">{{ r.gene_name }}</td>
-                <td class="py-2 pr-3 font-mono tabular-nums">{{ r.score?.toFixed(3) }}</td>
-                <td class="py-2 pr-3 text-muted-foreground">{{ r.ot_class_l1 || '—' }}</td>
-                <td class="py-2 pr-3">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Rank</TableHead><TableHead>Gene</TableHead>
+                <TableHead>Score</TableHead><TableHead>Class</TableHead>
+                <TableHead>Evidence</TableHead><TableHead>Top drivers</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow v-for="r in data.rows" :key="r.gene_name">
+                <TableCell class="font-mono tabular-nums text-muted-foreground">{{ r.rank_in_disease }}</TableCell>
+                <TableCell class="font-mono font-medium">{{ r.gene_name }}</TableCell>
+                <TableCell class="font-mono tabular-nums">{{ r.score?.toFixed(3) }}</TableCell>
+                <TableCell class="text-muted-foreground">{{ r.ot_class_l1 || '—' }}</TableCell>
+                <TableCell>
                   <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-[10px] uppercase"
                         :class="r.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary-foreground'">
                     {{ r.is_target ? 'known' : 'novel' }}
@@ -205,16 +207,15 @@
                   <span v-if="r.has_safety_liability"
                         title="A public liability flag. Liabilities are discovered BY drugging, so the flag marks well-studied targets — shown, never filtered."
                         class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-destructive">liability</span>
-                </td>
-                <td class="py-2 text-xs text-muted-foreground">{{ r.top_shap_drivers || '—' }}</td>
-              </tr>
-            </tbody>
-          </table>
+                </TableCell>
+                <TableCell class="text-xs text-muted-foreground">{{ r.top_shap_drivers || '—' }}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </div>
         <p v-else-if="loading" class="py-6 text-center text-sm text-muted-foreground">Loading…</p>
-        <p v-else class="py-6 text-center text-sm text-muted-foreground">
-          Select a disease to see its ranked list.
-        </p>
+        <EaEmpty v-else :icon="ListFilter" title="No list yet"
+                 description="Select a disease to see its ranked candidates." />
       </ActCard>
 
       <ActCard span="col-span-12 lg:col-span-6" title="Why this gene?" :chips="[['mock', 'not built']]"

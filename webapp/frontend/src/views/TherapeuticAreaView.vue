@@ -13,6 +13,9 @@
   import { computed, onMounted, ref, watch } from 'vue'
   import { apiUrl } from '@/utils/api'
   import ActCard from '@/components/act/ActCard.vue'
+  import ActStat from '@/components/act/ActStat.vue'
+  import { EaSelect, EaEmpty } from '@/components/ui'
+  import { Network, GitCompare, Info } from 'lucide-vue-next'
 
   defineOptions({ name: 'TherapeuticAreaView' })
 
@@ -25,6 +28,10 @@
 
   const families = ref<Family[]>([])
   const selected = ref<number | undefined>()
+  const selectedStr = computed<string | undefined>({
+    get: () => (selected.value === undefined ? undefined : String(selected.value)),
+    set: (v) => { selected.value = v === undefined ? undefined : Number(v) },
+  })
   const detail = ref<Detail | null>(null)
   const error = ref<string | null>(null)
 
@@ -84,27 +91,19 @@
     </p>
 
     <div class="grid grid-cols-12 gap-4">
-      <ActCard span="col-span-12" title="Choose a family" :chips="[['live', 'live']]"
+      <ActCard span="col-span-12" :icon="Network" title="Choose a family" :chips="[['live', 'live']]"
                desc="Families are drawn from a curated medical ontology, not by an algorithm — and that choice lowered the score we report."
                :src="['family_panel']">
         <div class="flex flex-wrap items-end gap-4">
-          <label class="flex min-w-72 flex-col gap-1 text-sm">
+          <label class="flex min-w-80 flex-col gap-1 text-sm">
             <span class="text-muted-foreground">Disease family</span>
-            <select v-model="selected" class="rounded-md border border-input bg-background px-2 py-1.5 text-sm">
-              <option v-for="f in families" :key="f.family_id" :value="f.family_id">
-                {{ f.family_name }} — {{ f.n_terms }} terms
-              </option>
-            </select>
+            <EaSelect v-model="selectedStr" placeholder="— Select a family —"
+                      :options="families.map((f) => ({ value: String(f.family_id),
+                                 label: `${f.family_name} — ${f.n_terms} terms` }))" />
           </label>
-          <div v-if="detail" class="flex gap-6">
-            <div class="flex flex-col">
-              <span class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">Terms</span>
-              <span class="font-mono text-xl tabular-nums">{{ detail.n_terms }}</span>
-            </div>
-            <div class="flex flex-col">
-              <span class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">Macro AUC</span>
-              <span class="font-mono text-xl tabular-nums">{{ detail.macro_auc.toFixed(4) }}</span>
-            </div>
+          <div v-if="detail" class="flex gap-8">
+            <ActStat label="Terms" :value="detail.n_terms" />
+            <ActStat label="Macro AUC" :value="detail.macro_auc.toFixed(4)" />
           </div>
         </div>
         <p class="mt-3 text-[13px] leading-relaxed text-muted-foreground">
@@ -143,10 +142,11 @@
             <span>{{ LO.toFixed(1) }}</span><span>0.7</span><span>1.0</span>
           </div>
         </div>
-        <p v-else class="py-6 text-center text-sm text-muted-foreground">Select a family.</p>
+        <EaEmpty v-else :icon="Network" title="No family selected"
+                 description="Pick a disease family to see every term in it." />
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-7" title="How much do the subtypes overlap?"
+      <ActCard span="col-span-12 lg:col-span-7" :icon="GitCompare" accent="var(--chart-3)" title="How much do the subtypes overlap?"
                :chips="[['live', 'live']]"
                desc="Shared genes in each pair's top 50. This is where the method's limit lives, and showing it here is what makes act 4 believable."
                :src="['pairwise_overlap']">
@@ -163,12 +163,11 @@
             </span>
           </div>
         </div>
-        <p v-else class="py-6 text-center text-[13px] text-muted-foreground">
-          No pairwise overlap computed for this family.
-        </p>
+        <EaEmpty v-else :icon="GitCompare" title="No overlap computed"
+                 description="Pairwise top-50 overlap has not been computed for this family." />
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-5" title="What this tells you before you build on it">
+      <ActCard span="col-span-12 lg:col-span-5" :icon="Info" accent="var(--chart-5)" title="What this tells you before you build on it">
         <p class="text-[13px] leading-relaxed text-muted-foreground">
           Two subtypes sharing most of their top 50 means the public data barely distinguishes them —
           the model will not resolve them either, and no amount of tuning changes that. Two subtypes

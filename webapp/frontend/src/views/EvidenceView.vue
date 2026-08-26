@@ -15,6 +15,11 @@
   import { computed, onMounted, ref } from 'vue'
   import { apiUrl } from '@/utils/api'
   import ActCard from '@/components/act/ActCard.vue'
+  import ActStat from '@/components/act/ActStat.vue'
+  import ActSay from '@/components/act/ActSay.vue'
+  import ActBar from '@/components/act/ActBar.vue'
+  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+  import { ShieldCheck, Database, GitBranch, Layers, FileText } from 'lucide-vue-next'
 
   defineOptions({ name: 'EvidenceView' })
 
@@ -41,10 +46,6 @@
      'You have that. We built the machine that makes your expertise testable.'],
   ]
 
-  function pct(rows: Bar[], row: Bar) {
-    const total = rows.reduce((a, r) => a + r.count, 0)
-    return total ? (100 * row.count) / total : 0
-  }
   const fmt = (n: number) => n.toLocaleString()
 
   onMounted(async () => {
@@ -79,44 +80,43 @@
     </p>
 
     <div class="grid grid-cols-12 gap-4">
-      <ActCard span="col-span-12" title="What this demo claims — and what it does not"
+      <ActCard span="col-span-12" :icon="ShieldCheck" accent="var(--chart-1)"
+               title="What this demo claims — and what it does not"
                desc="Say this before anything else. Every row is a place a competitor would overclaim.">
-        <p class="mb-3 rounded-md bg-secondary px-3 py-2 text-[13px] leading-relaxed">
+        <ActSay class="mb-3">
           <b>The claim.</b> From public knowledge alone, this reconstructs the targets a disease's
           field has already validated. The test is your own eyeball test on a disease you know — not
           a benchmark we chose. <b>If it reconstructs what is established, the machinery is sound</b>,
           and the interesting conversation is pointing it at data where the answer is not already
           known. That is your data, not ours.
-        </p>
-        <table class="w-full text-[13px]">
-          <thead>
-            <tr class="border-b border-border text-left font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
-              <th class="py-1.5 pr-4 font-medium">We are not claiming</th>
-              <th class="py-1.5 font-medium">What is true instead</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="[claim, truth] in NOT_CLAIMING" :key="claim" class="border-b border-border/60 last:border-0">
-              <td class="py-1.5 pr-4 align-top font-medium whitespace-nowrap">{{ claim }}</td>
-              <td class="py-1.5 align-top text-muted-foreground">{{ truth }}</td>
-            </tr>
-          </tbody>
-        </table>
+        </ActSay>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>We are not claiming</TableHead>
+              <TableHead>What is true instead</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow v-for="[claim, truth] in NOT_CLAIMING" :key="claim">
+              <TableCell class="align-top font-medium whitespace-nowrap">{{ claim }}</TableCell>
+              <TableCell class="align-top text-muted-foreground">{{ truth }}</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </ActCard>
 
-      <ActCard span="col-span-12" title="The graph, in four numbers" :chips="[['live', 'live']]"
+      <ActCard span="col-span-12" title="The graph, in four numbers" :icon="Database"
+               :chips="[['live', 'live']]"
                :src="['graph_node_type_counts', 'graph_relation_counts', 'graph_ppi_provenance']">
         <div v-if="totals" class="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div v-for="[k, label, sub] in [
+          <ActStat v-for="[k, label, sub] in [
                  ['nodes', 'Nodes', `${totals.node_types} types`],
                  ['edges', 'Edges', `${totals.relations} relations`],
                  ['edges_with_provenance', 'PPI edges with provenance', 'explicit source recorded'],
                  ['sources', 'External sources', 'GO · MONDO · NCBI · HPO · DrugBank · REACTOME'],
-               ] as [string, string, string]" :key="k" class="flex flex-col gap-0.5">
-            <span class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">{{ label }}</span>
-            <span class="font-mono text-2xl font-medium tabular-nums">{{ fmt(totals[k]) }}</span>
-            <span class="text-[11px] text-muted-foreground">{{ sub }}</span>
-          </div>
+               ] as [string, string, string]" :key="k"
+               :label="label" :value="fmt(totals[k])" :sub="sub" />
         </div>
         <p v-else class="py-4 text-center text-sm text-muted-foreground">Loading…</p>
       </ActCard>
@@ -130,21 +130,12 @@
                ] as [keyof Payload, string, string, string]"
                :key="key" span="col-span-12 lg:col-span-6" :title="title" :desc="desc"
                :chips="[['live', 'live']]" :src="[src]">
-        <div v-if="data" class="flex flex-col gap-1.5">
-          <div v-for="row in (data[key] as Bar[])" :key="row.label" class="flex items-center gap-3">
-            <span class="w-52 flex-none truncate font-mono text-[11px]" :title="row.label">{{ row.label }}</span>
-            <span class="h-3 flex-1 overflow-hidden rounded-sm bg-secondary">
-              <span class="block h-full rounded-sm bg-primary" :style="{ width: pct(data[key] as Bar[], row) + '%' }" />
-            </span>
-            <span class="w-20 flex-none text-right font-mono text-[11px] tabular-nums text-muted-foreground">
-              {{ fmt(row.count) }}
-            </span>
-          </div>
-        </div>
+        <ActBar v-if="data" :rows="(data[key] as Bar[])" />
         <p v-else class="py-4 text-center text-sm text-muted-foreground">Loading…</p>
       </ActCard>
 
-      <ActCard span="col-span-12" title="What this act must not do"
+      <ActCard span="col-span-12" :icon="FileText" accent="var(--chart-5)"
+               title="What this act must not do"
                desc="Provenance is not accuracy.">
         <p class="text-[13px] leading-relaxed text-muted-foreground">
           The graph being faithfully reproduced says nothing about whether the ranking is useful —

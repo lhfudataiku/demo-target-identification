@@ -29,6 +29,7 @@ from fastapi.staticfiles import StaticFiles
 from .routes.agents import router as agents_router
 from .routes.candidates import router as candidates_router
 from .routes.evidence import router as evidence_router
+from .routes.calibration import router as calibration_router
 from .routes.families import router as families_router
 from .routes.example import router as example_router
 from .routes.system import router as system_router
@@ -88,6 +89,7 @@ def configure(app: FastAPI) -> None:
     app.include_router(candidates_router)
     app.include_router(evidence_router)
     app.include_router(families_router)
+    app.include_router(calibration_router)
     # Agents card-grid blueprint — always on; the sidebar's Administration
     # section toggle (frontend) controls its visibility at runtime.
     app.include_router(agents_router)
