@@ -356,8 +356,14 @@ def main():
                 drift.append("%s=%s" % (key, v))
 
     mrows, strays, unrecorded = [], [], []
-    for mid, meta in sorted(models.items(), key=lambda kv: kv[1]["name"]):
-        name = meta["name"]
+    # Iterate live saved models UNION registry entries. Seven retired models were deleted from the
+    # flow on 2026-08-26; iterating only live objects would have silently dropped the whole ablation
+    # ladder from the index, which is the one place those numbers are meant to stay greppable.
+    combined = {mid: meta["name"] for mid, meta in models.items()}
+    for mid, rec_ in mreg.items():
+        combined.setdefault(mid, rec_.get("name", mid))
+    for mid, name in sorted(combined.items(), key=lambda kv: kv[1]):
+        meta = models.get(mid) or {"name": name}
         consumers = sorted(n for n, b in blob.items() if mid in b)
         # a consumer is "expected" if it is this model's own train/score recipe or a declared
         # ablation consumer; anything else is a live entry point on a retired model
@@ -379,6 +385,7 @@ def main():
             return "?" if v is None else v
         mrows.append({
             "model": name, "id": mid,
+            "in_flow": "yes" if mid in models else "no (lab %s)" % rec.get("lab_session", "?"),
             "role": (("CHAMPION" if mid == champion else
                       "ablation" if mid in ladder else "-")),
             "n_feat": g("n_features"),
@@ -454,7 +461,7 @@ def main():
                                                      not r["status"].startswith("STALE"),
                                                      r["path"])),
                         ["path", "kind", "status", "n_refs", "referenced_by"]),
-        "models.tsv": tsv(mrows, ["model", "id", "role", "n_feat", "assoc_auroc", "assoc_auprc",
+        "models.tsv": tsv(mrows, ["model", "id", "in_flow", "role", "n_feat", "assoc_auroc", "assoc_auprc",
                                   "hub_spread", "drug_all", "drug_supported", "tract_dm200",
                                   "disc_lift50", "disc_lift200", "delta", "verdict",
                                   "consumers", "decisions_lines"]),

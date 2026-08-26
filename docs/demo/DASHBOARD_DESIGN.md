@@ -2870,3 +2870,124 @@ a mechanical fix, and the tool cannot distinguish the two cases from the name al
 | `compute_gene_druggability.py`, `compute_drug_target_benchmark_staged.py`, `compute_lung_granularity_check.py`, `compute_model_comparison.py`, `compute_target_reachability.py`, `compute_tractability_lift.py`, `compute_validation_auc_by_disease_2.py` |
 
 Indexes rebuilt after the prune: **109 recipes, 98 assertions, 2,092 claims**.
+
+## 34. Zone 90 pruned, and the serving-zone cycles removed
+
+### 34.1 The remaining zone-90 orphans
+
+`scored_m1`, `scored_m2`, `scored_m3`, `family_top_genes` — plus `family_gene_agg`, which the closure
+pulled in because deleting `family_top_genes` orphaned it. The whole branch
+`group_family_gene → family_gene_agg → topn_family_genes → family_top_genes → family_top_genes_named`
+was dead once the last link went in the previous pass. **5 datasets, 5 recipes.** 104 → 99.
+
+Pre-flight confirmed the two survivors that mattered: `family_validation_scored` keeps
+`window_family_rank` (its route to `family_auc_by_family`, which nb3 asserts) and
+`psplit_validation_set` keeps `score_psplit_validation_m7`, the champion scoring.
+
+Verified: run `2026-08-25-20-18-35-759`, 846.7s, **68 assertions, 0 failures**.
+
+Zone 90 is now 8 datasets — five read by notebooks, three forming the chain behind
+`family_auc_by_family`.
+
+### 34.2 A transitive closure would have deleted the serving layer — for the third time
+
+Computing the *transitive* dead set (unread, and every consumer also dead) returned **26 datasets
+including all of A1–A4**: `graph_node_type_counts`, `family_panel`, `shap_drivers_long`,
+`dashboard_persona_trust`, the lot. Nothing reads them because the webapp UI does not exist.
+
+**Never run an unscoped reachability prune on this project.** Scope to a zone and exclude
+notebook-read datasets, as this pass did.
+
+### 34.3 The serving zones were circular; they are not now
+
+Two cycles existed, both through A2:
+
+| cycle | via |
+|---|---|
+| A3 ↔ A2 | `disease_hierarchy_annotation` (A3→A2), `validation_auc_ci` (A2→A3) |
+| A4 ↔ A2 | `dashboard_candidates` (A4→A2), `persona_candidates` (A2→A4) |
+
+**A first attempt failed and was reverted.** Moving all four into a new "A0 shared base" zone did not
+work: `dashboard_candidates` is *derived from* A4's `candidates_annotated` and `persona_candidates`
+from A2's own outputs. They are downstream products, not shared upstream, so the same two cycles
+re-formed around A0. The zone was deleted and the datasets restored.
+
+What worked, after tracing each dataset's actual upstream:
+
+- `disease_hierarchy_annotation` is an annotation built from zones 00/10/20 and consumed by A2 — it
+  was simply misfiled in A3. **Moved to zone 20.**
+- The ten-dataset chain ending at `dashboard_candidates` sat in A4 while A2 and A3 both read from it.
+  It draws only from 00/20/30 — verified, no back-edge — so it **moved to a new zone 40, "Candidate
+  ranking (shared by acts)"**, upstream of every act.
+
+Result: **zero circular zone dependencies**, and a clean order:
+
+```
+00 → 10/11 → 12 → 20 → 30 → 31 → 40 → A1/A2 → A3/A4 → 90
+```
+
+A4 drops from 13 datasets to 3, which is the honest shape: most of what was labelled "Shortlist" was
+the shared ranking base every act reads.
+
+**The check that separated the right move from the wrong one:** before relocating a chain, ask
+whether it consumes anything from the zones it feeds. The first attempt skipped that; the second
+ran it.
+
+## 35. Seven saved models dropped — the champion is the only one left in the flow
+
+`m1-f7`, `m2-f10`, `m3-f12`, `m4-f13`, `m5-f13`, `m6-f13-new-pc`, `m8-f14-pm` deleted with their seven
+`train_*` recipes. **14 items.** Only `m7-f14` (`hJLGoYn4`) remains, still wired to
+`score_persona_candidates`, `score_psplit_validation_m7` and `train_m7-f14`.
+
+They were droppable because the scoring recipes that consumed them went in the earlier passes — each
+retired model's only remaining reference was its own training recipe. Cascade checked: deleting the
+seven leaves `psplit_train_set` and `psplit_test_set` with `compute_split_audit_2`, so nothing
+upstream orphans.
+
+### 35.1 Recoverability was verified, not assumed
+
+The stated reason for dropping them was that they are recoverable from the VisualML object. That is
+checkable, and deletion is irreversible, so it was checked:
+
+- Each saved model records `lastExportedFrom`, e.g. m3-f12 →
+  `A-DEMO_TARGET_IDENTIFICATION-I2csfIX2-krJwswcb-s3-pp2-m1`.
+- Analysis `I2csfIX2` (on `psplit_train_set`) and ML task `krJwswcb` **still exist**.
+- The task retains trained models for sessions s1–s12, all `DONE` — one per saved model, no gaps.
+- After the deletions the lab still lists **17 trained models**: removing a saved model does not touch
+  the analysis it came from.
+
+The mapping is written to `docs/demo/model_recovery.json` so a redeploy does not require guessing
+which session produced which model:
+
+| model | id | lab session |
+|---|---|---|
+| m1-f7 | `Lx5Mz2hY` | s1 |
+| m2-f10 | `6hEivCx0` | s2 |
+| m3-f12 | `cGPhBOGC` | s3 |
+| m4-f13 | `79JOklWN` | s8 |
+| m5-f13 | `r2oXoTEw` | s9 |
+| m6-f13-new-pc | `DWtdaTje` | s10 |
+| m7-f14 | `hJLGoYn4` | s11 |
+| m8-f14-pm | `3RZ9a9kN` | s12 |
+
+Redeploy with `dku ml deploy I2csfIX2 krJwswcb <lab_id>`.
+
+### 35.2 The index would have dropped the ablation ladder — corrected
+
+The claim above was first written as "the numbers remain in `.index/models.tsv`". That was **wrong**:
+`build_recipe_index.py` built the model rows by iterating **live** saved models, so the next
+`--refresh` would have reduced `models.tsv` to a single row and taken the ablation ladder with it —
+deleting exactly the evidence the deletion was justified by.
+
+The metrics themselves were never at risk; they are hand-recorded in `tools/model_registry.json`, not
+derived from DSS. What was at risk is their presence in the queryable index, which is where the repo
+says to look.
+
+Two changes fix it:
+
+- the registry entries now carry `name`, `lab_session` and `lab_id`, so a retired model can be named
+  and recovered without consulting a separate file;
+- the row loop iterates **live models UNION registry entries**, and a new `in_flow` column records
+  which is which — `yes` for the champion, `no (lab s3)` for a retired model and where to get it back.
+
+`models.tsv` still lists all eight after the refresh, with `m7-f14` the only `in_flow: yes`.

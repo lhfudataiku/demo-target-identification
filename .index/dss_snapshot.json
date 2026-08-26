@@ -1,35 +1,7 @@
 {
  "_models": {
-  "3RZ9a9kN": {
-   "name": "m8-f14-pm",
-   "type": "PREDICTION"
-  },
-  "6hEivCx0": {
-   "name": "m2-f10",
-   "type": "PREDICTION"
-  },
-  "79JOklWN": {
-   "name": "m4-f13",
-   "type": "PREDICTION"
-  },
-  "DWtdaTje": {
-   "name": "m6-f13-new-pc",
-   "type": "PREDICTION"
-  },
-  "Lx5Mz2hY": {
-   "name": "m1-f7",
-   "type": "PREDICTION"
-  },
-  "cGPhBOGC": {
-   "name": "m3-f12",
-   "type": "PREDICTION"
-  },
   "hJLGoYn4": {
    "name": "m7-f14",
-   "type": "PREDICTION"
-  },
-  "r2oXoTEw": {
-   "name": "m5-f13",
    "type": "PREDICTION"
   }
  },
@@ -646,14 +618,6 @@
    "n_distinct_genes",
    "count"
   ],
-  "family_gene_agg": [
-   "disease_family_id",
-   "gene_index",
-   "best_score",
-   "is_target_any",
-   "n_diseases_scored",
-   "n_diseases_known_target"
-  ],
   "family_panel": [
    "disease_index",
    "target_rank_sum",
@@ -675,15 +639,6 @@
    "disease_split_key",
    "split_key_name",
    "split_key_rule"
-  ],
-  "family_top_genes": [
-   "disease_family_id",
-   "gene_index",
-   "best_score",
-   "is_target_any",
-   "n_diseases_scored",
-   "n_diseases_known_target",
-   "_rank"
   ],
   "family_validation_ranked": [
    "gene_index",
@@ -1264,138 +1219,6 @@
    "prox_mean",
    "prox_kernel",
    "prox_n_reach",
-   "shared_pathway_count",
-   "shared_pathway_frac",
-   "rwr_score",
-   "disease_context",
-   "relation",
-   "has_inflammatory_go_annotation",
-   "ppi_evidence_depth",
-   "ppi_multi_source_frac",
-   "ppi_edges_with_provenance",
-   "ppi_common_neighbors_z",
-   "ppi_cn_expected",
-   "dwpc_GBGD",
-   "dwpc_GFGD",
-   "rwr_norm",
-   "is_target",
-   "disease_family_id",
-   "anchor_name",
-   "hop_depth",
-   "disease_split_key",
-   "split_key_name",
-   "split_key_rule",
-   "proba_0",
-   "proba_1",
-   "prediction"
-  ],
-  "scored_m1": [
-   "gene_index",
-   "disease_index",
-   "gene_ppi_degree",
-   "gene_n_diseases",
-   "gene_n_pathways",
-   "module_size",
-   "degree",
-   "clustering_coefficient",
-   "triangles",
-   "eigenvector_centrality",
-   "pagerank",
-   "dwpc_GPGD",
-   "dwpc_GCD",
-   "dwpc_GGD",
-   "ppi_common_neighbors",
-   "ppi_adamic_adar",
-   "ppi_jaccard",
-   "prox_closest",
-   "shared_pathway_count",
-   "shared_pathway_frac",
-   "rwr_score",
-   "disease_context",
-   "relation",
-   "has_inflammatory_go_annotation",
-   "ppi_evidence_depth",
-   "ppi_multi_source_frac",
-   "ppi_edges_with_provenance",
-   "ppi_common_neighbors_z",
-   "ppi_cn_expected",
-   "dwpc_GBGD",
-   "dwpc_GFGD",
-   "rwr_norm",
-   "is_target",
-   "disease_family_id",
-   "anchor_name",
-   "hop_depth",
-   "disease_split_key",
-   "split_key_name",
-   "split_key_rule",
-   "proba_0",
-   "proba_1",
-   "prediction"
-  ],
-  "scored_m2": [
-   "gene_index",
-   "disease_index",
-   "gene_ppi_degree",
-   "gene_n_diseases",
-   "gene_n_pathways",
-   "module_size",
-   "degree",
-   "clustering_coefficient",
-   "triangles",
-   "eigenvector_centrality",
-   "pagerank",
-   "dwpc_GPGD",
-   "dwpc_GCD",
-   "dwpc_GGD",
-   "ppi_common_neighbors",
-   "ppi_adamic_adar",
-   "ppi_jaccard",
-   "prox_closest",
-   "shared_pathway_count",
-   "shared_pathway_frac",
-   "rwr_score",
-   "disease_context",
-   "relation",
-   "has_inflammatory_go_annotation",
-   "ppi_evidence_depth",
-   "ppi_multi_source_frac",
-   "ppi_edges_with_provenance",
-   "ppi_common_neighbors_z",
-   "ppi_cn_expected",
-   "dwpc_GBGD",
-   "dwpc_GFGD",
-   "rwr_norm",
-   "is_target",
-   "disease_family_id",
-   "anchor_name",
-   "hop_depth",
-   "disease_split_key",
-   "split_key_name",
-   "split_key_rule",
-   "proba_0",
-   "proba_1",
-   "prediction"
-  ],
-  "scored_m3": [
-   "gene_index",
-   "disease_index",
-   "gene_ppi_degree",
-   "gene_n_diseases",
-   "gene_n_pathways",
-   "module_size",
-   "degree",
-   "clustering_coefficient",
-   "triangles",
-   "eigenvector_centrality",
-   "pagerank",
-   "dwpc_GPGD",
-   "dwpc_GCD",
-   "dwpc_GGD",
-   "ppi_common_neighbors",
-   "ppi_adamic_adar",
-   "ppi_jaccard",
-   "prox_closest",
    "shared_pathway_count",
    "shared_pathway_frac",
    "rwr_score",
@@ -3283,17 +3106,6 @@
   ],
   "type": "grouping"
  },
- "group_family_gene": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "family_validation_scored"
-  ],
-  "outputs": [
-   "family_gene_agg"
-  ],
-  "type": "grouping"
- },
  "join_dashboard_annotations": {
   "code": null,
   "cypher": null,
@@ -3378,42 +3190,6 @@
   ],
   "type": "prediction_scoring"
  },
- "score_psplit_validation_set": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "Lx5Mz2hY",
-   "psplit_validation_set"
-  ],
-  "outputs": [
-   "scored_m1"
-  ],
-  "type": "prediction_scoring"
- },
- "score_psplit_validation_set_1": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "6hEivCx0",
-   "psplit_validation_set"
-  ],
-  "outputs": [
-   "scored_m2"
-  ],
-  "type": "prediction_scoring"
- },
- "score_psplit_validation_set_2": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "cGPhBOGC",
-   "psplit_validation_set"
-  ],
-  "outputs": [
-   "scored_m3"
-  ],
-  "type": "prediction_scoring"
- },
  "split_by_disease_key": {
   "code": null,
   "cypher": null,
@@ -3438,89 +3214,6 @@
   ],
   "type": "sync"
  },
- "topn_family_genes": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "family_gene_agg"
-  ],
-  "outputs": [
-   "family_top_genes"
-  ],
-  "type": "topn"
- },
- "train_m1-f7": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "psplit_test_set",
-   "psplit_train_set"
-  ],
-  "outputs": [
-   "Lx5Mz2hY"
-  ],
-  "type": "prediction_training"
- },
- "train_m2-f10": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "psplit_test_set",
-   "psplit_train_set"
-  ],
-  "outputs": [
-   "6hEivCx0"
-  ],
-  "type": "prediction_training"
- },
- "train_m3-f12": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "psplit_test_set",
-   "psplit_train_set"
-  ],
-  "outputs": [
-   "cGPhBOGC"
-  ],
-  "type": "prediction_training"
- },
- "train_m4-f13": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "psplit_test_set",
-   "psplit_train_set"
-  ],
-  "outputs": [
-   "79JOklWN"
-  ],
-  "type": "prediction_training"
- },
- "train_m5-f13": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "psplit_test_set",
-   "psplit_train_set"
-  ],
-  "outputs": [
-   "r2oXoTEw"
-  ],
-  "type": "prediction_training"
- },
- "train_m6-f13-new-pc": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "psplit_test_set",
-   "psplit_train_set"
-  ],
-  "outputs": [
-   "DWtdaTje"
-  ],
-  "type": "prediction_training"
- },
  "train_m7-f14": {
   "code": null,
   "cypher": null,
@@ -3529,18 +3222,6 @@
   ],
   "outputs": [
    "hJLGoYn4"
-  ],
-  "type": "prediction_training"
- },
- "train_m8-f14-pm": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "psplit_test_set",
-   "psplit_train_set"
-  ],
-  "outputs": [
-   "3RZ9a9kN"
   ],
   "type": "prediction_training"
  },

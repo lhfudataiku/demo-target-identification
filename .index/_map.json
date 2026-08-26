@@ -2,22 +2,20 @@
  "zones": {
   "breast_panel_metrics": "90 Notebook \u2014 validation evidence",
   "breast_panel_overlap": "90 Notebook \u2014 validation evidence",
-  "breast_shortlist": "90 Notebook \u2014 validation evidence",
-  "candidates_annotated": "A4 Shortlist (serving)",
-  "dashboard_candidates": "A4 Shortlist (serving)",
+  "candidates_annotated": "40 Candidate ranking (shared by acts)",
+  "dashboard_candidates": "40 Candidate ranking (shared by acts)",
   "dashboard_persona_trust": "A4 Shortlist (serving)",
   "disease_eligibility": "A2 Calibration (serving)",
   "disease_family_id": "20 Annotations & split key",
-  "disease_hierarchy_annotation": "A3 Therapeutic area (serving)",
-  "disease_pool_sizes": "A4 Shortlist (serving)",
+  "disease_hierarchy_annotation": "20 Annotations & split key",
+  "disease_pool_sizes": "40 Candidate ranking (shared by acts)",
   "drug_best": "20 Annotations & split key",
   "drug_classified": "20 Annotations & split key",
   "drug_disease_edges": "00 Imported from DEMO_KG_LS (synced)",
-  "drug_evidence_pairs": "A4 Shortlist (serving)",
+  "drug_evidence_pairs": "40 Candidate ranking (shared by acts)",
   "drug_joined": "20 Annotations & split key",
   "drug_protein_edges": "00 Imported from DEMO_KG_LS (synced)",
   "drug_target_benchmark": "A2 Calibration (serving)",
-  "drug_target_benchmark_staged": "90 Notebook \u2014 validation evidence",
   "edge_metadata": "00 Imported from DEMO_KG_LS (synced)",
   "enriched_degree_controls_1": "10 Features - graph traversal (Cypher)",
   "enriched_disease_context_1": "10 Features - graph traversal (Cypher)",
@@ -26,10 +24,8 @@
   "enriched_dwpc_GFGD": "11 Features - matrix (Python)",
   "enriched_dwpc_GGD": "10 Features - graph traversal (Cypher)",
   "enriched_dwpc_GPGD": "10 Features - graph traversal (Cypher)",
-  "enriched_gene_druggability": "20 Annotations & split key",
   "enriched_gene_druggability_v2": "20 Annotations & split key",
   "enriched_gene_localization": "20 Annotations & split key",
-  "enriched_gene_safety": "20 Annotations & split key",
   "enriched_gene_safety_v2": "20 Annotations & split key",
   "enriched_graph_features_1": "12 Features - assembly",
   "enriched_graph_features_1_family": "30 Split & modelling table",
@@ -46,10 +42,7 @@
   "enriched_shared_pathway_count_1": "10 Features - graph traversal (Cypher)",
   "family_auc_by_family": "90 Notebook \u2014 validation evidence",
   "family_auc_grouped": "90 Notebook \u2014 validation evidence",
-  "family_gene_agg": "90 Notebook \u2014 validation evidence",
   "family_panel": "A3 Therapeutic area (serving)",
-  "family_top_genes": "90 Notebook \u2014 validation evidence",
-  "family_top_genes_named": "90 Notebook \u2014 validation evidence",
   "family_validation_ranked": "90 Notebook \u2014 validation evidence",
   "family_validation_scored": "90 Notebook \u2014 validation evidence",
   "filter_three_axes": "A4 Shortlist (serving)",
@@ -68,24 +61,16 @@
   "hetionet_disease_slim": "20 Annotations & split key",
   "known_drug_truth": "A4 Shortlist (serving)",
   "llm_hx": "Default",
-  "lung_granularity_check": "90 Notebook \u2014 validation evidence",
-  "maturity_confound": "90 Notebook \u2014 validation evidence",
-  "model_comparison": "90 Notebook \u2014 validation evidence",
   "mondo_references": "00 Imported from DEMO_KG_LS (synced)",
-  "nb1_verify": "90 Notebook \u2014 validation evidence",
-  "nb3_verify": "90 Notebook \u2014 validation evidence",
-  "nb6_assertion_results": "90 Notebook \u2014 validation evidence",
   "novel_discovery_eval": "A2 Calibration (serving)",
   "ot_drug_mapped": "20 Annotations & split key",
   "pairwise_overlap": "A3 Therapeutic area (serving)",
   "pairwise_pairs": "A3 Therapeutic area (serving)",
-  "persona2_scored": "A4 Shortlist (serving)",
-  "persona2_scored_shap": "A4 Shortlist (serving)",
+  "persona2_scored": "31 Train & score",
+  "persona2_scored_shap": "40 Candidate ranking (shared by acts)",
   "persona_candidates": "A2 Calibration (serving)",
   "persona_enrichment": "A2 Calibration (serving)",
   "pool_reachability": "90 Notebook \u2014 validation evidence",
-  "pool_selection_bias": "90 Notebook \u2014 validation evidence",
-  "pool_unreachable_targets": "90 Notebook \u2014 validation evidence",
   "psplit_test_set": "30 Split & modelling table",
   "psplit_train_set": "30 Split & modelling table",
   "psplit_validation_set": "30 Split & modelling table",
@@ -94,34 +79,23 @@
   "raw_ot_druggability": "20 Annotations & split key",
   "raw_ot_known_drug": "00 Imported from DEMO_KG_LS (synced)",
   "raw_ot_safety": "20 Annotations & split key",
-  "safety_lift": "90 Notebook \u2014 validation evidence",
   "scored_champion": "31 Train & score",
-  "scored_m1": "90 Notebook \u2014 validation evidence",
-  "scored_m2": "90 Notebook \u2014 validation evidence",
-  "scored_m3": "90 Notebook \u2014 validation evidence",
-  "scored_m4": "90 Notebook \u2014 validation evidence",
-  "scored_m5": "90 Notebook \u2014 validation evidence",
-  "scored_m6": "90 Notebook \u2014 validation evidence",
   "scored_m7": "31 Train & score",
-  "scored_m8": "90 Notebook \u2014 validation evidence",
   "shap_driver_frequency": "A2 Calibration (serving)",
   "shap_drivers_long": "A2 Calibration (serving)",
   "split_audit_2": "A2 Calibration (serving)",
-  "target_candidates_2": "A4 Shortlist (serving)",
-  "target_reachability": "90 Notebook \u2014 validation evidence",
+  "target_candidates_2": "40 Candidate ranking (shared by acts)",
   "top50_membership": "A3 Therapeutic area (serving)",
   "top50_membership_b": "A3 Therapeutic area (serving)",
   "top50_pairs": "A3 Therapeutic area (serving)",
   "top50_slim_a": "A3 Therapeutic area (serving)",
   "top50_slim_b": "A3 Therapeutic area (serving)",
-  "top_annotated": "A4 Shortlist (serving)",
-  "top_candidates": "A4 Shortlist (serving)",
+  "top_annotated": "40 Candidate ranking (shared by acts)",
+  "top_candidates": "40 Candidate ranking (shared by acts)",
   "tractability_axis": "90 Notebook \u2014 validation evidence",
-  "tractability_lift": "90 Notebook \u2014 validation evidence",
   "validation_auc_by_disease": "A2 Calibration (serving)",
-  "validation_auc_by_disease_2": "90 Notebook \u2014 validation evidence",
   "validation_auc_ci": "A2 Calibration (serving)",
-  "validation_set_personas_2": "A4 Shortlist (serving)",
+  "validation_set_personas_2": "31 Train & score",
   "validation_set_scored": "A2 Calibration (serving)",
   "validation_set_scored_grouped": "A2 Calibration (serving)",
   "validation_set_scored_windows": "A2 Calibration (serving)"
@@ -140,7 +114,6 @@
   "raw_ot_safety": "compute_DEMO_KG_raw_ot_safety_copy",
   "breast_panel_metrics": "compute_breast_panel",
   "breast_panel_overlap": "compute_breast_panel",
-  "breast_shortlist": "compute_breast_shortlist",
   "disease_eligibility": "compute_disease_eligibility",
   "disease_family_id": "compute_disease_family_id",
   "disease_hierarchy_annotation": "compute_disease_hierarchy_annotation",
@@ -149,7 +122,6 @@
   "drug_evidence_pairs": "compute_drug_evidence_pairs",
   "drug_joined": "compute_drug_joined",
   "drug_target_benchmark": "compute_drug_target_benchmark",
-  "drug_target_benchmark_staged": "compute_drug_target_benchmark_staged",
   "enriched_dwpc_GBGD": "compute_dwpc_go_metapaths",
   "enriched_dwpc_GFGD": "compute_dwpc_go_metapaths",
   "enriched_degree_controls_1": "compute_enriched_degree_controls_1",
@@ -171,10 +143,8 @@
   "family_validation_scored": "compute_family_validation_scored",
   "filter_three_axes": "compute_filter_three_axes",
   "gene_crosswalk": "compute_gene_crosswalk",
-  "enriched_gene_druggability": "compute_gene_druggability",
   "enriched_gene_druggability_v2": "compute_gene_druggability_v2",
   "enriched_gene_localization": "compute_gene_localization",
-  "enriched_gene_safety": "compute_gene_safety",
   "gene_safety_best": "compute_gene_safety_best",
   "gene_safety_joined": "compute_gene_safety_join",
   "enriched_gene_safety_v2": "compute_gene_safety_v2",
@@ -185,9 +155,6 @@
   "graph_ppi_provenance": "compute_graph_ppi_provenance",
   "graph_relation_counts": "compute_graph_relation_counts",
   "known_drug_truth": "compute_known_drug_truth",
-  "lung_granularity_check": "compute_lung_granularity_check",
-  "maturity_confound": "compute_maturity_confound",
-  "model_comparison": "compute_model_comparison",
   "novel_discovery_eval": "compute_novel_discovery_eval",
   "ot_drug_mapped": "compute_ot_drug_mapped",
   "pairwise_overlap": "compute_pairwise_overlap",
@@ -195,25 +162,19 @@
   "persona_candidates": "compute_persona_candidates",
   "persona_enrichment": "compute_persona_enrichment",
   "pool_reachability": "compute_pool_reachability",
-  "pool_unreachable_targets": "compute_pool_reachability",
-  "pool_selection_bias": "compute_pool_selection_bias",
   "enriched_ppi_cn_zscore": "compute_ppi_cn_zscore",
   "enriched_ppi_evidence_depth": "compute_ppi_evidence_depth",
   "raw_ot_known_drug": "compute_raw_ot_known_drug",
-  "safety_lift": "compute_safety_lift",
   "shap_driver_frequency": "compute_shap_driver_frequency",
   "shap_drivers_long": "compute_shap_drivers_long",
   "split_audit_2": "compute_split_audit_2",
-  "target_reachability": "compute_target_reachability",
   "top50_membership": "compute_top50_membership",
   "top50_pairs": "compute_top50_pairs",
   "top50_slim_a": "compute_top50_slim_a",
   "top50_slim_b": "compute_top50_slim_b",
   "persona2_scored_shap": "compute_top_shap_drivers_1",
   "tractability_axis": "compute_tractability_axis",
-  "tractability_lift": "compute_tractability_lift",
   "validation_auc_by_disease": "compute_validation_auc_by_disease",
-  "validation_auc_by_disease_2": "compute_validation_auc_by_disease_2",
   "validation_auc_ci": "compute_validation_auc_ci",
   "validation_set_scored": "compute_validation_set_scored",
   "validation_set_scored_grouped": "compute_validation_set_scored_grouped",
@@ -227,38 +188,18 @@
   "validation_set_personas_2": "filter_persona_diseases",
   "dashboard_candidates": "finalize_dashboard_candidates",
   "family_auc_grouped": "group_family_auc",
-  "family_gene_agg": "group_family_gene",
   "candidates_annotated": "join_dashboard_annotations",
   "enriched_graph_features_1_family": "join_disease_family_id",
   "target_candidates_2": "join_disease_name",
-  "family_top_genes_named": "join_family_gene_name",
   "dashboard_persona_trust": "join_trust_for_personas",
   "top_candidates": "rank_per_disease",
-  "nb6_assertion_results": "run_nb6_assertions",
   "persona2_scored": "score_persona_candidates",
-  "scored_m4": "score_psplit_validation_m4",
-  "scored_m5": "score_psplit_validation_m5",
-  "scored_m6": "score_psplit_validation_m6",
   "scored_m7": "score_psplit_validation_m7",
-  "scored_m8": "score_psplit_validation_m8",
-  "scored_m1": "score_psplit_validation_set",
-  "scored_m2": "score_psplit_validation_set_1",
-  "scored_m3": "score_psplit_validation_set_2",
   "psplit_test_set": "split_by_disease_key",
   "psplit_train_set": "split_by_disease_key",
   "psplit_validation_set": "split_by_disease_key",
   "scored_champion": "sync_scored_champion",
-  "family_top_genes": "topn_family_genes",
-  "Lx5Mz2hY": "train_m1-f7",
-  "6hEivCx0": "train_m2-f10",
-  "cGPhBOGC": "train_m3-f12",
-  "79JOklWN": "train_m4-f13",
-  "r2oXoTEw": "train_m5-f13",
-  "DWtdaTje": "train_m6-f13-new-pc",
   "hJLGoYn4": "train_m7-f14",
-  "3RZ9a9kN": "train_m8-f14-pm",
-  "nb1_verify": "verify_nb1_on_champion",
-  "nb3_verify": "verify_nb3_on_champion",
   "family_validation_ranked": "window_family_rank"
  },
  "consumers": {
@@ -267,34 +208,21 @@
    "compute_breast_panel",
    "compute_drug_evidence_pairs",
    "compute_drug_target_benchmark",
-   "compute_drug_target_benchmark_staged",
    "compute_filter_three_axes",
    "compute_known_drug_truth",
-   "compute_maturity_confound",
-   "compute_model_comparison",
    "compute_novel_discovery_eval",
-   "compute_pool_reachability",
-   "compute_safety_lift",
-   "compute_target_reachability",
-   "compute_tractability_lift",
-   "run_nb6_assertions"
+   "compute_pool_reachability"
   ],
   "drug_protein_edges": [
    "compute_DEMO_KG_drug_protein_edges_copy",
    "compute_breast_panel",
    "compute_drug_evidence_pairs",
    "compute_drug_target_benchmark",
-   "compute_drug_target_benchmark_staged",
    "compute_filter_three_axes",
    "compute_known_drug_truth",
-   "compute_model_comparison",
    "compute_novel_discovery_eval",
    "compute_pool_reachability",
-   "compute_safety_lift",
-   "compute_target_reachability",
-   "compute_tractability_axis",
-   "compute_tractability_lift",
-   "run_nb6_assertions"
+   "compute_tractability_axis"
   ],
   "edge_metadata": [
    "compute_DEMO_KG_edge_metadata_copy",
@@ -305,8 +233,6 @@
   "gene_names": [
    "compute_DEMO_KG_gene_names_copy",
    "compute_gene_crosswalk",
-   "compute_gene_druggability",
-   "compute_gene_safety",
    "compute_known_drug_truth"
   ],
   "graph_edges": [
@@ -327,33 +253,22 @@
    "compute_disease_hierarchy_annotation",
    "compute_drug_evidence_pairs",
    "compute_drug_target_benchmark",
-   "compute_drug_target_benchmark_staged",
    "compute_dwpc_go_metapaths",
    "compute_enriched_prox_closest",
    "compute_enriched_rwr_score_1",
    "compute_filter_three_axes",
-   "compute_gene_druggability",
    "compute_gene_localization",
-   "compute_gene_safety",
    "compute_graph_genes",
    "compute_graph_node_source_counts",
    "compute_graph_node_type_counts",
    "compute_known_drug_truth",
-   "compute_lung_granularity_check",
-   "compute_maturity_confound",
-   "compute_model_comparison",
    "compute_novel_discovery_eval",
    "compute_persona_candidates",
    "compute_pool_reachability",
    "compute_ppi_cn_zscore",
-   "compute_safety_lift",
-   "compute_target_reachability",
    "compute_tractability_axis",
-   "compute_tractability_lift",
    "decorate_target_candidates",
-   "join_disease_name",
-   "join_family_gene_name",
-   "run_nb6_assertions"
+   "join_disease_name"
   ],
   "mondo_references": [
    "compute_DEMO_KG_mondo_references_copy",
@@ -371,37 +286,19 @@
   ],
   "raw_ot_druggability": [
    "compute_DEMO_KG_raw_ot_druggability_copy",
-   "compute_gene_druggability",
    "compute_ot_drug_mapped"
   ],
   "raw_ot_safety": [
    "compute_DEMO_KG_raw_ot_safety_copy",
-   "compute_gene_safety",
    "compute_gene_safety_join"
   ],
   "scored_champion": [
    "compute_breast_panel",
    "compute_drug_target_benchmark",
-   "compute_drug_target_benchmark_staged",
    "compute_family_validation_scored",
-   "compute_lung_granularity_check",
    "compute_novel_discovery_eval",
-   "compute_pool_selection_bias",
-   "compute_safety_lift",
-   "compute_target_reachability",
    "compute_tractability_axis",
-   "compute_tractability_lift",
-   "compute_validation_auc_by_disease_2",
-   "compute_validation_set_scored",
-   "run_nb6_assertions",
-   "verify_nb1_on_champion",
-   "verify_nb3_on_champion"
-  ],
-  "target_candidates_2": [
-   "compute_breast_shortlist",
-   "compute_filter_three_axes",
-   "count_candidates_per_disease",
-   "join_dashboard_annotations"
+   "compute_validation_set_scored"
   ],
   "disease_hierarchy_annotation": [
    "compute_disease_eligibility"
@@ -430,19 +327,10 @@
    "compute_drug_classified"
   ],
   "enriched_gene_localization": [
-   "compute_drug_joined",
-   "compute_gene_druggability"
+   "compute_drug_joined"
   ],
   "ot_drug_mapped": [
    "compute_drug_joined"
-  ],
-  "enriched_gene_druggability_v2": [
-   "compute_drug_target_benchmark_staged",
-   "compute_pool_reachability",
-   "compute_tractability_axis",
-   "compute_tractability_lift",
-   "decorate_target_candidates",
-   "run_nb6_assertions"
   ],
   "Lg8lbpl5": [
    "compute_enriched_degree_controls_1",
@@ -471,8 +359,7 @@
   "enriched_dwpc_GCD": [
    "compute_enriched_graph_features_1",
    "compute_enriched_pair_features_index_1",
-   "compute_pool_reachability",
-   "compute_pool_selection_bias"
+   "compute_pool_reachability"
   ],
   "enriched_dwpc_GFGD": [
    "compute_enriched_graph_features_1",
@@ -481,13 +368,11 @@
   "enriched_dwpc_GGD": [
    "compute_enriched_graph_features_1",
    "compute_enriched_pair_features_index_1",
-   "compute_pool_reachability",
-   "compute_pool_selection_bias"
+   "compute_pool_reachability"
   ],
   "enriched_dwpc_GPGD": [
    "compute_enriched_graph_features_1",
-   "compute_enriched_pair_features_index_1",
-   "compute_pool_selection_bias"
+   "compute_enriched_pair_features_index_1"
   ],
   "enriched_guilt_by_association_1": [
    "compute_enriched_graph_features_1",
@@ -529,8 +414,12 @@
   ],
   "known_drug_truth": [
    "compute_filter_three_axes",
-   "compute_pool_reachability",
-   "compute_pool_selection_bias"
+   "compute_pool_reachability"
+  ],
+  "target_candidates_2": [
+   "compute_filter_three_axes",
+   "count_candidates_per_disease",
+   "join_dashboard_annotations"
   ],
   "graph_genes": [
    "compute_gene_crosswalk"
@@ -550,22 +439,7 @@
   ],
   "raw_ot_known_drug": [
    "compute_known_drug_truth",
-   "compute_raw_ot_known_drug",
-   "run_nb6_assertions"
-  ],
-  "novel_discovery_eval": [
-   "compute_maturity_confound",
-   "compute_persona_candidates",
-   "run_nb6_assertions"
-  ],
-  "scored_m1": [
-   "compute_model_comparison"
-  ],
-  "scored_m2": [
-   "compute_model_comparison"
-  ],
-  "scored_m3": [
-   "compute_model_comparison"
+   "compute_raw_ot_known_drug"
   ],
   "pairwise_pairs": [
    "compute_pairwise_overlap"
@@ -577,70 +451,46 @@
    "compute_pairwise_pairs"
   ],
   "drug_target_benchmark": [
-   "compute_persona_candidates",
-   "run_nb6_assertions",
-   "verify_nb3_on_champion"
+   "compute_persona_candidates"
+  ],
+  "novel_discovery_eval": [
+   "compute_persona_candidates"
   ],
   "validation_auc_by_disease": [
    "compute_persona_candidates",
-   "compute_validation_auc_ci",
-   "run_nb6_assertions",
-   "verify_nb3_on_champion"
+   "compute_validation_auc_ci"
   ],
   "persona_candidates": [
    "compute_persona_enrichment",
    "join_trust_for_personas"
   ],
+  "enriched_gene_druggability_v2": [
+   "compute_pool_reachability",
+   "compute_tractability_axis",
+   "decorate_target_candidates"
+  ],
   "enriched_graph_features_candidate_psplit": [
    "compute_pool_reachability",
    "split_by_disease_key"
-  ],
-  "enriched_gene_safety_v2": [
-   "compute_safety_lift",
-   "decorate_target_candidates",
-   "run_nb6_assertions"
   ],
   "shap_drivers_long": [
    "compute_shap_driver_frequency"
   ],
   "dashboard_candidates": [
    "compute_shap_drivers_long",
-   "compute_top50_membership",
-   "run_nb6_assertions"
+   "compute_top50_membership"
   ],
   "psplit_test_set": [
-   "compute_split_audit_2",
-   "train_m1-f7",
-   "train_m2-f10",
-   "train_m3-f12",
-   "train_m4-f13",
-   "train_m5-f13",
-   "train_m6-f13-new-pc",
-   "train_m8-f14-pm"
+   "compute_split_audit_2"
   ],
   "psplit_train_set": [
    "compute_split_audit_2",
-   "train_m1-f7",
-   "train_m2-f10",
-   "train_m3-f12",
-   "train_m4-f13",
-   "train_m5-f13",
-   "train_m6-f13-new-pc",
-   "train_m7-f14",
-   "train_m8-f14-pm",
-   "verify_nb1_on_champion"
+   "train_m7-f14"
   ],
   "psplit_validation_set": [
    "compute_split_audit_2",
    "filter_persona_diseases",
-   "score_psplit_validation_m4",
-   "score_psplit_validation_m5",
-   "score_psplit_validation_m6",
-   "score_psplit_validation_m7",
-   "score_psplit_validation_m8",
-   "score_psplit_validation_set",
-   "score_psplit_validation_set_1",
-   "score_psplit_validation_set_2"
+   "score_psplit_validation_m7"
   ],
   "top50_membership": [
    "compute_top50_pairs",
@@ -663,6 +513,9 @@
   "validation_set_scored": [
    "compute_validation_set_scored_windows"
   ],
+  "enriched_gene_safety_v2": [
+   "decorate_target_candidates"
+  ],
   "top_candidates": [
    "decorate_target_candidates"
   ],
@@ -675,10 +528,6 @@
   "family_validation_ranked": [
    "group_family_auc"
   ],
-  "family_validation_scored": [
-   "group_family_gene",
-   "window_family_rank"
-  ],
   "disease_pool_sizes": [
    "join_dashboard_annotations",
    "join_trust_for_personas"
@@ -689,26 +538,8 @@
   "top_annotated": [
    "join_disease_name"
   ],
-  "family_top_genes": [
-   "join_family_gene_name"
-  ],
   "persona2_scored_shap": [
    "rank_per_disease"
-  ],
-  "breast_panel_overlap": [
-   "run_nb6_assertions"
-  ],
-  "lung_granularity_check": [
-   "run_nb6_assertions"
-  ],
-  "safety_lift": [
-   "run_nb6_assertions"
-  ],
-  "tractability_axis": [
-   "run_nb6_assertions"
-  ],
-  "tractability_lift": [
-   "run_nb6_assertions"
   ],
   "hJLGoYn4": [
    "score_persona_candidates",
@@ -717,35 +548,11 @@
   "validation_set_personas_2": [
    "score_persona_candidates"
   ],
-  "79JOklWN": [
-   "score_psplit_validation_m4"
-  ],
-  "r2oXoTEw": [
-   "score_psplit_validation_m5"
-  ],
-  "DWtdaTje": [
-   "score_psplit_validation_m6"
-  ],
-  "3RZ9a9kN": [
-   "score_psplit_validation_m8"
-  ],
-  "Lx5Mz2hY": [
-   "score_psplit_validation_set"
-  ],
-  "6hEivCx0": [
-   "score_psplit_validation_set_1"
-  ],
-  "cGPhBOGC": [
-   "score_psplit_validation_set_2"
-  ],
   "scored_m7": [
    "sync_scored_champion"
   ],
-  "family_gene_agg": [
-   "topn_family_genes"
-  ],
-  "family_auc_by_family": [
-   "verify_nb3_on_champion"
+  "family_validation_scored": [
+   "window_family_rank"
   ]
  },
  "rtype": {
@@ -761,7 +568,6 @@
   "compute_DEMO_KG_raw_ot_druggability_copy": "sync",
   "compute_DEMO_KG_raw_ot_safety_copy": "sync",
   "compute_breast_panel": "python",
-  "compute_breast_shortlist": "python",
   "compute_disease_eligibility": "grouping",
   "compute_disease_family_id": "python",
   "compute_disease_hierarchy_annotation": "python",
@@ -770,7 +576,6 @@
   "compute_drug_evidence_pairs": "python",
   "compute_drug_joined": "join",
   "compute_drug_target_benchmark": "python",
-  "compute_drug_target_benchmark_staged": "python",
   "compute_dwpc_go_metapaths": "python",
   "compute_enriched_degree_controls_1": "CustomCode_visual-graph-execute-cypher",
   "compute_enriched_disease_context_1": "CustomCode_visual-graph-execute-cypher",
@@ -791,10 +596,8 @@
   "compute_family_validation_scored": "sync",
   "compute_filter_three_axes": "python",
   "compute_gene_crosswalk": "join",
-  "compute_gene_druggability": "python",
   "compute_gene_druggability_v2": "shaker",
   "compute_gene_localization": "python",
-  "compute_gene_safety": "python",
   "compute_gene_safety_best": "topn",
   "compute_gene_safety_join": "join",
   "compute_gene_safety_v2": "shaker",
@@ -805,9 +608,6 @@
   "compute_graph_ppi_provenance": "grouping",
   "compute_graph_relation_counts": "grouping",
   "compute_known_drug_truth": "python",
-  "compute_lung_granularity_check": "python",
-  "compute_maturity_confound": "python",
-  "compute_model_comparison": "python",
   "compute_novel_discovery_eval": "python",
   "compute_ot_drug_mapped": "join",
   "compute_pairwise_overlap": "grouping",
@@ -815,24 +615,19 @@
   "compute_persona_candidates": "python",
   "compute_persona_enrichment": "shaker",
   "compute_pool_reachability": "python",
-  "compute_pool_selection_bias": "python",
   "compute_ppi_cn_zscore": "python",
   "compute_ppi_evidence_depth": "python",
   "compute_raw_ot_known_drug": "sync",
-  "compute_safety_lift": "python",
   "compute_shap_driver_frequency": "grouping",
   "compute_shap_drivers_long": "shaker",
   "compute_split_audit_2": "python",
-  "compute_target_reachability": "python",
   "compute_top50_membership": "shaker",
   "compute_top50_pairs": "join",
   "compute_top50_slim_a": "shaker",
   "compute_top50_slim_b": "shaker",
   "compute_top_shap_drivers_1": "python",
   "compute_tractability_axis": "python",
-  "compute_tractability_lift": "python",
   "compute_validation_auc_by_disease": "shaker",
-  "compute_validation_auc_by_disease_2": "python",
   "compute_validation_auc_ci": "shaker",
   "compute_validation_set_scored": "sync",
   "compute_validation_set_scored_grouped": "grouping",
@@ -846,36 +641,16 @@
   "filter_persona_diseases": "sampling",
   "finalize_dashboard_candidates": "shaker",
   "group_family_auc": "grouping",
-  "group_family_gene": "grouping",
   "join_dashboard_annotations": "join",
   "join_disease_family_id": "join",
   "join_disease_name": "join",
-  "join_family_gene_name": "join",
   "join_trust_for_personas": "join",
   "rank_per_disease": "window",
-  "run_nb6_assertions": "python",
   "score_persona_candidates": "prediction_scoring",
-  "score_psplit_validation_m4": "prediction_scoring",
-  "score_psplit_validation_m5": "prediction_scoring",
-  "score_psplit_validation_m6": "prediction_scoring",
   "score_psplit_validation_m7": "prediction_scoring",
-  "score_psplit_validation_m8": "prediction_scoring",
-  "score_psplit_validation_set": "prediction_scoring",
-  "score_psplit_validation_set_1": "prediction_scoring",
-  "score_psplit_validation_set_2": "prediction_scoring",
   "split_by_disease_key": "split",
   "sync_scored_champion": "sync",
-  "topn_family_genes": "topn",
-  "train_m1-f7": "prediction_training",
-  "train_m2-f10": "prediction_training",
-  "train_m3-f12": "prediction_training",
-  "train_m4-f13": "prediction_training",
-  "train_m5-f13": "prediction_training",
-  "train_m6-f13-new-pc": "prediction_training",
   "train_m7-f14": "prediction_training",
-  "train_m8-f14-pm": "prediction_training",
-  "verify_nb1_on_champion": "python",
-  "verify_nb3_on_champion": "python",
   "window_family_rank": "window"
  },
  "nb": {

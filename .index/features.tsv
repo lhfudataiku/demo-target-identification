@@ -14,7 +14,6 @@ prox_closest	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1	y	Per-dise
 prox_kernel	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1	y	Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
 shared_pathway_frac	compute_enriched_shared_pathway_count_1	module_size >= 20	1	y	n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
 _rank	rank_per_disease	-	-		
-_rank	topn_family_genes	-	-		
 all_overlap	compute_breast_panel	-	-		
 all_overlap_pct	compute_breast_panel	-	-		
 anchor_children_names	compute_disease_hierarchy_annotation	-	-		
@@ -64,7 +63,6 @@ auc_trustworthy	compute_breast_panel	-	-
 auc_trustworthy	compute_validation_auc_ci	-	-		
 base_rate_pct	compute_breast_panel	-	-		
 best_rank	compute_drug_target_benchmark	-	-		
-best_score	group_family_gene	-	-		
 clustering_coefficient	compute_enriched_node_centrality_1	-	-		
 count	compute_disease_eligibility	-	-		
 count	compute_graph_label_evidence	-	-		
@@ -203,7 +201,6 @@ is_parent_term	compute_disease_hierarchy_annotation	-	-
 is_plasma_membrane	compute_gene_localization	-	-		
 is_secreted	compute_gene_localization	-	-		
 is_target	compute_enriched_graph_features_1	-	-		
-is_target_any	group_family_gene	-	-		
 kd08_kept	compute_filter_three_axes	-	-		
 kd08_lift	compute_filter_three_axes	-	-		
 kd08_recall	compute_filter_three_axes	-	-		
@@ -229,8 +226,6 @@ n_curated	compute_pool_reachability	-	-
 n_descendants	compute_disease_hierarchy_annotation	-	-		
 n_diseases	compute_split_audit_2	-	-		
 n_diseases_in_family	group_family_auc	-	-		
-n_diseases_known_target	group_family_gene	-	-		
-n_diseases_scored	group_family_gene	-	-		
 n_distinct_genes	group_family_auc	-	-		
 n_eligible_children	compute_disease_hierarchy_annotation	-	-		
 n_eligible_descendants	compute_disease_hierarchy_annotation	-	-		
@@ -271,19 +266,10 @@ ppi_common_neighbors	compute_enriched_guilt_by_association_1	module_size >= 20	1
 ppi_edges_with_provenance	compute_ppi_evidence_depth	-	-		
 prediction	score_persona_candidates	-	-		
 prediction	score_psplit_validation_m7	-	-		
-prediction	score_psplit_validation_set	-	-		
-prediction	score_psplit_validation_set_1	-	-		
-prediction	score_psplit_validation_set_2	-	-		
 proba_0	score_persona_candidates	-	-		
 proba_0	score_psplit_validation_m7	-	-		
-proba_0	score_psplit_validation_set	-	-		
-proba_0	score_psplit_validation_set_1	-	-		
-proba_0	score_psplit_validation_set_2	-	-		
 proba_1	score_persona_candidates	-	-		
 proba_1	score_psplit_validation_m7	-	-		
-proba_1	score_psplit_validation_set	-	-		
-proba_1	score_psplit_validation_set_1	-	-		
-proba_1	score_psplit_validation_set_2	-	-		
 prox_mean	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1		Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
 prox_n_reach	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1		Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
 rank	compute_validation_set_scored_windows	-	-		

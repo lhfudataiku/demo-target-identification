@@ -874,6 +874,7 @@ docs/demo/DASHBOARD_DESIGN.md	2766	31.8	0.6886	VALUE_ONLY	nb2_splitting_and_pool
 docs/demo/DASHBOARD_DESIGN.md	2766	31.8	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
 docs/demo/DASHBOARD_DESIGN.md	2766	31.8	0.6833	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
 docs/demo/DASHBOARD_DESIGN.md	2766	31.8	0.7335	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
+docs/demo/DASHBOARD_DESIGN.md	2872	33.3	2,092	ORPHAN				Indexes rebuilt after the prune: **109 recipes, 98 assertions, 2,092 claims**.
 docs/demo/DEMO_NARRATIVE.md	18	-	129,253	ORPHAN				**The artifact.** `target_candidates_2` — **129,253 scored candidates across 13 diseases**, each row
 docs/demo/DEMO_NARRATIVE.md	26	-	0.82	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie
 docs/demo/DEMO_NARRATIVE.md	26	-	0.80	ASSERTED	nb3_validation_and_plots.py:header per-split-key AUC	y		| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 familie
