@@ -186,35 +186,6 @@
    "split_key_name",
    "split_key_rule"
   ],
-  "disease_hierarchy_annotation": [
-   "disease_index",
-   "mondo_id",
-   "disease_name",
-   "node_source",
-   "module_size",
-   "is_eligible",
-   "is_anchor",
-   "anchor_doid",
-   "anchor_hetionet_name",
-   "current_family_id",
-   "current_family_name",
-   "current_anchor_name",
-   "current_hop_depth",
-   "n_parents",
-   "n_children",
-   "n_eligible_children",
-   "n_anchor_children",
-   "is_parent_term",
-   "parent_names",
-   "anchor_children_names",
-   "n_anchor_ancestors",
-   "n_anchor_descendants",
-   "is_ancestor_of_anchor",
-   "is_descendant_of_anchor",
-   "antichain_ok_as_anchor",
-   "n_descendants",
-   "n_eligible_descendants"
-  ],
   "disease_pool_sizes": [
    "disease_index",
    "gene_index_count"
@@ -856,6 +827,16 @@
   "hetionet_disease_slim": [
    "doid"
   ],
+  "hub_bias_meter": [
+   "quintile",
+   "n_rows",
+   "n_genes",
+   "median_degree",
+   "mean_proba",
+   "pct_predicted_positive",
+   "rho_degree_proba",
+   "threshold"
+  ],
   "known_drug_truth": [
    "disease_index",
    "gene_index",
@@ -886,6 +867,29 @@
    "lift_top100",
    "hits_top200",
    "lift_top200"
+  ],
+  "orthogonality_scatter": [
+   "disease_index",
+   "target_rank_sum",
+   "n_pos",
+   "n_neg",
+   "auc_disease",
+   "hits_at_10",
+   "hits_at_20",
+   "recall_at_20",
+   "hits_at_50",
+   "count",
+   "n_genes",
+   "n_validated_targets",
+   "median_pct",
+   "best_rank",
+   "hits_at_top1pct",
+   "hits_at_top10pct",
+   "auc_drug_targets",
+   "auc_assoc_labels",
+   "n_assoc_positives",
+   "validated_also_assoc",
+   "disease_name"
   ],
   "ot_drug_mapped": [
    "ensg",
@@ -2221,15 +2225,16 @@
   "type": "python"
  },
  "compute_disease_eligibility": {
-  "code": null,
+  "code": "# Disease eligibility, derived directly.\n#\n# This used to be a Group over `disease_hierarchy_annotation` -- a 27-column,\n# 27,153-row ontology table (anchors, hop depth, antichain checks) reduced to\n# two numbers. The annotation was analysis, not pipeline: nothing else consumed\n# it, and it is published as an appendix CSV where the analysis belongs.\n#\n# The eligible set IS `enriched_module_size_1`: one row per disease whose module\n# clears the seed gate. The total is the disease node count. Nothing else needed.\n#\n# Verified identical to the old chain on 2026-08-26: 25,996 / 1,157 of 27,153.\nimport dataiku\nimport pandas as pd\n\neligible = len(dataiku.Dataset(\"enriched_module_size_1\").get_dataframe(columns=[\"disease_index\"]))\n\ntypes = dataiku.Dataset(\"graph_node_type_counts\").get_dataframe()\ntotal = int(types.loc[types.node_type == \"disease\", \"count\"].iloc[0])\n\nout = pd.DataFrame([\n    {\"is_eligible\": 0, \"count\": total - eligible},\n    {\"is_eligible\": 1, \"count\": eligible},\n])\nprint(f\"eligible {eligible:,} of {total:,} disease nodes \"\n      f\"({100.0 * eligible / total:.1f}%) \u2014 excluded {total - eligible:,}\")\ndataiku.Dataset(\"disease_eligibility\").write_with_schema(out)\n\n",
   "cypher": null,
   "inputs": [
-   "disease_hierarchy_annotation"
+   "enriched_module_size_1",
+   "graph_node_type_counts"
   ],
   "outputs": [
    "disease_eligibility"
   ],
-  "type": "grouping"
+  "type": "python"
  },
  "compute_disease_family_id": {
   "code": "# Disease family_id (Hetionet DO-Slim anchor rollup) -- COMPUTE.\n# Mitigates train/test leakage from MONDO parent/child & sibling disease\n# concepts (e.g. breast cancer <-> breast carcinoma) for the enriched graph's\n# resampling split. For every disease appearing in enriched_graph_features_1,\n# walk up the native (directed) MONDO parent-child hierarchy (raw_disease_disease,\n# pre-reversal -- graph_edges/kg lose direction via compute_kg's reverse-all step)\n# and find the nearest Hetionet DO-Slim term (mapped via mondo_references' DOID\n# xrefs). Ties broken by shallowest depth, then lowest node_index. Diseases with\n# no reachable anchor within MAX_DEPTH fall back to their own node_index (never\n# worse than the current disease_index-based split).\n#\n# A full graph-wide connected-components grouping over the whole MONDO hierarchy\n# was tried and rejected: >50% of eligible diseases have multiple direct MONDO\n# parents, so any peer-to-peer grouping (undirected hops, directed ancestor\n# checks, hub-degree-filtered variants) transitively collapses ~85-96% of the\n# eligible population into one dominant component regardless of parameters.\n# The fixed, small (137-term), pre-curated Hetionet anchor set avoids this: each\n# disease independently looks up toward a static anchor list rather than being\n# unioned with its peers, so ambiguity stays local (7.4% of diseases reach >1\n# anchor) instead of cascading. See decision log for the empirical comparison.\nimport dataiku\nimport networkx as nx\nimport pandas as pd\n\nMAX_DEPTH = 15\n# Option 5 -- \"lift the split key one level\". The split key is NOT the anchor itself but the\n# anchor's most-specific parent, so an anchor and its own parent/siblings land in ONE family.\n# Motivation: `diabetes mellitus` (parent) sat in validation while `type 2 diabetes mellitus`\n# (child, an anchor) sat in TRAIN -- a direct MONDO parent/child pair straddling the split,\n# which is leak 3 recurring. The upward-only rollup cannot fix that: a parent can never join\n# its own child-anchor's family.\n#\n# Measured alternatives, all rejected:\n#   - merging the parent INTO the child-anchor family: clinically backwards\n#   - promoting siblings to anchors: makes grouping FINER (wrong direction for a split key)\n#   - adding anchor-parents to the key SET: does not merge -- an anchor is already a key,\n#     so it never walks up to its parent\n#\n# The key set is built ONCE (lift every anchor to its most-specific parent under the cap),\n# then every disease finds its nearest member of THAT set. Keying directly on the elevated\n# set is what broadens coverage: a disease sitting under `diabetes mellitus` but under\n# neither of its anchor children (e.g. `monogenic diabetes`) now finds the key, where the\n# earlier \"find anchor first, then lift\" order left it as a self-fallback singleton.\n# Measured: coverage 27.4% -> 34.7%, families 900 -> 841, largest family 35.\n#\n# SPLIT_PARENT_FANOUT_CAP keeps classificatory blobs (`hereditary disease`, 1,762 children)\n# from becoming split keys; above the cap we keep the anchor itself. The cap is a sharp\n# threshold, not a dial: at 50 `cancer` becomes a key and absorbs 143 diseases, and the\n# breast-cancer/breast-carcinoma pair SPLITS again. 20 keeps the largest family at 35 with\n# anatomically coherent top groups; 30 reaches 36.6% coverage but lets `hematologic\n# disorder` grow to 55.\n#\n# The split key carries NO clinical meaning and is never reported -- it only has to guarantee\n# that biologically-related diseases land on the same side. Scoring stays at `disease_index`\n# granularity (lung adenocarcinoma != small-cell lung carcinoma for target validation).\nSPLIT_PARENT_FANOUT_CAP = 20\n\nhetionet = dataiku.Dataset(\"hetionet_disease_slim\").get_dataframe(infer_with_pandas=False)\n# Dataset DEMO_KG_LS.mondo_references renamed to DEMO_KG_mondo_references_copy by liheng.fu@dataiku.com on 2026-08-18 09:40:43\n# Dataset DEMO_KG_mondo_references_copy renamed to mondo_references by liheng.fu@dataiku.com on 2026-08-18 09:56:26\nmondo_refs = dataiku.Dataset(\"mondo_references\").get_dataframe(infer_with_pandas=False)\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(infer_with_pandas=False)\n# Dataset DEMO_KG_LS.raw_disease_disease renamed to DEMO_KG_raw_disease_disease_copy by liheng.fu@dataiku.com on 2026-08-18 09:40:57\n# Dataset DEMO_KG_raw_disease_disease_copy renamed to raw_disease_disease by liheng.fu@dataiku.com on 2026-08-18 09:56:09\nraw_dd = dataiku.Dataset(\"raw_disease_disease\").get_dataframe(infer_with_pandas=False)\ntarget_diseases = dataiku.Dataset(\"enriched_graph_features_1\").get_dataframe(columns=[\"disease_index\"])\ntarget_diseases = target_diseases.disease_index.unique()\n\ndisease_nodes = nodes[(nodes.node_type == \"disease\") & (nodes.node_source == \"MONDO\")]\nid_to_index = dict(zip(disease_nodes.node_id.astype(str), disease_nodes.node_index.astype(int)))\nindex_to_name = dict(zip(nodes.node_index.astype(int), nodes.node_name))\n\ndoid_to_mondo = (mondo_refs[mondo_refs.ontology == \"DOID\"]\n                 .groupby(\"ontology_id\").mondo_id.apply(list).to_dict())\nanchor_indices, anchor_names = set(), {}\nfor _, row in hetionet.iterrows():\n    for mid in doid_to_mondo.get(row.doid, []):\n        idx = id_to_index.get(str(mid))\n        if idx is not None:\n            anchor_indices.add(idx)\n            anchor_names[idx] = row[\"name\"]\n\nraw_dd[\"parent_idx\"] = raw_dd.parent_id.map(id_to_index)\nraw_dd[\"child_idx\"] = raw_dd.child_id.map(id_to_index)\nmapped = raw_dd.dropna(subset=[\"parent_idx\", \"child_idx\"]).copy()\nmapped[\"parent_idx\"] = mapped.parent_idx.astype(int)\nmapped[\"child_idx\"] = mapped.child_idx.astype(int)\n\nGdir = nx.DiGraph()\nGdir.add_edges_from(mapped[[\"child_idx\", \"parent_idx\"]].itertuples(index=False, name=None))\n\nparents_of = mapped.groupby(\"child_idx\").parent_idx.apply(set).to_dict()\nfanout = mapped.groupby(\"parent_idx\").child_idx.nunique().to_dict()\n\n\ndef lift_key(anchor):\n    \"\"\"Most-specific parent of `anchor` under the fanout cap; the anchor itself if none.\"\"\"\n    cands = [p for p in parents_of.get(anchor, set())\n             if fanout.get(p, 0) <= SPLIT_PARENT_FANOUT_CAP]\n    if not cands:\n        return anchor, \"anchor (no parent under cap)\"\n    return min(cands, key=lambda p: (fanout.get(p, 0), p)), \"lifted to parent\"\n\n\n# build the elevated key set once, then key every disease against it\nSPLIT_KEYS, key_origin = set(), {}\nfor _a in anchor_indices:\n    _k, _rule = lift_key(_a)\n    SPLIT_KEYS.add(_k)\n    key_origin.setdefault(_k, _rule)\n\n\ndef nearest_split_key(d):\n    \"\"\"Nearest member of the elevated key set at or above d.\"\"\"\n    if d in SPLIT_KEYS:\n        return d, key_origin.get(d, \"is a split key\")\n    if d not in Gdir:\n        return None, None\n    seen, frontier, depth = {d}, [d], 0\n    while frontier and depth < MAX_DEPTH:\n        depth += 1\n        nxt, found = [], set()\n        for n in frontier:\n            for p in Gdir.successors(n):\n                if p not in seen:\n                    seen.add(p); nxt.append(p)\n                    if p in SPLIT_KEYS:\n                        found.add(p)\n        if found:\n            return min(found), \"under a split key\"\n        frontier = nxt\n    return None, None\n\n\ndef nearest_anchor(d):\n    if d in anchor_indices:\n        return d, 0, anchor_names.get(d)\n    if d not in Gdir:\n        return None, None, None\n    seen = {d: 0}\n    frontier = [d]\n    depth = 0\n    found = {}\n    while frontier and depth < MAX_DEPTH:\n        depth += 1\n        nxt = []\n        for n in frontier:\n            for p in Gdir.successors(n):\n                if p not in seen:\n                    seen[p] = depth\n                    nxt.append(p)\n                    if p in anchor_indices:\n                        found[p] = depth\n        frontier = nxt\n    if not found:\n        return None, None, None\n    min_depth = min(found.values())\n    best = min(a for a, dep in found.items() if dep == min_depth)\n    return best, min_depth, anchor_names.get(best)\n\n\nrows = []\nfor d in target_diseases:\n    d = int(d)\n    anchor, depth, name = nearest_anchor(d)\n    family_id = anchor if anchor is not None else d\n    split_key, rule = nearest_split_key(d)\n    if split_key is None:\n        split_key, rule = d, \"self (no key above)\"\n    rows.append({\"disease_index\": d, \"disease_family_id\": int(family_id),\n                 \"anchor_name\": name, \"hop_depth\": depth,\n                 \"disease_split_key\": int(split_key),\n                 \"split_key_name\": index_to_name.get(int(split_key)),\n                 \"split_key_rule\": rule})\n\nout = pd.DataFrame(rows)\nprint(\"disease_family_id rows:\", out.shape,\n      \"| covered by an anchor:\", out.anchor_name.notna().sum(),\n      \"| self-fallback:\", out.anchor_name.isna().sum())\nprint(\"families (old anchor key) :\", out.disease_family_id.nunique())\nprint(\"families (lifted split key):\", out.disease_split_key.nunique())\nprint(out.split_key_rule.value_counts().to_string())\ndataiku.Dataset(\"disease_family_id\").write_with_schema(out)\n\n",
@@ -2243,22 +2248,6 @@
   ],
   "outputs": [
    "disease_family_id"
-  ],
-  "type": "python"
- },
- "compute_disease_hierarchy_annotation": {
-  "code": "# Disease hierarchy annotation \u2014 one row per MONDO disease node, with everything needed\n# to validate and redesign the family-split grouping by hand.\n#\n# WHY: the anchor-rollup grouping (compute_disease_family_id) is hard to audit because the\n# relevant structure lives in the MONDO DAG, not in any single table. This flattens it:\n# anchor status, parent/child counts, antichain relationships, eligibility, module size.\n#\n# NODE_INDEX SAFETY: read-only, emits a per-disease attribute table. No nodes, no edges.\n#\n# Direction note: reads `raw_disease_disease` (pre-reversal, explicit parent_id/child_id),\n# NOT graph_edges -- compute_kg reverse-alls every relation and destroys the direction.\nimport dataiku\nimport networkx as nx\nimport pandas as pd\n\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_type\", \"node_name\", \"node_source\"],\n    infer_with_pandas=False)\nrdd = dataiku.Dataset(\"raw_disease_disease\").get_dataframe(infer_with_pandas=False)\nhet = dataiku.Dataset(\"hetionet_disease_slim\").get_dataframe(infer_with_pandas=False)\nmref = dataiku.Dataset(\"mondo_references\").get_dataframe(infer_with_pandas=False)\nmod = dataiku.Dataset(\"enriched_module_size_1\").get_dataframe()\nfam = dataiku.Dataset(\"disease_family_id\").get_dataframe()\n\nnodes[\"node_index\"] = nodes.node_index.astype(int)\ndis = nodes[nodes.node_type == \"disease\"].copy()\nmondo = dis[dis.node_source == \"MONDO\"]\nid2idx = dict(zip(mondo.node_id.astype(str), mondo.node_index))\nnm = dict(zip(dis.node_index, dis.node_name))\neligible = set(mod.disease_index)\nmsize = dict(zip(mod.disease_index, mod.module_size))\n\n# ---- anchors: Hetionet DOID -> MONDO -> node_index --------------------------\nd2m = mref[mref.ontology == \"DOID\"].groupby(\"ontology_id\").mondo_id.apply(list).to_dict()\nanchor_doid, anchor_label = {}, {}\nfor _, r in het.iterrows():\n    for mid in d2m.get(str(r.doid), []):\n        i = id2idx.get(str(mid))\n        if i is not None:\n            anchor_doid[i] = str(r.doid)\n            anchor_label[i] = r[\"name\"]\nA = set(anchor_doid)\n\n# ---- directed hierarchy -----------------------------------------------------\nrdd[\"p\"] = rdd.parent_id.map(id2idx)\nrdd[\"c\"] = rdd.child_id.map(id2idx)\ne = rdd.dropna(subset=[\"p\", \"c\"]).astype({\"p\": int, \"c\": int})\nUP = nx.DiGraph(); UP.add_edges_from(zip(e.c, e.p))      # child -> parent\nDOWN = nx.DiGraph(); DOWN.add_edges_from(zip(e.p, e.c))  # parent -> child\nkids = e.groupby(\"p\").c.apply(set).to_dict()\npars = e.groupby(\"c\").p.apply(set).to_dict()\n\nfamix = fam.set_index(\"disease_index\")\n\nrows = []\nfor d in sorted(dis.node_index):\n    ch = kids.get(d, set())\n    pa = pars.get(d, set())\n    ancs = nx.descendants(UP, d) if d in UP else set()     # superclasses\n    desc = nx.descendants(DOWN, d) if d in DOWN else set()  # subclasses\n    anchor_desc = desc & A\n    anchor_ancs = ancs & A\n    f = famix.loc[d] if d in famix.index else None\n    rows.append({\n        \"disease_index\": d,\n        \"mondo_id\": dis.loc[dis.node_index == d, \"node_id\"].iloc[0],\n        \"disease_name\": nm.get(d),\n        \"node_source\": dis.loc[dis.node_index == d, \"node_source\"].iloc[0],\n        \"module_size\": msize.get(d),\n        \"is_eligible\": int(d in eligible),\n        # anchor status\n        \"is_anchor\": int(d in A),\n        \"anchor_doid\": anchor_doid.get(d),\n        \"anchor_hetionet_name\": anchor_label.get(d),\n        # current grouping (as built)\n        \"current_family_id\": None if f is None else int(f.disease_family_id),\n        \"current_family_name\": None if f is None else nm.get(int(f.disease_family_id)),\n        \"current_anchor_name\": None if f is None else f.anchor_name,\n        \"current_hop_depth\": None if f is None else f.hop_depth,\n        # local structure\n        \"n_parents\": len(pa),\n        \"n_children\": len(ch),\n        \"n_eligible_children\": len(ch & eligible),\n        \"n_anchor_children\": len(ch & A),\n        \"is_parent_term\": int(len(ch & eligible) >= 1),\n        \"parent_names\": \" | \".join(sorted(str(nm.get(x)) for x in pa))[:400],\n        \"anchor_children_names\": \" | \".join(sorted(str(anchor_label.get(x)) for x in (ch & A)))[:300],\n        # antichain relationships (transitive)\n        \"n_anchor_ancestors\": len(anchor_ancs),\n        \"n_anchor_descendants\": len(anchor_desc),\n        \"is_ancestor_of_anchor\": int(len(anchor_desc) > 0),\n        \"is_descendant_of_anchor\": int(len(anchor_ancs) > 0),\n        \"antichain_ok_as_anchor\": int(len(anchor_desc) == 0 and len(anchor_ancs) == 0),\n        # scale of the subtree\n        \"n_descendants\": len(desc),\n        \"n_eligible_descendants\": len(desc & eligible),\n    })\n\nout = pd.DataFrame(rows)\nprint(\"rows:\", len(out))\nprint(\"\\nanchor accounting:\")\nprint(f\"  hetionet_disease_slim terms         : {len(het)}\")\nprint(f\"  resolved to a graph node_index      : {int(out.is_anchor.sum())}\")\nprint(f\"  used as nearest anchor (in family)  : {fam.anchor_name.nunique()}\")\nprint(f\"\\neligible diseases                     : {int(out.is_eligible.sum())}\")\nprint(f\"  parent terms (>=1 eligible child)   : {int(out[out.is_eligible==1].is_parent_term.sum())}\")\nprint(f\"  antichain-clean (anchor-able)       : {int(out[out.is_eligible==1].antichain_ok_as_anchor.sum())}\")\nprint(\"\\nexisting anchors violating the antichain:\")\nv = out[(out.is_anchor == 1) & (out.is_ancestor_of_anchor == 1)]\nfor _, r in v.iterrows():\n    print(f\"  {r.disease_name} -> ancestor of {r.n_anchor_descendants} anchor(s)\")\n\ndataiku.Dataset(\"disease_hierarchy_annotation\").write_with_schema(out)\n\n",
-  "cypher": null,
-  "inputs": [
-   "disease_family_id",
-   "enriched_module_size_1",
-   "graph_nodes",
-   "hetionet_disease_slim",
-   "mondo_references",
-   "raw_disease_disease"
-  ],
-  "outputs": [
-   "disease_hierarchy_annotation"
   ],
   "type": "python"
  },
@@ -2704,6 +2693,17 @@
   ],
   "type": "grouping"
  },
+ "compute_hub_bias_meter": {
+  "code": "# Hub-bias meter -- act 2's counter-measurement.\n#\n# Holds biology constant (KNOWN TARGETS ONLY) and asks whether the model scores\n# poorly-connected true targets as highly as hubs. It does not: the least-\n# connected fifth scores ~0.59 against ~0.79 for the most-connected.\n#\n# This existed only inside nb3b, whose own comment said \"it has no recipe, so\n# this notebook IS its artifact\". Act 2 needs it served, and an aggregate over\n# 3.96M rows cannot be computed per request.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\n# The F1-optimised operating point, NOT 0.5. At 0.5 the same table reads\n# 65.5% / 84.8% and the finding looks like the opposite of what it is.\nTHR = 0.860\n\n# scored_champion is a 45-column CSV: a column-pruned read still streams all 45,\n# so chunk it. Chunking, not sampling -- sampling would move the asserted values.\n_chunks = []\nfor _c in dataiku.Dataset(\"scored_champion\").iter_dataframes(\n        chunksize=250_000,\n        columns=[\"gene_index\", \"is_target\", \"proba_1\", \"gene_ppi_degree\"]):\n    _c = _c[_c.is_target == 1]\n    if len(_c):\n        _chunks.append(_c)\npos = pd.concat(_chunks, ignore_index=True)\n\n# Quintiles exactly as nb6 section 5.2 computes them -- raw degree over the\n# positive ROWS, duplicates dropped:\n#\n#     pos[\"q\"] = pd.qcut(pos.gene_ppi_degree, 5, labels=False, duplicates=\"drop\")\n#\n# NOTE the methodological quirk, deliberately preserved: rows are disease-gene\n# pairs, so a gene that is a known target for 50 diseases contributes 50 rows and\n# pulls the boundaries toward its degree. Deduplicating to distinct genes first\n# is arguably the better statistic -- it gives Q1 0.5675 / Q5 0.7744 instead of\n# 0.59 / 0.79. It is NOT used here: nb6 is the asserted source and the narrative\n# quotes its figures, and a serving dataset that silently disagrees with the\n# notebook is how a demo contradicts itself in the room. Change both together or\n# neither.\npos[\"dq\"] = pd.qcut(pos.gene_ppi_degree, 5, labels=False, duplicates=\"drop\")\n\nrows = []\nfor q, g in pos.groupby(\"dq\"):\n    rows.append({\n        \"quintile\": int(q) + 1,\n        \"n_rows\": int(len(g)),\n        \"n_genes\": int(g.gene_index.nunique()),\n        \"median_degree\": float(g.gene_ppi_degree.median()),\n        \"mean_proba\": float(g.proba_1.mean()),\n        \"pct_predicted_positive\": float(100.0 * (g.proba_1 >= THR).mean()),\n    })\nout = pd.DataFrame(rows).sort_values(\"quintile\")\n\n# Spearman between degree and score, on the same population.\nrho = float(pd.Series(pos.gene_ppi_degree).rank().corr(pd.Series(pos.proba_1).rank()))\nout[\"rho_degree_proba\"] = round(rho, 4)\nout[\"threshold\"] = THR\n\nprint(out.to_string(index=False))\nprint(f\"\\nQ1 mean_proba {out.mean_proba.iloc[0]:.4f} | Q5 {out.mean_proba.iloc[-1]:.4f} | rho {rho:+.4f}\")\n\ndataiku.Dataset(\"hub_bias_meter\").write_with_schema(out)\n\n",
+  "cypher": null,
+  "inputs": [
+   "scored_champion"
+  ],
+  "outputs": [
+   "hub_bias_meter"
+  ],
+  "type": "python"
+ },
  "compute_known_drug_truth": {
   "code": "# Map the curated `known_drug` label onto graph indices, and calibrate its score against the\n# join-based truth so a threshold can be chosen on evidence rather than by guess.\n#\n# OT's known_drug score rises with maximum clinical phase, so it spans approved pharmacology and\n# early trial evidence in one column. Rather than pick a cutoff arbitrarily, this compares the score\n# distribution of pairs that ARE in our approved join against those that are not.\n#\n# NODE_INDEX SAFETY: per-pair evaluation label. No nodes, no edges.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nkd = dataiku.Dataset(\"raw_ot_known_drug\").get_dataframe()\nnid = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_name\", \"node_type\"], infer_with_pandas=False)\nnid[\"node_index\"] = nid.node_index.astype(int)\nnid[\"node_id\"] = nid.node_id.astype(str)\nG = nid[nid.node_type == \"gene/protein\"]\nD = nid[nid.node_type == \"disease\"]\ngn = dataiku.Dataset(\"gene_names\").get_dataframe(columns=[\"symbol\", \"entrez_id\"])\n\n# symbol -> entrez -> gene_index, the same crosswalk the druggability chain uses\ngn = gn.dropna(subset=[\"entrez_id\"]).copy()\ngn[\"entrez\"] = gn.entrez_id.astype(\"int64\").astype(str)\nsym2idx = (gn.merge(G[[\"node_id\", \"node_index\"]].rename(columns={\"node_id\": \"entrez\"}), on=\"entrez\")\n           [[\"symbol\", \"node_index\"]].drop_duplicates(\"symbol\")\n           .rename(columns={\"node_index\": \"gene_index\"}))\n\n# OT diseaseId is MONDO_0005148 / EFO_xxxx; our disease node_id is bare-integer MONDO\nkd[\"mondo_bare\"] = kd.diseaseId.astype(str).str.extract(r\"^MONDO_0*(\\d+)$\")[0]\ndis2idx = D[[\"node_id\", \"node_index\"]].rename(\n    columns={\"node_id\": \"mondo_bare\", \"node_index\": \"disease_index\"})\n\nt = (kd.merge(sym2idx, on=\"symbol\", how=\"inner\")\n       .merge(dis2idx, on=\"mondo_bare\", how=\"inner\"))\nt = t.groupby([\"disease_index\", \"gene_index\"], as_index=False).score.max()\nprint(f\"known_drug pairs {len(kd):,} -> resolved onto the graph: {len(t):,}\")\nprint(f\"  ({t.disease_index.nunique():,} diseases, {t.gene_index.nunique():,} genes)\")\nprint(f\"  unresolved: {kd.mondo_bare.isna().sum():,} non-MONDO disease ids, \"\n      f\"{(~kd.symbol.isin(sym2idx.symbol)).sum():,} unmapped symbols\")\n\n# ---- calibrate against the join-based truth ----------------------------------\ndmap = dict(zip(D.node_id, D.node_index)); gmap = dict(zip(G.node_id, G.node_index))\ndd = dataiku.Dataset(\"drug_disease_edges\").get_dataframe(infer_with_pandas=False)\ndp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\ngc, tc = (\"x_id\", \"y_id\") if (dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ndp[\"drug\"] = dp[gc].astype(str); dp[\"gene_index\"] = dp[tc].astype(str).map(gmap)\ndp = dp.dropna(subset=[\"gene_index\"])[[\"drug\", \"gene_index\"]]\n\n\ndef joined(rel):\n    sub = dd[dd.relation.astype(str).str.fullmatch(rel, case=False, na=False)].copy()\n    dc, xc = (\"x_id\", \"y_id\") if (sub.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\n    sub[\"drug\"] = sub[dc].astype(str); sub[\"disease_index\"] = sub[xc].astype(str).map(dmap)\n    return set(map(tuple, sub.dropna(subset=[\"disease_index\"])[[\"drug\", \"disease_index\"]]\n                   .merge(dp, on=\"drug\")[[\"disease_index\", \"gene_index\"]].astype(int).values))\n\n\nap, iv = joined(\"indication\"), joined(\"drug_investigated_for\")\nkeys = list(zip(t.disease_index.astype(int), t.gene_index.astype(int)))\nt[\"in_approved_join\"] = [1 if k in ap else 0 for k in keys]\nt[\"in_investig_join\"] = [1 if k in iv else 0 for k in keys]\n\nprint(f\"\\n=== overlap with the join-based truth ===\")\nprint(f\"  known_drug pairs also in the APPROVED join      : {int(t.in_approved_join.sum()):,} \"\n      f\"({t.in_approved_join.mean():.1%})\")\nprint(f\"  known_drug pairs also in the INVESTIGATIONAL join: {int(t.in_investig_join.sum()):,} \"\n      f\"({t.in_investig_join.mean():.1%})\")\nprint(f\"  APPROVED join pairs missing from known_drug      : \"\n      f\"{len(ap - set(keys)):,} of {len(ap):,}\")\n\nprint(f\"\\n=== score CALIBRATION: does the score separate approved from not? ===\")\nprint(f\"  {'bucket':16s}{'n':>9s}{'in approved join':>19s}{'in investig join':>19s}\")\nfor lo, hi in [(0, .1), (.1, .2), (.2, .4), (.4, .6), (.6, .8), (.8, 1.01)]:\n    m = (t.score >= lo) & (t.score < hi)\n    if not m.any():\n        continue\n    print(f\"  [{lo:.1f},{hi:.2f})\".ljust(16) + f\"{int(m.sum()):>9,}\"\n          f\"{t[m].in_approved_join.mean():>18.1%}{t[m].in_investig_join.mean():>19.1%}\")\nprint(\"\\n  A rising approved-share with score means the score is a usable phase proxy, so a\")\nprint(\"  threshold can stand in for 'approved' without needing the join at all.\")\n\ndataiku.Dataset(\"known_drug_truth\").write_with_schema(t)\n\n",
   "cypher": null,
@@ -3140,6 +3140,18 @@
   ],
   "outputs": [
    "target_candidates_2"
+  ],
+  "type": "join"
+ },
+ "join_orthogonality": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "drug_target_benchmark",
+   "validation_auc_by_disease"
+  ],
+  "outputs": [
+   "orthogonality_scatter"
   ],
   "type": "join"
  },

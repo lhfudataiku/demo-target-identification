@@ -1,0 +1,186 @@
+{
+ "ACT 1": [
+  {
+   "title": "What this demo claims \u2014 and what it does not",
+   "components": [
+    "ActSay",
+    "Table"
+   ]
+  },
+  {
+   "title": "The graph, in four numbers",
+   "components": [
+    "ActStat"
+   ]
+  },
+  {
+   "title": "8 node types",
+   "components": [
+    "ActBar"
+   ]
+  },
+  {
+   "title": "18 relations",
+   "components": [
+    "ActBar"
+   ]
+  },
+  {
+   "title": "Where the nodes came from",
+   "components": [
+    "ActBar"
+   ]
+  },
+  {
+   "title": "Every edge knows where it came from",
+   "components": [
+    "ActBar"
+   ]
+  },
+  {
+   "title": "What \u201cknown target\u201d actually means",
+   "components": [
+    "ActDonut"
+   ]
+  },
+  {
+   "title": "What this act must not do",
+   "components": []
+  }
+ ],
+ "ACT 2": [
+  {
+   "title": "Where the candidates come from",
+   "components": [
+    "ActSankey",
+    "ActSay"
+   ]
+  },
+  {
+   "title": "Zero straddling keys",
+   "components": [
+    "ActSay"
+   ]
+  },
+  {
+   "title": "The distribution, not the summary",
+   "components": [
+    "ActBar",
+    "ActSay",
+    "ActStat"
+   ]
+  },
+  {
+   "title": "Usefulness is not uniform \u2014 every disease, not just a summary",
+   "components": [
+    "ActBeeswarm",
+    "ActSay"
+   ]
+  },
+  {
+   "title": "Where it still under-scores",
+   "components": [
+    "ActSay",
+    "Table"
+   ]
+  },
+  {
+   "title": "What the model actually keys on",
+   "components": [
+    "ActBar"
+   ]
+  },
+  {
+   "title": "What the 14 features actually are",
+   "components": [
+    "ActSay"
+   ]
+  },
+  {
+   "title": "A high AUC does not buy therapeutic relevance",
+   "components": [
+    "ActScatter",
+    "ActStat"
+   ]
+  },
+  {
+   "title": "Why the drug benchmark is never a score",
+   "components": [
+    "ActSay"
+   ]
+  }
+ ],
+ "ACT 3": [
+  {
+   "title": "Choose a family",
+   "components": [
+    "ActStat",
+    "EaSelect"
+   ]
+  },
+  {
+   "title": "AUC, with the uncertainty it actually has",
+   "components": [
+    "ActIntervals",
+    "EaEmpty"
+   ]
+  },
+  {
+   "title": "How much do the subtypes overlap?",
+   "components": [
+    "ActMatrix",
+    "EaEmpty"
+   ]
+  },
+  {
+   "title": "For the thin diseases, change the metric",
+   "components": [
+    "ActBar",
+    "ActSay"
+   ]
+  },
+  {
+   "title": "The common programme, and what is subtype-specific",
+   "components": [
+    "ActSay"
+   ]
+  },
+  {
+   "title": "What this tells you before you build on it",
+   "components": []
+  }
+ ],
+ "ACT 4": [
+  {
+   "title": "The contract",
+   "components": []
+  },
+  {
+   "title": "Your thresholds, not ours",
+   "components": [
+    "EaSelect"
+   ]
+  },
+  {
+   "title": "What a safety filter would cost you",
+   "components": [
+    "ActSay"
+   ]
+  },
+  {
+   "title": "`The ranked list${current ? ' \u2014 ' + current.disease_name : ''}`",
+   "components": [
+    "EaEmpty",
+    "Table"
+   ]
+  },
+  {
+   "title": "Why this gene?",
+   "components": []
+  },
+  {
+   "title": "The mechanism, on the graph",
+   "components": []
+  }
+ ]
+}

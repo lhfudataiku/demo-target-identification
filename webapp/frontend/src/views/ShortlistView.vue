@@ -22,6 +22,8 @@
   import ActCard from '@/components/act/ActCard.vue'
   import ActSay from '@/components/act/ActSay.vue'
   import { EaSelect, EaEmpty } from '@/components/ui'
+  import ActStat from '@/components/act/ActStat.vue'
+  import ActTabs from '@/components/act/ActTabs.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
   import { ListFilter, ShieldAlert, FileCheck2 } from 'lucide-vue-next'
 
@@ -114,11 +116,18 @@
       <!-- The contract, stated before the list appears. -->
       <ActCard span="col-span-12" :icon="FileCheck2" accent="var(--chart-1)" title="The contract"
                desc="Stated before the list appears, because it is what makes the rest arguable.">
+        <div v-if="data" class="mb-3 flex flex-wrap gap-8">
+          <ActStat label="Candidates scored" :value="data.funnel[0].n.toLocaleString()"
+                   sub="nothing pre-filtered" />
+          <ActStat label="After your filters" :value="data.funnel[data.funnel.length - 1].n.toLocaleString()"
+                   sub="you set the cut-offs" />
+          <ActStat label="Shown" :value="data.returned" sub="ranked by score" />
+        </div>
         <ul class="flex flex-col gap-1.5 text-[13px] leading-relaxed text-muted-foreground">
-          <li><b class="text-foreground">Nothing is pre-filtered.</b> Every candidate the model scored is here; you cut it.</li>
-          <li><b class="text-foreground">Every row carries its evidence</b> — the drivers that moved it, and the class it belongs to.</li>
-          <li><b class="text-foreground">The drug badges are ground truth, not a filter.</b> They are what the enrichment is measured against; filtering on them would make the claim circular.</li>
-          <li><b class="text-foreground">This is a reconstruction test.</b> We are not claiming discovery — we are asking whether the top of a list you know reads correctly.</li>
+          <li><b class="text-foreground">The drug badges are ground truth, not a filter.</b> They are what
+            the enrichment is measured against; filtering on them would make the claim circular.</li>
+          <li><b class="text-foreground">This is a reconstruction test.</b> The question is whether the top
+            of a list you know reads correctly.</li>
         </ul>
       </ActCard>
 
@@ -178,6 +187,9 @@
                :chips="[['live', 'live']]"
                :desc="data ? `Showing ${data.returned} of ${data.funnel[data.funnel.length - 1].n.toLocaleString()} after your filters.` : undefined"
                :src="['dashboard_candidates']">
+        <ActTabs :model-value="novelOnly ? 'novel' : 'all'" class="mb-3"
+                 :options="[{ value: 'all', label: 'All' }, { value: 'novel', label: 'Novel only' }]"
+                 @update:model-value="(v) => (novelOnly = v === 'novel')" />
         <div v-if="data && data.rows.length" class="overflow-x-auto">
           <Table>
             <TableHeader>

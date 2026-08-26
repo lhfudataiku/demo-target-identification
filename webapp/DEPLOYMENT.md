@@ -160,6 +160,51 @@ These are demo requirements, not style preferences. They are enforced in
 |---|---|
 | Deployed, but the UI is unchanged | Browser cached `assets/index.js` — the filename has no content hash. The backend now sends `no-store`, so this should be historical. |
 | Synced the project, UI still old | Git does not carry the built bundle. Run `make deploy`. |
-| UI shows old *data* after a dataset rebuild | `candidates.py` caches the dataframe per process. Restart the backend (`dku webapp restart OlmPX9a`). |
+| UI shows old *data* after a dataset rebuild | The route caches the dataframe per process — see “Dataset caching” below. Restart the backend (`dku webapp restart OlmPX9a`) until the fix lands. |
 | Local dev: HTTP 500 on every API call | Either the stale key in `~/.dataiku/config.json`, or `BACKEND_PORT` no longer matching the Vite proxy. |
 | `nginx: could not open error log file` in the logs | Harmless. Gunicorn binds fine afterwards. |
+
+## Dataset caching — the known staleness, and the fix
+
+The act routes load their datasets once per process:
+
+```python
+@functools.lru_cache(maxsize=1)
+def _frame():
+    return get_dataiku().Dataset("dashboard_candidates").get_dataframe(columns=COLS)
+```
+
+That is deliberate — `dashboard_candidates` is 129,253 rows and re-reading it per request makes the
+demo feel slow. The cost is real: **if the dataset is rebuilt, the webapp keeps serving the old rows
+until the backend restarts.** In front of an audience that is the worst kind of stale — the numbers
+look fine and are simply out of date.
+
+**The fix to apply: keep the cache, but key it on the dataset's last-build timestamp, so a rebuild
+invalidates it automatically.**
+
+```python
+def _last_build(name: str) -> str:
+    # Cheap identity for the current build: metadata, not a data read.
+    ds = get_dataiku().Dataset(name)
+    return str(ds.get_last_metric_values()
+                 .get_metric_by_id("reporting:BUILD_END").get_value())
+
+@functools.lru_cache(maxsize=4)
+def _frame_at(name: str, build_stamp: str):
+    # build_stamp is unused inside — it exists purely as part of the cache key.
+    return get_dataiku().Dataset(name).get_dataframe(columns=COLS)
+
+def _frame():
+    return _frame_at("dashboard_candidates", _last_build("dashboard_candidates"))
+```
+
+The stamp lookup is a metadata call, so the per-request cost stays negligible, while a rebuild
+changes the cache key and the next request reloads. `maxsize=4` keeps a generation or two rather
+than thrashing.
+
+Applies to every cached route: `candidates.py`, `calibration.py`, `families.py`, `evidence.py`.
+
+> One caveat worth knowing before relying on it: DSS dataset **metrics can lag** — `rows` on
+> `nb6_assertion_results` read 33 while the table held 34, and `family_panel` reported 670 rows while
+> the file was an empty 2 KB parquet. `BUILD_END` is written by the build itself rather than by a
+> metrics pass, so it is the reliable one to key on — but do not swap it for `rows`.

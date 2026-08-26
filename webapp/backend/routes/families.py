@@ -43,6 +43,19 @@ def _panel():
 
 
 @functools.lru_cache(maxsize=1)
+def _enrich() -> dict[int, float]:
+    """disease_index -> rank enrichment. v3's thin-disease card plots this, not
+    the known-target count; the count is only the label."""
+    try:
+        df = get_dataiku().Dataset("persona_enrichment").get_dataframe(
+            columns=["disease_index", "rank_enrichment"])
+        return {int(r.disease_index): float(r.rank_enrichment)
+                for r in df.itertuples() if r.rank_enrichment == r.rank_enrichment}
+    except Exception:
+        return {}
+
+
+@functools.lru_cache(maxsize=1)
 def _overlap():
     try:
         return get_dataiku().Dataset(OVERLAP).get_dataframe()
@@ -87,8 +100,10 @@ def family(family_id: int) -> dict[str, Any]:
     if g.empty:
         raise HTTPException(status_code=404, detail=f"No family {family_id}")
 
+    enr = _enrich()
     terms = [{
         "disease_index": int(r.disease_index),
+        "enrichment": round(enr[int(r.disease_index)], 2) if int(r.disease_index) in enr else None,
         "disease_name": names.get(int(r.disease_index), str(int(r.disease_index))),
         "auc": round(float(r.auc_disease), 4),
         "lo95": round(float(r.auc_lo95), 4),
@@ -97,6 +112,9 @@ def family(family_id: int) -> dict[str, Any]:
         # but never quote its AUC.
         "trustworthy": bool(r.auc_trustworthy),
         "n_pos": int(r.n_pos),
+        # Depth in the disease ontology, so the term list can be drawn as the
+        # hierarchy it actually is rather than a flat list.
+        "hop_depth": int(r.hop_depth) if r.hop_depth == r.hop_depth else 0,
     } for r in g.sort_values("n_pos", ascending=False).itertuples()]
 
     # Subtype overlap among this family's terms, where it was computed.
@@ -111,7 +129,30 @@ def family(family_id: int) -> dict[str, Any]:
             "shared": int(r["count"]),
         } for _, r in m.iterrows()]
 
+    # The common programme: genes appearing in the top 50 of EVERY term, versus
+    # those specific to one. v3 fills this card with `geneGrid`.
+    genes: dict[str, int] = {}
+    try:
+        top = get_dataiku().Dataset("top50_membership").get_dataframe(
+            columns=["gene_index", "disease_index"])
+        top = top[top.disease_index.isin(idx)]
+        gname = {int(r.node_index): str(r.node_name)
+                 for r in get_dataiku().Dataset("graph_nodes").get_dataframe(
+                     columns=["node_index", "node_name", "node_type"]).itertuples()
+                 if r.node_type == "gene/protein"}
+        for r in top.itertuples():
+            n = gname.get(int(r.gene_index))
+            if n:
+                genes[n] = genes.get(n, 0) + 1
+    except Exception:
+        genes = {}
+    n_terms_with_top = len({int(i) for i in idx})
+    gene_grid = [{"name": n, "group": ("common" if c >= max(2, n_terms_with_top)
+                                       else "shared" if c > 1 else "specific")}
+                 for n, c in sorted(genes.items(), key=lambda kv: (-kv[1], kv[0]))]
+
     return {
+        "gene_grid": gene_grid,
         "family_id": family_id,
         "n_terms": len(terms),
         "macro_auc": round(float(g.auc_disease.mean()), 4),

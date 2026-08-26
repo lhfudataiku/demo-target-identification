@@ -1,0 +1,90 @@
+<title>Mockup Parity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;600;700&family=Roboto:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#FEFEF9;--panel:#fff;--ink:#1A1A1A;--ink2:#5C5A54;--ink3:#8A887F;--rule:#E4E1D6;--rule2:#EFEDE4;
+--beige:#F8F4E4;--ok-bg:#E4F0E8;--ok:#2C6B45;--drift-bg:#F6EBDD;--drift:#8A5620;--wrong-bg:#F7E5E5;--wrong:#9B3030;
+--miss-bg:#EEEDEA;--miss:#5C5A54;--drop-bg:#E3ECF5;--drop:#2A5C8A;--chg-bg:#C7FFF1;--chg:#06312E;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14211F;--panel:#06312E;--ink:#FEFEF9;
+--ink2:#A6BDB8;--ink3:#7E948F;--rule:rgba(254,254,249,.16);--rule2:rgba(254,254,249,.08);--beige:#1E3D39;
+--ok-bg:#16301F;--ok:#78C295;--drift-bg:#33240F;--drift:#D9A366;--wrong-bg:#361818;--wrong:#E08585;
+--miss-bg:#1E3D39;--miss:#A6BDB8;--drop-bg:#132738;--drop:#7FB0DD;--chg-bg:#12312F;--chg:#3EDAB2;}}
+:root[data-theme="dark"]{--bg:#14211F;--panel:#06312E;--ink:#FEFEF9;--ink2:#A6BDB8;--ink3:#7E948F;
+--rule:rgba(254,254,249,.16);--rule2:rgba(254,254,249,.08);--beige:#1E3D39;--ok-bg:#16301F;--ok:#78C295;
+--drift-bg:#33240F;--drift:#D9A366;--wrong-bg:#361818;--wrong:#E08585;--miss-bg:#1E3D39;--miss:#A6BDB8;
+--drop-bg:#132738;--drop:#7FB0DD;--chg-bg:#12312F;--chg:#3EDAB2;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Roboto,system-ui,sans-serif;font-size:15px;line-height:1.6}
+.wrap{max-width:1300px;margin:0 auto;padding:52px 26px 90px;display:flex;flex-direction:column;gap:32px}
+h1{font-family:Spectral,Georgia,serif;font-size:clamp(30px,4vw,42px);line-height:1.1;margin:0;font-weight:600;letter-spacing:-.02em}
+h2{font-family:Spectral,Georgia,serif;font-size:21px;margin:0;font-weight:600}
+p{margin:0;max-width:76ch}
+code{font-family:"DM Mono",monospace;font-size:.88em;background:var(--beige);padding:1px 5px;border-radius:3px}
+.eyebrow{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3)}
+header{border-bottom:1px solid var(--rule);padding-bottom:24px;display:flex;flex-direction:column;gap:10px}
+section{display:flex;flex-direction:column;gap:13px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--rule);
+ border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.stat{background:var(--panel);padding:14px 15px;display:flex;flex-direction:column;gap:2px}
+.stat .n{font-family:"DM Mono",monospace;font-size:24px;font-weight:500;font-variant-numeric:tabular-nums}
+.stat .l{font-size:11.5px;color:var(--ink3)}
+.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:6px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+ color:var(--ink3);font-weight:500;padding:10px 13px;border-bottom:1px solid var(--rule);background:var(--panel)}
+td{padding:10px 13px;border-bottom:1px solid var(--rule2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.act{font-family:"DM Mono",monospace;font-size:11px;color:var(--ink3);white-space:nowrap}
+td.card{font-weight:500;min-width:180px}
+.pill{display:inline-block;font-family:"DM Mono",monospace;font-size:10px;font-weight:500;letter-spacing:.04em;
+ text-transform:uppercase;padding:2px 7px;border-radius:3px;white-space:nowrap}
+.ok{background:var(--ok-bg);color:var(--ok)}.drift{background:var(--drift-bg);color:var(--drift)}
+.wrong{background:var(--wrong-bg);color:var(--wrong)}.missing{background:var(--miss-bg);color:var(--miss)}
+.drop{background:var(--drop-bg);color:var(--drop)}.changed{background:var(--chg-bg);color:var(--chg)}
+.sm{font-size:12.5px;color:var(--ink2)}
+</style>
+<div class="wrap">
+<header><div class="eyebrow">Target Prioritizer · webapp</div>
+<h1>Mockup Parity</h1>
+<p class="sm" style="font-size:16px">Not a component comparison — what each card <b>measures and shows</b>
+in <code>DASHBOARD_MOCKUP_V3.html</code> against what the webapp renders today. Three cards plot the
+wrong variable entirely, which no component-level check would have found.</p></header>
+<section><div class="stats">
+<div class="stat"><div class="n">8</div><div class="l">wrong content</div></div>
+<div class="stat"><div class="n">4</div><div class="l">drifted</div></div>
+<div class="stat"><div class="n">4</div><div class="l">not built</div></div>
+<div class="stat"><div class="n">2</div><div class="l">to be dropped</div></div>
+<div class="stat"><div class="n">1</div><div class="l">changed on request</div></div>
+</div></section>
+<section><h2>Card by card — the information, not the component</h2>
+<div class="tw"><table><thead><tr><th>Act</th><th>Card</th><th>What v3 shows</th><th>What the webapp shows</th><th>Verdict</th><th>Action</th></tr></thead><tbody>
+<tr><td class="act">Act 1</td><td class="card">8 node types · 18 relations · node sources · PPI provenance</td><td class="sm"><code>hbars</code>. Counts per category. Colour is a single accent per card, not a cycle.</td><td class="sm">ActBar. Same counts, but <b>multicolour cycling</b> across bars.</td><td><span class="pill drift">Drifted</span></td><td class="sm">Drop the colour cycle; colour by <b>grouping</b>, as v3 does — one hue per card, or by category family.</td></tr>
+<tr><td class="act">Act 1</td><td class="card">What “known target” actually means</td><td class="sm"><code>hbars</code> of evidence-type counts.</td><td class="sm">ActDonut. Same counts.</td><td><span class="pill changed">Changed on request</span></td><td class="sm">Keep — you asked for the circle chart.</td></tr>
+<tr><td class="act">Act 1</td><td class="card">Explore the graph</td><td class="sm">Iframe embed of the Visual Graph Explorer webapp.</td><td class="sm">Absent.</td><td><span class="pill missing">Not built</span></td><td class="sm">Embed the existing graph webapp.</td></tr>
+<tr><td class="act">Act 1</td><td class="card">What this demo claims / What this act must not do</td><td class="sm">Disclaimer text.</td><td class="sm">Same, ported.</td><td><span class="pill drop">Should be dropped</span></td><td class="sm"><b>Drop from the app.</b> Lives in the narrative.</td></tr>
+<tr><td class="act">Act 2</td><td class="card">Where the candidates come from</td><td class="sm"><b>Two plots in one card.</b> (1) A disease-eligibility band: 27,153 disease nodes, <b>1,157 eligible</b> at gate <code>module_size ≥ 20</code>, 95.7% excluded. (2) A three-route Sankey into the pool — GGD 3,380,853 · GPGD 5,373,706 · GCD 42,227 → union <b>6,754,128</b> at 1.89% positive. Plus the honest-limit box and a reachability note.</td><td class="sm">One Sankey of pool → train/validation/test. <b>Different data entirely</b>; no eligibility band, no routes.</td><td><span class="pill wrong">Wrong content</span></td><td class="sm">Rebuild: eligibility band + route Sankey. Split counts belong elsewhere.</td></tr>
+<tr><td class="act">Act 2</td><td class="card">How well the ranking holds</td><td class="sm"><code>histogram</code>, 20 bins, with a <b>tab switch</b>: <i>By disease · 668</i> / <i>By family · 503</i> (<code>D.calib.diseaseAuc</code> / <code>familyAuc</code>).</td><td class="sm">“The distribution, not the summary” — horizontal ActBar of my own binning, <b>no tabs</b>, renamed.</td><td><span class="pill wrong">Wrong content</span></td><td class="sm">Restore the name, use a histogram, add the disease/family tab.</td></tr>
+<tr><td class="act">Act 2</td><td class="card">Usefulness is not uniform — every disease</td><td class="sm"><code>beeswarm</code> of <b>enrichment</b> per persona (2.92–33.81) with a box {q1 9.13, med 19.23, q3 28.23, max 59.22} and persona labels.</td><td class="sm">ActBeeswarm of <b>per-disease AUC</b>, 0–1.</td><td><span class="pill wrong">Wrong content</span></td><td class="sm"><b>Wrong metric.</b> Plot enrichment, not AUC. Add the box and labels.</td></tr>
+<tr><td class="act">Act 2</td><td class="card">What the model actually keys on</td><td class="sm"><code>hbars</code> of SHAP top-2 driver frequency, coloured in <b>two groups</b> — provenance features vs path/proximity/topology — with a legend.</td><td class="sm">ActBar, multicolour cycling, no legend, no grouping.</td><td><span class="pill wrong">Wrong content</span></td><td class="sm">Colour by feature kind from the glossary; add the legend.</td></tr>
+<tr><td class="act">Act 2</td><td class="card">What the 14 features actually are</td><td class="sm">A <b>table</b>: feature · kind · what it measures, with provenance rows highlighted.</td><td class="sm">Prose paragraph.</td><td><span class="pill wrong">Wrong content</span></td><td class="sm">Render the glossary table.</td></tr>
+<tr><td class="act">Act 2</td><td class="card">Precision, against the base rate it has to beat</td><td class="sm">Inline SVG, two bars.</td><td class="sm">Absent.</td><td><span class="pill missing">Not built</span></td><td class="sm">BarChart covers it.</td></tr>
+<tr><td class="act">Act 2</td><td class="card">Hub bias · orthogonality · drug benchmark</td><td class="sm"><b>Not in act 2.</b> These are Acts 5–6 talk-track cards.</td><td class="sm">Three cards I added to act 2.</td><td><span class="pill drop">Should be dropped</span></td><td class="sm"><b>Drop from the app.</b></td></tr>
+<tr><td class="act">Act 3</td><td class="card">Choose a family</td><td class="sm">A select listing every family as <i>name — N diseases, AUC x.xxxx</i>, plus a note line and <b>a table of the family’s terms</b> (<code>famBody</code>).</td><td class="sm">EaSelect plus two stat blocks. <b>The table is gone.</b></td><td><span class="pill wrong">Wrong content</span></td><td class="sm">Restore the per-family table.</td></tr>
+<tr><td class="act">Act 3</td><td class="card">AUC, with the uncertainty it actually has</td><td class="sm"><code>intervals</code> over the panel, plus a warning box: <b>triple-negative’s 95% interval runs to 1.041</b> — above what an AUC can reach, which is the argument that retires the metric for thin diseases.</td><td class="sm">ActIntervals, no warning box, cramped layout.</td><td><span class="pill drift">Drifted</span></td><td class="sm">Tidy the plot; add the 1.041 warning box.</td></tr>
+<tr><td class="act">Act 3</td><td class="card">For the thin diseases, change the metric</td><td class="sm"><code>hbars</code> of <b>enrichment at 50</b> for diseases with n ≤ 138, labelled <i>name (n=X)</i>, coloured by whether the AUC is trustworthy.</td><td class="sm">ActBar of <b>known-target count</b>, top 10.</td><td><span class="pill wrong">Wrong content</span></td><td class="sm"><b>Wrong metric.</b> Plot enrichment@50, label with n, colour by trustworthiness.</td></tr>
+<tr><td class="act">Act 3</td><td class="card">How much do the subtypes overlap?</td><td class="sm">Segmented control <i>All top-50 genes</i> / <i>Novel only</i> → <code>matrix</code> heat grid <b>plus</b> <code>geneGrid</code>, the gene-membership grid.</td><td class="sm">ActMatrix only. No tabs, no gene grid, labels unreadable.</td><td><span class="pill wrong">Wrong content</span></td><td class="sm">Add the tab, fix label truncation, build the gene grid.</td></tr>
+<tr><td class="act">Act 3</td><td class="card">The common programme</td><td class="sm">Filled by <code>geneGrid</code>.</td><td class="sm">Text only.</td><td><span class="pill missing">Not built</span></td><td class="sm">Build the gene grid.</td></tr>
+<tr><td class="act">Act 4</td><td class="card">The contract</td><td class="sm"><code>stat</code> blocks.</td><td class="sm">Text only.</td><td><span class="pill drift">Drifted</span></td><td class="sm">Use ActStat.</td></tr>
+<tr><td class="act">Act 4</td><td class="card">The ranked list</td><td class="sm"><code>renderTable</code> with an All / Novel-only tab.</td><td class="sm">Table, filters in a separate card.</td><td><span class="pill drift">Drifted</span></td><td class="sm">Add the in-card tab.</td></tr>
+<tr><td class="act">Act 4</td><td class="card">Why this gene? · The mechanism on the graph</td><td class="sm">SHAP drawer and graph iframe.</td><td class="sm">Placeholders.</td><td><span class="pill missing">Not built</span></td><td class="sm">Diverging BarChart for the drawer; iframe for the graph.</td></tr>
+</tbody></table></div></section>
+<section><h2>Where the standard component falls short</h2>
+<p class="sm">The template’s charting standard is <code>vue-echarts</code>.</p>
+<div class="tw"><table><thead><tr><th>v3 primitive</th><th>What it draws</th><th>Why ECharts falls short</th><th>Alternative</th></tr></thead><tbody>
+<tr><td><code>geneGrid</code></td><td class="sm">Gene membership grid — genes as labelled cells, grouped in columns of 30</td><td class="sm">Not a chart. ECharts has no equivalent and would gain nothing.</td><td class="sm">Plain CSS grid, or the template’s <code>Table</code>.</td></tr>
+<tr><td><code>beeswarm</code></td><td class="sm">Points with collision packing, plus a quartile box</td><td class="sm">No native beeswarm series; true packing is not built in.</td><td class="sm">ScatterChart + deterministic jitter + <code>markArea</code>/<code>markLine</code>. Acceptable — but <b>the current one plots the wrong variable</b>, which is the real defect.</td></tr>
+<tr><td><code>poolFlow</code></td><td class="sm">Eligibility band above a route Sankey, one SVG</td><td class="sm">One ECharts instance cannot hold two unrelated coordinate systems.</td><td class="sm">Two stacked components in the same card: a single stacked BarChart for eligibility, SankeyChart beneath.</td></tr>
+<tr><td><code>renderGraph / Explore the graph</code></td><td class="sm">The graph canvas</td><td class="sm">Not a chart — an iframe to another webapp.</td><td class="sm">Embed it. <code>GraphChart</code> is unrelated.</td></tr>
+<tr><td><code>Precision vs base rate</code></td><td class="sm">Two comparison bars</td><td class="sm">Inline SVG in v3 only.</td><td class="sm">BarChart, no custom work.</td></tr>
+</tbody></table></div></section>
+</div>

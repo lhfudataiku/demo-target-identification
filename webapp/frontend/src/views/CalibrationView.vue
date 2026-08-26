@@ -1,17 +1,18 @@
 <script setup lang="ts">
   /**
-   * Act 2 — calibration.
+   * Act 2 — calibration. Rebuilt against DASHBOARD_MOCKUP_V3's card set.
    *
-   * "How faithfully does it reconstruct?" Read the AUC as reconstruction
-   * fidelity, not predictive power.
-   *
-   * Three cards that must appear together, because each is dishonest alone:
-   * the distribution (usefulness is not uniform), the hub-bias meter (we
-   * under-score under-studied true targets), and orthogonality (a high
-   * association AUC does not buy therapeutic relevance).
-   *
-   * Guardrail: macro AUC only. Pooled reads 0.8932 and overstates by ~7 points;
-   * it must never appear beside the macro figure.
+   * Corrections from the parity review:
+   *  - "Where the candidates come from" is TWO plots: a disease-eligibility
+   *    band above a three-route sankey. Not the train/test split.
+   *  - "How well the ranking holds" is a histogram with a by-disease/by-family
+   *    tab, not a horizontal bar of my own binning.
+   *  - "Usefulness is not uniform" plots ENRICHMENT per persona, not AUC.
+   *  - Driver bars are coloured in two GROUPS (provenance vs the rest), with a
+   *    legend — not a colour cycle.
+   *  - Hub-bias, orthogonality and the drug-benchmark card belong to the Acts
+   *    5-6 talk track and are not in the app.
+   *  - Disclaimer cards live in the narrative, not here.
    */
   import { computed, onMounted, ref } from 'vue'
   import { apiUrl } from '@/utils/api'
@@ -19,34 +20,62 @@
   import ActStat from '@/components/act/ActStat.vue'
   import ActSay from '@/components/act/ActSay.vue'
   import ActBar from '@/components/act/ActBar.vue'
-  import ActScatter from '@/components/act/ActScatter.vue'
+  import ActHistogram from '@/components/act/ActHistogram.vue'
+  import ActBand from '@/components/act/ActBand.vue'
+  import ActSankey from '@/components/act/ActSankey.vue'
+  import ActBeeswarm from '@/components/act/ActBeeswarm.vue'
+  import ActTabs from '@/components/act/ActTabs.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-  import { Gauge, Network, Scale } from 'lucide-vue-next'
+  import { Split, Gauge, Crosshair, ListTree } from 'lucide-vue-next'
 
   defineOptions({ name: 'CalibrationView' })
 
   interface Payload {
-    n_diseases: number; macro_auc: number; median_auc: number; below_chance: number
-    histogram: { lo: number; hi: number; n: number }[]
-    hub_bias: { quintile: number; median_degree: number; mean_proba: number; pct_predicted_positive: number; n_genes: number }[]
-    rho_degree_proba: number; threshold: number
-    orthogonality: { n: number; pearson_r: number; r2: number; points: { assoc: number; drug: number }[]; drug_macro_auc: number }
+    eligibility: { total: number; eligible: number; excluded: number; pct_excluded: number; gate: string }
+    routes: { label: string; count: number }[]
+    union_rows: number; pos_rate: number; n_families: number
+    glossary: { feature: string; kind: string; what: string }[]
+    drivers: { label: string; count: number }[]
+    drivers_kind: Record<string, string>
+    auc_values: number[]; family_auc_values: number[]
+    personas: { label: string; value: number; current: boolean }[]
+    n_diseases: number; macro_auc: number; median_auc: number
+    splits: { split: string; rows: number; positives: number; pos_rate_pct: number }[]
   }
 
   const data = ref<Payload | null>(null)
   const error = ref<string | null>(null)
+  const aucScope = ref('disease')
 
-  const histRows = computed(() =>
-    (data.value?.histogram ?? [])
-      .filter((b) => b.n > 0)
-      .map((b) => ({ label: `${b.lo.toFixed(2)}–${b.hi.toFixed(2)}`, count: b.n })))
+  const HIST_BINS = 20
+  // The values behind whichever tab is selected. Macro and median are derived
+  // from THIS array, so they change with the tab -- they described the disease
+  // scope regardless of the tab before, which made the switch look broken.
+  const scopeValues = computed(() =>
+    !data.value ? [] : aucScope.value === 'disease' ? data.value.auc_values : data.value.family_auc_values)
 
-  const swing = computed(() => {
-    const h = data.value?.hub_bias
-    if (!h?.length) return null
-    const lo = h[0].pct_predicted_positive, hi = h[h.length - 1].pct_predicted_positive
-    return lo ? (hi / lo).toFixed(1) : null
+  const aucHist = computed(() => {
+    const out = Array.from({ length: HIST_BINS }, (_, i) => ({
+      lo: i / HIST_BINS, hi: (i + 1) / HIST_BINS, n: 0,
+    }))
+    for (const v of scopeValues.value)
+      out[Math.min(HIST_BINS - 1, Math.max(0, Math.floor(v * HIST_BINS)))].n++
+    return out
   })
+  const scopeMacro = computed(() => {
+    const v = scopeValues.value
+    return v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0
+  })
+  const scopeMedian = computed(() => {
+    const v = [...scopeValues.value].sort((a, b) => a - b)
+    return v.length ? v[Math.floor(v.length / 2)] : 0
+  })
+  // v3 colours drivers in two groups, with a legend — provenance against the rest.
+  const driverRows = computed(() =>
+    (data.value?.drivers ?? []).map((d) => ({
+      label: d.label, count: d.count,
+      colour: data.value!.drivers_kind[d.label] === 'provenance' ? 'var(--chart-2)' : 'var(--chart-3)',
+    })))
 
   onMounted(async () => {
     try {
@@ -67,9 +96,8 @@
       </p>
       <h1 class="font-serif text-3xl font-semibold tracking-tight">How faithfully does it reconstruct?</h1>
       <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-        Across every held-out disease, how reliably do the already-validated targets land near the
-        top. Read this as reconstruction fidelity, not predictive power — and read the distribution
-        before the summary, because usefulness is not uniform.
+        Where the candidates come from, how they were split, and how reliably the already-validated
+        targets land near the top. The distribution leads and the summary follows.
       </p>
     </header>
 
@@ -78,77 +106,120 @@
     </p>
 
     <div class="grid grid-cols-12 gap-4">
-      <ActCard span="col-span-12 lg:col-span-7" :icon="Gauge" title="The distribution, not the summary"
+      <!-- Two plots in one card, as v3's poolFlow draws it. -->
+      <ActCard span="col-span-12" :icon="Split" accent="var(--chart-3)"
+               title="Where the candidates come from" :chips="[['live', 'live']]"
+               desc="A disease has to clear a gate before any of its genes become candidates — then three graph routes admit the pairs."
+               :src="['disease_eligibility', 'enriched_dwpc_GGD', 'enriched_dwpc_GPGD', 'enriched_dwpc_GCD']">
+        <template v-if="data">
+          <p class="mb-1.5 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+            Disease nodes · gate {{ data.eligibility.gate }}
+          </p>
+          <ActBand :in-label="'eligible'" :in-value="data.eligibility.eligible"
+                   :out-label="'excluded — too few curated associations'" :out-value="data.eligibility.excluded" />
+
+          <p class="mb-1.5 mt-5 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+            The eligible diseases generate the pair pool · units change from diseases to gene–disease pairs
+          </p>
+          <ActSankey
+            :nodes="[...data.routes.map((r) => ({ name: r.label })), { name: 'candidate pool' }]"
+            :links="data.routes.map((r) => ({ source: r.label, target: 'candidate pool', value: r.count }))"
+            :height="250" />
+
+          <div class="mt-2 flex gap-8">
+            <ActStat label="Pool" :value="data.union_rows.toLocaleString()" sub="gene–disease pairs" />
+            <ActStat label="Positive rate" :value="data.pos_rate + '%'" sub="what precision must beat" />
+          </div>
+
+          <ActSay class="mt-3">
+            <b>{{ data.eligibility.excluded.toLocaleString() }} of
+            {{ data.eligibility.total.toLocaleString() }} diseases — {{ data.eligibility.pct_excluded }}% —
+            never enter the pool at all</b>, because they carry too few curated gene associations. The model has
+            nothing to learn from and nothing to be tested on for those. This is the number to volunteer, not
+            to be asked for.
+          </ActSay>
+        </template>
+      </ActCard>
+
+      <ActCard span="col-span-12 lg:col-span-7" :icon="Gauge" title="How well the ranking holds"
                :chips="[['live', 'live']]"
-               desc="One number answers a question nobody asked. Which diseases reconstruct well is more useful than the average."
-               :src="['validation_auc_by_disease']">
-        <div v-if="data" class="mb-3 flex gap-8">
-          <ActStat label="Diseases" :value="data.n_diseases" />
-          <ActStat label="Macro AUC" :value="data.macro_auc.toFixed(4)" sub="never pooled" />
-          <ActStat label="Median" :value="data.median_auc.toFixed(4)" />
-          <ActStat label="Below chance" :value="data.below_chance" sub="AUC < 0.5" />
+               desc="Every held-out unit, binned. Read it as reconstruction fidelity, not predictive power."
+               :src="['validation_auc_by_disease', 'family_auc_by_family']">
+        <div v-if="data" class="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <ActTabs v-model="aucScope" :options="[
+            { value: 'disease', label: `By disease · ${data.n_diseases}` },
+            { value: 'family', label: `By family · ${data.n_families}` }]" />
+          <div class="flex gap-6">
+            <ActStat label="Macro AUC" :value="scopeMacro.toFixed(4)" sub="never pooled" />
+            <ActStat label="Median" :value="scopeMedian.toFixed(4)" />
+            <ActStat label="Units" :value="scopeValues.length" />
+          </div>
         </div>
-        <ActBar v-if="data" :rows="histRows" color="var(--chart-2)" :row-height="16" />
+        <ActHistogram v-if="data" :bins="aucHist" x-label="AUC" />
         <ActSay class="mt-3">
-          <b>Macro, never pooled.</b> Pooling reads <b>0.8932</b> and overstates by roughly seven
-          points, because it lets large diseases carry small ones. The macro figure is the one that
-          goes in front of anybody.
+          <b>Macro, never pooled.</b> Pooling reads 0.8932 and overstates by roughly seven points,
+          because it lets large diseases carry small ones.
         </ActSay>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-5" :icon="Network" accent="var(--chart-4)"
-               title="Where it still under-scores" :chips="[['live', 'live']]"
-               desc="Biology held constant — known targets only — split into fifths by network connectivity."
-               :src="['hub_bias_meter']">
+      <ActCard span="col-span-12 lg:col-span-5" :icon="Gauge" accent="var(--chart-4)"
+               title="Usefulness is not uniform — every disease, not just a summary"
+               :chips="[['live', 'live']]"
+               desc="Rank enrichment per disease. The box is the interquartile range; the line is the median."
+               :src="['persona_enrichment']">
+        <ActBeeswarm v-if="data" :points="data.personas"
+                     :min="0" :max="Math.ceil(Math.max(...data.personas.map((p) => p.value)) / 10) * 10"
+                     unit="rank enrichment" />
+        <ActSay class="mt-3">
+          A single number hides this. Some diseases enrich twenty-fold and some barely at all —
+          <b>which is which is more useful to you than the average.</b>
+        </ActSay>
+      </ActCard>
+
+      <ActCard span="col-span-12 lg:col-span-7" :icon="Crosshair" accent="var(--chart-2)"
+               title="What the model actually keys on" :chips="[['live', 'live']]"
+               desc="How often each feature is a top SHAP driver across every scored candidate."
+               :src="['shap_driver_frequency']">
+        <ActBar v-if="data" :rows="driverRows" :row-height="17" />
+        <div class="mt-2 flex gap-4 font-mono text-[10.5px] text-muted-foreground">
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block size-2.5 rounded-sm" style="background:var(--chart-2)"></span>
+            edge-provenance features
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block size-2.5 rounded-sm" style="background:var(--chart-3)"></span>
+            path, proximity and topology
+          </span>
+        </div>
+      </ActCard>
+
+      <ActCard span="col-span-12 lg:col-span-5" :icon="ListTree" accent="var(--chart-5)"
+               title="What the 14 features actually are" :chips="[['live', 'live']]"
+               desc="Network topology, not biology. Provenance features are highlighted — they are what the model leans on most.">
         <Table v-if="data">
           <TableHeader>
-            <TableRow>
-              <TableHead>Connectivity</TableHead>
-              <TableHead>Median degree</TableHead>
-              <TableHead>Mean score</TableHead>
-              <TableHead>Predicted +</TableHead>
-            </TableRow>
+            <TableRow><TableHead>Feature</TableHead><TableHead>Kind</TableHead><TableHead>What it measures</TableHead></TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="q in data.hub_bias" :key="q.quintile">
-              <TableCell class="font-mono">Q{{ q.quintile }}</TableCell>
-              <TableCell class="font-mono tabular-nums text-muted-foreground">{{ q.median_degree }}</TableCell>
-              <TableCell class="font-mono tabular-nums">{{ q.mean_proba.toFixed(2) }}</TableCell>
-              <TableCell class="font-mono tabular-nums">{{ q.pct_predicted_positive.toFixed(1) }}%</TableCell>
+            <TableRow v-for="f in data.glossary" :key="f.feature">
+              <TableCell class="font-mono text-[11.5px] font-medium whitespace-nowrap">{{ f.feature }}</TableCell>
+              <TableCell>
+                <span class="rounded px-1.5 py-0.5 font-mono text-[10px] uppercase"
+                      :class="f.kind === 'provenance' ? 'bg-primary/25 text-primary-foreground' : 'bg-secondary text-muted-foreground'">
+                  {{ f.kind }}
+                </span>
+              </TableCell>
+              <TableCell class="text-[12px] text-muted-foreground">{{ f.what }}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
-        <ActSay v-if="data && swing" class="mt-3">
-          A <b>{{ swing }}×</b> detection swing on network position alone, with biology held
-          constant. Both things are true: the ranking is not explained by popularity, and
-          <b>the model still under-scores under-studied true targets.</b> We have not fixed that.
-        </ActSay>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-7" :icon="Scale" accent="var(--chart-3)"
-               title="A high AUC does not buy therapeutic relevance" :chips="[['live', 'live']]"
-               desc="Each point is one disease: how well it reconstructs association labels, against how well it ranks real drug targets."
-               :src="['orthogonality_scatter']">
-        <ActScatter v-if="data" :points="data.orthogonality.points"
-                    x-label="association AUC" y-label="drug-target AUC" />
-        <div v-if="data" class="mt-3 flex gap-8">
-          <ActStat label="Pearson r" :value="data.orthogonality.pearson_r.toFixed(4)" />
-          <ActStat label="R²" :value="data.orthogonality.r2.toFixed(4)" />
-          <ActStat label="Diseases" :value="data.orthogonality.n" />
-        </div>
-      </ActCard>
+      
 
-      <ActCard span="col-span-12 lg:col-span-5" title="Why the drug benchmark is never a score">
-        <p class="text-[13px] leading-relaxed text-muted-foreground">
-          The two axes are uncorrelated. A disease the model ranks well on association tells you
-          nothing about whether it ranks drug targets well.
-        </p>
-        <ActSay class="mt-3">
-          On that benchmark a popularity lookup — <i>“how many diseases is this gene already a
-          target for”</i> — beats the trained model. <b>A benchmark a lookup table wins is measuring
-          the lookup.</b> We report it as a warning flag and never optimise against it.
-        </ActSay>
-      </ActCard>
+      
+
+      
     </div>
   </div>
 </template>

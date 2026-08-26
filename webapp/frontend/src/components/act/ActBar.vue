@@ -19,23 +19,30 @@
 
   const props = withDefaults(
     defineProps<{
-      rows: { label: string; count: number }[]
+      /** `colour` on a row wins, so a card can colour by GROUP as v3 does. */
+      rows: { label: string; count: number; colour?: string }[]
       color?: string
+      /** Cycle the chart palette across bars, as the mockup does, instead of
+          painting every bar one colour. */
+      multicolour?: boolean
       /** px per bar; the chart grows with the data rather than scrolling. */
       rowHeight?: number
     }>(),
-    { color: 'var(--chart-2)', rowHeight: 22 },
+    { color: 'var(--chart-2)', multicolour: false, rowHeight: 22 },
   )
+
+  const PALETTE = ['--chart-1', '--chart-2', '--chart-3', '--chart-4', '--chart-5']
 
   const height = computed(() => Math.max(120, props.rows.length * props.rowHeight + 28))
 
   // ECharts renders to canvas and cannot resolve CSS custom properties, so the
   // token is read off the document at build time.
-  const resolved = computed(() => {
-    const m = /^var\((--[\w-]+)\)$/.exec(props.color)
-    if (!m) return props.color
+  const resolve = (c: string) => {
+    const m = /^var\((--[\w-]+)\)$/.exec(c)
+    if (!m) return c
     return getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim() || '#3EDAB2'
-  })
+  }
+  const resolved = computed(() => resolve(props.color))
 
   const option = computed((): EChartsOption => ({
     grid: { left: 4, right: 56, top: 4, bottom: 4, containLabel: true },
@@ -54,8 +61,14 @@
     },
     series: [{
       type: 'bar',
-      data: props.rows.map((r) => r.count),
-      itemStyle: { color: resolved.value, borderRadius: [0, 3, 3, 0] },
+      data: props.rows.map((r) => (r.colour
+        ? { value: r.count, itemStyle: { color: resolve(r.colour) } }
+        : r.count)),
+      itemStyle: { borderRadius: [0, 3, 3, 0] },
+      colorBy: props.multicolour ? 'data' : 'series',
+      color: props.multicolour
+        ? PALETTE.map((v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim())
+        : resolved.value,
       barMaxWidth: 14,
       label: {
         show: true, position: 'right',

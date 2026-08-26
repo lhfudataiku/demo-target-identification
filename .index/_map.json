@@ -7,7 +7,6 @@
   "dashboard_persona_trust": "A4 Shortlist (serving)",
   "disease_eligibility": "A2 Calibration (serving)",
   "disease_family_id": "20 Annotations & split key",
-  "disease_hierarchy_annotation": "20 Annotations & split key",
   "disease_pool_sizes": "40 Candidate ranking (shared by acts)",
   "drug_best": "20 Annotations & split key",
   "drug_classified": "20 Annotations & split key",
@@ -59,10 +58,12 @@
   "graph_ppi_provenance": "A1 Evidence base (serving)",
   "graph_relation_counts": "A1 Evidence base (serving)",
   "hetionet_disease_slim": "20 Annotations & split key",
+  "hub_bias_meter": "A2 Calibration (serving)",
   "known_drug_truth": "A4 Shortlist (serving)",
   "llm_hx": "Default",
   "mondo_references": "00 Imported from DEMO_KG_LS (synced)",
   "novel_discovery_eval": "A2 Calibration (serving)",
+  "orthogonality_scatter": "A2 Calibration (serving)",
   "ot_drug_mapped": "20 Annotations & split key",
   "pairwise_overlap": "A3 Therapeutic area (serving)",
   "pairwise_pairs": "A3 Therapeutic area (serving)",
@@ -116,7 +117,6 @@
   "breast_panel_overlap": "compute_breast_panel",
   "disease_eligibility": "compute_disease_eligibility",
   "disease_family_id": "compute_disease_family_id",
-  "disease_hierarchy_annotation": "compute_disease_hierarchy_annotation",
   "drug_best": "compute_drug_best",
   "drug_classified": "compute_drug_classified",
   "drug_evidence_pairs": "compute_drug_evidence_pairs",
@@ -154,6 +154,7 @@
   "graph_node_type_counts": "compute_graph_node_type_counts",
   "graph_ppi_provenance": "compute_graph_ppi_provenance",
   "graph_relation_counts": "compute_graph_relation_counts",
+  "hub_bias_meter": "compute_hub_bias_meter",
   "known_drug_truth": "compute_known_drug_truth",
   "novel_discovery_eval": "compute_novel_discovery_eval",
   "ot_drug_mapped": "compute_ot_drug_mapped",
@@ -191,6 +192,7 @@
   "candidates_annotated": "join_dashboard_annotations",
   "enriched_graph_features_1_family": "join_disease_family_id",
   "target_candidates_2": "join_disease_name",
+  "orthogonality_scatter": "join_orthogonality",
   "dashboard_persona_trust": "join_trust_for_personas",
   "top_candidates": "rank_per_disease",
   "persona2_scored": "score_persona_candidates",
@@ -250,7 +252,6 @@
    "compute_DEMO_KG_graph_nodes_copy",
    "compute_breast_panel",
    "compute_disease_family_id",
-   "compute_disease_hierarchy_annotation",
    "compute_drug_evidence_pairs",
    "compute_drug_target_benchmark",
    "compute_dwpc_go_metapaths",
@@ -272,13 +273,11 @@
   ],
   "mondo_references": [
    "compute_DEMO_KG_mondo_references_copy",
-   "compute_disease_family_id",
-   "compute_disease_hierarchy_annotation"
+   "compute_disease_family_id"
   ],
   "raw_disease_disease": [
    "compute_DEMO_KG_raw_disease_disease_copy",
-   "compute_disease_family_id",
-   "compute_disease_hierarchy_annotation"
+   "compute_disease_family_id"
   ],
   "raw_go_hierarchy": [
    "compute_DEMO_KG_raw_go_hierarchy_copy",
@@ -296,11 +295,16 @@
    "compute_breast_panel",
    "compute_drug_target_benchmark",
    "compute_family_validation_scored",
+   "compute_hub_bias_meter",
    "compute_novel_discovery_eval",
    "compute_tractability_axis",
    "compute_validation_set_scored"
   ],
-  "disease_hierarchy_annotation": [
+  "enriched_module_size_1": [
+   "compute_disease_eligibility",
+   "compute_enriched_graph_features_1"
+  ],
+  "graph_node_type_counts": [
    "compute_disease_eligibility"
   ],
   "enriched_graph_features_1": [
@@ -308,17 +312,7 @@
    "join_disease_family_id"
   ],
   "hetionet_disease_slim": [
-   "compute_disease_family_id",
-   "compute_disease_hierarchy_annotation"
-  ],
-  "disease_family_id": [
-   "compute_disease_hierarchy_annotation",
-   "compute_family_panel",
-   "join_disease_family_id"
-  ],
-  "enriched_module_size_1": [
-   "compute_disease_hierarchy_annotation",
-   "compute_enriched_graph_features_1"
+   "compute_disease_family_id"
   ],
   "drug_classified": [
    "compute_drug_best"
@@ -409,6 +403,10 @@
   "family_auc_grouped": [
    "compute_family_auc"
   ],
+  "disease_family_id": [
+   "compute_family_panel",
+   "join_disease_family_id"
+  ],
   "validation_auc_ci": [
    "compute_family_panel"
   ],
@@ -451,14 +449,16 @@
    "compute_pairwise_pairs"
   ],
   "drug_target_benchmark": [
-   "compute_persona_candidates"
+   "compute_persona_candidates",
+   "join_orthogonality"
   ],
   "novel_discovery_eval": [
    "compute_persona_candidates"
   ],
   "validation_auc_by_disease": [
    "compute_persona_candidates",
-   "compute_validation_auc_ci"
+   "compute_validation_auc_ci",
+   "join_orthogonality"
   ],
   "persona_candidates": [
    "compute_persona_enrichment",
@@ -568,9 +568,8 @@
   "compute_DEMO_KG_raw_ot_druggability_copy": "sync",
   "compute_DEMO_KG_raw_ot_safety_copy": "sync",
   "compute_breast_panel": "python",
-  "compute_disease_eligibility": "grouping",
+  "compute_disease_eligibility": "python",
   "compute_disease_family_id": "python",
-  "compute_disease_hierarchy_annotation": "python",
   "compute_drug_best": "topn",
   "compute_drug_classified": "shaker",
   "compute_drug_evidence_pairs": "python",
@@ -607,6 +606,7 @@
   "compute_graph_node_type_counts": "grouping",
   "compute_graph_ppi_provenance": "grouping",
   "compute_graph_relation_counts": "grouping",
+  "compute_hub_bias_meter": "python",
   "compute_known_drug_truth": "python",
   "compute_novel_discovery_eval": "python",
   "compute_ot_drug_mapped": "join",
@@ -644,6 +644,7 @@
   "join_dashboard_annotations": "join",
   "join_disease_family_id": "join",
   "join_disease_name": "join",
+  "join_orthogonality": "join",
   "join_trust_for_personas": "join",
   "rank_per_disease": "window",
   "score_persona_candidates": "prediction_scoring",
@@ -746,7 +747,23 @@
  },
  "web": [
   "dashboard_candidates",
-  "novel_discovery_eval",
-  "persona_candidates"
+  "disease_eligibility",
+  "disease_family_id",
+  "family_auc_by_family",
+  "family_panel",
+  "graph_label_evidence",
+  "graph_node_source_counts",
+  "graph_node_type_counts",
+  "graph_nodes",
+  "graph_ppi_provenance",
+  "graph_relation_counts",
+  "hub_bias_meter",
+  "orthogonality_scatter",
+  "pairwise_overlap",
+  "persona_enrichment",
+  "shap_driver_frequency",
+  "split_audit_2",
+  "top50_membership",
+  "validation_auc_by_disease"
  ]
 }

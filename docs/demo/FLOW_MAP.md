@@ -1,6 +1,6 @@
 # Flow map
 
-Live DSS: **99 datasets across 14 zones**, cross-referenced against the recipe graph, `notebooks/*.py`, and `webapp/backend.py`.
+Live DSS: **100 datasets across 14 zones**, cross-referenced against the recipe graph, `notebooks/*.py`, and `webapp/backend.py`.
 
 **`downstream` counts recipes whose CODE reads the dataset**, not recipes that merely declare it as an input. Those differ: `dku recipe replace-input` rewires the declaration and leaves the code alone, which is how five recipes ended up declaring `_v2` while reading the old name.
 
@@ -14,8 +14,8 @@ Live DSS: **99 datasets across 14 zones**, cross-referenced against the recipe g
 
 ## Summary
 
-- endpoints (read by a notebook or the webapp): **24**
-- zone A1-A4 serving datasets (consumer not built yet): **29** — excluded from pruning
+- endpoints (read by a notebook or the webapp): **38**
+- zone A1-A4 serving datasets (consumer not built yet): **31** — excluded from pruning
 - genuine orphans: **0**
 
 > The naive rule *delete what nothing reads* flags all 40 A-zone datasets, because `webapp/backend.py` reads only three of them today. The serving layer's consumer is the unbuilt UI. Zone membership, not reference counting, is what separates them.
@@ -40,8 +40,8 @@ Live DSS: **99 datasets across 14 zones**, cross-referenced against the recipe g
 | `drug_disease_edges` | nb6 | `compute_DEMO_KG_drug_disease_edges_copy` | 8 |  |
 | `drug_protein_edges` | nb6 | `compute_DEMO_KG_drug_protein_edges_copy` | 9 |  |
 | `graph_edges` | nb5 | `compute_DEMO_KG_graph_edges_copy` | 9 |  |
-| `graph_nodes` | nb5/nb6 | `compute_DEMO_KG_graph_nodes_copy` | 22 |  |
-| `raw_disease_disease` | nb5 | `compute_DEMO_KG_raw_disease_disease_copy` | 3 |  |
+| `graph_nodes` | **webapp**, nb5/nb6 | `compute_DEMO_KG_graph_nodes_copy` | 21 |  |
+| `raw_disease_disease` | nb5 | `compute_DEMO_KG_raw_disease_disease_copy` | 2 |  |
 | `raw_ot_known_drug` | nb4 | `compute_raw_ot_known_drug` | 2 |  |
 
 **Read by no notebook and no webapp (4):**
@@ -50,7 +50,7 @@ Live DSS: **99 datasets across 14 zones**, cross-referenced against the recipe g
 |---|---|---|---|---|
 | `edge_metadata` | `compute_DEMO_KG_edge_metadata_copy` | sync | 4 |  |
 | `gene_names` | `compute_DEMO_KG_gene_names_copy` | sync | 3 |  |
-| `mondo_references` | `compute_DEMO_KG_mondo_references_copy` | sync | 3 |  |
+| `mondo_references` | `compute_DEMO_KG_mondo_references_copy` | sync | 2 |  |
 | `raw_go_hierarchy` | `compute_DEMO_KG_raw_go_hierarchy_copy` | sync | 2 |  |
 
 ## 10 Features - graph traversal (Cypher)  (10 datasets)
@@ -98,19 +98,18 @@ _Nothing in this zone is read by a notebook or the webapp._
 | `enriched_graph_features_1` | `compute_enriched_graph_features_1` | join | 2 |  |
 | `enriched_pair_features_index_1` | `compute_enriched_pair_features_index_1` | vstack | 1 |  |
 
-## 20 Annotations & split key  (16 datasets)
+## 20 Annotations & split key  (15 datasets)
 
 | dataset | consumed by | producing recipe | downstream | flag |
 |---|---|---|---|---|
+| `disease_family_id` | **webapp** | `compute_disease_family_id` | 2 |  |
 | `enriched_gene_druggability_v2` | nb6 | `compute_gene_druggability_v2` | 3 |  |
 | `enriched_gene_safety_v2` | nb6 | `compute_gene_safety_v2` | 1 |  |
 
-**Read by no notebook and no webapp (14):**
+**Read by no notebook and no webapp (12):**
 
 | dataset | producing recipe | type | downstream | flag |
 |---|---|---|---|---|
-| `disease_family_id` | `compute_disease_family_id` | python | 3 |  |
-| `disease_hierarchy_annotation` | `compute_disease_hierarchy_annotation` | python | 1 |  |
 | `drug_best` | `compute_drug_best` | topn | 1 |  |
 | `drug_classified` | `compute_drug_classified` | shaker | 1 |  |
 | `drug_joined` | `compute_drug_joined` | join | 1 |  |
@@ -119,7 +118,7 @@ _Nothing in this zone is read by a notebook or the webapp._
 | `gene_safety_best` | `compute_gene_safety_best` | topn | 1 |  |
 | `gene_safety_joined` | `compute_gene_safety_join` | join | 1 |  |
 | `graph_genes` | `compute_graph_genes` | shaker | 1 |  |
-| `hetionet_disease_slim` | `extract_hetionet_disease_slim` | python | 2 |  |
+| `hetionet_disease_slim` | `extract_hetionet_disease_slim` | python | 1 |  |
 | `ot_drug_mapped` | `compute_ot_drug_mapped` | join | 1 |  |
 | `raw_ot_druggability` | `compute_DEMO_KG_raw_ot_druggability_copy` | sync | 2 |  |
 | `raw_ot_safety` | `compute_DEMO_KG_raw_ot_safety_copy` | sync | 2 |  |
@@ -143,7 +142,7 @@ _Nothing in this zone is read by a notebook or the webapp._
 
 | dataset | consumed by | producing recipe | downstream | flag |
 |---|---|---|---|---|
-| `scored_champion` | nb1/nb2/nb3/nb3b/nb4/nb6 | `sync_scored_champion` | 6 |  |
+| `scored_champion` | nb1/nb2/nb3/nb3b/nb4/nb6 | `sync_scored_champion` | 7 |  |
 
 **Read by no notebook and no webapp (3):**
 
@@ -177,7 +176,7 @@ _Nothing in this zone is read by a notebook or the webapp._
 |---|---|---|---|---|
 | `breast_panel_metrics` | nb4 | `compute_breast_panel` | 0 | KEEP |
 | `breast_panel_overlap` | nb4/nb6 | `compute_breast_panel` | 0 | KEEP |
-| `family_auc_by_family` | nb3 | `compute_family_auc` | 0 | KEEP |
+| `family_auc_by_family` | **webapp**, nb3 | `compute_family_auc` | 0 | KEEP |
 | `pool_reachability` | nb2 | `compute_pool_reachability` | 0 | KEEP |
 | `tractability_axis` | nb4/nb6 | `compute_tractability_axis` | 0 | KEEP |
 
@@ -191,35 +190,33 @@ _Nothing in this zone is read by a notebook or the webapp._
 
 ## A1 Evidence base (serving)  (5 datasets)
 
-_Nothing in this zone is read by a notebook or the webapp._
+| dataset | consumed by | producing recipe | downstream | flag |
+|---|---|---|---|---|
+| `graph_label_evidence` | **webapp** | `compute_graph_label_evidence` | 0 | serving (webapp TBD) |
+| `graph_node_source_counts` | **webapp** | `compute_graph_node_source_counts` | 0 | serving (webapp TBD) |
+| `graph_node_type_counts` | **webapp** | `compute_graph_node_type_counts` | 1 | serving (webapp TBD) |
+| `graph_ppi_provenance` | **webapp** | `compute_graph_ppi_provenance` | 0 | serving (webapp TBD) |
+| `graph_relation_counts` | **webapp** | `compute_graph_relation_counts` | 0 | serving (webapp TBD) |
+
+## A2 Calibration (serving)  (15 datasets)
+
+| dataset | consumed by | producing recipe | downstream | flag |
+|---|---|---|---|---|
+| `disease_eligibility` | **webapp** | `compute_disease_eligibility` | 0 | serving (webapp TBD) |
+| `drug_target_benchmark` | nb3/nb6 | `compute_drug_target_benchmark` | 2 | serving (webapp TBD) |
+| `hub_bias_meter` | **webapp** | `compute_hub_bias_meter` | 0 | serving (webapp TBD) |
+| `novel_discovery_eval` | nb4/nb6 | `compute_novel_discovery_eval` | 1 | serving (webapp TBD) |
+| `orthogonality_scatter` | **webapp** | `join_orthogonality` | 0 | serving (webapp TBD) |
+| `persona_candidates` | nb4 | `compute_persona_candidates` | 2 | serving (webapp TBD) |
+| `persona_enrichment` | **webapp** | `compute_persona_enrichment` | 0 | serving (webapp TBD) |
+| `shap_driver_frequency` | **webapp** | `compute_shap_driver_frequency` | 0 | serving (webapp TBD) |
+| `split_audit_2` | **webapp**, nb2 | `compute_split_audit_2` | 0 | serving (webapp TBD) |
+| `validation_auc_by_disease` | **webapp**, nb3/nb5/nb6 | `compute_validation_auc_by_disease` | 3 | serving (webapp TBD) |
 
 **Read by no notebook and no webapp (5):**
 
 | dataset | producing recipe | type | downstream | flag |
 |---|---|---|---|---|
-| `graph_label_evidence` | `compute_graph_label_evidence` | grouping | 0 | serving (webapp TBD) |
-| `graph_node_source_counts` | `compute_graph_node_source_counts` | grouping | 0 | serving (webapp TBD) |
-| `graph_node_type_counts` | `compute_graph_node_type_counts` | grouping | 0 | serving (webapp TBD) |
-| `graph_ppi_provenance` | `compute_graph_ppi_provenance` | grouping | 0 | serving (webapp TBD) |
-| `graph_relation_counts` | `compute_graph_relation_counts` | grouping | 0 | serving (webapp TBD) |
-
-## A2 Calibration (serving)  (13 datasets)
-
-| dataset | consumed by | producing recipe | downstream | flag |
-|---|---|---|---|---|
-| `drug_target_benchmark` | nb3/nb6 | `compute_drug_target_benchmark` | 1 | serving (webapp TBD) |
-| `novel_discovery_eval` | **webapp**, nb4/nb6 | `compute_novel_discovery_eval` | 1 | serving (webapp TBD) |
-| `persona_candidates` | **webapp**, nb4 | `compute_persona_candidates` | 2 | serving (webapp TBD) |
-| `split_audit_2` | nb2 | `compute_split_audit_2` | 0 | serving (webapp TBD) |
-| `validation_auc_by_disease` | nb3/nb5/nb6 | `compute_validation_auc_by_disease` | 2 | serving (webapp TBD) |
-
-**Read by no notebook and no webapp (8):**
-
-| dataset | producing recipe | type | downstream | flag |
-|---|---|---|---|---|
-| `disease_eligibility` | `compute_disease_eligibility` | grouping | 0 | serving (webapp TBD) |
-| `persona_enrichment` | `compute_persona_enrichment` | shaker | 0 | serving (webapp TBD) |
-| `shap_driver_frequency` | `compute_shap_driver_frequency` | grouping | 0 | serving (webapp TBD) |
 | `shap_drivers_long` | `compute_shap_drivers_long` | shaker | 1 | serving (webapp TBD) |
 | `validation_auc_ci` | `compute_validation_auc_ci` | shaker | 1 | serving (webapp TBD) |
 | `validation_set_scored` | `compute_validation_set_scored` | sync | 1 | serving (webapp TBD) |
@@ -228,16 +225,17 @@ _Nothing in this zone is read by a notebook or the webapp._
 
 ## A3 Therapeutic area (serving)  (8 datasets)
 
-_Nothing in this zone is read by a notebook or the webapp._
+| dataset | consumed by | producing recipe | downstream | flag |
+|---|---|---|---|---|
+| `family_panel` | **webapp** | `compute_family_panel` | 0 | serving (webapp TBD) |
+| `pairwise_overlap` | **webapp** | `compute_pairwise_overlap` | 0 | serving (webapp TBD) |
+| `top50_membership` | **webapp** | `compute_top50_membership` | 4 | serving (webapp TBD) |
 
-**Read by no notebook and no webapp (8):**
+**Read by no notebook and no webapp (5):**
 
 | dataset | producing recipe | type | downstream | flag |
 |---|---|---|---|---|
-| `family_panel` | `compute_family_panel` | join | 0 | serving (webapp TBD) |
-| `pairwise_overlap` | `compute_pairwise_overlap` | grouping | 0 | serving (webapp TBD) |
 | `pairwise_pairs` | `compute_pairwise_pairs` | join | 1 | serving (webapp TBD) |
-| `top50_membership` | `compute_top50_membership` | shaker | 4 | serving (webapp TBD) |
 | `top50_membership_b` | `copy_top50_b` | sync | 1 | serving (webapp TBD) |
 | `top50_pairs` | `compute_top50_pairs` | join | 0 | serving (webapp TBD) |
 | `top50_slim_a` | `compute_top50_slim_a` | shaker | 1 | serving (webapp TBD) |

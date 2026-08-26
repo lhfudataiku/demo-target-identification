@@ -88,24 +88,24 @@ a{color:var(--accent)}
 <p class="sub">Every dataset in the project, mapped to the notebook or webapp act that consumes it,
 with the in-zone recipe chain behind it — so the pruning pass removes what is genuinely dead and
 nothing else.</p>
-<div class="meta">99 datasets · 14 zones · live DSS state cross-referenced against
+<div class="meta">100 datasets · 14 zones · live DSS state cross-referenced against
 the recipe graph, notebooks/*.py and webapp/backend.py</div>
 </header>
 <section><div class="alert">
-<h2>After the prune, “nothing reads it” became more dangerous</h2>
+<h2>“Nothing reads it” is still the wrong test here</h2>
 <p><code>family_auc_by_family</code>, <code>tractability_axis</code> and
-<code>breast_panel_overlap</code> now have <strong>zero recipe consumers</strong>. Their real
-consumers are notebooks, which do not appear in the recipe graph — the verify recipes that used to
-make them look referenced were deleted on 2026-08-25. A mechanical reference check would flag exactly
-the datasets the audit decided must survive.</p>
-<p>The same holds for the <strong>29</strong> datasets in zones A1–A4: the webapp UI that reads
-them is not built, so <code>webapp/backend.py</code> touches only three. Zone membership, not
-reference counting, is what separates a serving dataset from an orphan.</p>
+<code>breast_panel_overlap</code> have <strong>zero recipe consumers</strong>. Their real consumers
+are notebooks, which do not appear in the recipe graph. A mechanical reference check would flag
+exactly the datasets the audit decided must survive.</p>
+<p>The webapp now reads <strong>19</strong> datasets across acts 1–4, so much of the serving layer is
+genuinely referenced — but the remainder of the <strong>31</strong> in A1–A4 is waiting on cards
+that are not built yet, not dead. Zone membership, not reference counting, is what separates a serving
+dataset from an orphan.</p>
 </div></section>
 <section><div class="stats">
-<div class="stat"><div class="n">99</div><div class="l">datasets</div></div>
-<div class="stat ok"><div class="n">24</div><div class="l">read by a notebook / webapp</div></div>
-<div class="stat sv"><div class="n">29</div><div class="l">serving layer (A1–A4)</div></div>
+<div class="stat"><div class="n">100</div><div class="l">datasets</div></div>
+<div class="stat ok"><div class="n">38</div><div class="l">read by a notebook / webapp</div></div>
+<div class="stat sv"><div class="n">31</div><div class="l">serving layer (A1–A4)</div></div>
 <div class="stat hi"><div class="n">0</div><div class="l">genuine orphans</div></div>
 <div class="stat ok"><div class="n">0</div><div class="l">circular zone dependencies</div></div>
 </div>
@@ -124,7 +124,7 @@ reference counting, is what separates a serving dataset from an orphan.</p>
 <section><div class="eyebrow">Do not delete</div><h2>Must survive, with the reason</h2>
 <div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Why it must survive</th></tr></thead><tbody>
 <tr><td class="ds">llm_hx</td><td class="rc">—</td><td class="why">Retained for the Part 1 visual-graph webapp (DEMO_KG_LS). Never built and unreferenced here, so a reference check reads it as dead — it is held for a consumer outside this project.</td></tr>
-<tr><td class="ds">family_auc_by_family</td><td class="rc">nb3</td><td class="why">Only surviving copy of 0.8009 over 505 families. Its whole upstream chain — <code>family_validation_ranked</code>, <code>family_auc_grouped</code> — was never built, so it cannot be re-derived.</td></tr>
+<tr><td class="ds">family_auc_by_family</td><td class="rc">webapp, nb3</td><td class="why">Only surviving copy of 0.8009 over 505 families. Its whole upstream chain — <code>family_validation_ranked</code>, <code>family_auc_grouped</code> — was never built, so it cannot be re-derived.</td></tr>
 <tr><td class="ds">tractability_axis</td><td class="rc">nb4, nb6</td><td class="why">nb4 §8.4 and nb6 §5.1 run the same block over it. Codifying duplicates a full 3.96M-row scan in two notebooks.</td></tr>
 <tr><td class="ds">breast_panel_metrics</td><td class="rc">nb4</td><td class="why">Read by nb4.</td></tr>
 <tr><td class="ds">breast_panel_overlap</td><td class="rc">nb4, nb6</td><td class="why">Read by nb4 and nb6 §6.3.</td></tr>
@@ -143,9 +143,9 @@ reference counting, is what separates a serving dataset from an orphan.</p>
 <tr><td class="ds">edge_metadata</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_edge_metadata_copy</td><td class="rc">sync</td><td class="num">4</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">gene_names</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_gene_names_copy</td><td class="rc">sync</td><td class="num">3</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">graph_edges</td><td class="rc">nb5</td><td class="rc">compute_DEMO_KG_graph_edges_copy</td><td class="rc">sync</td><td class="num">9</td><td><span class="chip live">In chain</span></td></tr>
-<tr><td class="ds">graph_nodes</td><td class="rc">nb5, nb6</td><td class="rc">compute_DEMO_KG_graph_nodes_copy</td><td class="rc">sync</td><td class="num">22</td><td><span class="chip live">In chain</span></td></tr>
-<tr><td class="ds">mondo_references</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_mondo_references_copy</td><td class="rc">sync</td><td class="num">3</td><td><span class="chip live">In chain</span></td></tr>
-<tr><td class="ds">raw_disease_disease</td><td class="rc">nb5</td><td class="rc">compute_DEMO_KG_raw_disease_disease_copy</td><td class="rc">sync</td><td class="num">3</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">graph_nodes</td><td class="rc">webapp, nb5, nb6</td><td class="rc">compute_DEMO_KG_graph_nodes_copy</td><td class="rc">sync</td><td class="num">21</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">mondo_references</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_mondo_references_copy</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">raw_disease_disease</td><td class="rc">nb5</td><td class="rc">compute_DEMO_KG_raw_disease_disease_copy</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">raw_go_hierarchy</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_raw_go_hierarchy_copy</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">raw_ot_known_drug</td><td class="rc">nb4</td><td class="rc">compute_raw_ot_known_drug</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
 </tbody></table></div></div>
@@ -176,10 +176,9 @@ reference counting, is what separates a serving dataset from an orphan.</p>
 <tr><td class="ds">enriched_graph_features_1</td><td class="rc">—</td><td class="rc">compute_enriched_graph_features_1</td><td class="rc">join</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">enriched_pair_features_index_1</td><td class="rc">—</td><td class="rc">compute_enriched_pair_features_index_1</td><td class="rc">vstack</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 </tbody></table></div></div>
-<div class="zone"><div class="zh"><span class="zn">20 Annotations &amp; split key</span><span class="zc">16 datasets</span></div>
+<div class="zone"><div class="zh"><span class="zn">20 Annotations &amp; split key</span><span class="zc">15 datasets</span></div>
 <div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
-<tr><td class="ds">disease_family_id</td><td class="rc">—</td><td class="rc">compute_disease_family_id</td><td class="rc">python</td><td class="num">3</td><td><span class="chip live">In chain</span></td></tr>
-<tr><td class="ds">disease_hierarchy_annotation</td><td class="rc">—</td><td class="rc">compute_disease_hierarchy_annotation</td><td class="rc">python</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">disease_family_id</td><td class="rc">webapp</td><td class="rc">compute_disease_family_id</td><td class="rc">python</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">drug_best</td><td class="rc">—</td><td class="rc">compute_drug_best</td><td class="rc">topn</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">drug_classified</td><td class="rc">—</td><td class="rc">compute_drug_classified</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">drug_joined</td><td class="rc">—</td><td class="rc">compute_drug_joined</td><td class="rc">join</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
@@ -190,7 +189,7 @@ reference counting, is what separates a serving dataset from an orphan.</p>
 <tr><td class="ds">gene_safety_best</td><td class="rc">—</td><td class="rc">compute_gene_safety_best</td><td class="rc">topn</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">gene_safety_joined</td><td class="rc">—</td><td class="rc">compute_gene_safety_join</td><td class="rc">join</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">graph_genes</td><td class="rc">—</td><td class="rc">compute_graph_genes</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
-<tr><td class="ds">hetionet_disease_slim</td><td class="rc">—</td><td class="rc">extract_hetionet_disease_slim</td><td class="rc">python</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">hetionet_disease_slim</td><td class="rc">—</td><td class="rc">extract_hetionet_disease_slim</td><td class="rc">python</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">ot_drug_mapped</td><td class="rc">—</td><td class="rc">compute_ot_drug_mapped</td><td class="rc">join</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">raw_ot_druggability</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_raw_ot_druggability_copy</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">raw_ot_safety</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_raw_ot_safety_copy</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
@@ -206,7 +205,7 @@ reference counting, is what separates a serving dataset from an orphan.</p>
 <div class="zone"><div class="zh"><span class="zn">31 Train &amp; score</span><span class="zc">4 datasets</span></div>
 <div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
 <tr><td class="ds">persona2_scored</td><td class="rc">—</td><td class="rc">score_persona_candidates</td><td class="rc">prediction_scoring</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
-<tr><td class="ds">scored_champion</td><td class="rc">nb1, nb2, nb3, nb3b, nb4, nb6</td><td class="rc">sync_scored_champion</td><td class="rc">sync</td><td class="num">6</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">scored_champion</td><td class="rc">nb1, nb2, nb3, nb3b, nb4, nb6</td><td class="rc">sync_scored_champion</td><td class="rc">sync</td><td class="num">7</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">scored_m7</td><td class="rc">—</td><td class="rc">score_psplit_validation_m7</td><td class="rc">prediction_scoring</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">validation_set_personas_2</td><td class="rc">—</td><td class="rc">filter_persona_diseases</td><td class="rc">sampling</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 </tbody></table></div></div>
@@ -225,7 +224,7 @@ reference counting, is what separates a serving dataset from an orphan.</p>
 <div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
 <tr><td class="ds">breast_panel_metrics</td><td class="rc">nb4</td><td class="rc">compute_breast_panel</td><td class="rc">python</td><td class="num">0</td><td><span class="chip keep">Keep</span></td></tr>
 <tr><td class="ds">breast_panel_overlap</td><td class="rc">nb4, nb6</td><td class="rc">compute_breast_panel</td><td class="rc">python</td><td class="num">0</td><td><span class="chip keep">Keep</span></td></tr>
-<tr><td class="ds">family_auc_by_family</td><td class="rc">nb3</td><td class="rc">compute_family_auc</td><td class="rc">shaker</td><td class="num">0</td><td><span class="chip keep">Keep</span></td></tr>
+<tr><td class="ds">family_auc_by_family</td><td class="rc">webapp, nb3</td><td class="rc">compute_family_auc</td><td class="rc">shaker</td><td class="num">0</td><td><span class="chip keep">Keep</span></td></tr>
 <tr><td class="ds">family_auc_grouped</td><td class="rc">—</td><td class="rc">group_family_auc</td><td class="rc">grouping</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">family_validation_ranked</td><td class="rc">—</td><td class="rc">window_family_rank</td><td class="rc">window</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">family_validation_scored</td><td class="rc">—</td><td class="rc">compute_family_validation_scored</td><td class="rc">sync</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
@@ -234,23 +233,25 @@ reference counting, is what separates a serving dataset from an orphan.</p>
 </tbody></table></div></div>
 <div class="zone"><div class="zh"><span class="zn">A1 Evidence base (serving)</span><span class="zc">5 datasets</span></div>
 <div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
-<tr><td class="ds">graph_label_evidence</td><td class="rc">—</td><td class="rc">compute_graph_label_evidence</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">graph_node_source_counts</td><td class="rc">—</td><td class="rc">compute_graph_node_source_counts</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">graph_node_type_counts</td><td class="rc">—</td><td class="rc">compute_graph_node_type_counts</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">graph_ppi_provenance</td><td class="rc">—</td><td class="rc">compute_graph_ppi_provenance</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">graph_relation_counts</td><td class="rc">—</td><td class="rc">compute_graph_relation_counts</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">graph_label_evidence</td><td class="rc">webapp</td><td class="rc">compute_graph_label_evidence</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">graph_node_source_counts</td><td class="rc">webapp</td><td class="rc">compute_graph_node_source_counts</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">graph_node_type_counts</td><td class="rc">webapp</td><td class="rc">compute_graph_node_type_counts</td><td class="rc">grouping</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">graph_ppi_provenance</td><td class="rc">webapp</td><td class="rc">compute_graph_ppi_provenance</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">graph_relation_counts</td><td class="rc">webapp</td><td class="rc">compute_graph_relation_counts</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
 </tbody></table></div></div>
-<div class="zone"><div class="zh"><span class="zn">A2 Calibration (serving)</span><span class="zc">13 datasets</span></div>
+<div class="zone"><div class="zh"><span class="zn">A2 Calibration (serving)</span><span class="zc">15 datasets</span></div>
 <div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
-<tr><td class="ds">disease_eligibility</td><td class="rc">—</td><td class="rc">compute_disease_eligibility</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">drug_target_benchmark</td><td class="rc">nb3, nb6</td><td class="rc">compute_drug_target_benchmark</td><td class="rc">python</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">novel_discovery_eval</td><td class="rc">webapp, nb4, nb6</td><td class="rc">compute_novel_discovery_eval</td><td class="rc">python</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">persona_candidates</td><td class="rc">webapp, nb4</td><td class="rc">compute_persona_candidates</td><td class="rc">python</td><td class="num">2</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">persona_enrichment</td><td class="rc">—</td><td class="rc">compute_persona_enrichment</td><td class="rc">shaker</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">shap_driver_frequency</td><td class="rc">—</td><td class="rc">compute_shap_driver_frequency</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">disease_eligibility</td><td class="rc">webapp</td><td class="rc">compute_disease_eligibility</td><td class="rc">python</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">drug_target_benchmark</td><td class="rc">nb3, nb6</td><td class="rc">compute_drug_target_benchmark</td><td class="rc">python</td><td class="num">2</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">hub_bias_meter</td><td class="rc">webapp</td><td class="rc">compute_hub_bias_meter</td><td class="rc">python</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">novel_discovery_eval</td><td class="rc">nb4, nb6</td><td class="rc">compute_novel_discovery_eval</td><td class="rc">python</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">orthogonality_scatter</td><td class="rc">webapp</td><td class="rc">join_orthogonality</td><td class="rc">join</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">persona_candidates</td><td class="rc">nb4</td><td class="rc">compute_persona_candidates</td><td class="rc">python</td><td class="num">2</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">persona_enrichment</td><td class="rc">webapp</td><td class="rc">compute_persona_enrichment</td><td class="rc">shaker</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">shap_driver_frequency</td><td class="rc">webapp</td><td class="rc">compute_shap_driver_frequency</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">shap_drivers_long</td><td class="rc">—</td><td class="rc">compute_shap_drivers_long</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">split_audit_2</td><td class="rc">nb2</td><td class="rc">compute_split_audit_2</td><td class="rc">python</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">validation_auc_by_disease</td><td class="rc">nb3, nb5, nb6</td><td class="rc">compute_validation_auc_by_disease</td><td class="rc">shaker</td><td class="num">2</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">split_audit_2</td><td class="rc">webapp, nb2</td><td class="rc">compute_split_audit_2</td><td class="rc">python</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">validation_auc_by_disease</td><td class="rc">webapp, nb3, nb5, nb6</td><td class="rc">compute_validation_auc_by_disease</td><td class="rc">shaker</td><td class="num">3</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">validation_auc_ci</td><td class="rc">—</td><td class="rc">compute_validation_auc_ci</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">validation_set_scored</td><td class="rc">—</td><td class="rc">compute_validation_set_scored</td><td class="rc">sync</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">validation_set_scored_grouped</td><td class="rc">—</td><td class="rc">compute_validation_set_scored_grouped</td><td class="rc">grouping</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
@@ -258,10 +259,10 @@ reference counting, is what separates a serving dataset from an orphan.</p>
 </tbody></table></div></div>
 <div class="zone"><div class="zh"><span class="zn">A3 Therapeutic area (serving)</span><span class="zc">8 datasets</span></div>
 <div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
-<tr><td class="ds">family_panel</td><td class="rc">—</td><td class="rc">compute_family_panel</td><td class="rc">join</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">pairwise_overlap</td><td class="rc">—</td><td class="rc">compute_pairwise_overlap</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">family_panel</td><td class="rc">webapp</td><td class="rc">compute_family_panel</td><td class="rc">join</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">pairwise_overlap</td><td class="rc">webapp</td><td class="rc">compute_pairwise_overlap</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">pairwise_pairs</td><td class="rc">—</td><td class="rc">compute_pairwise_pairs</td><td class="rc">join</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">top50_membership</td><td class="rc">—</td><td class="rc">compute_top50_membership</td><td class="rc">shaker</td><td class="num">4</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">top50_membership</td><td class="rc">webapp</td><td class="rc">compute_top50_membership</td><td class="rc">shaker</td><td class="num">4</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">top50_membership_b</td><td class="rc">—</td><td class="rc">copy_top50_b</td><td class="rc">sync</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">top50_pairs</td><td class="rc">—</td><td class="rc">compute_top50_pairs</td><td class="rc">join</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">top50_slim_a</td><td class="rc">—</td><td class="rc">compute_top50_slim_a</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>

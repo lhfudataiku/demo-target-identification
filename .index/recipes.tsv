@@ -22,9 +22,8 @@ compute_DEMO_KG_raw_go_hierarchy_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_go_hiera
 compute_DEMO_KG_raw_ot_druggability_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_ot_druggability	raw_ot_druggability
 compute_DEMO_KG_raw_ot_safety_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_ot_safety	raw_ot_safety
 compute_breast_panel	python	-	-		dss_recipes/compute_breast_panel.py	drug_disease_edges,drug_protein_edges,graph_nodes,scored_champion	breast_panel_metrics,breast_panel_overlap
-compute_disease_eligibility	grouping	-	-		DSS-only	disease_hierarchy_annotation	disease_eligibility
+compute_disease_eligibility	python	-	-		dss_recipes/compute_disease_eligibility.py	enriched_module_size_1,graph_node_type_counts	disease_eligibility
 compute_disease_family_id	python	-	-		dss_recipes/compute_disease_family_id.py	enriched_graph_features_1,graph_nodes,hetionet_disease_slim,mondo_references,raw_disease_disease	disease_family_id
-compute_disease_hierarchy_annotation	python	-	-		dss_recipes/compute_disease_hierarchy_annotation.py	disease_family_id,enriched_module_size_1,graph_nodes,hetionet_disease_slim,mondo_references,raw_disease_disease	disease_hierarchy_annotation
 compute_drug_best	topn	-	-		DSS-only	drug_classified	drug_best
 compute_drug_classified	shaker	-	-		DSS-only	drug_joined	drug_classified
 compute_drug_evidence_pairs	python	-	-		dss_recipes/compute_drug_evidence_pairs.py	drug_disease_edges,drug_protein_edges,graph_nodes	drug_evidence_pairs
@@ -51,6 +50,7 @@ compute_graph_node_source_counts	grouping	-	-		DSS-only	graph_nodes	graph_node_s
 compute_graph_node_type_counts	grouping	-	-		DSS-only	graph_nodes	graph_node_type_counts
 compute_graph_ppi_provenance	grouping	-	-		DSS-only	edge_metadata	graph_ppi_provenance
 compute_graph_relation_counts	grouping	-	-		DSS-only	graph_edges	graph_relation_counts
+compute_hub_bias_meter	python	-	-		dss_recipes/compute_hub_bias_meter.py	scored_champion	hub_bias_meter
 compute_known_drug_truth	python	-	-		dss_recipes/compute_known_drug_truth.py	drug_disease_edges,drug_protein_edges,gene_names,graph_nodes,raw_ot_known_drug	known_drug_truth
 compute_novel_discovery_eval	python	-	-		dss_recipes/compute_novel_discovery_eval.py	drug_disease_edges,drug_protein_edges,graph_nodes,scored_champion	novel_discovery_eval
 compute_ot_drug_mapped	join	-	-		DSS-only	gene_crosswalk,raw_ot_druggability	ot_drug_mapped
@@ -88,6 +88,7 @@ group_family_auc	grouping	-	-		DSS-only	family_validation_ranked	family_auc_grou
 join_dashboard_annotations	join	-	-		DSS-only	disease_pool_sizes,drug_evidence_pairs,target_candidates_2	candidates_annotated
 join_disease_family_id	join	-	-		DSS-only	disease_family_id,enriched_graph_features_1	enriched_graph_features_1_family
 join_disease_name	join	-	-		DSS-only	graph_nodes,top_annotated	target_candidates_2
+join_orthogonality	join	-	-		DSS-only	drug_target_benchmark,validation_auc_by_disease	orthogonality_scatter
 join_trust_for_personas	join	-	-		DSS-only	disease_pool_sizes,persona_candidates	dashboard_persona_trust
 rank_per_disease	window	-	-		DSS-only	persona2_scored_shap	top_candidates
 score_persona_candidates	prediction_scoring	-	-		DSS-only	hJLGoYn4,validation_set_personas_2	persona2_scored

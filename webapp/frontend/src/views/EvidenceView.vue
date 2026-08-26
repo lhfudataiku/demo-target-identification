@@ -16,10 +16,10 @@
   import { apiUrl } from '@/utils/api'
   import ActCard from '@/components/act/ActCard.vue'
   import ActStat from '@/components/act/ActStat.vue'
-  import ActSay from '@/components/act/ActSay.vue'
   import ActBar from '@/components/act/ActBar.vue'
+  import ActDonut from '@/components/act/ActDonut.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-  import { ShieldCheck, Database, GitBranch, Layers, FileText } from 'lucide-vue-next'
+  import { Database, GitBranch, Layers, FileText } from 'lucide-vue-next'
 
   defineOptions({ name: 'EvidenceView' })
 
@@ -47,6 +47,16 @@
   ]
 
   const fmt = (n: number) => n.toLocaleString()
+
+  // v3 colours these two cards by GROUP, not by a cycle:
+  //   PPI provenance  — corroborated by 2+ interactomes vs a single source
+  //   node sources    — the six external vocabularies vs the one we derived
+  const ppiRows = computed(() => (data.value?.ppi_provenance ?? []).map((r) => ({
+    ...r, colour: r.label.includes('+') ? 'var(--chart-2)' : 'var(--chart-1)',
+  })))
+  const sourceRows = computed(() => (data.value?.node_sources ?? []).map((r) => ({
+    ...r, colour: /grouped/i.test(r.label) ? 'var(--muted-foreground)' : 'var(--chart-2)',
+  })))
 
   onMounted(async () => {
     try {
@@ -80,32 +90,6 @@
     </p>
 
     <div class="grid grid-cols-12 gap-4">
-      <ActCard span="col-span-12" :icon="ShieldCheck" accent="var(--chart-1)"
-               title="What this demo claims — and what it does not"
-               desc="Say this before anything else. Every row is a place a competitor would overclaim.">
-        <ActSay class="mb-3">
-          <b>The claim.</b> From public knowledge alone, this reconstructs the targets a disease's
-          field has already validated. The test is your own eyeball test on a disease you know — not
-          a benchmark we chose. <b>If it reconstructs what is established, the machinery is sound</b>,
-          and the interesting conversation is pointing it at data where the answer is not already
-          known. That is your data, not ours.
-        </ActSay>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>We are not claiming</TableHead>
-              <TableHead>What is true instead</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <TableRow v-for="[claim, truth] in NOT_CLAIMING" :key="claim">
-              <TableCell class="align-top font-medium whitespace-nowrap">{{ claim }}</TableCell>
-              <TableCell class="align-top text-muted-foreground">{{ truth }}</TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </ActCard>
-
       <ActCard span="col-span-12" title="The graph, in four numbers" :icon="Database"
                :chips="[['live', 'live']]"
                :src="['graph_node_type_counts', 'graph_relation_counts', 'graph_ppi_provenance']">
@@ -121,29 +105,48 @@
         <p v-else class="py-4 text-center text-sm text-muted-foreground">Loading…</p>
       </ActCard>
 
-      <ActCard v-for="[key, title, desc, src] in [
-                 ['node_types', 'What kinds of thing the graph knows about', 'Eight node types.', 'graph_node_type_counts'],
-                 ['relations', 'Every relation, and its count', 'Eighteen relations. The seven largest match GRAPH_BUILDING.md §7.1 exactly.', 'graph_relation_counts'],
-                 ['node_sources', 'Where the nodes came from', 'Six external vocabularies, and one grouping we derived ourselves.', 'graph_node_source_counts'],
-                 ['ppi_provenance', 'Every PPI edge knows its source', 'Which interaction databases asserted each edge — this is the lineage claim, made concrete.', 'graph_ppi_provenance'],
-                 ['label_evidence', 'What “known target” actually means', 'The evidence types behind the association label. Not all of it is equally strong, and act 5 returns to that.', 'graph_label_evidence'],
-               ] as [keyof Payload, string, string, string]"
-               :key="key" span="col-span-12 lg:col-span-6" :title="title" :desc="desc"
-               :chips="[['live', 'live']]" :src="[src]">
-        <ActBar v-if="data" :rows="(data[key] as Bar[])" />
-        <p v-else class="py-4 text-center text-sm text-muted-foreground">Loading…</p>
+      <ActCard span="col-span-12 lg:col-span-5" title="8 node types" :icon="Layers"
+               desc="What kinds of thing the graph knows about." :chips="[['live', 'live']]"
+               :src="['graph_node_type_counts']">
+        <ActBar v-if="data" :rows="data.node_types" color="var(--chart-2)" />
       </ActCard>
 
-      <ActCard span="col-span-12" :icon="FileText" accent="var(--chart-5)"
-               title="What this act must not do"
-               desc="Provenance is not accuracy.">
-        <p class="text-[13px] leading-relaxed text-muted-foreground">
-          The graph being faithfully reproduced says nothing about whether the ranking is useful —
-          that is act 2's job. Nothing on this screen is a quality claim, and it should not be
-          presented as one. What it establishes is that the substrate is credible and traceable,
-          which is the precondition for the interrogation that follows.
-        </p>
+      <ActCard span="col-span-12 lg:col-span-7" title="18 relations" :icon="GitBranch"
+               desc="Every relation and its count. The seven largest match GRAPH_BUILDING.md §7.1 exactly."
+               :chips="[['live', 'live']]" :src="['graph_relation_counts']">
+        <ActBar v-if="data" :rows="data.relations" color="var(--chart-3)" />
       </ActCard>
-    </div>
+
+      <ActCard span="col-span-12 lg:col-span-5" title="Where the nodes came from" :icon="Database"
+               desc="Six external vocabularies, and one grouping we derived ourselves."
+               :chips="[['live', 'live']]" :src="['graph_node_source_counts']">
+        <ActBar v-if="data" :rows="sourceRows" />
+        <div class="mt-3 rounded-lg border-l-2 border-destructive bg-destructive/10 px-3.5 py-2.5 text-[13px] leading-relaxed">
+          <b>Say six sources, not seven.</b> One of these is a grouping we derived ourselves, not an
+          external vocabulary — it is shown in grey.
+        </div>
+      </ActCard>
+
+      <ActCard span="col-span-12 lg:col-span-7" title="Every edge knows where it came from"
+               :icon="GitBranch" accent="var(--chart-3)"
+               desc="Which interaction databases asserted each PPI edge. This is the lineage claim, made concrete."
+               :chips="[['live', 'live']]" :src="['graph_ppi_provenance']">
+        <ActBar v-if="data" :rows="ppiRows" />
+        <div class="mt-2 flex gap-4 font-mono text-[10.5px] text-muted-foreground">
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block size-2.5 rounded-sm" style="background:var(--chart-1)"></span>single source</span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block size-2.5 rounded-sm" style="background:var(--chart-2)"></span>corroborated by 2+ interactomes</span>
+        </div>
+      </ActCard>
+
+      <ActCard span="col-span-12 lg:col-span-6" title="What “known target” actually means"
+               :icon="FileText" accent="var(--chart-4)"
+               desc="The evidence types behind the association label — and they are not equally strong. Act 5 returns to this."
+               :chips="[['live', 'live']]" :src="['graph_label_evidence']">
+        <ActDonut v-if="data" :rows="data.label_evidence" />
+      </ActCard>
+
+      </div>
   </div>
 </template>
