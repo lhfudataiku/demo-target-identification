@@ -14,6 +14,12 @@
    Map the CSS variable tokens from styles/tokens.css into Tailwind
    utility classes (e.g. bg-background, text-muted-foreground, etc.).    */
 @theme inline {
+  /* Brand typography: Signifier/Untitled Sans/Sohne Mono are licensed;
+     these are the sanctioned Google substitutes. */
+  --font-sans: 'Roboto', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Spectral', ui-serif, Georgia, serif;
+  --font-mono: 'DM Mono', ui-monospace, SFMono-Regular, monospace;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
