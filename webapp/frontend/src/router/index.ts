@@ -1,8 +1,9 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import { Database, ListFilter, Settings, Shield } from 'lucide-vue-next'
+import { Database, ListFilter, Network, Settings, Shield } from 'lucide-vue-next'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import ShortlistView from '@/views/ShortlistView.vue'
 import EvidenceView from '@/views/EvidenceView.vue'
+import TherapeuticAreaView from '@/views/TherapeuticAreaView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import AdminView from '@/views/AdminView.vue'
 import { useAdminStore } from '@/stores/admin'
@@ -18,6 +19,12 @@ const coreRoutes: RouteRecordRaw[] = [
     name: 'evidence',
     component: EvidenceView,
     meta: { title: 'The evidence base', icon: Database, menu: 'primary', order: 1 },
+  },
+  {
+    path: 'therapeutic-area',
+    name: 'therapeutic-area',
+    component: TherapeuticAreaView,
+    meta: { title: 'The therapeutic area', icon: Network, menu: 'primary', order: 3 },
   },
   {
     path: 'shortlist',
