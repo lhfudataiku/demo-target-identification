@@ -32,6 +32,10 @@ def main():
     # DECISIONS.md is append-only and legitimately names files that were later deleted -- a mention
     # there is a historical record, not a stale pointer. Links are still checked everywhere.
     NO_MENTION_CHECK = {"DECISIONS.md"}
+    # archive/ is a historical record: its links pointed somewhere real when it was
+    # written, and rewriting them would falsify the record. Skipped entirely, the same
+    # way DECISIONS.md is exempt from the mention check.
+    md = [f for f in md if not f.startswith("archive/")]
     bad_links, bad_mentions = [], []
     for f in md:
         d = os.path.dirname(f)

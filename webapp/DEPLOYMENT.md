@@ -1,0 +1,165 @@
+# Deploying this webapp
+
+**The one thing to know before anything else:**
+
+> **`git push` does not deploy the webapp. `make deploy` does.**
+
+Git is version control. Deployment is a separate, explicit step. They both put files
+on the DSS instance, in different places, and only one of those places is executed.
+
+---
+
+## Why a build step exists at all
+
+The browser cannot run `.vue` files. Vite compiles `frontend/src/**` into a single bundle
+at `frontend/dist/assets/index.js`, and **that compiled bundle is what DSS serves.**
+
+`frontend/dist/` is gitignored — correctly, because build artifacts do not belong in
+version control. The consequence is unavoidable and worth stating plainly: **a built
+bundle can never travel through git.** It reaches DSS only when `deploy.sh` uploads it.
+
+This is the single most confusing thing about the setup. A colleague can commit, push,
+and watch the project sync succeed, and the webapp will still serve the UI from whenever
+someone last ran `make deploy`.
+
+## Where things live on DSS
+
+The project library ends up with two copies of this app if the repo is mirrored. Only
+one of them runs:
+
+| library path | what it is | runs? |
+|---|---|---|
+| `python/target_prioritizer/` | `backend/` + built `frontend_dist/`, written by `make deploy` | **yes** |
+| `project/webapp/` | a mirror of the repo, if the whole repo is synced | no |
+
+DSS puts the library's `python/` directory on the Python import path. The webapp's shim
+does `importlib.import_module('target_prioritizer.backend.app')`, which can only resolve
+under `python/`. Anything at `project/` is stored files — readable, never imported.
+
+*(As of 2026-08-26 the `project/` mirror is being dropped: nothing depended on it, and
+its presence made the webapp look "not linked to what is in the library".)*
+
+---
+
+## First time on a new machine
+
+```bash
+brew install node                 # or nodejs.org
+curl -Lsf https://astral.sh/uv/install.sh | sh
+dku auth login                    # authenticate the CLI against the DSS instance
+```
+
+`app.env` is already filled in and committed — do not change these unless you are
+targeting a different project:
+
+```
+LIB_NS=target_prioritizer          APP_PREFIX=TARGET_PRIORITIZER
+PROJECT_KEY=DEMO_TARGET_IDENTIFICATION
+WEBAPP_ID=OlmPX9a                  ENV_NAME=primekg_kg
+```
+
+**Do not change `BACKEND_PORT`.** `frontend/vite.config.ts` hardcodes the `/api` proxy to
+`127.0.0.1:5000`. Changing the port here alone breaks local dev with an `ECONNREFUSED`
+that surfaces in the UI as an unexplained HTTP 500.
+
+---
+
+## Changing the webapp
+
+### 1. Edit
+
+| what you are changing | where |
+|---|---|
+| an API endpoint | `backend/routes/*.py` — then register it in `backend/app.py` |
+| a screen | `frontend/src/views/*.vue` |
+| shared card / layout | `frontend/src/components/act/ActCard.vue` |
+| navigation, act order | `frontend/src/router/index.ts` |
+| colours, fonts | `frontend/src/styles/tokens.css` (Dataiku brand — see below) |
+
+### 2. Check it locally (optional)
+
+```bash
+make dev            # Vite on :5173, FastAPI on :5000
+```
+
+Layout and routing can be checked here. **Live DSS data may not work locally** — it needs
+a valid API key in `~/.dataiku/config.json`, and a stale key returns 401. This does not
+affect deployment: `backend/dss_client.py` is dual-mode and uses `dataiku.api_client()`
+inside DSS.
+
+Read logs with `tail .run/logs/backend.log`. Do not use `make logs` in a script — it
+follows and will block.
+
+### 3. Deploy
+
+```bash
+make deploy
+```
+
+Which does, in order: `npm run build` → upload `backend/` → upload `frontend/dist/` →
+patch the webapp definition → restart the backend.
+
+### 4. Verify it actually landed
+
+Do not trust "deploy succeeded". Grep the deployed bundle for a string unique to your
+change:
+
+```bash
+dku library read python/target_prioritizer/frontend_dist/assets/index.js \
+  -P DEMO_TARGET_IDENTIFICATION | grep -c "some new string you added"
+
+dku webapp logs OlmPX9a -P DEMO_TARGET_IDENTIFICATION | tail -20
+```
+
+A `0` from the first command means the build did not include your change, or the upload
+did not happen. This check has caught a stale deploy at least once.
+
+### 5. Commit and push
+
+Separately, and for version control only. It updates nothing on DSS.
+
+---
+
+## Design system
+
+The app uses the **Dataiku brand palette**, not the shadcn defaults the template shipped
+with. `frontend/src/styles/tokens.css` holds the values:
+
+```
+dkBlack #1A1A1A   dkWhite #FEFEF9   dkDarkGreen #06312E
+dkBeige #F8F4E4   dkGreen #3EDAB2   dkLightGreen #C7FFF1
+dkBlue  #7092F2   dkOrange #EDAB4F   (data viz only)
+```
+
+Fonts: **Spectral** headings, **Roboto** body, **DM Mono** data — the sanctioned Google
+substitutes for Signifier / Untitled Sans / Söhne Mono.
+
+Two rules that are easy to break: `dkGreen` is a **light** mint, so anything on it takes
+dark text (`--primary-foreground` is dkDarkGreen, never white). And Orange+Green or
+Blue+Green must never be co-dominant surfaces.
+
+## Guardrails the UI must keep
+
+These are demo requirements, not style preferences. They are enforced in
+`ShortlistView.vue` and documented in `docs/demo/DASHBOARD_DESIGN.md`:
+
+- **Drug badges and the liability flag render, but are never filter controls.** The badges
+  are the ground truth the enrichment is measured against — filtering on them makes the
+  claim circular. Filtering the liability flag deletes ERBB2 from its own disease's list.
+- **`prediction` is never fetched or displayed.** 590 of 762 known obesity targets are
+  negative at the F1 threshold.
+- **Every funnel count renders its rank cut-off**, so a count cannot acquire two values.
+- **No discovery-enrichment figure on a summary tile.** The demo makes a *reconstruction*
+  claim; a headline enrichment number turns it into a discovery claim.
+- **Every card names its source dataset.** A number with no provenance undercuts the
+  platform argument the demo closes on.
+
+## Known traps
+
+| symptom | cause |
+|---|---|
+| Deployed, but the UI is unchanged | Browser cached `assets/index.js` — the filename has no content hash. The backend now sends `no-store`, so this should be historical. |
+| Synced the project, UI still old | Git does not carry the built bundle. Run `make deploy`. |
+| UI shows old *data* after a dataset rebuild | `candidates.py` caches the dataframe per process. Restart the backend (`dku webapp restart OlmPX9a`). |
+| Local dev: HTTP 500 on every API call | Either the stale key in `~/.dataiku/config.json`, or `BACKEND_PORT` no longer matching the Vite proxy. |
+| `nginx: could not open error log file` in the logs | Harmless. Gunicorn binds fine afterwards. |
