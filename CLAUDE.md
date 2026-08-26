@@ -41,9 +41,10 @@ reverse.** A pruning plan derived from a hypothetical dashboard once cut 46 of 6
 including the answer to the most common objection.
 
 Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `style.css`,
-~1,100 lines) and the `60 Dashboard (serving)` flow zone with `dashboard_candidates`,
-`dashboard_persona_trust`, `drug_evidence_pairs` and `target_candidates_2` (129,253 ranked rows over
-13 personas). What is missing is the UI itself.
+~1,100 lines), the v3 mockup, and a built serving layer — 29 datasets across zones `A1`–`A4` plus the
+shared `40 Candidate ranking` zone (`dashboard_candidates`, `target_candidates_2`, 129,253 ranked rows
+over 13 personas). What is missing is the UI itself. `docs/demo/FLOW_MAP.md` maps every dataset to the
+act that consumes it.
 
 **Track B — Phase 3. Preparation complete; the branch project is not built.**
 Widening the pool-route seed gate 20 → 5 would admit 931 diseases the model cannot see today.

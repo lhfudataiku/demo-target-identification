@@ -27,8 +27,9 @@ Grouped by purpose. **Read one section, not a whole file** — several are 20–
 
 | | |
 |---|---|
-| [`demo/DEMO_NARRATIVE.md`](demo/DEMO_NARRATIVE.md) | The demo as a six-question interrogation (Q1 *"show me the list"* → Q6 *"what can't it do?"*), because that is the order a sceptical scientist asks in. **Derive the dashboard from this, not the reverse** |
-| [`demo/DASHBOARD_DESIGN.md`](demo/DASHBOARD_DESIGN.md) | The demo surface **as one Vue webapp** built from `bs-blueprint`: six acts on a single therapeutic-area spine (breast, HER2+ lead), the route/view/data map, the guardrails the code must enforce, nine serving-layer gaps, and **six places the narrative is measurably stale** |
+| [`demo/DEMO_NARRATIVE.md`](demo/DEMO_NARRATIVE.md) | The demo as **four acts on screen and two in a talk track**, in the order a sceptical scientist asks: what can the model see → how far can it be trusted → does it hold across my area → show me the list. **Derive the app from this, not the reverse** |
+| [`demo/DASHBOARD_DESIGN.md`](demo/DASHBOARD_DESIGN.md) | The **technical companion** to the narrative: the Vue/DSS architecture, the data contract per act, the analytic reasoning each claim rests on, and the zone-by-zone flow. Build log archived separately |
+| [`demo/FLOW_MAP.md`](demo/FLOW_MAP.md) | Every dataset by zone, its producing recipe and its consuming act or notebook — generated from live DSS. **Read before pruning anything**: a reference check alone flags the whole serving layer |
 | [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) | **Current mockup.** Four interactive acts. The Sankey opens on the whole ontology and shows the 95.7% the seed gate excludes; panel and ontology tree merged; full ranked list with search, tractability and class filters |
 | [`demo/DASHBOARD_MOCKUP_V2.html`](demo/DASHBOARD_MOCKUP_V2.html) | Iteration 2, kept for comparison |
 | [`demo/DASHBOARD_MOCKUP.html`](demo/DASHBOARD_MOCKUP.html) | Iteration 1, six static acts |

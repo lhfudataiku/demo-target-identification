@@ -1,4 +1,4 @@
-# Pruning map
+# Flow map
 
 Live DSS: **99 datasets across 14 zones**, cross-referenced against the recipe graph, `notebooks/*.py`, and `webapp/backend.py`.
 
@@ -129,47 +129,47 @@ _Nothing in this zone is read by a notebook or the webapp._
 | dataset | consumed by | producing recipe | downstream | flag |
 |---|---|---|---|---|
 | `enriched_graph_features_candidate_psplit` | nb2/nb5 | `filter_has_path_evidence` | 2 |  |
-| `psplit_train_set` | nb1 | `split_by_disease_key` | 9 |  |
+| `psplit_train_set` | nb1 | `split_by_disease_key` | 2 |  |
 
 **Read by no notebook and no webapp (3):**
 
 | dataset | producing recipe | type | downstream | flag |
 |---|---|---|---|---|
 | `enriched_graph_features_1_family` | `join_disease_family_id` | join | 1 |  |
-| `psplit_test_set` | `split_by_disease_key` | split | 8 |  |
+| `psplit_test_set` | `split_by_disease_key` | split | 1 |  |
 | `psplit_validation_set` | `split_by_disease_key` | split | 3 |  |
 
-## 31 Train & score  (2 datasets)
+## 31 Train & score  (4 datasets)
 
 | dataset | consumed by | producing recipe | downstream | flag |
 |---|---|---|---|---|
 | `scored_champion` | nb1/nb2/nb3/nb3b/nb4/nb6 | `sync_scored_champion` | 6 |  |
 
-**Read by no notebook and no webapp (1):**
+**Read by no notebook and no webapp (3):**
 
 | dataset | producing recipe | type | downstream | flag |
 |---|---|---|---|---|
+| `persona2_scored` | `score_persona_candidates` | prediction_scoring | 1 |  |
 | `scored_m7` | `score_psplit_validation_m7` | prediction_scoring | 1 |  |
+| `validation_set_personas_2` | `filter_persona_diseases` | sampling | 1 |  |
 
-## 40 Candidate ranking (shared by acts)  (10 datasets)
+## 40 Candidate ranking (shared by acts)  (8 datasets)
 
 | dataset | consumed by | producing recipe | downstream | flag |
 |---|---|---|---|---|
 | `dashboard_candidates` | **webapp**, nb6 | `finalize_dashboard_candidates` | 2 |  |
 
-**Read by no notebook and no webapp (9):**
+**Read by no notebook and no webapp (7):**
 
 | dataset | producing recipe | type | downstream | flag |
 |---|---|---|---|---|
 | `candidates_annotated` | `join_dashboard_annotations` | join | 1 |  |
 | `disease_pool_sizes` | `count_candidates_per_disease` | grouping | 2 |  |
 | `drug_evidence_pairs` | `compute_drug_evidence_pairs` | python | 1 |  |
-| `persona2_scored` | `score_persona_candidates` | prediction_scoring | 1 |  |
 | `persona2_scored_shap` | `compute_top_shap_drivers_1` | python | 1 |  |
 | `target_candidates_2` | `join_disease_name` | join | 3 |  |
 | `top_annotated` | `decorate_target_candidates` | join | 1 |  |
 | `top_candidates` | `rank_per_disease` | window | 1 |  |
-| `validation_set_personas_2` | `filter_persona_diseases` | sampling | 1 |  |
 
 ## 90 Notebook — validation evidence  (8 datasets)
 
