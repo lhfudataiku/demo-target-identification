@@ -1,0 +1,98 @@
+notebook	section	check	expected
+nb1_features_and_config.py	6.1	6.1 dwpc_GGD single-feature AUC	0.669
+nb1_features_and_config.py	6.1	6.1 dwpc_GPGD single-feature AUC	0.718
+nb1_features_and_config.py	6.1	6.1 highest |rho| vs degree	0.975
+nb1_features_and_config.py	6.2	6.2 worst null gap pp (model features)	-31.7
+nb1_features_and_config.py	6.3	6.3 F1 threshold	0.875
+nb1_features_and_config.py	6.3	6.3 obesity known targets	762.0
+nb2_splitting_and_pool.py	10.4	10.4 Spearman pool_size vs coverage	0.081
+nb2_splitting_and_pool.py	10.4	10.4 diseases at 100% coverage	181.0
+nb2_splitting_and_pool.py	10.4	10.4 diseases below 50%	2.0
+nb2_splitting_and_pool.py	10.4	10.4 reachability ceiling %	98.5
+nb2_splitting_and_pool.py	5.2	5.2 GCD rows	42227.0
+nb2_splitting_and_pool.py	5.2	5.2 GGD rows	3380853.0
+nb2_splitting_and_pool.py	5.2	5.2 GPGD rows	5373706.0
+nb2_splitting_and_pool.py	5.2	5.2 pool positive rate %	1.89
+nb2_splitting_and_pool.py	5.2	5.2 pool rows	6754128.0
+nb2_splitting_and_pool.py	5.2.1	5.2.1  [loop-table]	0.6886
+nb2_splitting_and_pool.py	5.2.1	5.2.1  [loop-table]	0.7471
+nb2_splitting_and_pool.py	5.2.1	5.2.1  [loop-table]	0.6833
+nb2_splitting_and_pool.py	5.2.1	5.2.1  [loop-table]	0.7335
+nb2_splitting_and_pool.py	5.2.1	5.2.1  [loop-table]	0.6886
+nb2_splitting_and_pool.py	5.2.1	5.2.1  [loop-table]	0.7471
+nb2_splitting_and_pool.py	5.2.1	5.2.1  [loop-table]	0.6833
+nb2_splitting_and_pool.py	5.2.1	5.2.1  [loop-table]	0.7335
+nb2_splitting_and_pool.py	5.2.1	5.2.1 GCD-only pairs	10337.0
+nb2_splitting_and_pool.py	5.2.1	5.2.1 GCD-only pct of pool	0.153
+nb2_splitting_and_pool.py	5.4	5.4 	0.0
+nb3_validation_and_plots.py	10.1	10.1 macro per-disease AUC	0.823
+nb3_validation_and_plots.py	10.1	10.1 validation diseases	670.0
+nb3_validation_and_plots.py	7.3	7.3 families	505.0
+nb3_validation_and_plots.py	7.3	7.3 per-family macro AUC	0.8009
+nb3_validation_and_plots.py	7.4	7.4 drug-target macro AUC	0.6886
+nb3_validation_and_plots.py	7.4	7.4 orthogonality R2	0.0
+nb3_validation_and_plots.py	7.4	7.4 orthogonality pearson r	0.002
+nb3_validation_and_plots.py	-	header per-split-key AUC	0.8046
+nb3_validation_and_plots.py	-	header pooled AUC	0.8932
+nb3b_hub_bias_meter.py	7.2	7.2 champion Q1 probability	0.5938
+nb3b_hub_bias_meter.py	7.2	7.2 champion Q5 probability	0.7873
+nb3b_hub_bias_meter.py	7.2	7.2 champion rho(degree,proba)	0.3273
+nb3b_hub_bias_meter.py	7.2	7.2 champion spread	0.1935
+nb3b_hub_bias_meter.py	7.2	7.2 known-target rows	73829.0
+nb4_results_three_axes.py	8.1	8.1 raw known_drug rows	107593.0
+nb4_results_three_axes.py	8.1	8.1 resolving onto graph	67748.0
+nb4_results_three_axes.py	8.10	8.10 HER2+ AUC	0.9365
+nb4_results_three_axes.py	8.10	8.10 HER2+ vs TNBC novel overlap	2.0
+nb4_results_three_axes.py	8.10	8.10 TNBC known targets	8.0
+nb4_results_three_axes.py	8.3	8.3 approved lift@10	16.88
+nb4_results_three_axes.py	8.3	8.3 approved lift@200	5.04
+nb4_results_three_axes.py	8.3	8.3 curated>=0.8 diseases	114.0
+nb4_results_three_axes.py	8.3	8.3 curated>=0.8 lift@10	21.32
+nb4_results_three_axes.py	8.3	8.3 curated>=0.8 lift@200	5.23
+nb4_results_three_axes.py	8.3	8.3 investigational lift@10	8.85
+nb4_results_three_axes.py	8.4	8.4 dm>naive macro @ [loop-table]	10.0
+nb4_results_three_axes.py	8.4	8.4 dm>naive macro @ [loop-table]	20.0
+nb4_results_three_axes.py	8.4	8.4 dm>naive macro @ [loop-table]	50.0
+nb4_results_three_axes.py	8.4	8.4 dm>naive macro @ [loop-table]	200.0
+nb4_results_three_axes.py	8.4	8.4 dm>naive pooled @ [loop-table]	10.0
+nb4_results_three_axes.py	8.4	8.4 dm>naive pooled @ [loop-table]	20.0
+nb4_results_three_axes.py	8.4	8.4 dm>naive pooled @ [loop-table]	50.0
+nb4_results_three_axes.py	8.4	8.4 dm>naive pooled @ [loop-table]	200.0
+nb4_results_three_axes.py	8.4	8.4 macro dm lift @10	3.11
+nb4_results_three_axes.py	8.4	8.4 pooled dm lift @10	3.29
+nb4_results_three_axes.py	8.4	8.4 pooled dm lift @200	2.42
+nb4_results_three_axes.py	8.7	8.7 diseases passing 5 criteria	64.0
+nb4_results_three_axes.py	8.7	8.7 validation diseases	670.0
+nb6_interrogation_and_close.py	5.1	5.1 dm>naive macro @ [loop-table]	10.0
+nb6_interrogation_and_close.py	5.1	5.1 dm>naive macro @ [loop-table]	20.0
+nb6_interrogation_and_close.py	5.1	5.1 dm>naive macro @ [loop-table]	50.0
+nb6_interrogation_and_close.py	5.1	5.1 dm>naive macro @ [loop-table]	200.0
+nb6_interrogation_and_close.py	5.1	5.1 dm>naive pooled @ [loop-table]	10.0
+nb6_interrogation_and_close.py	5.1	5.1 dm>naive pooled @ [loop-table]	20.0
+nb6_interrogation_and_close.py	5.1	5.1 dm>naive pooled @ [loop-table]	50.0
+nb6_interrogation_and_close.py	5.1	5.1 dm>naive pooled @ [loop-table]	200.0
+nb6_interrogation_and_close.py	5.1	5.1 macro dm lift @10	3.11
+nb6_interrogation_and_close.py	5.1	5.1 pooled dm lift @10	3.29
+nb6_interrogation_and_close.py	5.1	5.1 pooled dm lift @200	2.42
+nb6_interrogation_and_close.py	5.2	5.2 Q1 predicted-positive %	17.3
+nb6_interrogation_and_close.py	5.2	5.2 Q5 predicted-positive %	57.0
+nb6_interrogation_and_close.py	5.2	5.2 champion Q1 probability	0.59
+nb6_interrogation_and_close.py	5.2	5.2 champion Q5 probability	0.79
+nb6_interrogation_and_close.py	5.2	5.2 champion rho(degree, proba)	0.3273
+nb6_interrogation_and_close.py	5.3	5.3 approved lift@10	16.88
+nb6_interrogation_and_close.py	5.3	5.3 approved lift@200	5.04
+nb6_interrogation_and_close.py	5.3	5.3 investigational lift@10	8.85
+nb6_interrogation_and_close.py	5.5	5.5 drug-target macro AUC	0.6886
+nb6_interrogation_and_close.py	5.5	5.5 orthogonality R2	0.0
+nb6_interrogation_and_close.py	5.5	5.5 orthogonality pearson r	0.002
+nb6_interrogation_and_close.py	6.1	6.1 ion channel drug_lift	11.89
+nb6_interrogation_and_close.py	6.1	6.1 liability drug_lift	4.62
+nb6_interrogation_and_close.py	6.1	6.1 lof_intolerant assoc_lift	2.07
+nb6_interrogation_and_close.py	6.1	6.1 lof_intolerant drug_lift	1.37
+nb6_interrogation_and_close.py	6.1	6.1 membrane receptor assoc_lift	0.78
+nb6_interrogation_and_close.py	6.1	6.1 membrane receptor drug_lift	3.16
+nb6_interrogation_and_close.py	6.2	6.2 ERBB2 carries a liability flag	1.0
+nb6_interrogation_and_close.py	6.2	6.2 HER2+ top-15 liability-flagged	9.0
+nb6_interrogation_and_close.py	6.2	6.2 HER2+ top-50 liability-flagged	23.0
+nb6_interrogation_and_close.py	6.3	6.3 HER2+ vs TNBC all-gene overlap	14.0
+nb6_interrogation_and_close.py	6.3	6.3 HER2+ vs TNBC novel overlap	2.0

@@ -30,9 +30,11 @@ import pandas as pd
 LOEUF_CONSTRAINED = 0.35          # gnomAD convention
 
 saf = dataiku.Dataset("raw_ot_safety").get_dataframe()
-nodes = dataiku.Dataset("DEMO_KG_LS.graph_nodes").get_dataframe(
+nodes = dataiku.Dataset("graph_nodes").get_dataframe(
     columns=["node_index", "node_id", "node_type"], infer_with_pandas=False)
-gn = dataiku.Dataset("DEMO_KG_LS.gene_names").get_dataframe(columns=["symbol", "entrez_id"])
+# Dataset DEMO_KG_LS.gene_names renamed to DEMO_KG_gene_names_copy by liheng.fu@dataiku.com on 2026-08-18 09:39:43
+# Dataset DEMO_KG_gene_names_copy renamed to gene_names by liheng.fu@dataiku.com on 2026-08-18 09:57:09
+gn = dataiku.Dataset("gene_names").get_dataframe(columns=["symbol", "entrez_id"])
 
 # ENSG -> symbol -> entrez -> gene_index (same crosswalk as the druggability chain)
 gp = nodes[nodes.node_type == "gene/protein"].copy()
@@ -82,3 +84,4 @@ print("\n=== LOEUF distribution (lof_oe_upper) ===")
 print(out.lof_oe_upper.describe().to_string())
 
 dataiku.Dataset("enriched_gene_safety").write_with_schema(out)
+

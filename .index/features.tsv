@@ -1,0 +1,420 @@
+feature	produced_by	gate	class	in_champion	note
+dwpc_GBGD	compute_dwpc_go_metapaths	MIN_MODULE 20	2	y	THE ONLY CLASS 2. `assoc` (per-gene disease degree) is computed over the ELIGIBLE disease set and feeds the DWPC weight, so widening eligibility changes dwpc_GBGD/dwpc_GFGD for EXISTING pairs. A 20->5 change was applied and REVERTED on 2026-08-20 for this reason. Phase 3 HOLDS this at 20 to keep the pre-change population byte-identical.
+dwpc_GFGD	compute_dwpc_go_metapaths	MIN_MODULE 20	2	y	THE ONLY CLASS 2. `assoc` (per-gene disease degree) is computed over the ELIGIBLE disease set and feeds the DWPC weight, so widening eligibility changes dwpc_GBGD/dwpc_GFGD for EXISTING pairs. A 20->5 change was applied and REVERTED on 2026-08-20 for this reason. Phase 3 HOLDS this at 20 to keep the pre-change population byte-identical.
+dwpc_GGD	compute_enriched_dwpc_GGD	module_size >= 20	1	y	POOL ROUTE. Degrees come from whole-graph COUNT{} subqueries; module_size is per-disease with LOO. Verified in dss_recipes/cypher/.
+dwpc_GPGD	compute_enriched_dwpc_GPGD	module_size >= 20	1	y	POOL ROUTE. Same structure as GGD, pathway-mediated middle node.
+gene_n_pathways	compute_enriched_degree_controls_1	-	-	y	
+gene_ppi_degree	compute_enriched_degree_controls_1	-	-	y	
+ppi_adamic_adar	compute_enriched_guilt_by_association_1	module_size >= 20	1	y	deg_m and ppi_deg_g are whole-graph COUNT{} over protein_protein, halved for the both-directions Kuzu build. Emits ppi_adamic_adar, ppi_jaccard.
+ppi_common_neighbors_z	compute_ppi_cn_zscore	-	-	y	
+ppi_evidence_depth	compute_ppi_evidence_depth	-	-	y	
+ppi_jaccard	compute_enriched_guilt_by_association_1	module_size >= 20	1	y	deg_m and ppi_deg_g are whole-graph COUNT{} over protein_protein, halved for the both-directions Kuzu build. Emits ppi_adamic_adar, ppi_jaccard.
+ppi_multi_source_frac	compute_ppi_evidence_depth	-	-	y	
+prox_closest	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1	y	Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
+prox_kernel	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1	y	Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
+shared_pathway_frac	compute_enriched_shared_pathway_count_1	module_size >= 20	1	y	n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
+REVIEW_already_known_to_you	compute_breast_shortlist	-	-		
+REVIEW_comment	compute_breast_shortlist	-	-		
+REVIEW_plausible_1to5	compute_breast_shortlist	-	-		
+REVIEW_worth_pursuing	compute_breast_shortlist	-	-		
+_rank	rank_per_disease	-	-		
+_rank	topn_family_genes	-	-		
+all_overlap	compute_breast_panel	-	-		
+all_overlap_pct	compute_breast_panel	-	-		
+anchor_children_names	compute_disease_hierarchy_annotation	-	-		
+anchor_doid	compute_disease_hierarchy_annotation	-	-		
+anchor_hetionet_name	compute_disease_hierarchy_annotation	-	-		
+anchor_name	compute_disease_family_id	-	-		
+antibody_tractable	compute_breast_shortlist	-	-		
+antichain_ok_as_anchor	compute_disease_hierarchy_annotation	-	-		
+appr_kept	compute_filter_three_axes	-	-		
+appr_lift	compute_filter_three_axes	-	-		
+appr_recall	compute_filter_three_axes	-	-		
+approved_for_disease	compute_drug_evidence_pairs	-	-		
+approved_novel_exp50	compute_breast_panel	-	-		
+approved_novel_hits50	compute_breast_panel	-	-		
+approved_novel_lift50	compute_breast_panel	-	-		
+approved_novel_total	compute_breast_panel	-	-		
+arm	compute_breast_shortlist	-	-		
+assessed_dm10	compute_tractability_axis	-	-		
+assessed_dm100	compute_tractability_axis	-	-		
+assessed_dm20	compute_tractability_axis	-	-		
+assessed_dm200	compute_tractability_axis	-	-		
+assessed_dm50	compute_tractability_axis	-	-		
+assessed_exp10	compute_tractability_axis	-	-		
+assessed_exp100	compute_tractability_axis	-	-		
+assessed_exp20	compute_tractability_axis	-	-		
+assessed_exp200	compute_tractability_axis	-	-		
+assessed_exp50	compute_tractability_axis	-	-		
+assessed_naive10	compute_tractability_axis	-	-		
+assessed_naive100	compute_tractability_axis	-	-		
+assessed_naive20	compute_tractability_axis	-	-		
+assessed_naive200	compute_tractability_axis	-	-		
+assessed_naive50	compute_tractability_axis	-	-		
+assessed_obs10	compute_tractability_axis	-	-		
+assessed_obs100	compute_tractability_axis	-	-		
+assessed_obs20	compute_tractability_axis	-	-		
+assessed_obs200	compute_tractability_axis	-	-		
+assessed_obs50	compute_tractability_axis	-	-		
+assoc_lift	compute_safety_lift	-	-		
+assoc_lift	compute_tractability_lift	-	-		
+assoc_rate	compute_safety_lift	-	-		
+assoc_rate	compute_tractability_lift	-	-		
+attribute	compute_safety_lift	-	-		
+attribute	compute_tractability_lift	-	-		
+auc	compute_breast_panel	-	-		
+auc	compute_drug_target_benchmark_staged	-	-		
+auc_all	compute_pool_selection_bias	-	-		
+auc_assoc	compute_model_comparison	-	-		
+auc_assoc_labels	compute_drug_target_benchmark	-	-		
+auc_delta	compute_pool_selection_bias	-	-		
+auc_disease	compute_validation_auc_by_disease	-	-		
+auc_drug	compute_model_comparison	-	-		
+auc_drug_targets	compute_drug_target_benchmark	-	-		
+auc_hi95	compute_breast_panel	-	-		
+auc_hi95	compute_validation_auc_ci	-	-		
+auc_lo95	compute_breast_panel	-	-		
+auc_lo95	compute_validation_auc_ci	-	-		
+auc_se	compute_breast_panel	-	-		
+auc_se	compute_validation_auc_ci	-	-		
+auc_supported_only	compute_pool_selection_bias	-	-		
+auc_trustworthy	compute_breast_panel	-	-		
+auc_trustworthy	compute_validation_auc_ci	-	-		
+base_rate_pct	compute_breast_panel	-	-		
+best_rank	compute_drug_target_benchmark	-	-		
+best_score	group_family_gene	-	-		
+block	compute_breast_shortlist	-	-		
+block_rank	compute_breast_shortlist	-	-		
+check	run_nb6_assertions	-	-		
+check	verify_nb1_on_champion	-	-		
+check	verify_nb3_on_champion	-	-		
+cls	compute_maturity_confound	-	-		
+clustering_coefficient	compute_enriched_node_centrality_1	-	-		
+count	compute_disease_eligibility	-	-		
+count	compute_graph_label_evidence	-	-		
+count	compute_graph_node_source_counts	-	-		
+count	compute_graph_node_type_counts	-	-		
+count	compute_graph_ppi_provenance	-	-		
+count	compute_graph_relation_counts	-	-		
+count	compute_pairwise_overlap	-	-		
+count	compute_shap_driver_frequency	-	-		
+count	compute_validation_set_scored_grouped	-	-		
+count	group_family_auc	-	-		
+coverage_pct	compute_pool_reachability	-	-		
+current_anchor_name	compute_disease_hierarchy_annotation	-	-		
+current_family_id	compute_disease_hierarchy_annotation	-	-		
+current_family_name	compute_disease_hierarchy_annotation	-	-		
+current_hop_depth	compute_disease_hierarchy_annotation	-	-		
+degree	compute_enriched_node_centrality_1	-	-		
+delta	compute_maturity_confound	-	-		
+demonstrated_dm10	compute_tractability_axis	-	-		
+demonstrated_dm100	compute_tractability_axis	-	-		
+demonstrated_dm20	compute_tractability_axis	-	-		
+demonstrated_dm200	compute_tractability_axis	-	-		
+demonstrated_dm50	compute_tractability_axis	-	-		
+demonstrated_exp10	compute_tractability_axis	-	-		
+demonstrated_exp100	compute_tractability_axis	-	-		
+demonstrated_exp20	compute_tractability_axis	-	-		
+demonstrated_exp200	compute_tractability_axis	-	-		
+demonstrated_exp50	compute_tractability_axis	-	-		
+demonstrated_naive10	compute_tractability_axis	-	-		
+demonstrated_naive100	compute_tractability_axis	-	-		
+demonstrated_naive20	compute_tractability_axis	-	-		
+demonstrated_naive200	compute_tractability_axis	-	-		
+demonstrated_naive50	compute_tractability_axis	-	-		
+demonstrated_obs10	compute_tractability_axis	-	-		
+demonstrated_obs100	compute_tractability_axis	-	-		
+demonstrated_obs20	compute_tractability_axis	-	-		
+demonstrated_obs200	compute_tractability_axis	-	-		
+demonstrated_obs50	compute_tractability_axis	-	-		
+disease	compute_breast_panel	-	-		
+disease	compute_filter_three_axes	-	-		
+disease	compute_novel_discovery_eval	-	-		
+disease	compute_pool_reachability	-	-		
+disease	compute_tractability_axis	-	-		
+disease_a	compute_breast_panel	-	-		
+disease_b	compute_breast_panel	-	-		
+disease_b	compute_top50_slim_b	-	-		
+disease_context	compute_enriched_disease_context_1	module_size >= 20	1		Settled 2026-08-21 from the newly mirrored Cypher. The gate filters the ANCHOR D only; D2 is matched fresh via (D)-[:disease_disease]-(D2) with NO module_size filter, so an existing (g,D) pair's disease_context cannot change. Was flagged unresolved before the mirror existed.
+disease_family_id	compute_disease_family_id	-	-		
+disease_index	compute_drug_evidence_pairs	-	-		
+disease_index	compute_dwpc_go_metapaths	MIN_MODULE 20	2		THE ONLY CLASS 2. `assoc` (per-gene disease degree) is computed over the ELIGIBLE disease set and feeds the DWPC weight, so widening eligibility changes dwpc_GBGD/dwpc_GFGD for EXISTING pairs. A 20->5 change was applied and REVERTED on 2026-08-20 for this reason. Phase 3 HOLDS this at 20 to keep the pre-change population byte-identical.
+disease_index	compute_enriched_disease_context_1	module_size >= 20	1		Settled 2026-08-21 from the newly mirrored Cypher. The gate filters the ANCHOR D only; D2 is matched fresh via (D)-[:disease_disease]-(D2) with NO module_size filter, so an existing (g,D) pair's disease_context cannot change. Was flagged unresolved before the mirror existed.
+disease_index	compute_enriched_dwpc_GCD	module_size >= 20	1		POOL ROUTE, compound-mediated. Not a model feature -- pool membership only (see _champion_features_provenance). Source of the 5.2.1 selection bias.
+disease_index	compute_enriched_dwpc_GGD	module_size >= 20	1		POOL ROUTE. Degrees come from whole-graph COUNT{} subqueries; module_size is per-disease with LOO. Verified in dss_recipes/cypher/.
+disease_index	compute_enriched_dwpc_GPGD	module_size >= 20	1		POOL ROUTE. Same structure as GGD, pathway-mediated middle node.
+disease_index	compute_enriched_guilt_by_association_1	module_size >= 20	1		deg_m and ppi_deg_g are whole-graph COUNT{} over protein_protein, halved for the both-directions Kuzu build. Emits ppi_adamic_adar, ppi_jaccard.
+disease_index	compute_enriched_module_size_1	module_size >= 20	1		Trivially per-disease. WARNING: this dataset is itself gated, so its minimum IS 20 -- it cannot be used to size the sub-20 population. Use graph_edges disease_protein directly (FEATURE_AUDIT section 5).
+disease_index	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1		Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
+disease_index	compute_enriched_rwr_score_1	MIN_SEEDS 20	1		MIN_SEEDS gate inside a per-disease loop; adjacency and degrees are global. Was UNVERSIONED until 2026-08-21 -- a gated recipe with no diff history.
+disease_index	compute_enriched_shared_pathway_count_1	module_size >= 20	1		n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
+disease_index	compute_known_drug_truth	-	-		
+disease_index	compute_ppi_cn_zscore	-	-		
+disease_name	compute_disease_hierarchy_annotation	-	-		
+disease_name	compute_drug_target_benchmark	-	-		
+disease_name	compute_drug_target_benchmark_staged	-	-		
+disease_name	compute_lung_granularity_check	-	-		
+disease_name	join_disease_name	-	-		
+disease_pool_size	finalize_dashboard_candidates	-	-		
+disease_split_key	compute_disease_family_id	-	-		
+distinct	compute_breast_panel	-	-		
+documented	run_nb6_assertions	-	-		
+documented	verify_nb1_on_champion	-	-		
+documented	verify_nb3_on_champion	-	-		
+documented_safety_liability	compute_breast_shortlist	-	-		
+doid	extract_hetionet_disease_slim	-	-		
+driver_slot	compute_shap_drivers_long	-	-		
+drug_lift	compute_safety_lift	-	-		
+drug_lift	compute_tractability_lift	-	-		
+drug_rate	compute_safety_lift	-	-		
+drug_rate	compute_tractability_lift	-	-		
+druggability	compute_breast_shortlist	-	-		
+druggability_class	compute_drug_classified	-	-		
+druggability_class	compute_gene_druggability	-	-		
+druggability_evidence	compute_drug_classified	-	-		
+druggability_evidence	compute_gene_druggability	-	-		
+dwpc_GCD	compute_enriched_dwpc_GCD	module_size >= 20	1		POOL ROUTE, compound-mediated. Not a model feature -- pool membership only (see _champion_features_provenance). Source of the 5.2.1 selection bias.
+eigenvector_centrality	compute_enriched_node_centrality_1	-	-		
+enrichment_at_50	compute_breast_panel	-	-		
+ev_rank	compute_drug_classified	-	-		
+expected_at_50	compute_breast_panel	-	-		
+explanations	score_persona_candidates	-	-		
+feature	compute_shap_drivers_long	-	-		
+feature	compute_target_reachability	-	-		
+filter	compute_drug_target_benchmark_staged	-	-		
+gene	compute_breast_shortlist	-	-		
+gene	compute_pool_reachability	-	-		
+gene_index	compute_drug_evidence_pairs	-	-		
+gene_index	compute_dwpc_go_metapaths	MIN_MODULE 20	2		THE ONLY CLASS 2. `assoc` (per-gene disease degree) is computed over the ELIGIBLE disease set and feeds the DWPC weight, so widening eligibility changes dwpc_GBGD/dwpc_GFGD for EXISTING pairs. A 20->5 change was applied and REVERTED on 2026-08-20 for this reason. Phase 3 HOLDS this at 20 to keep the pre-change population byte-identical.
+gene_index	compute_enriched_degree_controls_1	-	-		
+gene_index	compute_enriched_disease_context_1	module_size >= 20	1		Settled 2026-08-21 from the newly mirrored Cypher. The gate filters the ANCHOR D only; D2 is matched fresh via (D)-[:disease_disease]-(D2) with NO module_size filter, so an existing (g,D) pair's disease_context cannot change. Was flagged unresolved before the mirror existed.
+gene_index	compute_enriched_dwpc_GCD	module_size >= 20	1		POOL ROUTE, compound-mediated. Not a model feature -- pool membership only (see _champion_features_provenance). Source of the 5.2.1 selection bias.
+gene_index	compute_enriched_dwpc_GGD	module_size >= 20	1		POOL ROUTE. Degrees come from whole-graph COUNT{} subqueries; module_size is per-disease with LOO. Verified in dss_recipes/cypher/.
+gene_index	compute_enriched_dwpc_GPGD	module_size >= 20	1		POOL ROUTE. Same structure as GGD, pathway-mediated middle node.
+gene_index	compute_enriched_guilt_by_association_1	module_size >= 20	1		deg_m and ppi_deg_g are whole-graph COUNT{} over protein_protein, halved for the both-directions Kuzu build. Emits ppi_adamic_adar, ppi_jaccard.
+gene_index	compute_enriched_inflammatory_go	-	-		
+gene_index	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1		Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
+gene_index	compute_enriched_rwr_score_1	MIN_SEEDS 20	1		MIN_SEEDS gate inside a per-disease loop; adjacency and degrees are global. Was UNVERSIONED until 2026-08-21 -- a gated recipe with no diff history.
+gene_index	compute_enriched_shared_pathway_count_1	module_size >= 20	1		n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
+gene_index	compute_gene_localization	-	-		
+gene_index	compute_gene_safety	-	-		
+gene_index	compute_gene_safety_v2	-	-		
+gene_index	compute_known_drug_truth	-	-		
+gene_index	compute_ppi_cn_zscore	-	-		
+gene_index	compute_ppi_evidence_depth	-	-		
+gene_index_count	count_candidates_per_disease	-	-		
+gene_n_diseases	compute_enriched_degree_controls_1	-	-		
+gene_name	compute_lung_granularity_check	-	-		
+gene_name	decorate_target_candidates	-	-		
+ground_truth	compute_novel_discovery_eval	-	-		
+group	compute_target_reachability	-	-		
+has_approved_drug	compute_drug_classified	-	-		
+has_approved_drug	compute_gene_druggability	-	-		
+has_inflammatory_go_annotation	compute_enriched_inflammatory_go	-	-		
+hits50_poisson_p	compute_breast_panel	-	-		
+hits50_verdict	compute_breast_panel	-	-		
+hits_at_10	compute_validation_set_scored_grouped	-	-		
+hits_at_10	group_family_auc	-	-		
+hits_at_20	compute_validation_set_scored_grouped	-	-		
+hits_at_20	group_family_auc	-	-		
+hits_at_50	compute_breast_panel	-	-		
+hits_at_50	compute_drug_target_benchmark	-	-		
+hits_at_50	compute_drug_target_benchmark_staged	-	-		
+hits_at_50	compute_model_comparison	-	-		
+hits_at_50	compute_validation_auc_by_disease_2	-	-		
+hits_at_50	compute_validation_set_scored_grouped	-	-		
+hits_at_50	group_family_auc	-	-		
+hits_at_top10pct	compute_drug_target_benchmark	-	-		
+hits_at_top1pct	compute_drug_target_benchmark	-	-		
+hits_top10	compute_novel_discovery_eval	-	-		
+hits_top100	compute_novel_discovery_eval	-	-		
+hits_top20	compute_novel_discovery_eval	-	-		
+hits_top200	compute_novel_discovery_eval	-	-		
+hits_top50	compute_novel_discovery_eval	-	-		
+hits_top50	compute_persona_candidates	-	-		
+hits_top50_approved	compute_maturity_confound	-	-		
+hits_top50_investigational	compute_maturity_confound	-	-		
+hop_depth	compute_disease_family_id	-	-		
+in_approved_join	compute_known_drug_truth	-	-		
+in_investig_join	compute_known_drug_truth	-	-		
+in_pool	compute_pool_reachability	-	-		
+inv_kept	compute_filter_three_axes	-	-		
+inv_lift	compute_filter_three_axes	-	-		
+inv_recall	compute_filter_three_axes	-	-		
+investigational_for_disease	compute_drug_evidence_pairs	-	-		
+investigational_novel_exp50	compute_breast_panel	-	-		
+investigational_novel_hits50	compute_breast_panel	-	-		
+investigational_novel_lift50	compute_breast_panel	-	-		
+investigational_novel_total	compute_breast_panel	-	-		
+is_ancestor_of_anchor	compute_disease_hierarchy_annotation	-	-		
+is_anchor	compute_disease_hierarchy_annotation	-	-		
+is_descendant_of_anchor	compute_disease_hierarchy_annotation	-	-		
+is_eligible	compute_disease_hierarchy_annotation	-	-		
+is_membrane_only	compute_gene_localization	-	-		
+is_parent_term	compute_disease_hierarchy_annotation	-	-		
+is_plasma_membrane	compute_gene_localization	-	-		
+is_secreted	compute_gene_localization	-	-		
+is_target	compute_enriched_graph_features_1	-	-		
+is_target_any	group_family_gene	-	-		
+kd08_kept	compute_filter_three_axes	-	-		
+kd08_lift	compute_filter_three_axes	-	-		
+kd08_recall	compute_filter_three_axes	-	-		
+label	compute_pool_selection_bias	-	-		
+liability_detail	compute_breast_shortlist	-	-		
+lift_top10	compute_novel_discovery_eval	-	-		
+lift_top100	compute_novel_discovery_eval	-	-		
+lift_top20	compute_novel_discovery_eval	-	-		
+lift_top200	compute_novel_discovery_eval	-	-		
+lift_top50	compute_novel_discovery_eval	-	-		
+lift_top50_approved	compute_maturity_confound	-	-		
+lift_top50_investigational	compute_maturity_confound	-	-		
+live	run_nb6_assertions	-	-		
+live	verify_nb1_on_champion	-	-		
+live	verify_nb3_on_champion	-	-		
+localization_class	compute_gene_localization	-	-		
+lof_intolerant	compute_gene_safety	-	-		
+lof_intolerant	compute_gene_safety_v2	-	-		
+lof_sortkey	compute_gene_safety_best	-	-		
+maturity	compute_maturity_confound	-	-		
+mean_pct	compute_target_reachability	-	-		
+median_pct	compute_drug_target_benchmark	-	-		
+median_pct	compute_drug_target_benchmark_staged	-	-		
+model	compute_model_comparison	-	-		
+model_score	compute_breast_shortlist	-	-		
+module_size	compute_enriched_module_size_1	module_size >= 20	1		Trivially per-disease. WARNING: this dataset is itself gated, so its minimum IS 20 -- it cannot be used to size the sub-20 population. Use graph_edges disease_protein directly (FEATURE_AUDIT section 5).
+n	compute_filter_three_axes	-	-		
+n	compute_safety_lift	-	-		
+n	compute_tractability_lift	-	-		
+n_anchor_ancestors	compute_disease_hierarchy_annotation	-	-		
+n_anchor_children	compute_disease_hierarchy_annotation	-	-		
+n_anchor_descendants	compute_disease_hierarchy_annotation	-	-		
+n_anchor_families	compute_split_audit_2	-	-		
+n_approved_drugs	compute_maturity_confound	-	-		
+n_assoc	compute_model_comparison	-	-		
+n_assoc_positives	compute_drug_target_benchmark	-	-		
+n_cand	compute_tractability_axis	-	-		
+n_children	compute_disease_hierarchy_annotation	-	-		
+n_curated	compute_pool_reachability	-	-		
+n_descendants	compute_disease_hierarchy_annotation	-	-		
+n_diseases	compute_split_audit_2	-	-		
+n_diseases_in_family	group_family_auc	-	-		
+n_diseases_known_target	group_family_gene	-	-		
+n_diseases_scored	group_family_gene	-	-		
+n_distinct_genes	group_family_auc	-	-		
+n_drug	compute_model_comparison	-	-		
+n_eligible_children	compute_disease_hierarchy_annotation	-	-		
+n_eligible_descendants	compute_disease_hierarchy_annotation	-	-		
+n_gcd_only_pos	compute_pool_selection_bias	-	-		
+n_genes	compute_drug_target_benchmark	-	-		
+n_known	compute_novel_discovery_eval	-	-		
+n_known_targets	compute_breast_panel	-	-		
+n_neg	compute_validation_set_scored_grouped	-	-		
+n_neg	group_family_auc	-	-		
+n_novel	compute_breast_panel	-	-		
+n_novel	compute_novel_discovery_eval	-	-		
+n_parents	compute_disease_hierarchy_annotation	-	-		
+n_pos	compute_pool_selection_bias	-	-		
+n_pos	compute_validation_set_scored_grouped	-	-		
+n_pos	group_family_auc	-	-		
+n_reachable	compute_pool_reachability	-	-		
+n_split_keys	compute_split_audit_2	-	-		
+n_trial_drugs	compute_maturity_confound	-	-		
+n_unreachable	compute_pool_reachability	-	-		
+n_val_kept	compute_drug_target_benchmark_staged	-	-		
+n_val_total	compute_drug_target_benchmark_staged	-	-		
+n_validated_targets	compute_drug_target_benchmark	-	-		
+node_group	compute_enriched_node_centrality_1	-	-		
+node_id	compute_enriched_node_centrality_1	-	-		
+novel50_tractable	compute_breast_panel	-	-		
+novel50_tractable_pct	compute_breast_panel	-	-		
+novel_base_rate_pct	compute_novel_discovery_eval	-	-		
+novel_linked_total	compute_novel_discovery_eval	-	-		
+novel_linked_total_approved	compute_maturity_confound	-	-		
+novel_linked_total_investigational	compute_maturity_confound	-	-		
+novel_overlap	compute_breast_panel	-	-		
+novel_overlap_pct	compute_breast_panel	-	-		
+null_rate	compute_target_reachability	-	-		
+pagerank	compute_enriched_node_centrality_1	-	-		
+parent_names	compute_disease_hierarchy_annotation	-	-		
+pct_membrane_all	compute_tractability_axis	-	-		
+pct_membrane_top50	compute_tractability_axis	-	-		
+pct_secreted_all	compute_tractability_axis	-	-		
+pct_secreted_top50	compute_tractability_axis	-	-		
+pool	compute_breast_panel	-	-		
+pool	compute_drug_target_benchmark_staged	-	-		
+pool_size	compute_pool_reachability	-	-		
+pos_rate_pct	compute_split_audit_2	-	-		
+positives	compute_split_audit_2	-	-		
+ppi_cn_expected	compute_ppi_cn_zscore	-	-		
+ppi_common_neighbors	compute_enriched_guilt_by_association_1	module_size >= 20	1		deg_m and ppi_deg_g are whole-graph COUNT{} over protein_protein, halved for the both-directions Kuzu build. Emits ppi_adamic_adar, ppi_jaccard.
+ppi_edges_with_provenance	compute_ppi_evidence_depth	-	-		
+prediction	score_persona_candidates	-	-		
+prediction	score_psplit_validation_m4	-	-		
+prediction	score_psplit_validation_m5	-	-		
+prediction	score_psplit_validation_m6	-	-		
+prediction	score_psplit_validation_m7	-	-		
+prediction	score_psplit_validation_m8	-	-		
+prediction	score_psplit_validation_set	-	-		
+prediction	score_psplit_validation_set_1	-	-		
+prediction	score_psplit_validation_set_2	-	-		
+proba_0	score_persona_candidates	-	-		
+proba_0	score_psplit_validation_m4	-	-		
+proba_0	score_psplit_validation_m5	-	-		
+proba_0	score_psplit_validation_m6	-	-		
+proba_0	score_psplit_validation_m7	-	-		
+proba_0	score_psplit_validation_m8	-	-		
+proba_0	score_psplit_validation_set	-	-		
+proba_0	score_psplit_validation_set_1	-	-		
+proba_0	score_psplit_validation_set_2	-	-		
+proba_1	score_persona_candidates	-	-		
+proba_1	score_psplit_validation_m4	-	-		
+proba_1	score_psplit_validation_m5	-	-		
+proba_1	score_psplit_validation_m6	-	-		
+proba_1	score_psplit_validation_m7	-	-		
+proba_1	score_psplit_validation_m8	-	-		
+proba_1	score_psplit_validation_set	-	-		
+proba_1	score_psplit_validation_set_1	-	-		
+proba_1	score_psplit_validation_set_2	-	-		
+prox_mean	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1		Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
+prox_n_reach	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1		Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
+rank	compute_validation_set_scored_windows	-	-		
+rank	window_family_rank	-	-		
+rank_in_disease	compute_lung_granularity_check	-	-		
+rank_in_disease	join_disease_name	-	-		
+rank_in_subtype	compute_breast_shortlist	-	-		
+rank_percentile	finalize_dashboard_candidates	-	-		
+reason	compute_pool_reachability	-	-		
+recall_at_20	compute_validation_auc_by_disease	-	-		
+recall_at_50	compute_validation_auc_by_disease_2	-	-		
+recall_ceiling	compute_pool_reachability	-	-		
+rwr_norm	compute_enriched_graph_features_1	-	-		
+rwr_score	compute_enriched_rwr_score_1	MIN_SEEDS 20	1		MIN_SEEDS gate inside a per-disease loop; adjacency and degrees are global. Was UNVERSIONED until 2026-08-21 -- a gated recipe with no diff history.
+safety_flag	compute_gene_safety	-	-		
+safety_flag	compute_gene_safety_v2	-	-		
+scope	compute_tractability_axis	-	-		
+score	join_disease_name	-	-		
+shared_pathway_count	compute_enriched_shared_pathway_count_1	module_size >= 20	1		n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
+small_molecule_tractable	compute_breast_shortlist	-	-		
+some_drug_already_hits_this_gene	compute_breast_shortlist	-	-		
+split_key_name	compute_disease_family_id	-	-		
+split_key_rule	compute_disease_family_id	-	-		
+stage	compute_filter_three_axes	-	-		
+status	compute_drug_target_benchmark_staged	-	-		
+status	run_nb6_assertions	-	-		
+status	verify_nb1_on_champion	-	-		
+status	verify_nb3_on_champion	-	-		
+target_class	compute_breast_shortlist	-	-		
+target_rank_sum	compute_validation_set_scored_grouped	-	-		
+target_rank_sum	group_family_auc	-	-		
+test	compute_split_audit_2	-	-		
+top10_novel_genes	compute_breast_panel	-	-		
+top_shap_drivers	compute_top_shap_drivers_1	-	-		
+tract_kept	compute_filter_three_axes	-	-		
+tract_lift	compute_filter_three_axes	-	-		
+tract_recall	compute_filter_three_axes	-	-		
+triangles	compute_enriched_node_centrality_1	-	-		
+validated_also_assoc	compute_drug_target_benchmark	-	-		
+validation	compute_split_audit_2	-	-		
+value	compute_safety_lift	-	-		
+value	compute_tractability_lift	-	-		
+why_the_model_ranked_it	compute_breast_shortlist	-	-		

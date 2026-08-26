@@ -13,18 +13,24 @@ import dataiku
 import pandas as pd
 
 COLS = ["disease_index", "disease_split_key", "disease_family_id", "split_key_name", "is_target"]
-SETS = {"train": "enriched_train_full_2",
-        "validation": "enriched_validation_set_2",
-        "test": "enriched_test_set_2"}
+# Repointed 2026-08-19: the recipe's declared inputs were migrated to the psplit_* datasets on
+# 2026-08-17 but this code was not, so every build since has failed with "Dataset
+# enriched_train_full_2 cannot be used" and `split_audit_2` sat empty. TARGET_PRIORITIZER section 5.4
+# was quoting a pre-migration run. The leakage guarantee is only real if this recipe builds.
+SETS = {"train": "psplit_train_set",
+        "validation": "psplit_validation_set",
+        "test": "psplit_test_set"}
 # personas + the pair that motivated the elevated key
 # Indices remapped 2026-08-17 for the DEMO_KG_LS graph, resolved through
 # (node_id, node_type, node_source) -- see index_remap.json. node_index is DETERMINISTIC in that
 # graph, so these are stable from here on; they were not stable in the old single-project build.
 # They are still project-specific: the same diseases carry different integers per graph build.
-WATCH = {47530: "morbid obesity", 37143: "obesity disorder",
+WATCH = {37143: "obesity disorder", 47437: "diabetes mellitus", 47537: "type 2 diabetes mellitus",
+         54058: "type 1 diabetes mellitus", 52236: "lung cancer", 47604: "non-small cell lung ca",
+         47469: "lung adenocarcinoma", 47654: "chronic kidney disease",
          49721: "breast cancer", 47415: "breast carcinoma",
-         47437: "diabetes mellitus", 47537: "type 2 diabetes mellitus",
-         54058: "type 1 diabetes mellitus"}
+         48537: "HER2 positive breast ca", 47807: "triple-negative breast ca",
+         42563: "luminal A breast ca", 42562: "luminal B breast ca"}
 
 frames = {k: dataiku.Dataset(v).get_dataframe(columns=COLS) for k, v in SETS.items()}
 
@@ -81,5 +87,6 @@ out["overlap_train_val_keys"] = len(keys["train"] & keys["validation"])
 out["overlap_test_val_keys"] = len(keys["test"] & keys["validation"])
 out["straddling_split_keys"] = int((straddle > 1).sum())
 dataiku.Dataset("split_audit_2").write_with_schema(out)
+
 
 

@@ -25,6 +25,8 @@ dis_map = dict(zip(nodes[nodes.node_type == "disease"].node_id,
 gene_map = dict(zip(nodes[nodes.node_type == "gene/protein"].node_id,
                     nodes[nodes.node_type == "gene/protein"].node_index))
 dd = dataiku.Dataset("drug_disease_edges").get_dataframe(infer_with_pandas=False)
+# Dataset DEMO_KG_LS.drug_protein_edges renamed to DEMO_KG_drug_protein_edges_copy by liheng.fu@dataiku.com on 2026-08-18 09:42:34
+# Dataset DEMO_KG_drug_protein_edges_copy renamed to drug_protein_edges by liheng.fu@dataiku.com on 2026-08-18 09:57:33
 dp = dataiku.Dataset("drug_protein_edges").get_dataframe(infer_with_pandas=False)
 ind = dd[dd.relation.astype(str).str.fullmatch("indication", case=False, na=False)].copy()
 dcol, xcol = ("x_id", "y_id") if (ind.x_type == "drug").any() else ("y_id", "x_id")
@@ -38,12 +40,13 @@ truth = (ind.dropna(subset=["disease_index"])[["drug", "disease_index"]]
          [["disease_index", "gene_index"]].astype(int).drop_duplicates())
 truth["is_validated"] = 1
 
-df = dataiku.Dataset("validation_set_2_scored").get_dataframe(
+# Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46
+df = dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target"])
 df = df[df.disease_index.isin(set(truth.disease_index))]
 df = df.merge(truth, on=["disease_index", "gene_index"], how="left")
 df["is_validated"] = df.is_validated.fillna(0).astype(int)
-drg = dataiku.Dataset("enriched_gene_druggability").get_dataframe()
+drg = dataiku.Dataset("enriched_gene_druggability_v2").get_dataframe()
 df = df.merge(drg, on="gene_index", how="left")
 
 base_a = df.is_target.mean()
@@ -77,3 +80,5 @@ for col, g in out.groupby("attribute"):
           f"{g.drug_lift.max()/max(g.drug_lift.min(),1e-9):>12.2f}x")
 
 dataiku.Dataset("tractability_lift").write_with_schema(out)
+
+

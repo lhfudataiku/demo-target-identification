@@ -18,7 +18,8 @@ SCORE = "proba_1"
 COLS = ["disease_index", "gene_index", "is_target", "disease_split_key",
         "split_key_name", "disease_family_id", "anchor_name", SCORE]
 
-df = dataiku.Dataset("validation_set_2_scored").get_dataframe(columns=COLS)
+# Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46
+df = dataiku.Dataset("scored_m3").get_dataframe(columns=COLS)
 print("scored rows:", len(df), "| diseases:", df.disease_index.nunique(),
       "| split keys:", df.disease_split_key.nunique())
 
@@ -72,3 +73,5 @@ by_key = by_key.rename(columns={"disease_split_key": "disease_index"})
 out = pd.concat([by_dis, by_key], ignore_index=True)
 out["pooled_auc"] = pooled
 dataiku.Dataset("validation_auc_by_disease_2").write_with_schema(out)
+
+

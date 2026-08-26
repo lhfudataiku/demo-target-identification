@@ -1,0 +1,144 @@
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<div class="tp-app">
+
+  <header class="tp-header">
+    <div>
+      <h1>Explainable Target Prioritizer</h1>
+      <p class="tp-sub">Ranked candidate targets per disease &middot; knowledge-graph features &middot; XGBoost + SHAP</p>
+    </div>
+    <div class="tp-header-meta" id="headerMeta"></div>
+  </header>
+
+  <div class="tp-body">
+
+    <!-- ================= SCREEN A (left) : disease picker ================= -->
+    <aside class="tp-picker">
+      <div class="tp-picker-head">
+        <input type="text" id="diseaseSearch" placeholder="Search diseases&hellip;" autocomplete="off">
+        <div class="tp-scope">
+          <button class="tp-scope-btn is-active" data-scope="candidates">With candidate lists</button>
+          <button class="tp-scope-btn" data-scope="all">All validated</button>
+        </div>
+        <p class="tp-scope-note" id="scopeNote"></p>
+      </div>
+      <ul class="tp-disease-list" id="diseaseList"></ul>
+    </aside>
+
+    <!-- ================= main ================= -->
+    <main class="tp-main">
+
+      <div id="emptyState" class="tp-empty">
+        <h2>Pick a disease to begin</h2>
+        <p>Every list starts with its own evidence. The trust panel tells you how far this
+           model can be believed <em>for that disease</em> before it shows you a single gene &mdash;
+           the model is 19&times; on non-small cell lung carcinoma and 2.9&times; on chronic kidney
+           disease, and a dashboard that presented both identically would be lying by omission.</p>
+      </div>
+
+      <div id="diseaseView" class="tp-hidden">
+
+        <!-- ---------- SCREEN A (right) : trust panel ---------- -->
+        <section class="tp-trust" id="trustPanel"></section>
+
+        <nav class="tp-tabs">
+          <button class="tp-tab is-active" data-tab="explorer">Candidate explorer</button>
+          <button class="tp-tab" data-tab="byclass">By druggability class</button>
+          <button class="tp-tab" data-tab="evidence">Evidence</button>
+        </nav>
+
+        <!-- ---------- SCREEN B : candidate explorer ---------- -->
+        <section class="tp-pane is-active" data-pane="explorer">
+          <div class="tp-explorer">
+
+            <div class="tp-rail">
+              <div class="tp-rail-block">
+                <h3>The validated filter</h3>
+                <p class="tp-rail-note">Three clauses, measured at 1.42&ndash;1.71&times; enrichment
+                   with 98&ndash;100% recall on both drug ground truths.</p>
+                <label class="tp-check"><input type="checkbox" id="fNovel"> <span>Novel only <em>(drop known targets)</em></span></label>
+                <label class="tp-check"><input type="checkbox" id="fTractable"> <span>Tractable <em>(small-molecule or antibody)</em></span></label>
+                <label class="tp-check"><input type="checkbox" id="fNotSecreted"> <span>Not secreted</span></label>
+                <button class="tp-apply3" id="applyThree">Apply all three</button>
+              </div>
+
+              <div class="tp-rail-block">
+                <h3>Rank cut-off</h3>
+                <input type="range" id="fRank" min="10" max="1000" step="10" value="1000">
+                <div class="tp-rail-row"><span>Top <strong id="fRankLabel">all</strong></span>
+                  <button class="tp-mini" id="fRankReset">reset</button></div>
+              </div>
+
+              <div class="tp-rail-block">
+                <h3>Modality</h3>
+                <label class="tp-check"><input type="checkbox" id="fSm"> <span>Small-molecule tractable</span></label>
+                <label class="tp-check"><input type="checkbox" id="fAb"> <span>Antibody tractable</span></label>
+              </div>
+
+              <div class="tp-rail-block">
+                <h3>Target class</h3>
+                <div id="fClassList" class="tp-classlist"></div>
+              </div>
+
+              <div class="tp-rail-block">
+                <h3>Gene</h3>
+                <input type="text" id="fGene" placeholder="e.g. GLP1R" autocomplete="off">
+              </div>
+
+              <div class="tp-rail-block tp-rail-warn">
+                <h3>Not filterable &mdash; and that is deliberate</h3>
+                <p>Known liabilities and genetic constraint are shown as badges but cannot be
+                   filtered on. Both run <em>with</em> efficacy, not against it: excluding flagged
+                   targets destroys 15&ndash;70% of validated ones and takes obesity to 0.54&times;,
+                   worse than no filter at all. Drug badges are the validation ground truth and are
+                   display-only for the same reason.</p>
+              </div>
+            </div>
+
+            <div class="tp-results">
+              <div class="tp-count" id="liveCount"></div>
+              <div class="tp-tablewrap">
+                <table class="tp-table" id="candTable">
+                  <thead>
+                    <tr>
+                      <th class="tp-num">Rank</th><th>Gene</th><th>Class</th>
+                      <th class="tp-num">Score</th><th>Top SHAP drivers</th><th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="candBody"></tbody>
+                </table>
+              </div>
+              <div class="tp-more" id="tableMore"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ---------- SCREEN C : class-grouped ---------- -->
+        <section class="tp-pane" data-pane="byclass">
+          <p class="tp-pane-intro">
+            The model ranks secreted ligands above the receptors they bind, because membrane
+            proteins resist the assays that built the interactome &mdash; an artifact of the data,
+            not of the biology. Grouping by class recovers the druggable half without touching the
+            model. The same filter rail applies.
+          </p>
+          <div class="tp-lanes" id="lanes"></div>
+        </section>
+
+        <!-- ---------- SCREEN E : evidence ---------- -->
+        <section class="tp-pane" data-pane="evidence">
+          <div id="evidenceBody"></div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ---------- detail drawer ---------- -->
+  <div class="tp-drawer-back tp-hidden" id="drawerBack"></div>
+  <aside class="tp-drawer tp-hidden" id="drawer">
+    <button class="tp-drawer-close" id="drawerClose">&times;</button>
+    <div id="drawerBody"></div>
+  </aside>
+
+  <div class="tp-tooltip tp-hidden" id="tip"></div>
+</div>

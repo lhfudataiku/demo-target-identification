@@ -56,8 +56,12 @@ MAX_DEPTH = 15
 SPLIT_PARENT_FANOUT_CAP = 20
 
 hetionet = dataiku.Dataset("hetionet_disease_slim").get_dataframe(infer_with_pandas=False)
+# Dataset DEMO_KG_LS.mondo_references renamed to DEMO_KG_mondo_references_copy by liheng.fu@dataiku.com on 2026-08-18 09:40:43
+# Dataset DEMO_KG_mondo_references_copy renamed to mondo_references by liheng.fu@dataiku.com on 2026-08-18 09:56:26
 mondo_refs = dataiku.Dataset("mondo_references").get_dataframe(infer_with_pandas=False)
 nodes = dataiku.Dataset("graph_nodes").get_dataframe(infer_with_pandas=False)
+# Dataset DEMO_KG_LS.raw_disease_disease renamed to DEMO_KG_raw_disease_disease_copy by liheng.fu@dataiku.com on 2026-08-18 09:40:57
+# Dataset DEMO_KG_raw_disease_disease_copy renamed to raw_disease_disease by liheng.fu@dataiku.com on 2026-08-18 09:56:09
 raw_dd = dataiku.Dataset("raw_disease_disease").get_dataframe(infer_with_pandas=False)
 target_diseases = dataiku.Dataset("enriched_graph_features_1").get_dataframe(columns=["disease_index"])
 target_diseases = target_diseases.disease_index.unique()
@@ -177,3 +181,4 @@ print("families (old anchor key) :", out.disease_family_id.nunique())
 print("families (lifted split key):", out.disease_split_key.nunique())
 print(out.split_key_rule.value_counts().to_string())
 dataiku.Dataset("disease_family_id").write_with_schema(out)
+

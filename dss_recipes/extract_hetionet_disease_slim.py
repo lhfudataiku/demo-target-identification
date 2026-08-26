@@ -23,3 +23,4 @@ diseases["doid"] = diseases["id"].str.replace("Disease::DOID:", "", regex=False)
 out = diseases[["doid", "name"]].drop_duplicates()
 
 dataiku.Dataset("hetionet_disease_slim").write_with_schema(out)
+

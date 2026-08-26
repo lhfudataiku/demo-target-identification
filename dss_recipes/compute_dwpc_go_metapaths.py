@@ -1,3 +1,8 @@
+# THRESHOLD HELD AT 20 — a 20 -> 5 change was applied on 2026-08-20 and REVERTED the same day.
+# Measured: it added no pool pairs at all, because this recipe counts module size the same way the
+# Cypher pool routes do, so every disease with >=20 seeds already had these features. Worse, `assoc`
+# below is computed over the ELIGIBLE set, so widening eligibility silently changes dwpc values for
+# existing pairs — a different intervention, not a NULL fill. See docs/FEATURE_AUDIT.md.
 # dwpc_GFGD + dwpc_GBGD — GO molecular-function / biological-process metapaths (Python).
 #
 # Replaces the Execute Cypher route, which OOM'd Kuzu's buffer pool: GO fans out far harder
@@ -28,7 +33,11 @@ DAMPING = -0.4
 MIN_MODULE = 20
 MAX_FANOUT = 500          # skip promiscuous GO terms; see module docstring
 
+# Dataset DEMO_KG_LS.graph_edges renamed to DEMO_KG_graph_edges_copy by liheng.fu@dataiku.com on 2026-08-18 09:38:18
+# Dataset DEMO_KG_graph_edges_copy renamed to graph_edges by liheng.fu@dataiku.com on 2026-08-18 09:56:56
 edges = dataiku.Dataset("graph_edges").get_dataframe(columns=["relation", "x_index", "y_index"])
+# Dataset DEMO_KG_LS.graph_nodes renamed to DEMO_KG_graph_nodes_copy by liheng.fu@dataiku.com on 2026-08-18 09:38:35
+# Dataset DEMO_KG_graph_nodes_copy renamed to graph_nodes by liheng.fu@dataiku.com on 2026-08-18 09:56:41
 nodes = dataiku.Dataset("graph_nodes").get_dataframe(columns=["node_index", "node_type"])
 genes = set(nodes.loc[nodes.node_type == "gene/protein", "node_index"])
 
@@ -121,3 +130,4 @@ def dwpc(ann_relation, ann_type, out_name):
 
 dwpc("molfunc_protein", "molecular_function", "dwpc_GFGD")
 dwpc("bioprocess_protein", "biological_process", "dwpc_GBGD")
+

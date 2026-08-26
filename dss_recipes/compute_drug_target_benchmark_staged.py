@@ -22,7 +22,7 @@ import pandas as pd
 
 SCORE = "proba_1"
 
-nodes = dataiku.Dataset("DEMO_KG_LS.graph_nodes").get_dataframe(
+nodes = dataiku.Dataset("graph_nodes").get_dataframe(
     columns=["node_index", "node_id", "node_type", "node_name"], infer_with_pandas=False)
 nodes["node_index"] = nodes.node_index.astype(int)
 nodes["node_id"] = nodes.node_id.astype(str)
@@ -32,8 +32,10 @@ dis_map = dict(zip(dis.node_id, dis.node_index))
 gene_map = dict(zip(gen.node_id, gen.node_index))
 dname = dict(zip(dis.node_index, dis.node_name))
 
-dd = dataiku.Dataset("DEMO_KG_LS.drug_disease_edges").get_dataframe(infer_with_pandas=False)
-dp = dataiku.Dataset("DEMO_KG_LS.drug_protein_edges").get_dataframe(infer_with_pandas=False)
+dd = dataiku.Dataset("drug_disease_edges").get_dataframe(infer_with_pandas=False)
+# Dataset DEMO_KG_LS.drug_protein_edges renamed to DEMO_KG_drug_protein_edges_copy by liheng.fu@dataiku.com on 2026-08-18 09:42:34
+# Dataset DEMO_KG_drug_protein_edges_copy renamed to drug_protein_edges by liheng.fu@dataiku.com on 2026-08-18 09:57:33
+dp = dataiku.Dataset("drug_protein_edges").get_dataframe(infer_with_pandas=False)
 ind = dd[dd.relation.astype(str).str.fullmatch("indication", case=False, na=False)].copy()
 dcol, xcol = ("x_id", "y_id") if (ind.x_type == "drug").any() else ("y_id", "x_id")
 ind["drug"] = ind[dcol].astype(str)
@@ -46,9 +48,9 @@ truth = (ind.dropna(subset=["disease_index"])[["drug", "disease_index"]]
          [["disease_index", "gene_index"]].astype(int).drop_duplicates())
 tset = truth.groupby("disease_index").gene_index.apply(set).to_dict()
 
-drg = dataiku.Dataset("enriched_gene_druggability").get_dataframe()
+drg = dataiku.Dataset("enriched_gene_druggability_v2").get_dataframe()
 # Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46
-sc = dataiku.Dataset("scored_m3").get_dataframe(
+sc = dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", SCORE])
 sc = sc.merge(drg, on="gene_index", how="left")
 
