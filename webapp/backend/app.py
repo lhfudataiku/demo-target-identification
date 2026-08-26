@@ -28,6 +28,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .routes.agents import router as agents_router
 from .routes.candidates import router as candidates_router
+from .routes.evidence import router as evidence_router
 from .routes.example import router as example_router
 from .routes.system import router as system_router
 
@@ -84,6 +85,7 @@ def configure(app: FastAPI) -> None:
     app.include_router(system_router)
     app.include_router(example_router)
     app.include_router(candidates_router)
+    app.include_router(evidence_router)
     # Agents card-grid blueprint — always on; the sidebar's Administration
     # section toggle (frontend) controls its visibility at runtime.
     app.include_router(agents_router)

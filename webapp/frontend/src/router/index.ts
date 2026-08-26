@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import { ListFilter, Settings, Shield } from 'lucide-vue-next'
+import { Database, ListFilter, Settings, Shield } from 'lucide-vue-next'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import ShortlistView from '@/views/ShortlistView.vue'
+import EvidenceView from '@/views/EvidenceView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import AdminView from '@/views/AdminView.vue'
 import { useAdminStore } from '@/stores/admin'
@@ -13,10 +14,16 @@ import { enabledFeatureRoutes } from './features'
 // router/features.ts and are only registered when their ENABLE_* flag is on.
 const coreRoutes: RouteRecordRaw[] = [
   {
+    path: 'evidence',
+    name: 'evidence',
+    component: EvidenceView,
+    meta: { title: 'The evidence base', icon: Database, menu: 'primary', order: 1 },
+  },
+  {
     path: 'shortlist',
     name: 'shortlist',
     component: ShortlistView,
-    meta: { title: 'The list', icon: ListFilter, menu: 'primary', order: 1 },
+    meta: { title: 'The list', icon: ListFilter, menu: 'primary', order: 4 },
   },
 ]
 
@@ -87,7 +94,7 @@ function firstEnabledRoute(): string {
     .getRoutes()
     .filter((r) => r.meta?.menu === 'primary' && r.name)
     .sort((a, b) => ((a.meta?.order as number) ?? 0) - ((b.meta?.order as number) ?? 0))
-  return (primary[0]?.name as string) ?? 'shortlist'
+  return (primary[0]?.name as string) ?? 'evidence'
 }
 
 // Block direct navigation to Administration pages when the toggle is off.
