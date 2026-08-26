@@ -38,6 +38,24 @@ from .routes.system import router as system_router
 logger = logging.getLogger(__name__)
 
 
+# ── Cache control for the SPA bundle ─────────────────────────────────────────
+# vite.config.ts pins the output to `assets/index.js` with NO content hash
+# ("single-bundle output -- code splitting breaks DSS resource loading"). Every
+# deploy therefore overwrites the same URL, and a browser that has the file
+# cached will keep serving the old app: the deploy looks like it silently did
+# nothing. Stable filenames and caching cannot both be right, so caching goes.
+_NO_STORE = {"Cache-Control": "no-store, must-revalidate"}
+
+
+class _NoCacheStatic(StaticFiles):
+    """StaticFiles that refuses to let the un-hashed bundle be cached."""
+
+    def file_response(self, *args: object, **kwargs: object):  # type: ignore[override]
+        resp = super().file_response(*args, **kwargs)  # type: ignore[arg-type]
+        resp.headers.update(_NO_STORE)
+        return resp
+
+
 def _find_dist_dir() -> Path | None:
     """Locate the built frontend.
 
@@ -122,7 +140,7 @@ def configure(app: FastAPI) -> None:
             if (dist_dir / "assets").is_dir():
                 app.mount(
                     "/assets",
-                    StaticFiles(directory=dist_dir / "assets"),
+                    _NoCacheStatic(directory=dist_dir / "assets"),
                     name="static-assets",
                 )
 
@@ -133,11 +151,11 @@ def configure(app: FastAPI) -> None:
 
                 @app.get(f"/{static_file.name}")
                 async def _serve_root(p: str = _path) -> FileResponse:
-                    return FileResponse(p)
+                    return FileResponse(p, headers=_NO_STORE)
 
             @app.get("/{path:path}")
             async def spa_fallback(path: str) -> FileResponse:
-                return FileResponse(dist_dir / "index.html")
+                return FileResponse(dist_dir / "index.html", headers=_NO_STORE)
 
 
 # Module-level app for `uvicorn backend.app:app` (local dev).

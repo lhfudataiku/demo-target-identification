@@ -1,9 +1,7 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import { Bot, Database, ListFilter, Settings, Shield } from 'lucide-vue-next'
+import { ListFilter, Settings, Shield } from 'lucide-vue-next'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
-import ExampleView from '@/views/ExampleView.vue'
 import ShortlistView from '@/views/ShortlistView.vue'
-import AgentsView from '@/views/AgentsView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import AdminView from '@/views/AdminView.vue'
 import { useAdminStore } from '@/stores/admin'
@@ -18,25 +16,14 @@ const coreRoutes: RouteRecordRaw[] = [
     path: 'shortlist',
     name: 'shortlist',
     component: ShortlistView,
-    meta: { title: 'The list', icon: ListFilter, menu: 'primary', order: 4 },
-  },
-  {
-    path: 'dataset',
-    name: 'dataset',
-    component: ExampleView,
-    meta: { title: 'Datasets', icon: Database, menu: 'primary', order: 3 },
+    meta: { title: 'The list', icon: ListFilter, menu: 'primary', order: 1 },
   },
 ]
 
 // Administration section — visible only when the Admin toggle is on.
-const adminRoutes: RouteRecordRaw[] = [
-  {
-    path: 'agents',
-    name: 'agents',
-    component: AgentsView,
-    meta: { title: 'Agents', icon: Bot, menu: 'secondary', order: 1, requiresAdmin: true },
-  },
-]
+// Template scaffolding (Agents registry demo) removed — this app is the demo
+// deck, and a stray admin page in the sidebar is noise in front of an audience.
+const adminRoutes: RouteRecordRaw[] = []
 
 // Footer (tertiary) routes.
 const footerRoutes: RouteRecordRaw[] = [
@@ -100,7 +87,7 @@ function firstEnabledRoute(): string {
     .getRoutes()
     .filter((r) => r.meta?.menu === 'primary' && r.name)
     .sort((a, b) => ((a.meta?.order as number) ?? 0) - ((b.meta?.order as number) ?? 0))
-  return (primary[0]?.name as string) ?? 'dataset'
+  return (primary[0]?.name as string) ?? 'shortlist'
 }
 
 // Block direct navigation to Administration pages when the toggle is off.
