@@ -1,77 +1,66 @@
 <script setup lang="ts">
-  /** Heat matrix — v3's `matrix`: pairwise top-50 overlap between subtypes. */
-  import { computed, nextTick, onMounted, ref } from 'vue'
-  import VChart from 'vue-echarts'
-  import { use } from 'echarts/core'
-  import { HeatmapChart } from 'echarts/charts'
-  import { GridComponent, TooltipComponent, VisualMapComponent } from 'echarts/components'
-  import { CanvasRenderer } from 'echarts/renderers'
-  import type { EChartsOption } from 'echarts'
+  /**
+   * Pairwise overlap matrix — a plain CSS grid, dynamically tinted.
+   *
+   * The ECharts heatmap was unreadable at this size: rotated category labels
+   * collided and the value labels fought the cells. v3 draws it as SVG cells
+   * with `fill-opacity = 0.08 + t * 0.9` and the value printed inside; a CSS
+   * grid does the same with real text, selectable labels and native tooltips.
+   */
+  import { computed } from 'vue'
 
-  use([HeatmapChart, GridComponent, TooltipComponent, VisualMapComponent, CanvasRenderer])
   defineOptions({ name: 'ActMatrix' })
 
   const props = withDefaults(
     defineProps<{
       labels: string[]
-      /** [x, y, value] triples; the diagonal is omitted by the caller. */
-      cells: [number, number, number][]
-      max?: number
-      unitLabel?: string
+      pairs: { a: string; b: string; shared: number }[]
+      unit?: number
     }>(),
-    { max: 50, unitLabel: 'of 50' },
+    { unit: 50 },
   )
 
-  const ready = ref(false)
-  onMounted(() => nextTick(() => (ready.value = true)))
-
-  const short = computed(() => props.labels.map((l) => (l.length > 22 ? l.slice(0, 21) + '…' : l)))
-  const height = computed(() => Math.max(220, props.labels.length * 26 + 130))
-
-  const token = (n: string, f: string) =>
-    getComputedStyle(document.documentElement).getPropertyValue(n).trim() || f
-
-  const chartOption = computed((): EChartsOption => ({
-    animationDuration: 700,
-    tooltip: {
-      position: 'top',
-      formatter: (p: { value: [number, number, number] }) =>
-        `${props.labels[p.value[1]]}<br/>vs ${props.labels[p.value[0]]}<br/>` +
-        `<b>${p.value[2]}</b> ${props.unitLabel}`,
-    },
-    grid: { left: 4, right: 12, top: 88, bottom: 8, containLabel: true },
-    xAxis: {
-      type: 'category', data: short.value, position: 'top',
-      axisLine: { show: false }, axisTick: { show: false }, splitArea: { show: true },
-      axisLabel: {
-        rotate: 42, fontFamily: 'DM Mono, monospace', fontSize: 10,
-        color: 'var(--muted-foreground)',
-      },
-    },
-    yAxis: {
-      type: 'category', data: short.value, inverse: true,
-      axisLine: { show: false }, axisTick: { show: false }, splitArea: { show: true },
-      axisLabel: { fontFamily: 'DM Mono, monospace', fontSize: 10, color: 'var(--muted-foreground)' },
-    },
-    visualMap: {
-      min: 0, max: props.max, calculable: false, orient: 'horizontal',
-      left: 'center', bottom: 0, itemWidth: 10, itemHeight: 90, show: false,
-      inRange: { color: [token('--card', '#fff'), token('--chart-2', '#3EDAB2')] },
-    },
-    series: [{
-      type: 'heatmap',
-      data: props.cells,
-      label: {
-        show: true, formatter: (p: { value: [number, number, number] }) => String(p.value[2]),
-        fontFamily: 'DM Mono, monospace', fontSize: 10,
-      },
-      itemStyle: { borderColor: 'var(--card)', borderWidth: 2 },
-    }],
-  }))
+  const lookup = computed(() => {
+    const m = new Map<string, number>()
+    for (const p of props.pairs) {
+      m.set(`${p.a}|${p.b}`, p.shared)
+      m.set(`${p.b}|${p.a}`, p.shared)
+    }
+    return m
+  })
+  const max = computed(() => Math.max(1, ...props.pairs.map((p) => p.shared)))
+  const short = (l: string) => (l.length > 26 ? l.slice(0, 25) + '…' : l)
 </script>
 
 <template>
-  <div class="w-full" :style="{ height: height + 'px' }">
-    <VChart v-if="ready" :option="chartOption" :autoresize="true" class="h-full w-full" />
+  <div class="overflow-x-auto">
+    <div class="inline-block min-w-full">
+      <!-- header row: rotated labels, given real height so they cannot collide -->
+      <div class="flex" :style="{ paddingLeft: '190px' }">
+        <div v-for="l in labels" :key="'h' + l"
+             class="relative h-[104px] w-[30px] flex-none">
+          <span class="absolute bottom-1 left-1/2 origin-bottom-left -rotate-[52deg] whitespace-nowrap
+                       font-mono text-[9.5px] text-muted-foreground"
+                :title="l">{{ short(l) }}</span>
+        </div>
+      </div>
+
+      <div v-for="a in labels" :key="a" class="flex items-center">
+        <div class="w-[190px] flex-none truncate pr-2 text-right text-[11px]" :title="a">{{ a }}</div>
+        <div v-for="b in labels" :key="a + '|' + b" class="w-[30px] flex-none p-[1px]">
+          <div v-if="a === b" class="grid h-[26px] place-items-center rounded-sm bg-muted"></div>
+          <div v-else
+               class="grid h-[26px] place-items-center rounded-sm font-mono text-[9.5px]"
+               :style="{
+                 background: `color-mix(in oklab, var(--chart-3) ${(8 + ((lookup.get(a + '|' + b) ?? 0) / max) * 90).toFixed(0)}%, var(--card))`,
+                 color: ((lookup.get(a + '|' + b) ?? 0) / max) > 0.55
+                   ? 'var(--primary-foreground)' : 'var(--muted-foreground)',
+               }"
+               :title="`${a} × ${b}: ${lookup.get(a + '|' + b) ?? 0} of ${unit}`">
+            {{ lookup.get(a + '|' + b) ?? 0 }}
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>

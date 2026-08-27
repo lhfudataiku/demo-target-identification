@@ -129,30 +129,62 @@ def family(family_id: int) -> dict[str, Any]:
             "shared": int(r["count"]),
         } for _, r in m.iterrows()]
 
-    # The common programme: genes appearing in the top 50 of EVERY term, versus
-    # those specific to one. v3 fills this card with `geneGrid`.
-    genes: dict[str, int] = {}
+    # One pass over dashboard_candidates gives everything acts 3 needs about
+    # membership: the top-50 list per term (all and novel-only), the pairwise
+    # overlap for both modes, and the gene x term RANK matrix the grid encodes.
+    TOP = 50
+    tops: dict[int, list[tuple[str, int]]] = {}
+    tops_novel: dict[int, list[tuple[str, int]]] = {}
     try:
-        top = get_dataiku().Dataset("top50_membership").get_dataframe(
-            columns=["gene_index", "disease_index"])
-        top = top[top.disease_index.isin(idx)]
-        gname = {int(r.node_index): str(r.node_name)
-                 for r in get_dataiku().Dataset("graph_nodes").get_dataframe(
-                     columns=["node_index", "node_name", "node_type"]).itertuples()
-                 if r.node_type == "gene/protein"}
-        for r in top.itertuples():
-            n = gname.get(int(r.gene_index))
-            if n:
-                genes[n] = genes.get(n, 0) + 1
+        cols = ["disease_index", "gene_name", "rank_in_disease", "is_target"]
+        cand = get_dataiku().Dataset("dashboard_candidates").get_dataframe(columns=cols)
+        cand = cand[cand.disease_index.isin(idx)]
+        # NB: do not name this `g` -- the outer `g` is the family_panel slice the
+        # return still needs, and shadowing it here cost a 500 on every family.
+        for di, cg in cand.groupby("disease_index"):
+            cg = cg.sort_values("rank_in_disease")
+            tops[int(di)] = [(str(r.gene_name), int(r.rank_in_disease))
+                             for r in cg.head(TOP).itertuples()]
+            cgn = cg[cg.is_target == 0].head(TOP)
+            tops_novel[int(di)] = [(str(r.gene_name), int(r.rank_in_disease))
+                                   for r in cgn.itertuples()]
     except Exception:
-        genes = {}
-    n_terms_with_top = len({int(i) for i in idx})
-    gene_grid = [{"name": n, "group": ("common" if c >= max(2, n_terms_with_top)
-                                       else "shared" if c > 1 else "specific")}
-                 for n, c in sorted(genes.items(), key=lambda kv: (-kv[1], kv[0]))]
+        tops, tops_novel = {}, {}
+
+    def _pairs(src: dict[int, list[tuple[str, int]]]) -> list[dict[str, Any]]:
+        out = []
+        ids = [i for i in _with_data if i in src and src[i]]
+        for a in range(len(ids)):
+            for b in range(a + 1, len(ids)):
+                ia, ib = ids[a], ids[b]
+                shared = len({n for n, _ in src[ia]} & {n for n, _ in src[ib]})
+                out.append({"a": names.get(ia, str(ia)), "b": names.get(ib, str(ib)),
+                            "shared": shared})
+        return out
+
+    # Gene x term rank matrix. Dot size/opacity encodes rank, so the rank has to
+    # travel per cell -- membership alone is not enough.
+    # Ordered by hop depth, like the term table -- not by dict insertion.
+    _depth = {int(t["disease_index"]): (t["hop_depth"], -t["n_pos"]) for t in terms}
+    _with_data = sorted((i for i in idx if i in tops and tops[i]),
+                        key=lambda i: _depth.get(i, (99, 0)))
+    cols_order = [names.get(i, str(i)) for i in _with_data]
+    rank_of: dict[str, dict[str, int]] = {}
+    for i in idx:
+        for n, rk in tops.get(i, []):
+            rank_of.setdefault(n, {})[names.get(i, str(i))] = rk
+    gene_grid = [{"name": n, "ranks": r, "n_terms": len(r)}
+                 for n, r in sorted(rank_of.items(), key=lambda kv: (-len(kv[1]), kv[0]))]
 
     return {
         "gene_grid": gene_grid,
+        "grid_columns": cols_order,
+        # Only the 13 personas carry ranked candidates, so a family's remaining
+        # terms cannot appear in the matrix. Say how many, rather than showing a
+        # silent subset.
+        "coverage": {"with_data": len(_with_data), "total": len(terms)},
+        "overlap_all": _pairs(tops),
+        "overlap_novel": _pairs(tops_novel),
         "family_id": family_id,
         "n_terms": len(terms),
         "macro_auc": round(float(g.auc_disease.mean()), 4),

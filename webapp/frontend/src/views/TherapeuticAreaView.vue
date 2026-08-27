@@ -6,7 +6,7 @@
    * the same model against every term in it.
    *
    * The point of this act is the UNCERTAINTY, not the average. A term with 8
-   * known targets and one with 600 must not read the same, so every AUC renders
+   * associated targets and one with 600 must not read the same, so every AUC renders
    * with its 95% interval, and terms flagged untrustworthy are shown but never
    * quoted as a score.
    */
@@ -32,7 +32,12 @@
     auc: number; lo95: number; hi95: number; trustworthy: boolean; n_pos: number
     enrichment: number | null; hop_depth: number
   }
-  interface Detail { gene_grid: { name: string; group: string }[]; family_id: number; n_terms: number; macro_auc: number; terms: Term[]; overlap: { a: string; b: string; shared: number }[] }
+  interface Detail { gene_grid: { name: string; ranks: Record<string, number>; n_terms: number }[]
+  grid_columns: string[]
+  overlap_all: { a: string; b: string; shared: number }[]
+  overlap_novel: { a: string; b: string; shared: number }[]
+  coverage: { with_data: number; total: number }
+  family_id: number; n_terms: number; macro_auc: number; terms: Term[]; overlap: { a: string; b: string; shared: number }[] }
 
   const families = ref<Family[]>([])
   const selected = ref<number | undefined>()
@@ -51,11 +56,16 @@
 
   const untrustworthy = computed(() => detail.value?.terms.filter((t) => !t.trustworthy).length ?? 0)
   // v3 plots ENRICHMENT for the thin terms, labelled with n, coloured by whether
-  // the AUC is trustworthy. The known-target count is the label, not the bar.
+  // the AUC is trustworthy. The associated-target count is the label, not the bar.
+  // v3 lists terms in ontology order — by hop depth, then size within a level.
+  const orderedTerms = computed(() =>
+    [...(detail.value?.terms ?? [])].sort(
+      (a, b) => a.hop_depth - b.hop_depth || b.n_pos - a.n_pos))
+
   const thin = computed(() =>
     (detail.value?.terms ?? [])
       .filter((t) => t.enrichment !== null)
-      // Ranked by known-target count, descending: the biggest terms first, so
+      // Ranked by associated-target count, descending: the biggest terms first, so
       // the thin tail reads as a tail.
       .sort((a, b) => b.n_pos - a.n_pos)
       .map((t) => ({
@@ -64,18 +74,27 @@
         colour: t.trustworthy ? 'var(--chart-3)' : 'var(--destructive)',
       })))
   // Genes shared by every pair in the family: the common programme.
-  // Square matrix over the family's terms, as v3's `matrix` draws it.
-  const matrix = computed(() => {
-    const o = detail.value?.overlap ?? []
-    if (!o.length) return null
-    const labels = [...new Set(o.flatMap((p) => [p.a, p.b]))]
-    const ix = new Map(labels.map((l, i) => [l, i]))
-    const cells: [number, number, number][] = []
-    for (const p of o) {
-      const a = ix.get(p.a)!, b = ix.get(p.b)!
-      cells.push([a, b, p.shared], [b, a, p.shared])
-    }
-    return { labels, cells }
+  // The tab selects which overlap the matrix shows — it was bound but unused,
+  // so switching did nothing.
+  const overlapPairs = computed(() =>
+    (ovMode.value === 'novel' ? detail.value?.overlap_novel : detail.value?.overlap_all) ?? [])
+  // Hop order, from the backend — the same order the term table uses.
+  const overlapLabels = computed(() => detail.value?.grid_columns ?? [])
+
+  // v3's common-programme grid is the four biomarker subtypes, not every term.
+  const BIOMARKER = /HER2|luminal a|luminal b|triple.?neg/i
+  const gridColumns = computed(() =>
+    (detail.value?.grid_columns ?? []).filter((c) => BIOMARKER.test(c)))
+  const gridGenes = computed(() => {
+    const cols = new Set(gridColumns.value)
+    return (detail.value?.gene_grid ?? [])
+      .map((g) => ({
+        ...g,
+        ranks: Object.fromEntries(Object.entries(g.ranks).filter(([k]) => cols.has(k))),
+      }))
+      .filter((g) => Object.keys(g.ranks).length > 0)
+      .map((g) => ({ ...g, n_terms: Object.keys(g.ranks).length }))
+      .sort((a, b) => b.n_terms - a.n_terms || a.name.localeCompare(b.name))
   })
 
   const commonShare = computed(() => {
@@ -157,7 +176,7 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow v-for="t in detail.terms" :key="t.disease_index">
+              <TableRow v-for="t in orderedTerms" :key="t.disease_index">
                 <TableCell>
                   <span v-if="t.hop_depth > 0" class="font-mono text-muted-foreground"
                         :style="{ paddingLeft: (t.hop_depth - 1) * 14 + 'px' }">└ </span>{{ t.disease_name }}
@@ -188,12 +207,12 @@
                :desc="detail ? `${detail.n_terms} terms. ${untrustworthy} have intervals too wide to read as a score — shown, never quoted.` : undefined"
                :src="['family_panel']">
         <ActIntervals v-if="detail"
-                      :rows="detail.terms.map((t) => ({ label: t.disease_name, value: t.auc,
-                             lo: t.lo95, hi: t.hi95, muted: !t.trustworthy }))" />
+                      :rows="orderedTerms.map((t) => ({ label: t.disease_name, value: t.auc,
+                             lo: t.lo95, hi: t.hi95, n: t.n_pos, muted: !t.trustworthy }))" />
         <div v-if="detail && detail.terms.some((t) => t.hi95 > 1)"
              class="mt-3 rounded-lg border-l-2 border-destructive bg-destructive/10 px-3.5 py-2.5 text-[13px] leading-relaxed">
           <b>Some intervals run above 1.0 — higher than an AUC can reach.</b>
-          With only a handful of known targets the estimate is not wrong, it is
+          With only a handful of associated targets the estimate is not wrong, it is
           <i>unpinned</i>. That single fact retires the metric for thin diseases better than any
           threshold argument, which is why the card beside this one changes the measure.
         </div>
@@ -201,40 +220,46 @@
                  description="Pick a disease family to see every term in it." />
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-7" :icon="GitCompare" accent="var(--chart-3)" title="How much do the subtypes overlap?"
-               :chips="[['live', 'live']]"
-               desc="Shared genes in each pair's top 50. This is where the method's limit lives, and showing it here is what makes act 4 believable."
-               :src="['pairwise_overlap']">
-        <ActTabs v-model="ovMode" class="mb-3"
-                 :options="[{ value: 'all', label: 'All top-50 genes' },
-                            { value: 'novel', label: 'Novel only' }]" />
-        <ActMatrix v-if="matrix" :labels="matrix.labels" :cells="matrix.cells" />
-        <EaEmpty v-else :icon="GitCompare" title="No overlap computed"
-                 description="Pairwise top-50 overlap has not been computed for this family." />
-      </ActCard>
-
-      <ActCard span="col-span-12 lg:col-span-6" :icon="Ruler" accent="var(--chart-4)"
+      <ActCard span="col-span-12" :icon="Ruler" accent="var(--chart-4)"
                title="For the thin diseases, change the metric" :chips="[['live', 'live']]"
                desc="Enrichment at the head — observed hits over what chance would give. Red marks a term whose AUC is not trustworthy."
                :src="['family_panel']">
         <ActBar v-if="thin.length" :rows="thin" :row-height="22" />
         <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
-          Every term in this family has enough known targets to score.
+          Every term in this family has enough associated targets to score.
         </p>
         <ActSay class="mt-3">
-          For these, quote <b>hits in the top 20</b> or the rank of the best-known target — a count
+          For these, quote <b>hits in the top 20</b> or the rank of the best associated target — a count
           you can verify by eye — not an AUC whose interval spans half the range.
         </ActSay>
       </ActCard>
 
+      
+
+      <ActCard span="col-span-12 lg:col-span-7" :icon="GitCompare" accent="var(--chart-3)" title="How much do the subtypes overlap?"
+               :chips="[['live', 'live']]"
+               desc="Shared genes in each pair's top 50."
+               :src="['pairwise_overlap']">
+        <ActTabs v-model="ovMode" class="mb-3"
+                 :options="[{ value: 'all', label: 'All top-50 genes' },
+                            { value: 'novel', label: 'Novel only' }]" />
+        <p v-if="detail && detail.coverage.with_data < detail.coverage.total"
+           class="mb-3 text-[12.5px] text-muted-foreground">
+          Showing the <b>{{ detail.coverage.with_data }}</b> of {{ detail.coverage.total }} terms that
+          carry ranked candidates — the rest are not scored into a top-50 list, so they cannot appear.
+        </p>
+        <ActMatrix v-if="overlapPairs.length" :labels="overlapLabels" :pairs="overlapPairs" />
+        <EaEmpty v-else :icon="GitCompare" title="No overlap computed"
+                 description="Pairwise top-50 overlap has not been computed for this family." />
+      </ActCard>
+
+      
+
       <ActCard span="col-span-12 lg:col-span-6" :icon="Users" accent="var(--chart-2)"
                title="The common programme, and what is subtype-specific"
                :desc="commonShare !== null ? `Pairs in this family share ${commonShare} of their top 50 on average.` : undefined">
-        <ActGeneGrid v-if="detail?.gene_grid?.length" :genes="detail.gene_grid.slice(0, 120)"
-                     :legend="[
-                       { group: 'common', label: 'in every term', colour: 'var(--chart-2)' },
-                       { group: 'shared', label: 'in several', colour: 'var(--chart-3)' },
-                       { group: 'specific', label: 'one term only', colour: 'var(--chart-4)' }]" />
+        <ActGeneGrid v-if="gridGenes.length" :genes="gridGenes.slice(0, 120)"
+                     :columns="gridColumns" :shared-at="Math.min(3, gridColumns.length)" />
         <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
           No top-50 membership computed for this family.
         </p>

@@ -5,7 +5,7 @@
    * instead of its hard-coded hsl() palette.
    *
    * v3 draws this card with `hbars`; the donut is a deliberate change, because
-   * the point of "what 'known target' actually means" is the SHARE of each
+   * the point of "what the association evidence is" is the SHARE of each
    * evidence type, not the magnitude.
    */
   import { computed, nextTick, onMounted, ref } from 'vue'

@@ -20,7 +20,7 @@
   const props = withDefaults(
     defineProps<{
       /** `colour` on a row wins, so a card can colour by GROUP as v3 does. */
-      rows: { label: string; count: number; colour?: string }[]
+      rows: { label: string; count: number; colour?: string; note?: string }[]
       color?: string
       /** Cycle the chart palette across bars, as the mockup does, instead of
           painting every bar one colour. */
@@ -48,7 +48,11 @@
     grid: { left: 4, right: 56, top: 4, bottom: 4, containLabel: true },
     tooltip: {
       trigger: 'item',
-      valueFormatter: (v) => Number(v).toLocaleString(),
+      formatter: (p: { dataIndex: number }) => {
+        const r = props.rows[p.dataIndex]
+        return r ? `<b>${r.label}</b><br/>${r.count.toLocaleString()}`
+                   + (r.note ? `<br/>${r.note}` : '') : ''
+      },
     },
     xAxis: { type: 'value', show: false },
     yAxis: {
@@ -57,7 +61,10 @@
       data: props.rows.map((r) => r.label),
       axisLine: { show: false },
       axisTick: { show: false },
-      axisLabel: { fontFamily: 'DM Mono, monospace', fontSize: 11, color: 'var(--muted-foreground)' },
+      axisLabel: {
+        fontFamily: 'DM Mono, monospace', fontSize: 11, color: 'var(--muted-foreground)',
+        width: 190, overflow: 'truncate',   // long disease names must not eat the plot
+      },
     },
     series: [{
       type: 'bar',

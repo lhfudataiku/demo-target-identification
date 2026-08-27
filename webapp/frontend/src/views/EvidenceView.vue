@@ -140,9 +140,9 @@
         </div>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-6" title="What “known target” actually means"
+      <ActCard span="col-span-12 lg:col-span-6" title="What the association evidence is"
                :icon="FileText" accent="var(--chart-4)"
-               desc="The evidence types behind the association label — and they are not equally strong. Act 5 returns to this."
+               desc="Every association in the graph carries an evidence type. These are the three that exist here, and they are not equally strong — Act 5 returns to this."
                :chips="[['live', 'live']]" :src="['graph_label_evidence']">
         <ActDonut v-if="data" :rows="data.label_evidence" />
       </ActCard>

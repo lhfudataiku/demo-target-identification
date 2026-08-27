@@ -13,7 +13,7 @@
 
   const props = withDefaults(
     defineProps<{
-      nodes: { name: string }[]
+      nodes: { name: string; color?: string }[]
       links: { source: string; target: string; value: number }[]
       height?: number
     }>(),
@@ -42,9 +42,17 @@
       left: 4, right: 96, top: 8, bottom: 8,
       nodeWidth: 14, nodeGap: 10,
       emphasis: { focus: 'adjacency' },
+      // An explicit `color` lets a view carry a meaning across plots -- the
+      // pool card paints "survives the gate" and "dropped" the same in the band
+      // above and the flow below. Falls back to the palette cycle.
       data: props.nodes.map((n, i) => ({
         name: n.name,
-        itemStyle: { color: colors.value[i % colors.value.length], borderWidth: 0 },
+        itemStyle: {
+          color: n.color
+            ? getComputedStyle(document.documentElement).getPropertyValue(n.color).trim() || n.color
+            : colors.value[i % colors.value.length],
+          borderWidth: 0,
+        },
       })),
       links: props.links,
       lineStyle: { color: 'gradient', opacity: 0.34, curveness: 0.5 },

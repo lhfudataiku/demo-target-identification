@@ -64,7 +64,6 @@ def candidates(
     tractable_only: bool = Query(False, description="small-molecule or antibody tractable"),
     exclude_secreted: bool = Query(False),
     max_rank: int = Query(200, ge=1, le=5000),
-    limit: int = Query(100, ge=1, le=1000),
 ) -> dict[str, Any]:
     """One disease's ranked list, after the scientist's own filters.
 
@@ -94,7 +93,10 @@ def candidates(
     d = d[d.rank_in_disease <= max_rank]
     funnel.append({"step": f"+ rank <= {max_rank}", "n": int(len(d))})
 
-    d = d.sort_values("rank_in_disease").head(limit)
+    # Every row that survives the filters, not an arbitrary head(). `max_rank`
+    # is the only bound, and it is a control the scientist sets — so the table
+    # can never be quietly shorter than the funnel says.
+    d = d.sort_values("rank_in_disease")
     rows = d.where(d.notna(), None).to_dict(orient="records")
     return {
         "disease_index": disease,

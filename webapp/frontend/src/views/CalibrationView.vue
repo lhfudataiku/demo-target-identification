@@ -26,13 +26,16 @@
   import ActBeeswarm from '@/components/act/ActBeeswarm.vue'
   import ActTabs from '@/components/act/ActTabs.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-  import { Split, Gauge, Crosshair, ListTree } from 'lucide-vue-next'
+  import { Split, Gauge, Crosshair, ListTree, Target } from 'lucide-vue-next'
 
   defineOptions({ name: 'CalibrationView' })
 
   interface Payload {
+    champion: { precision: number; recall: number; f1: number; auprc: number
+                auc_pooled: number; lift: number; base_rate: number; source: string }
     eligibility: { total: number; eligible: number; excluded: number; pct_excluded: number; gate: string }
-    routes: { label: string; count: number }[]
+    routes: { label: string; count: number; source: string }[]
+    route_admissions: number; duplicates_removed: number; pairs_per_disease: number
     union_rows: number; pos_rate: number; n_families: number
     glossary: { feature: string; kind: string; what: string }[]
     drivers: { label: string; count: number }[]
@@ -71,6 +74,34 @@
     return v.length ? v[Math.floor(v.length / 2)] : 0
   })
   // v3 colours drivers in two groups, with a legend — provenance against the rest.
+  // Two scalars at one operating point, not a curve: what the model achieves
+  // against what chance gives. Bars, as v3 draws it — a line would imply a
+  // threshold sweep this card is not making a claim about.
+  const precisionRows = computed(() => {
+    const c = data.value?.champion
+    if (!c) return []
+    return [
+      { label: 'model precision', count: +(100 * c.precision).toFixed(1), colour: 'var(--chart-2)',
+        note: `at the F1-optimised threshold · recall ${(100 * c.recall).toFixed(1)}%` },
+      { label: 'base rate (chance)', count: +(100 * c.base_rate).toFixed(2), colour: 'var(--muted-foreground)',
+        note: 'the validation split’s positive rate' },
+    ]
+  })
+  const precisionLift = computed(() => {
+    const c = data.value?.champion
+    return c && c.base_rate ? (c.precision / c.base_rate).toFixed(0) : null
+  })
+  const auprcRows = computed(() => {
+    const c = data.value?.champion
+    if (!c) return []
+    return [
+      { label: 'average precision', count: +c.auprc.toFixed(3), colour: 'var(--chart-2)',
+        note: 'area under the precision–recall curve' },
+      { label: 'baseline', count: +c.base_rate.toFixed(3), colour: 'var(--muted-foreground)',
+        note: 'what a random ranker scores' },
+    ]
+  })
+
   const driverRows = computed(() =>
     (data.value?.drivers ?? []).map((d) => ({
       label: d.label, count: d.count,
@@ -118,13 +149,45 @@
           <ActBand :in-label="'eligible'" :in-value="data.eligibility.eligible"
                    :out-label="'excluded — too few curated associations'" :out-value="data.eligibility.excluded" />
 
-          <p class="mb-1.5 mt-5 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
-            The eligible diseases generate the pair pool · units change from diseases to gene–disease pairs
+          <!-- The bridge. The band ends in DISEASES and the flow begins in PAIRS;
+               without the multiplication written down, the two halves read as
+               unrelated plots that happen to share a card. -->
+          <div class="mt-4 flex flex-wrap items-baseline gap-x-2 gap-y-1 rounded-md border border-dashed
+                      border-border bg-muted/30 px-3 py-2 font-mono text-[11px]">
+            <span class="text-primary-foreground">
+              <b>{{ data.eligibility.eligible.toLocaleString() }}</b> eligible diseases
+            </span>
+            <span class="text-muted-foreground">×</span>
+            <span class="text-primary-foreground">
+              <b>~{{ data.pairs_per_disease.toLocaleString() }}</b> genes the graph links to each
+            </span>
+            <span class="text-muted-foreground">=</span>
+            <span class="text-primary-foreground">
+              <b>{{ data.union_rows.toLocaleString() }}</b> gene–disease pairs
+            </span>
+            <span class="ml-auto text-muted-foreground">
+              the {{ data.eligibility.excluded.toLocaleString() }} excluded diseases contribute nothing
+            </span>
+          </div>
+
+          <p class="mb-1.5 mt-3 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+            How those pairs are admitted, de-duplicated and split
           </p>
+          <!-- `duplicate admissions` is drawn, not just described: without it the
+               pool node takes 8.8M in and emits 6.75M, and 23% of the width
+               disappears at the node with nothing on screen to account for it.
+               Colours are deliberate, not a cycle -- --chart-2 is what survives
+               and --muted is what is dropped, in BOTH plots. -->
           <ActSankey
-            :nodes="[...data.routes.map((r) => ({ name: r.label })), { name: 'candidate pool' }]"
-            :links="data.routes.map((r) => ({ source: r.label, target: 'candidate pool', value: r.count }))"
-            :height="250" />
+            :nodes="[...data.routes.map((r) => ({ name: r.label })),
+                     { name: 'candidate pool', color: '--chart-2' },
+                     { name: 'duplicate admissions', color: '--muted' },
+                     ...data.splits.map((sp) => ({ name: sp.split }))]"
+            :links="[
+              ...data.routes.map((r) => ({ source: r.label, target: 'candidate pool', value: r.count })),
+              { source: 'candidate pool', target: 'duplicate admissions', value: data.duplicates_removed },
+              ...data.splits.map((sp) => ({ source: 'candidate pool', target: sp.split, value: sp.rows }))]"
+            :height="320" />
 
           <div class="mt-2 flex gap-8">
             <ActStat label="Pool" :value="data.union_rows.toLocaleString()" sub="gene–disease pairs" />
@@ -132,12 +195,46 @@
           </div>
 
           <ActSay class="mt-3">
+            <b>Why the routes sum to more than the pool.</b> They are not disjoint — one pair can be
+            admitted by two routes at once, so the three add to
+            {{ data.route_admissions.toLocaleString() }} admissions but only
+            <b>{{ data.union_rows.toLocaleString() }}</b> distinct pairs survive.
+            The {{ data.duplicates_removed.toLocaleString() }} difference is not a loss: it is the same
+            pair counted twice. The pool is exactly what the three splits partition, which is why the
+            split widths below add back to it.
+          </ActSay>
+          <ActSay class="mt-2">
             <b>{{ data.eligibility.excluded.toLocaleString() }} of
             {{ data.eligibility.total.toLocaleString() }} diseases — {{ data.eligibility.pct_excluded }}% —
-            never enter the pool at all</b>, because they carry too few curated gene associations. The model has
-            nothing to learn from and nothing to be tested on for those. This is the number to volunteer, not
-            to be asked for.
+            never enter at all</b>, because they carry too few curated gene associations. The model has
+            nothing to learn from and nothing to be tested on for those. This is the number to volunteer,
+            not to be asked for.
           </ActSay>
+        </template>
+      </ActCard>
+
+      <ActCard span="col-span-12 lg:col-span-5" :icon="Target" accent="var(--chart-1)"
+               title="Precision, against the base rate it has to beat" :chips="[['live', 'live']]"
+               desc="Accuracy is meaningless at a 1.9% positive rate — a model predicting “no” for everything scores 98%. Precision against the base rate is the honest comparison."
+               :src="['split_audit_2']">
+        <template v-if="data">
+          <p class="mb-1 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+            Precision · %
+          </p>
+          <ActBar :rows="precisionRows" :row-height="26" />
+          <p class="mb-1 mt-4 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+            Average precision · area under PR
+          </p>
+          <ActBar :rows="auprcRows" :row-height="26" />
+          <ActSay class="mt-3">
+            Precision is <b>{{ (100 * data.champion.precision).toFixed(1) }}%</b> against a base rate of
+            <b>{{ (100 * data.champion.base_rate).toFixed(2) }}%</b> — about
+            <b>{{ precisionLift }}×</b> chance. The number to distrust is the
+            <b>{{ (100 * 0.9776).toFixed(1) }}%</b> accuracy: at this class balance it says nothing.
+          </ActSay>
+          <p class="mt-2 font-mono text-[10px] text-muted-foreground">
+            champion m7-f14 · metrics {{ data.champion.source }}
+          </p>
         </template>
       </ActCard>
 
@@ -193,7 +290,7 @@
         </div>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-5" :icon="ListTree" accent="var(--chart-5)"
+      <ActCard span="col-span-12" :icon="ListTree" accent="var(--chart-5)"
                title="What the 14 features actually are" :chips="[['live', 'live']]"
                desc="Network topology, not biology. Provenance features are highlighted — they are what the model leans on most.">
         <Table v-if="data">
