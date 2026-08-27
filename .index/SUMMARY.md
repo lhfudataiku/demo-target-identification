@@ -22,11 +22,12 @@ flags them as historical dropped.
 | `AGENTS.md` | 0 | 1 | 8 | 9 |
 | `CLAUDE.md` | 0 | 1 | 8 | 9 |
 | `DECISIONS.md` | 2 | 59 | 350 | 411 |
+| `archive/DASHBOARD_BUILD_LOG.md` | 0 | 109 | 178 | 287 |
 | `docs/README.md` | 0 | 0 | 1 | 1 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
-| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 137 | 255 | 392 |
-| `docs/demo/DEMO_NARRATIVE.md` | 1 | 17 | 17 | 35 |
+| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 51 | 78 | 129 |
+| `docs/demo/DEMO_NARRATIVE.md` | 1 | 19 | 3 | 23 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
 | `docs/platform/DSS_CHEATSHEET.md` | 0 | 1 | 6 | 7 |
@@ -36,11 +37,13 @@ flags them as historical dropped.
 | `docs/reference/DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
 | `docs/reference/RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
 | `notebooks/README.md` | 0 | 2 | 2 | 4 |
-| **total** | **49** | **350** | **1694** | **2093** |
+| `webapp/DEPLOYMENT.md` | 0 | 0 | 1 | 1 |
+| `webapp/README.md` | 0 | 6 | 1 | 7 |
+| **total** | **49** | **381** | **1683** | **2113** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**407 rows.** Of 1694 total orphans, these are the model-dependent ones: the numbers that move
+**401 rows.** Of 1683 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -48,65 +51,65 @@ when the champion changes and that no notebook would catch.
 | `AGENTS.md:33` | - | 1,100 | Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `st |
 | `AGENTS.md:33` | - | 129,253 | Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `st |
 | `AGENTS.md:73` | - | 0.9354 | - **A benchmark a lookup table wins is measuring the lookup.** Drug-target AUC is dominate |
-| `CLAUDE.md:45` | - | 129,253 | `dashboard_persona_trust`, `drug_evidence_pairs` and `target_candidates_2` (129,253 ranked |
-| `docs/README.md:32` | - | 95.7 | \| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) \| **Current mockup.** |
+| `CLAUDE.md:45` | - | 129,253 | shared `40 Candidate ranking` zone (`dashboard_candidates`, `target_candidates_2`, 129,253 |
+| `archive/DASHBOARD_BUILD_LOG.md:238` | 12.4 | 0.8962 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
+| `archive/DASHBOARD_BUILD_LOG.md:238` | 12.4 | 0.3359 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
+| `archive/DASHBOARD_BUILD_LOG.md:242` | 12.4 | 0.8962 | \| AUROC \| 0.8962 \| **0.8230** \| +7.3 pts — exactly the pooled overstatement the projec |
+| `archive/DASHBOARD_BUILD_LOG.md:243` | 12.4 | 0.3359 | \| AUPRC \| 0.3359 \| **0.1778** \| nearly 2× \| |
+| `archive/DASHBOARD_BUILD_LOG.md:243` | 12.4 | 0.1778 | \| AUPRC \| 0.3359 \| **0.1778** \| nearly 2× \| |
+| `archive/DASHBOARD_BUILD_LOG.md:248` | 12.4 | 0.0189 | candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion |
+| `archive/DASHBOARD_BUILD_LOG.md:248` | 12.4 | 0.1778 | candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion |
+| `archive/DASHBOARD_BUILD_LOG.md:300` | 12.6 | 129,253 | drivers for all 129,253 scored rows. Aggregating gives an empirical importance ranking ove |
+| `archive/DASHBOARD_BUILD_LOG.md:388` | 12.7 | 1.041 | **TNBC's upper bound is 1.041 — impossible for an AUC.** That single fact demonstrates the |
+| `archive/DASHBOARD_BUILD_LOG.md:481` | 12.11 | 2.9 | 1. **`2.9×` degree-matched at top-10 is unguarded and matches no current estimator.** The  |
+| `archive/DASHBOARD_BUILD_LOG.md:578` | 13.4 | 0.06 | from a floor 312× higher than one at 0.06%. Comparing AUPRC across that population compare |
+| `archive/DASHBOARD_BUILD_LOG.md:585` | 13.4 | 0.1778 | So the rule: **AUPRC only at a single fixed prevalence** (the pooled pool at 1.89%, where  |
+| `archive/DASHBOARD_BUILD_LOG.md:586` | 13.4 | 0.0189 | a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which  |
+| `archive/DASHBOARD_BUILD_LOG.md:586` | 13.4 | 9.4 | a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which  |
+| `archive/DASHBOARD_BUILD_LOG.md:641` | 13.7 | 0.0001 | Every value agrees to ≤ 0.0001. The interval is therefore **pure arithmetic on `auc`, `n_p |
+| `archive/DASHBOARD_BUILD_LOG.md:1406` | 21.5 | 0.8623 | \| `validation_auc_by_disease` \| 670 rows, 668 scored, **macro 0.8230, median 0.8623** —  |
+| `archive/DASHBOARD_BUILD_LOG.md:1549` | 23.2 | 0.6911 | And `models.tsv`: **m3-f12 = 0.6911, m7-f14 (champion) = 0.6886.** |
+| `archive/DASHBOARD_BUILD_LOG.md:1570` | 23.3 | 0.6911 | \| `nb1`'s three figures \| the assertion values pinned to the champion (0.6886, not 0.691 |
+| `archive/DASHBOARD_BUILD_LOG.md:1609` | 24.2 | 3,958,921 | **1. `scored_champion` cannot be read whole in a container.** 3,958,921 rows killed the pr |
+| `archive/DASHBOARD_BUILD_LOG.md:1748` | 26.1 | 0.8197 | \| 10.1 macro per-disease AUC \| 0.8197 \| **0.8230** \| **m3-f12** (`models.tsv` assoc_au |
+| `archive/DASHBOARD_BUILD_LOG.md:1749` | 26.1 | 0.7976 | \| 7.3 per-family macro AUC \| 0.7976 \| **0.8009** \| m3-era \| |
+| `archive/DASHBOARD_BUILD_LOG.md:1750` | 26.1 | 0.024 | \| 7.4 orthogonality pearson r \| +0.024 \| **+0.002** \| m3-era \| |
+| `archive/DASHBOARD_BUILD_LOG.md:1751` | 26.1 | 0.0006 | \| 7.4 orthogonality R² \| 0.0006 \| **0.0000** \| m3-era \| |
+| `archive/DASHBOARD_BUILD_LOG.md:1757` | 26.1 | 0.641 | \| 6.1 dwpc_GPGD single-feature AUC \| 0.641 \| **0.702** \| \| |
+| `archive/DASHBOARD_BUILD_LOG.md:1757` | 26.1 | 0.702 | \| 6.1 dwpc_GPGD single-feature AUC \| 0.641 \| **0.702** \| \| |
+| `archive/DASHBOARD_BUILD_LOG.md:1758` | 26.1 | 0.601 | \| 6.1 dwpc_GGD single-feature AUC \| 0.601 \| **0.674** \| \| |
+| `archive/DASHBOARD_BUILD_LOG.md:1758` | 26.1 | 0.674 | \| 6.1 dwpc_GGD single-feature AUC \| 0.601 \| **0.674** \| \| |
+| `archive/DASHBOARD_BUILD_LOG.md:1831` | 27.2 | 0.8197 | \| 3 \| `0.8197` → **`0.8230`** \| the *documented value* in `check("10.1 macro per-diseas |
+| `archive/DASHBOARD_BUILD_LOG.md:1831` | 27.2 | 0.0006 | \| 3 \| `0.8197` → **`0.8230`** \| the *documented value* in `check("10.1 macro per-diseas |
+| `archive/DASHBOARD_BUILD_LOG.md:1832` | 27.2 | 0.7976 | \| 5 \| `0.7976` → **`0.8009`** \| `check("7.3 per-family macro AUC", …)` \| |
+| `archive/DASHBOARD_BUILD_LOG.md:1833` | 27.2 | 0.024 | \| 7 \| `0.024` → **`0.002`** \| `check("7.4 orthogonality pearson r", …)` \| |
+| `archive/DASHBOARD_BUILD_LOG.md:1835` | 27.2 | 0.6911 | \| 9 \| `0.6911` → **`0.6886`** \| `check("7.4 drug-target macro AUC", …)`; its `tol=0.000 |
+| `archive/DASHBOARD_BUILD_LOG.md:1835` | 27.2 | 0.0006 | \| 9 \| `0.6911` → **`0.6886`** \| `check("7.4 drug-target macro AUC", …)`; its `tol=0.000 |
+| `archive/DASHBOARD_BUILD_LOG.md:1889` | 28.1 | 0.8197 | 1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, |
+| `archive/DASHBOARD_BUILD_LOG.md:1889` | 28.1 | 0.7976 | 1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, |
+| `archive/DASHBOARD_BUILD_LOG.md:2026` | 30.2 | 425,469 | and `ot_ab_tractable` (425,469 + 481,777) independently sum to 907,246. If the codified tr |
+| `archive/DASHBOARD_BUILD_LOG.md:2026` | 30.2 | 481,777 | and `ot_ab_tractable` (425,469 + 481,777) independently sum to 907,246. If the codified tr |
+| `docs/README.md:33` | - | 95.7 | \| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) \| **Current mockup.** |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:97` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:106` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:108` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
-| `docs/demo/DASHBOARD_DESIGN.md:259` | 4 | 0.8623 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
-| `docs/demo/DASHBOARD_DESIGN.md:259` | 4 | 0.1045 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
-| `docs/demo/DASHBOARD_DESIGN.md:259` | 4 | 0.9962 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
-| `docs/demo/DASHBOARD_DESIGN.md:261` | 4 | 19.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
-| `docs/demo/DASHBOARD_DESIGN.md:261` | 4 | 28.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
-| `docs/demo/DASHBOARD_DESIGN.md:261` | 4 | 59.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
-| `docs/demo/DASHBOARD_DESIGN.md:297` | 4 | 0.9337 | \| The panel \| table \| 12 breast terms: pool, known targets, AUC, hits@50, enrichment, v |
-| `docs/demo/DASHBOARD_DESIGN.md:297` | 4 | 0.8949 | \| The panel \| table \| 12 breast terms: pool, known targets, AUC, hits@50, enrichment, v |
-| `docs/demo/DASHBOARD_DESIGN.md:316` | 4 | 12,272 | \| The ranked list \| virtualised table \| 12,272 rows, rank + percentile + score + SHAP d |
-| `docs/demo/DASHBOARD_DESIGN.md:317` | 4 | 12,272 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
-| `docs/demo/DASHBOARD_DESIGN.md:317` | 4 | 11,673 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
-| `docs/demo/DASHBOARD_DESIGN.md:317` | 4 | 7,951 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
-| `docs/demo/DASHBOARD_DESIGN.md:317` | 4 | 7,274 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
-| `docs/demo/DASHBOARD_DESIGN.md:381` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
-| `docs/demo/DASHBOARD_DESIGN.md:381` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
-| `docs/demo/DASHBOARD_DESIGN.md:383` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
-| `docs/demo/DASHBOARD_DESIGN.md:383` | 4 | 4.0 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
-| `docs/demo/DASHBOARD_DESIGN.md:778` | 12.4 | 0.8962 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
-| `docs/demo/DASHBOARD_DESIGN.md:778` | 12.4 | 0.3359 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
-| `docs/demo/DASHBOARD_DESIGN.md:782` | 12.4 | 0.8962 | \| AUROC \| 0.8962 \| **0.8230** \| +7.3 pts — exactly the pooled overstatement the projec |
-| `docs/demo/DASHBOARD_DESIGN.md:783` | 12.4 | 0.3359 | \| AUPRC \| 0.3359 \| **0.1778** \| nearly 2× \| |
-| `docs/demo/DASHBOARD_DESIGN.md:783` | 12.4 | 0.1778 | \| AUPRC \| 0.3359 \| **0.1778** \| nearly 2× \| |
-| `docs/demo/DASHBOARD_DESIGN.md:788` | 12.4 | 0.0189 | candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion |
-| `docs/demo/DASHBOARD_DESIGN.md:788` | 12.4 | 0.1778 | candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion |
-| `docs/demo/DASHBOARD_DESIGN.md:840` | 12.6 | 129,253 | drivers for all 129,253 scored rows. Aggregating gives an empirical importance ranking ove |
-| `docs/demo/DASHBOARD_DESIGN.md:928` | 12.7 | 1.041 | **TNBC's upper bound is 1.041 — impossible for an AUC.** That single fact demonstrates the |
-| `docs/demo/DASHBOARD_DESIGN.md:1021` | 12.11 | 2.9 | 1. **`2.9×` degree-matched at top-10 is unguarded and matches no current estimator.** The  |
-| `docs/demo/DASHBOARD_DESIGN.md:1118` | 13.4 | 0.06 | from a floor 312× higher than one at 0.06%. Comparing AUPRC across that population compare |
-| `docs/demo/DASHBOARD_DESIGN.md:1125` | 13.4 | 0.1778 | So the rule: **AUPRC only at a single fixed prevalence** (the pooled pool at 1.89%, where  |
-| `docs/demo/DASHBOARD_DESIGN.md:1126` | 13.4 | 0.0189 | a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which  |
-| `docs/demo/DASHBOARD_DESIGN.md:1126` | 13.4 | 9.4 | a 0.0189 floor means 9.4× chance). For per-disease precision use `rank_enrichment`, which  |
-| `docs/demo/DASHBOARD_DESIGN.md:1181` | 13.7 | 0.0001 | Every value agrees to ≤ 0.0001. The interval is therefore **pure arithmetic on `auc`, `n_p |
-| `docs/demo/DASHBOARD_DESIGN.md:1946` | 21.5 | 0.8623 | \| `validation_auc_by_disease` \| 670 rows, 668 scored, **macro 0.8230, median 0.8623** —  |
-| `docs/demo/DASHBOARD_DESIGN.md:2089` | 23.2 | 0.6911 | And `models.tsv`: **m3-f12 = 0.6911, m7-f14 (champion) = 0.6886.** |
-| `docs/demo/DASHBOARD_DESIGN.md:2110` | 23.3 | 0.6911 | \| `nb1`'s three figures \| the assertion values pinned to the champion (0.6886, not 0.691 |
-| `docs/demo/DASHBOARD_DESIGN.md:2149` | 24.2 | 3,958,921 | **1. `scored_champion` cannot be read whole in a container.** 3,958,921 rows killed the pr |
-| `docs/demo/DASHBOARD_DESIGN.md:2288` | 26.1 | 0.8197 | \| 10.1 macro per-disease AUC \| 0.8197 \| **0.8230** \| **m3-f12** (`models.tsv` assoc_au |
-| `docs/demo/DASHBOARD_DESIGN.md:2289` | 26.1 | 0.7976 | \| 7.3 per-family macro AUC \| 0.7976 \| **0.8009** \| m3-era \| |
-| `docs/demo/DASHBOARD_DESIGN.md:2290` | 26.1 | 0.024 | \| 7.4 orthogonality pearson r \| +0.024 \| **+0.002** \| m3-era \| |
-| `docs/demo/DASHBOARD_DESIGN.md:2291` | 26.1 | 0.0006 | \| 7.4 orthogonality R² \| 0.0006 \| **0.0000** \| m3-era \| |
-| `docs/demo/DASHBOARD_DESIGN.md:2297` | 26.1 | 0.641 | \| 6.1 dwpc_GPGD single-feature AUC \| 0.641 \| **0.702** \| \| |
-| `docs/demo/DASHBOARD_DESIGN.md:2297` | 26.1 | 0.702 | \| 6.1 dwpc_GPGD single-feature AUC \| 0.641 \| **0.702** \| \| |
-| `docs/demo/DASHBOARD_DESIGN.md:2298` | 26.1 | 0.601 | \| 6.1 dwpc_GGD single-feature AUC \| 0.601 \| **0.674** \| \| |
-| `docs/demo/DASHBOARD_DESIGN.md:2298` | 26.1 | 0.674 | \| 6.1 dwpc_GGD single-feature AUC \| 0.601 \| **0.674** \| \| |
-| `docs/demo/DASHBOARD_DESIGN.md:2371` | 27.2 | 0.8197 | \| 3 \| `0.8197` → **`0.8230`** \| the *documented value* in `check("10.1 macro per-diseas |
-| `docs/demo/DASHBOARD_DESIGN.md:2371` | 27.2 | 0.0006 | \| 3 \| `0.8197` → **`0.8230`** \| the *documented value* in `check("10.1 macro per-diseas |
-| `docs/demo/DASHBOARD_DESIGN.md:2372` | 27.2 | 0.7976 | \| 5 \| `0.7976` → **`0.8009`** \| `check("7.3 per-family macro AUC", …)` \| |
-| `docs/demo/DASHBOARD_DESIGN.md:2373` | 27.2 | 0.024 | \| 7 \| `0.024` → **`0.002`** \| `check("7.4 orthogonality pearson r", …)` \| |
-| `docs/demo/DASHBOARD_DESIGN.md:2375` | 27.2 | 0.6911 | \| 9 \| `0.6911` → **`0.6886`** \| `check("7.4 drug-target macro AUC", …)`; its `tol=0.000 |
-| `docs/demo/DASHBOARD_DESIGN.md:2375` | 27.2 | 0.0006 | \| 9 \| `0.6911` → **`0.6886`** \| `check("7.4 drug-target macro AUC", …)`; its `tol=0.000 |
-| `docs/demo/DASHBOARD_DESIGN.md:2429` | 28.1 | 0.8197 | 1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, |
-| `docs/demo/DASHBOARD_DESIGN.md:2429` | 28.1 | 0.7976 | 1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, |
+| `docs/demo/DASHBOARD_DESIGN.md:268` | 4 | 0.8623 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
+| `docs/demo/DASHBOARD_DESIGN.md:268` | 4 | 0.1045 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
+| `docs/demo/DASHBOARD_DESIGN.md:268` | 4 | 0.9962 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
+| `docs/demo/DASHBOARD_DESIGN.md:270` | 4 | 19.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
+| `docs/demo/DASHBOARD_DESIGN.md:270` | 4 | 28.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
+| `docs/demo/DASHBOARD_DESIGN.md:270` | 4 | 59.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
+| `docs/demo/DASHBOARD_DESIGN.md:306` | 4 | 0.9337 | \| The panel \| table \| 12 breast terms: pool, known targets, AUC, hits@50, enrichment, v |
+| `docs/demo/DASHBOARD_DESIGN.md:306` | 4 | 0.8949 | \| The panel \| table \| 12 breast terms: pool, known targets, AUC, hits@50, enrichment, v |
+| `docs/demo/DASHBOARD_DESIGN.md:325` | 4 | 12,272 | \| The ranked list \| virtualised table \| 12,272 rows, rank + percentile + score + SHAP d |
+| `docs/demo/DASHBOARD_DESIGN.md:326` | 4 | 12,272 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
+| `docs/demo/DASHBOARD_DESIGN.md:326` | 4 | 11,673 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
+| `docs/demo/DASHBOARD_DESIGN.md:326` | 4 | 7,951 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
+| `docs/demo/DASHBOARD_DESIGN.md:326` | 4 | 7,274 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
+| `docs/demo/DASHBOARD_DESIGN.md:390` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/DASHBOARD_DESIGN.md:390` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
 
-*347 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*341 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 

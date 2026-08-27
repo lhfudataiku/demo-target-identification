@@ -137,13 +137,13 @@ gene_index	compute_enriched_disease_context_1	module_size >= 20	1		Settled 2026-
 gene_index	compute_enriched_dwpc_GCD	module_size >= 20	1		POOL ROUTE, compound-mediated. Not a model feature -- pool membership only (see _champion_features_provenance). Source of the 5.2.1 selection bias.
 gene_index	compute_enriched_dwpc_GGD	module_size >= 20	1		POOL ROUTE. Degrees come from whole-graph COUNT{} subqueries; module_size is per-disease with LOO. Verified in dss_recipes/cypher/.
 gene_index	compute_enriched_dwpc_GPGD	module_size >= 20	1		POOL ROUTE. Same structure as GGD, pathway-mediated middle node.
+gene_index	compute_enriched_gene_safety_v2	-	-		
 gene_index	compute_enriched_guilt_by_association_1	module_size >= 20	1		deg_m and ppi_deg_g are whole-graph COUNT{} over protein_protein, halved for the both-directions Kuzu build. Emits ppi_adamic_adar, ppi_jaccard.
 gene_index	compute_enriched_inflammatory_go	-	-		
 gene_index	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1		Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
 gene_index	compute_enriched_rwr_score_1	MIN_SEEDS 20	1		MIN_SEEDS gate inside a per-disease loop; adjacency and degrees are global. Was UNVERSIONED until 2026-08-21 -- a gated recipe with no diff history.
 gene_index	compute_enriched_shared_pathway_count_1	module_size >= 20	1		n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
 gene_index	compute_gene_localization	-	-		
-gene_index	compute_gene_safety_v2	-	-		
 gene_index	compute_known_drug_truth	-	-		
 gene_index	compute_ppi_cn_zscore	-	-		
 gene_index	compute_ppi_evidence_depth	-	-		
@@ -196,8 +196,7 @@ lift_top20	compute_novel_discovery_eval	-	-
 lift_top200	compute_novel_discovery_eval	-	-		
 lift_top50	compute_novel_discovery_eval	-	-		
 localization_class	compute_gene_localization	-	-		
-lof_intolerant	compute_gene_safety_v2	-	-		
-lof_sortkey	compute_gene_safety_best	-	-		
+lof_intolerant	compute_enriched_gene_safety_v2	-	-		
 mean_proba	compute_hub_bias_meter	-	-		
 median_degree	compute_hub_bias_meter	-	-		
 median_pct	compute_drug_target_benchmark	-	-		
@@ -264,7 +263,7 @@ recall_ceiling	compute_pool_reachability	-	-
 rho_degree_proba	compute_hub_bias_meter	-	-		
 rwr_norm	compute_enriched_graph_features_1	-	-		
 rwr_score	compute_enriched_rwr_score_1	MIN_SEEDS 20	1		MIN_SEEDS gate inside a per-disease loop; adjacency and degrees are global. Was UNVERSIONED until 2026-08-21 -- a gated recipe with no diff history.
-safety_flag	compute_gene_safety_v2	-	-		
+safety_flag	compute_enriched_gene_safety_v2	-	-		
 scope	compute_tractability_axis	-	-		
 score	join_disease_name	-	-		
 shared_pathway_count	compute_enriched_shared_pathway_count_1	module_size >= 20	1		n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.

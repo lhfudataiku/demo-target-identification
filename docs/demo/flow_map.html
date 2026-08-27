@@ -88,7 +88,7 @@ a{color:var(--accent)}
 <p class="sub">Every dataset in the project, mapped to the notebook or webapp act that consumes it,
 with the in-zone recipe chain behind it — so the pruning pass removes what is genuinely dead and
 nothing else.</p>
-<div class="meta">100 datasets · 14 zones · live DSS state cross-referenced against
+<div class="meta">96 datasets · 14 zones · live DSS state cross-referenced against
 the recipe graph, notebooks/*.py and webapp/backend.py</div>
 </header>
 <section><div class="alert">
@@ -176,19 +176,16 @@ dataset from an orphan.</p>
 <tr><td class="ds">enriched_graph_features_1</td><td class="rc">—</td><td class="rc">compute_enriched_graph_features_1</td><td class="rc">join</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">enriched_pair_features_index_1</td><td class="rc">—</td><td class="rc">compute_enriched_pair_features_index_1</td><td class="rc">vstack</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 </tbody></table></div></div>
-<div class="zone"><div class="zh"><span class="zn">20 Annotations &amp; split key</span><span class="zc">15 datasets</span></div>
+<div class="zone"><div class="zh"><span class="zn">20 Annotations &amp; split key</span><span class="zc">12 datasets</span></div>
 <div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
 <tr><td class="ds">disease_family_id</td><td class="rc">webapp</td><td class="rc">compute_disease_family_id</td><td class="rc">python</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
-<tr><td class="ds">drug_best</td><td class="rc">—</td><td class="rc">compute_drug_best</td><td class="rc">topn</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">drug_classified</td><td class="rc">—</td><td class="rc">compute_drug_classified</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">drug_joined</td><td class="rc">—</td><td class="rc">compute_drug_joined</td><td class="rc">join</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
-<tr><td class="ds">enriched_gene_druggability_v2</td><td class="rc">nb6</td><td class="rc">compute_gene_druggability_v2</td><td class="rc">shaker</td><td class="num">3</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_gene_druggability_v2</td><td class="rc">nb6</td><td class="rc">compute_enriched_gene_druggability_v2</td><td class="rc">shaker</td><td class="num">3</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">enriched_gene_localization</td><td class="rc">—</td><td class="rc">compute_gene_localization</td><td class="rc">python</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
-<tr><td class="ds">enriched_gene_safety_v2</td><td class="rc">nb6</td><td class="rc">compute_gene_safety_v2</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_gene_safety_v2</td><td class="rc">nb6</td><td class="rc">compute_enriched_gene_safety_v2</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">gene_crosswalk</td><td class="rc">—</td><td class="rc">compute_gene_crosswalk</td><td class="rc">join</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
-<tr><td class="ds">gene_safety_best</td><td class="rc">—</td><td class="rc">compute_gene_safety_best</td><td class="rc">topn</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">gene_safety_joined</td><td class="rc">—</td><td class="rc">compute_gene_safety_join</td><td class="rc">join</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
-<tr><td class="ds">graph_genes</td><td class="rc">—</td><td class="rc">compute_graph_genes</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">hetionet_disease_slim</td><td class="rc">—</td><td class="rc">extract_hetionet_disease_slim</td><td class="rc">python</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">ot_drug_mapped</td><td class="rc">—</td><td class="rc">compute_ot_drug_mapped</td><td class="rc">join</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
 <tr><td class="ds">raw_ot_druggability</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_raw_ot_druggability_copy</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
@@ -239,7 +236,7 @@ dataset from an orphan.</p>
 <tr><td class="ds">graph_ppi_provenance</td><td class="rc">webapp</td><td class="rc">compute_graph_ppi_provenance</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">graph_relation_counts</td><td class="rc">webapp</td><td class="rc">compute_graph_relation_counts</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
 </tbody></table></div></div>
-<div class="zone"><div class="zh"><span class="zn">A2 Calibration (serving)</span><span class="zc">15 datasets</span></div>
+<div class="zone"><div class="zh"><span class="zn">A2 Calibration (serving)</span><span class="zc">14 datasets</span></div>
 <div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
 <tr><td class="ds">disease_eligibility</td><td class="rc">webapp</td><td class="rc">compute_disease_eligibility</td><td class="rc">python</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">drug_target_benchmark</td><td class="rc">nb3, nb6</td><td class="rc">compute_drug_target_benchmark</td><td class="rc">python</td><td class="num">2</td><td><span class="chip serving">Serving</span></td></tr>
@@ -253,7 +250,6 @@ dataset from an orphan.</p>
 <tr><td class="ds">split_audit_2</td><td class="rc">webapp, nb2</td><td class="rc">compute_split_audit_2</td><td class="rc">python</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">validation_auc_by_disease</td><td class="rc">webapp, nb3, nb5, nb6</td><td class="rc">compute_validation_auc_by_disease</td><td class="rc">shaker</td><td class="num">3</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">validation_auc_ci</td><td class="rc">—</td><td class="rc">compute_validation_auc_ci</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
-<tr><td class="ds">validation_set_scored</td><td class="rc">—</td><td class="rc">compute_validation_set_scored</td><td class="rc">sync</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">validation_set_scored_grouped</td><td class="rc">—</td><td class="rc">compute_validation_set_scored_grouped</td><td class="rc">grouping</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
 <tr><td class="ds">validation_set_scored_windows</td><td class="rc">—</td><td class="rc">compute_validation_set_scored_windows</td><td class="rc">window</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
 </tbody></table></div></div>

@@ -5,6 +5,7 @@ docs/appendix/manifest.json	docs	LIVE (referenced)	1	docs/appendix/README.md
 docs/demo/model_recovery.json	docs	LIVE (referenced)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/attach_node_index.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_breast_panel.py	recipe-mirror	MIRROR	3	archive/DASHBOARD_BUILD_LOG.md,docs/demo/DASHBOARD_MOCKUP_V2.html,docs/demo/DASHBOARD_MOCKUP_V3.html
+dss_recipes/compute_disease_eligibility.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_family_id.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_group_map.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_disease_hierarchy_annotation.py	recipe-mirror	MIRROR (graph-build project)	0	-
@@ -18,6 +19,7 @@ dss_recipes/compute_filter_three_axes.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_gene_druggability.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_gene_localization.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_gene_names.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/compute_hub_bias_meter.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_kg.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_kg_edges.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_known_drug_truth.py	recipe-mirror	MIRROR	0	-

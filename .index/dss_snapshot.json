@@ -190,36 +190,6 @@
    "disease_index",
    "gene_index_count"
   ],
-  "drug_best": [
-   "gene_index",
-   "is_plasma_membrane",
-   "is_secreted",
-   "is_membrane_only",
-   "localization_class",
-   "ensg",
-   "symbol",
-   "ot_class_l1",
-   "ot_class_l2",
-   "ot_sm_buckets",
-   "has_approved_drug",
-   "ot_ab_buckets",
-   "ot_subcell_membrane",
-   "druggability_evidence",
-   "ev_rank",
-   "ot_subcell_secreted",
-   "druggability_class",
-   "ot_sm_tractable",
-   "ot_ab_tractable",
-   "entrez_id",
-   "uniprot_id",
-   "omim_id",
-   "refseq_ids",
-   "node_id",
-   "node_type",
-   "node_name",
-   "node_source",
-   "node_index"
-  ],
   "drug_classified": [
    "gene_index",
    "is_plasma_membrane",
@@ -385,12 +355,12 @@
    "safety_dosing",
    "lof_oe",
    "lof_oe_upper",
-   "lof_intolerant",
    "lof_bin6",
    "mis_oe",
    "has_safety_liability",
-   "safety_flag",
-   "gene_index"
+   "gene_index",
+   "lof_intolerant",
+   "safety_flag"
   ],
   "enriched_graph_features_1": [
    "gene_index",
@@ -739,29 +709,6 @@
    "omim_id",
    "refseq_ids"
   ],
-  "gene_safety_best": [
-   "ensg",
-   "symbol",
-   "safety_assessed",
-   "n_safety_liabilities",
-   "safety_events",
-   "safety_dosing",
-   "lof_oe",
-   "lof_oe_upper",
-   "lof_bin6",
-   "mis_oe",
-   "has_safety_liability",
-   "entrez_id",
-   "uniprot_id",
-   "omim_id",
-   "refseq_ids",
-   "node_id",
-   "node_type",
-   "node_name",
-   "node_source",
-   "node_index",
-   "lof_sortkey"
-  ],
   "gene_safety_joined": [
    "ensg",
    "symbol",
@@ -789,13 +736,6 @@
    "display_relation",
    "x_index",
    "y_index"
-  ],
-  "graph_genes": [
-   "node_id",
-   "node_type",
-   "node_name",
-   "node_source",
-   "node_index"
   ],
   "graph_label_evidence": [
    "datatypes",
@@ -1810,53 +1750,6 @@
    "split_key_name",
    "split_key_rule"
   ],
-  "validation_set_scored": [
-   "gene_index",
-   "disease_index",
-   "gene_ppi_degree",
-   "gene_n_diseases",
-   "gene_n_pathways",
-   "module_size",
-   "degree",
-   "clustering_coefficient",
-   "triangles",
-   "eigenvector_centrality",
-   "pagerank",
-   "dwpc_GPGD",
-   "dwpc_GCD",
-   "dwpc_GGD",
-   "ppi_common_neighbors",
-   "ppi_adamic_adar",
-   "ppi_jaccard",
-   "prox_closest",
-   "prox_mean",
-   "prox_kernel",
-   "prox_n_reach",
-   "shared_pathway_count",
-   "shared_pathway_frac",
-   "rwr_score",
-   "disease_context",
-   "relation",
-   "has_inflammatory_go_annotation",
-   "ppi_evidence_depth",
-   "ppi_multi_source_frac",
-   "ppi_edges_with_provenance",
-   "ppi_common_neighbors_z",
-   "ppi_cn_expected",
-   "dwpc_GBGD",
-   "dwpc_GFGD",
-   "rwr_norm",
-   "is_target",
-   "disease_family_id",
-   "anchor_name",
-   "hop_depth",
-   "disease_split_key",
-   "split_key_name",
-   "split_key_rule",
-   "proba_0",
-   "proba_1",
-   "prediction"
-  ],
   "validation_set_scored_grouped": [
    "disease_index",
    "target_rank_sum",
@@ -2251,17 +2144,6 @@
   ],
   "type": "python"
  },
- "compute_drug_best": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "drug_classified"
-  ],
-  "outputs": [
-   "drug_best"
-  ],
-  "type": "topn"
- },
  "compute_drug_classified": {
   "code": null,
   "cypher": null,
@@ -2379,6 +2261,28 @@
    "enriched_dwpc_GPGD"
   ],
   "type": "CustomCode_visual-graph-execute-cypher"
+ },
+ "compute_enriched_gene_druggability_v2": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "drug_classified"
+  ],
+  "outputs": [
+   "enriched_gene_druggability_v2"
+  ],
+  "type": "topn"
+ },
+ "compute_enriched_gene_safety_v2": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "gene_safety_joined"
+  ],
+  "outputs": [
+   "enriched_gene_safety_v2"
+  ],
+  "type": "topn"
  },
  "compute_enriched_graph_features_1": {
   "code": null,
@@ -2562,23 +2466,12 @@
   "cypher": null,
   "inputs": [
    "gene_names",
-   "graph_genes"
+   "graph_nodes"
   ],
   "outputs": [
    "gene_crosswalk"
   ],
   "type": "join"
- },
- "compute_gene_druggability_v2": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "drug_best"
-  ],
-  "outputs": [
-   "enriched_gene_druggability_v2"
-  ],
-  "type": "shaker"
  },
  "compute_gene_localization": {
   "code": "# Gene localization flags \u2014 druggability proxy from GO cellular_component.\n#\n# WHY: the model ranks non-druggable secreted peptide ligands (GCG/GIP/IAPP) ABOVE the\n# membrane receptors that are the actual known targets (GLP1R/GIPR/CALCR) \u2014 see\n# TARGET_PRIORITIZER \u00a710.3. Network similarity cannot fix this; it needs a target-class\n# signal. GO cellular_component is already in the graph, so this costs no new data source.\n#\n# NODE_INDEX SAFETY: this recipe only READS the graph and emits a per-gene attribute table\n# keyed on gene_index. It adds no nodes and no edges, so `compute_kg`'s positional\n# node_index assignment is untouched. Never model these as edges -- that would reshuffle\n# every node_index and invalidate the feature tables, the Kuzu snapshot and every model.\n#\n# HIERARCHY DIRECTION: `cellcomp_cellcomp` in graph_edges is reverse-all'd, so parent->child\n# direction is gone. We read `raw_go_hierarchy` (pre-reversal, explicit parent_id/child_id)\n# instead -- the same reason `compute_disease_family_id` reads `raw_disease_disease`.\n# Propagation is DOWNWARD from each anchor: a gene annotated to \"integral component of\n# plasma membrane\" must count as plasma-membrane.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\n# GO ids are stored WITH the \"GO:\" prefix in node_id.\nMEMBRANE_ANCHORS = [\"GO:0005886\",   # plasma membrane\n                    \"GO:0009986\"]   # cell surface\nSECRETED_ANCHORS = [\"GO:0005576\"]   # extracellular region\n\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_type\"], infer_with_pandas=False)\nedges = dataiku.Dataset(\"graph_edges\").get_dataframe(columns=[\"relation\", \"x_index\", \"y_index\"])\n# Dataset DEMO_KG_LS.raw_go_hierarchy renamed to DEMO_KG_raw_go_hierarchy_copy by liheng.fu@dataiku.com on 2026-08-18 09:43:28\n# Dataset DEMO_KG_raw_go_hierarchy_copy renamed to raw_go_hierarchy by liheng.fu@dataiku.com on 2026-08-18 09:55:48\nhier = dataiku.Dataset(\"raw_go_hierarchy\").get_dataframe(infer_with_pandas=False)\n\nnodes[\"node_index\"] = nodes.node_index.astype(int)\ngenes = set(nodes.loc[nodes.node_type == \"gene/protein\", \"node_index\"])\ncc = nodes[nodes.node_type == \"cellular_component\"]\ncc_id_to_idx = dict(zip(cc.node_id.astype(str), cc.node_index))\n\n# ---- descendant closure over the DIRECTED cellcomp hierarchy -------------------\ncc_hier = hier[hier.namespace == \"cellcomp\"]\nchildren = cc_hier.groupby(\"parent_id\").child_id.apply(list).to_dict()\n\n\ndef descendants(anchor_ids):\n    \"\"\"All GO ids at or below the anchors (BFS down parent->child).\"\"\"\n    seen, frontier = set(anchor_ids), list(anchor_ids)\n    while frontier:\n        nxt = []\n        for term in frontier:\n            for c in children.get(term, []):\n                if c not in seen:\n                    seen.add(c)\n                    nxt.append(c)\n        frontier = nxt\n    return seen\n\n\nmem_terms = descendants(MEMBRANE_ANCHORS)\nsec_terms = descendants(SECRETED_ANCHORS)\nprint(f\"membrane term closure: {len(mem_terms)} GO terms (from {len(MEMBRANE_ANCHORS)} anchors)\")\nprint(f\"secreted term closure: {len(sec_terms)} GO terms (from {len(SECRETED_ANCHORS)} anchors)\")\n\nccp = edges[edges.relation == \"cellcomp_protein\"]\n\n\ndef genes_annotated_to(go_ids):\n    idx = {cc_id_to_idx[g] for g in go_ids if g in cc_id_to_idx}\n    hit = set(ccp.loc[ccp.x_index.isin(idx), \"y_index\"]) | set(ccp.loc[ccp.y_index.isin(idx), \"x_index\"])\n    return hit & genes\n\n\nmem = genes_annotated_to(mem_terms)\nsec = genes_annotated_to(sec_terms)\n\nall_genes = sorted(genes)\nout = pd.DataFrame({\"gene_index\": all_genes})\nout[\"is_plasma_membrane\"] = np.where(out.gene_index.isin(mem), 1, 0)\nout[\"is_secreted\"] = np.where(out.gene_index.isin(sec), 1, 0)\n# the discriminating signal: receptors are membrane WITHOUT being secreted\nout[\"is_membrane_only\"] = ((out.is_plasma_membrane == 1) & (out.is_secreted == 0)).astype(int)\nout[\"localization_class\"] = np.select(\n    [(out.is_plasma_membrane == 1) & (out.is_secreted == 0),\n     (out.is_secreted == 1) & (out.is_plasma_membrane == 0),\n     (out.is_plasma_membrane == 1) & (out.is_secreted == 1)],\n    [\"membrane\", \"secreted\", \"membrane_and_secreted\"], default=\"intracellular_or_unannotated\")\n\nprint(f\"\\ngenes: {len(out):,}\")\nprint(out.localization_class.value_counts().to_string())\ndataiku.Dataset(\"enriched_gene_localization\").write_with_schema(out)\n\n",
@@ -2593,17 +2486,6 @@
   ],
   "type": "python"
  },
- "compute_gene_safety_best": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "gene_safety_joined"
-  ],
-  "outputs": [
-   "gene_safety_best"
-  ],
-  "type": "topn"
- },
  "compute_gene_safety_join": {
   "code": null,
   "cypher": null,
@@ -2615,28 +2497,6 @@
    "gene_safety_joined"
   ],
   "type": "join"
- },
- "compute_gene_safety_v2": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "gene_safety_best"
-  ],
-  "outputs": [
-   "enriched_gene_safety_v2"
-  ],
-  "type": "shaker"
- },
- "compute_graph_genes": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "graph_nodes"
-  ],
-  "outputs": [
-   "graph_genes"
-  ],
-  "type": "shaker"
  },
  "compute_graph_label_evidence": {
   "code": null,
@@ -2973,17 +2833,6 @@
   ],
   "type": "shaker"
  },
- "compute_validation_set_scored": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "scored_champion"
-  ],
-  "outputs": [
-   "validation_set_scored"
-  ],
-  "type": "sync"
- },
  "compute_validation_set_scored_grouped": {
   "code": null,
   "cypher": null,
@@ -2999,7 +2848,7 @@
   "code": null,
   "cypher": null,
   "inputs": [
-   "validation_set_scored"
+   "scored_champion"
   ],
   "outputs": [
    "validation_set_scored_windows"

@@ -98,26 +98,23 @@ _Nothing in this zone is read by a notebook or the webapp._
 | `enriched_graph_features_1` | `compute_enriched_graph_features_1` | join | 2 |  |
 | `enriched_pair_features_index_1` | `compute_enriched_pair_features_index_1` | vstack | 1 |  |
 
-## 20 Annotations & split key  (15 datasets)
+## 20 Annotations & split key  (12 datasets)
 
 | dataset | consumed by | producing recipe | downstream | flag |
 |---|---|---|---|---|
 | `disease_family_id` | **webapp** | `compute_disease_family_id` | 2 |  |
-| `enriched_gene_druggability_v2` | nb6 | `compute_gene_druggability_v2` | 3 |  |
-| `enriched_gene_safety_v2` | nb6 | `compute_gene_safety_v2` | 1 |  |
+| `enriched_gene_druggability_v2` | nb6 | `compute_enriched_gene_druggability_v2` | 3 |  |
+| `enriched_gene_safety_v2` | nb6 | `compute_enriched_gene_safety_v2` | 1 |  |
 
-**Read by no notebook and no webapp (12):**
+**Read by no notebook and no webapp (9):**
 
 | dataset | producing recipe | type | downstream | flag |
 |---|---|---|---|---|
-| `drug_best` | `compute_drug_best` | topn | 1 |  |
 | `drug_classified` | `compute_drug_classified` | shaker | 1 |  |
 | `drug_joined` | `compute_drug_joined` | join | 1 |  |
 | `enriched_gene_localization` | `compute_gene_localization` | python | 1 |  |
 | `gene_crosswalk` | `compute_gene_crosswalk` | join | 2 |  |
-| `gene_safety_best` | `compute_gene_safety_best` | topn | 1 |  |
 | `gene_safety_joined` | `compute_gene_safety_join` | join | 1 |  |
-| `graph_genes` | `compute_graph_genes` | shaker | 1 |  |
 | `hetionet_disease_slim` | `extract_hetionet_disease_slim` | python | 1 |  |
 | `ot_drug_mapped` | `compute_ot_drug_mapped` | join | 1 |  |
 | `raw_ot_druggability` | `compute_DEMO_KG_raw_ot_druggability_copy` | sync | 2 |  |
@@ -198,7 +195,7 @@ _Nothing in this zone is read by a notebook or the webapp._
 | `graph_ppi_provenance` | **webapp** | `compute_graph_ppi_provenance` | 0 | serving (webapp TBD) |
 | `graph_relation_counts` | **webapp** | `compute_graph_relation_counts` | 0 | serving (webapp TBD) |
 
-## A2 Calibration (serving)  (15 datasets)
+## A2 Calibration (serving)  (14 datasets)
 
 | dataset | consumed by | producing recipe | downstream | flag |
 |---|---|---|---|---|
@@ -213,13 +210,12 @@ _Nothing in this zone is read by a notebook or the webapp._
 | `split_audit_2` | **webapp**, nb2 | `compute_split_audit_2` | 0 | serving (webapp TBD) |
 | `validation_auc_by_disease` | **webapp**, nb3/nb5/nb6 | `compute_validation_auc_by_disease` | 3 | serving (webapp TBD) |
 
-**Read by no notebook and no webapp (5):**
+**Read by no notebook and no webapp (4):**
 
 | dataset | producing recipe | type | downstream | flag |
 |---|---|---|---|---|
 | `shap_drivers_long` | `compute_shap_drivers_long` | shaker | 1 | serving (webapp TBD) |
 | `validation_auc_ci` | `compute_validation_auc_ci` | shaker | 1 | serving (webapp TBD) |
-| `validation_set_scored` | `compute_validation_set_scored` | sync | 1 | serving (webapp TBD) |
 | `validation_set_scored_grouped` | `compute_validation_set_scored_grouped` | grouping | 1 | serving (webapp TBD) |
 | `validation_set_scored_windows` | `compute_validation_set_scored_windows` | window | 1 | serving (webapp TBD) |
 
