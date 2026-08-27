@@ -23,6 +23,7 @@ logging.basicConfig(
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -31,6 +32,7 @@ from .routes.candidates import router as candidates_router
 from .routes.evidence import router as evidence_router
 from .routes.calibration import router as calibration_router
 from .routes.families import router as families_router
+from .routes.graph import router as graph_router
 from .routes.example import router as example_router
 from .routes.system import router as system_router
 
@@ -77,6 +79,12 @@ def _find_dist_dir() -> Path | None:
 def configure(app: FastAPI) -> None:
     """Wire CORS, routes, and (in DSS) static SPA serving onto a FastAPI app."""
 
+    # The bundle is served `no-store` (it carries no content hash, so a cached
+    # copy silently survives a deploy). That makes its uncompressed size a cost
+    # paid on EVERY load -- 1.7 MB once the graph renderer is in. Gzip brings
+    # that to ~548 KB and applies to the JSON payloads too.
+    app.add_middleware(GZipMiddleware, minimum_size=1024)
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=config.CORS_ORIGINS,
@@ -90,6 +98,7 @@ def configure(app: FastAPI) -> None:
     app.include_router(evidence_router)
     app.include_router(families_router)
     app.include_router(calibration_router)
+    app.include_router(graph_router)
     # Agents card-grid blueprint — always on; the sidebar's Administration
     # section toggle (frontend) controls its visibility at runtime.
     app.include_router(agents_router)

@@ -18,8 +18,11 @@
   import ActStat from '@/components/act/ActStat.vue'
   import ActBar from '@/components/act/ActBar.vue'
   import ActDonut from '@/components/act/ActDonut.vue'
+  import ActGraph from '@/components/act/ActGraph.vue'
+  import ActInfo from '@/components/act/ActInfo.vue'
+  import ActTabs from '@/components/act/ActTabs.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-  import { Database, GitBranch, Layers, FileText } from 'lucide-vue-next'
+  import { Database, GitBranch, Layers, FileText, Search, Loader2, Play } from 'lucide-vue-next'
 
   defineOptions({ name: 'EvidenceView' })
 
@@ -32,6 +35,85 @@
 
   const data = ref<Payload | null>(null)
   const error = ref<string | null>(null)
+
+  /* ── Explore the graph ──────────────────────────────────────────────────────
+     The search box speaks to the visual-graph plugin's own agent tool, which
+     accepts EITHER English or literal Cypher on the same key. The starters are
+     pinned Cypher and deterministic; anything typed goes through the LLM. That
+     difference is surfaced rather than hidden, because the NL path can and does
+     return nothing: edges are stored protein->disease, so a generated
+     `(disease)-[:disease_protein]->(protein)` matches zero rows. */
+  interface Starter { id: string; label: string; shows: string; measured: string; query: string }
+  interface ResultTable {
+    columns: string[]; rows: (string | number | null)[][]
+    n_rows: number; truncated: boolean
+  }
+  interface GraphResult {
+    mode: 'graph' | 'table' | 'empty'
+    nodes: { id: string; label: string; group_name: string }[]
+    edges: { id: string; src: string; dst: string; group_name: string }[]
+    n_nodes: number; n_edges: number
+    truncated: boolean; dropped_nodes?: number
+    empty: boolean
+    /* The agent's own prose. New with the agent route -- a bare tool call
+       returned records and nothing else. It leads the result, because it is the
+       part that says what the picture means and what it does not claim. */
+    answer: string | null
+    /* The Cypher that ran. For /cypher it is what was typed; for /search it is
+       recovered from the agent's trace. Either way it seeds the editable panel,
+       so an LLM-written query can be corrected and re-run without the LLM. */
+    cypher: string | null
+    table: ResultTable | null
+  }
+
+  const starters = ref<Starter[]>([])
+  const graph = ref<GraphResult | null>(null)
+  const graphBusy = ref(false)
+  const graphError = ref<string | null>(null)
+  const graphQuery = ref('')
+  const ranStarter = ref<string | null>(null)
+  const cypherDraft = ref('')
+  const cypherOpen = ref(false)
+  /* Graph or table. A subgraph answer offers both -- the canvas for shape, the
+     edge list for exact reading -- the way the graph explorer pairs them. An
+     aggregation has no graph to show, so the toggle is not offered. */
+  const graphTab = ref<'graph' | 'table'>('graph')
+
+  /* Two endpoints, one shape back. `/cypher` executes literal Cypher with no LLM
+     in the path — deterministic, ~2.5s, free — and is what the starters and the
+     Cypher panel use. `/search` goes through the agent and is only for questions
+     asked in English. */
+  async function runGraph(query: string, opts: { starterId?: string | null; literal?: boolean } = {}) {
+    if (!query.trim() || graphBusy.value) return
+    graphBusy.value = true
+    graphError.value = null
+    ranStarter.value = opts.starterId ?? null
+    try {
+      const res = await fetch(apiUrl(opts.literal ? '/api/graph/cypher' : '/api/graph/search'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query }),
+      })
+      if (!res.ok) {
+        const detail = await res.json().catch(() => null)
+        throw new Error(detail?.detail ?? `HTTP ${res.status}`)
+      }
+      graph.value = await res.json()
+      cypherDraft.value = graph.value?.cypher ?? ''
+      graphTab.value = graph.value?.mode === 'table' ? 'table' : 'graph'
+    } catch (e) {
+      graphError.value = e instanceof Error ? e.message : String(e)
+      graph.value = null
+    } finally {
+      graphBusy.value = false
+    }
+  }
+
+  function runStarter(s: Starter) {
+    graphQuery.value = ''
+    // Starters are pinned Cypher: straight to the engine, no LLM.
+    runGraph(s.query, { starterId: s.id, literal: true })
+  }
 
   const NOT_CLAIMING: [string, string][] = [
     ['That we discover novel targets',
@@ -65,6 +147,15 @@
       data.value = await res.json()
     } catch (e) {
       error.value = `Could not load the evidence base: ${e instanceof Error ? e.message : String(e)}`
+    }
+
+    // Starters are cheap metadata; the graph itself is not fetched until asked.
+    // Each tool call costs ~2-3s, so nothing runs on page load.
+    try {
+      const res = await fetch(apiUrl('/api/graph/defaults'))
+      if (res.ok) starters.value = (await res.json()).defaults
+    } catch {
+      /* the search box still works without starters */
     }
   })
 
@@ -103,6 +194,166 @@
                :label="label" :value="fmt(totals[k])" :sub="sub" />
         </div>
         <p v-else class="py-4 text-center text-sm text-muted-foreground">Loading…</p>
+      </ActCard>
+
+      <!-- Explore the graph. TWO paths, and the difference is the point:
+           the starters and the Cypher panel POST to /api/graph/cypher, which
+           runs literal Cypher with no LLM at all (~2.5s, deterministic, free);
+           free text POSTs to /api/graph/search, which asks the DSS agent
+           `graph_explorer` to write the query (~7s, and it may return nothing).
+           That is why the starters are labelled reproducible and free text is
+           not, and why the Cypher panel is editable — an LLM-written query can
+           be corrected and re-run on the deterministic path. -->
+      <ActCard span="col-span-12" title="Explore the graph" :icon="Search"
+               accent="var(--chart-2)"
+               desc="Ask the graph directly. The four starters are pinned queries that reproduce exactly; free text is translated to Cypher by an LLM, so it explores rather than proves."
+               :chips="[['live', 'live'], ['agent', 'muted']]"
+               :src="['Kuzu folder (ytvuniN8)', 'agent graph_explorer', 'tool b6Rpbve']">
+
+        <div class="flex flex-col gap-3">
+          <!-- pinned starters -->
+          <div class="flex flex-wrap gap-2">
+            <button v-for="s in starters" :key="s.id" type="button"
+                    :disabled="graphBusy"
+                    class="rounded-md border px-2.5 py-1 text-left text-xs transition-colors
+                           disabled:opacity-50"
+                    :class="ranStarter === s.id
+                      ? 'border-primary bg-primary/15 text-primary-foreground'
+                      : 'border-border bg-muted/30 text-muted-foreground hover:bg-muted/60'"
+                    @click="runStarter(s)">
+              {{ s.label }}
+              <ActInfo :text="`${s.shows}. Pinned Cypher — returns ${s.measured} every time.`" />
+            </button>
+          </div>
+
+          <!-- free text -->
+          <form class="flex flex-wrap items-center gap-2" @submit.prevent="runGraph(graphQuery)">
+            <input v-model="graphQuery" type="search"
+                   placeholder="Ask in plain English, or paste Cypher…"
+                   class="min-w-64 flex-1 rounded-md border border-input bg-background px-2.5 py-1.5 text-sm" />
+            <button type="submit" :disabled="graphBusy || !graphQuery.trim()"
+                    class="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm
+                           text-primary-foreground disabled:opacity-50">
+              <Loader2 v-if="graphBusy" class="size-3.5 animate-spin" />
+              <Search v-else class="size-3.5" />
+              Search
+            </button>
+            <ActInfo text="Plain English is translated to Cypher by an LLM, which is not deterministic here: this graph stores association edges protein→disease, and a generated query in the other direction matches nothing. An empty result usually means that, not an absent fact. Paste Cypher to bypass translation." />
+          </form>
+
+          <p v-if="graphError" class="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {{ graphError }}
+          </p>
+
+          <p v-else-if="graphBusy" class="font-mono text-[11px] text-muted-foreground">
+            querying the graph…
+          </p>
+
+          <template v-else-if="graph">
+            <!-- The agent's answer leads, whatever came back with it. A declined
+                 global count and a genuinely empty match both arrive as
+                 mode='empty'; only the second one is "no match". -->
+            <p v-if="graph.answer"
+               class="rounded-md border border-border bg-muted/30 px-3 py-2 text-sm text-foreground">
+              {{ graph.answer }}
+            </p>
+            <p v-else-if="graph.mode === 'empty'"
+               class="rounded-md border border-dashed border-border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
+              <b class="text-primary-foreground">No match.</b> The query ran and returned zero rows —
+              that is an answer, not a failure.
+            </p>
+            <template v-if="graph.mode !== 'empty'">
+              <!-- Only a subgraph answer has two views worth switching between.
+                   An aggregation returns rows and no nodes, so it shows the
+                   table alone rather than an empty canvas. -->
+              <div v-if="graph.mode === 'graph' && graph.table" class="flex">
+                <ActTabs v-model="graphTab"
+                         :options="[{ value: 'graph', label: 'Graph' },
+                                    { value: 'table', label: `Table (${graph.table.n_rows})` }]" />
+              </div>
+
+              <ActGraph v-if="graph.mode === 'graph' && graphTab === 'graph'"
+                        :nodes="graph.nodes" :edges="graph.edges" :height="440" />
+
+              <div v-else-if="graph.table" class="max-h-[440px] overflow-auto rounded-md border border-border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead v-for="c in graph.table.columns" :key="c" class="font-mono text-[10.5px]">
+                        {{ c }}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow v-for="(row, i) in graph.table.rows" :key="i">
+                      <TableCell v-for="(cell, j) in row" :key="j"
+                                 class="font-mono text-[11px] whitespace-nowrap">
+                        {{ typeof cell === 'number' ? cell.toLocaleString() : (cell ?? '—') }}
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+
+              <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1 font-mono text-[10.5px] text-muted-foreground">
+                <span v-if="graph.mode === 'graph'">
+                  <b class="text-primary-foreground">{{ graph.n_nodes }}</b> nodes ·
+                  <b class="text-primary-foreground">{{ graph.n_edges }}</b> edges
+                </span>
+                <span v-else-if="graph.table">
+                  <b class="text-primary-foreground">{{ graph.table.n_rows }}</b> rows
+                </span>
+                <span v-if="graph.truncated" class="text-destructive">
+                  capped — {{ graph.dropped_nodes }} further nodes not drawn
+                </span>
+                <span v-if="graph.table?.truncated" class="text-destructive">
+                  table capped at {{ graph.table.rows.length }} of {{ graph.table.n_rows }} rows
+                </span>
+              </div>
+
+              <!-- The Cypher panel. Editable and runnable, and its Run goes to
+                   /api/graph/cypher — no LLM, so a query the agent wrote can be
+                   corrected and re-run deterministically. -->
+              <div v-if="cypherDraft" class="rounded-md border border-border">
+                <button type="button"
+                        class="flex w-full items-center justify-between px-2.5 py-1.5 font-mono
+                               text-[10.5px] text-muted-foreground hover:bg-muted/40"
+                        @click="cypherOpen = !cypherOpen">
+                  <span>{{ cypherOpen ? '▾' : '▸' }} the Cypher that ran — editable</span>
+                  <span class="text-[10px]">{{ cypherOpen ? 'hide' : 'edit &amp; re-run' }}</span>
+                </button>
+                <div v-if="cypherOpen" class="border-t border-border p-2">
+                  <textarea v-model="cypherDraft" rows="4" spellcheck="false"
+                            class="w-full resize-y rounded-md border border-input bg-background p-2
+                                   font-mono text-[11px]" />
+                  <div class="mt-1.5 flex flex-wrap items-center gap-2">
+                    <button type="button" :disabled="graphBusy || !cypherDraft.trim()"
+                            class="flex items-center gap-1.5 rounded-md bg-primary px-2.5 py-1
+                                   text-xs text-primary-foreground disabled:opacity-50"
+                            @click="runGraph(cypherDraft, { literal: true })">
+                      <Loader2 v-if="graphBusy" class="size-3 animate-spin" />
+                      <Play v-else class="size-3" />
+                      Run
+                    </button>
+                    <button type="button" :disabled="graphBusy || cypherDraft === graph.cypher"
+                            class="rounded-md border border-border px-2.5 py-1 text-xs
+                                   text-muted-foreground disabled:opacity-40 hover:bg-muted/40"
+                            @click="cypherDraft = graph.cypher ?? ''">
+                      Reset
+                    </button>
+                    <span class="font-mono text-[10px] text-muted-foreground">
+                      runs directly against the graph — no LLM
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </template>
+          </template>
+
+          <p v-else class="font-mono text-[11px] text-muted-foreground">
+            Pick a starter above, or ask your own question.
+          </p>
+        </div>
       </ActCard>
 
       <ActCard span="col-span-12 lg:col-span-5" title="8 node types" :icon="Layers"

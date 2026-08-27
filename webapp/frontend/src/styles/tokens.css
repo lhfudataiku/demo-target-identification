@@ -72,6 +72,22 @@
   --chart-3: #7092F2;                 /* dkBlue */
   --chart-4: #EDAB4F;                 /* dkOrange */
   --chart-5: #A8BCDD;                 /* light blue grey */
+
+  /* Graph node types — one token per node type in the knowledge graph.
+     A closed set of 8, so an explicit map beats a colour cycle: the three GO
+     namespaces share the beige "annotation" family, and the two entities the
+     demo is actually about (protein, disease) get the brand's strongest accents.
+     Read by ActGraph via token() — vis-network paints to canvas and cannot use
+     Tailwind classes. */
+  --graph-protein: #3EDAB2;           /* dkGreen — the subject */
+  --graph-disease: #EDAB4F;           /* dkOrange */
+  --graph-drug: #7092F2;              /* dkBlue */
+  --graph-pathway: #06312E;           /* dkDarkGreen */
+  --graph-phenotype: #A8BCDD;         /* light blue grey */
+  --graph-bioprocess: #F8F4E4;        /* dkBeige — annotation family */
+  --graph-molfunc: #E5DFC5;
+  --graph-cellcomp: #CFC8A8;
+  --graph-other: #C4C4BD;
   --radius: 0.5rem;
   --sidebar: #06312E;                 /* dkDarkGreen anchor */
   --sidebar-foreground: #FEFEF9;
@@ -108,6 +124,18 @@
   --chart-3: #7092F2;
   --chart-4: #EDAB4F;
   --chart-5: #A8BCDD;
+
+  /* Graph node types, dark. protein/disease/drug hold their hue; the annotation
+     family darkens so beige fills do not glare on a dark canvas. */
+  --graph-protein: #3EDAB2;
+  --graph-disease: #EDAB4F;
+  --graph-drug: #7092F2;
+  --graph-pathway: #C7FFF1;
+  --graph-phenotype: #A8BCDD;
+  --graph-bioprocess: #6B665A;
+  --graph-molfunc: #57544A;
+  --graph-cellcomp: #454339;
+  --graph-other: #5A5A54;
   --sidebar: #06312E;
   --sidebar-foreground: #FEFEF9;
   --sidebar-primary: #3EDAB2;
