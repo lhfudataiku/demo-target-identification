@@ -73,17 +73,19 @@ reference_baseline.json	root-script	LIVE (referenced)	4	DECISIONS.md,archive/pre
 scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 tools/build_index.py	tool	LIVE	8	DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot
-tools/build_recipe_index.py	tool	LIVE	18	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
+tools/build_recipe_index.py	tool	LIVE	19	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
 tools/check_freshness.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
-tools/check_indexes.sh	tool	LIVE	7	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md
+tools/check_harness.py	tool	LIVE	3	harness/README.md,tools/build_index.py,tools/check_indexes.sh
+tools/check_indexes.sh	tool	LIVE	9	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md
 tools/check_links.py	tool	LIVE	5	DECISIONS.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/operations/PHASE_0_BASELINE_2026-08-28.md
-tools/model_registry.json	tool	LIVE	6	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
+tools/model_registry.json	tool	LIVE	7	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
 tools/pull_notebooks.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
 tools/recipe_classes.json	tool	LIVE	5	DECISIONS.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/prioritizer/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py
+tools/sync_harness.py	tool	LIVE	6	AGENTS.md,CLAUDE.md,harness/README.md,tools/check_harness.py
 webapp/backend/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
 webapp/backend/app.py	webapp	LIVE (referenced)	7	tools/recipe_classes.json,webapp/DEPLOYMENT.md,webapp/README.md,webapp/backend/routes/chat.py
 webapp/backend/config.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/app.env,webapp/dss_webapp/backend.py
-webapp/backend/dss_client.py	webapp	LIVE (referenced)	6	docs/demo/DASHBOARD_DESIGN.md,webapp/AGENTS.md,webapp/CLAUDE.md,webapp/DEPLOYMENT.md
+webapp/backend/dss_client.py	webapp	LIVE (referenced)	7	docs/demo/DASHBOARD_DESIGN.md,harness/WEBAPP_OVERLAY.md,webapp/AGENTS.md,webapp/CLAUDE.md
 webapp/backend/routes/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
 webapp/backend/routes/agents.py	webapp	LIVE (referenced)	1	webapp/frontend/src/types/agents.ts
 webapp/backend/routes/calibration.py	webapp	LIVE (referenced)	1	webapp/DEPLOYMENT.md
