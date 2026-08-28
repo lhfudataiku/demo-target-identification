@@ -54,7 +54,7 @@ dss_recipes/extract_ot_druggability.py	recipe-mirror	MIRROR (graph-build project
 dss_recipes/extract_ot_maps.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_ppi.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_reactome.py	recipe-mirror	MIRROR (graph-build project)	0	-
-index_remap.json	root-script	LIVE (referenced)	3	DECISIONS.md,docs/prioritizer/TARGET_PRIORITIZER.md,dss_recipes/compute_split_audit_2.py
+index_remap.json	root-script	LIVE (referenced)	4	DECISIONS.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/prioritizer/TARGET_PRIORITIZER.md,dss_recipes/compute_split_audit_2.py
 notebooks/nb1_features_and_config.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb2_splitting_and_pool.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb3_validation_and_plots.py	notebook	LIVE (tripwire)	1	archive/DASHBOARD_BUILD_LOG.md
@@ -63,17 +63,17 @@ notebooks/nb4_results_three_axes.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb5_data_exploration.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb6_interrogation_and_close.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb7_panel_selection.py	notebook	LIVE (tripwire)	1	docs/demo/panel_selection/README.md
-reference_baseline.json	root-script	LIVE (referenced)	3	DECISIONS.md,docs/graph/GRAPH_BUILDING.md,docs/prioritizer/TARGET_PRIORITIZER.md
+reference_baseline.json	root-script	LIVE (referenced)	4	DECISIONS.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/graph/GRAPH_BUILDING.md,docs/prioritizer/TARGET_PRIORITIZER.md
 scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
-tools/build_index.py	tool	LIVE	8	AGENTS.md,CLAUDE.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
-tools/build_recipe_index.py	tool	LIVE	18	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,AGENTS.md,CLAUDE.md
+tools/build_index.py	tool	LIVE	10	AGENTS.md,CLAUDE.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
+tools/build_recipe_index.py	tool	LIVE	20	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,AGENTS.md,CLAUDE.md
 tools/check_freshness.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
-tools/check_indexes.sh	tool	LIVE	7	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md
-tools/check_links.py	tool	LIVE	5	AGENTS.md,CLAUDE.md,DECISIONS.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md
-tools/model_registry.json	tool	LIVE	5	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
+tools/check_indexes.sh	tool	LIVE	9	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md
+tools/check_links.py	tool	LIVE	7	AGENTS.md,CLAUDE.md,DECISIONS.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md
+tools/model_registry.json	tool	LIVE	6	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
 tools/pull_notebooks.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
-tools/recipe_classes.json	tool	LIVE	4	DECISIONS.md,docs/prioritizer/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py,tools/model_registry.json
+tools/recipe_classes.json	tool	LIVE	5	DECISIONS.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/prioritizer/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py
 webapp/backend/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
 webapp/backend/app.py	webapp	LIVE (referenced)	7	tools/recipe_classes.json,webapp/DEPLOYMENT.md,webapp/README.md,webapp/backend/routes/chat.py
 webapp/backend/config.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/app.env,webapp/dss_webapp/backend.py

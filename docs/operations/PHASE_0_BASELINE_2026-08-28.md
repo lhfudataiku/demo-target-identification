@@ -45,7 +45,7 @@ All measurements below are working-tree byte counts at capture time, using track
 
 ## Index baseline
 
-At capture, `.index/` held 14 regular files / 644,851 bytes: seven TSV indexes (2,984 data-plus-header rows / 405,626 bytes), six JSON support/snapshot files (227,966 bytes), and `SUMMARY.md` (11,259 bytes).
+At the capture, `.index/` held 14 regular files / 644,851 bytes: seven TSV indexes (2,984 data-plus-header rows / 405,626 bytes), six JSON support/snapshot files (227,966 bytes), and `SUMMARY.md` (11,259 bytes).
 
 | index | rows | bytes | observed freshness |
 |---|---:|---:|---|
@@ -77,7 +77,7 @@ Final Phase 0 verification is recorded after the manifest and this document are 
 
 ## Phase 0 verification result
 
-The repository-only, offline rebuild completed without `--refresh`: `build_index.py` wrote 2,128 claims / 199 assertions / 158 decisions, and `build_recipe_index.py` wrote 94 recipes / 283 feature columns / 8 models / 107 code files. The difference from the captured index counts is itself baseline evidence of stale generated state, not a DSS change.
+This repository-only, offline rebuild completed without `--refresh`: `build_index.py` wrote 2,128 claims / 199 assertions / 158 decisions, and `build_recipe_index.py` wrote 94 recipes / 283 feature columns / 8 models / 107 code files. The difference from the captured index counts is itself baseline evidence of stale generated state, not a DSS change.
 
 - `git diff --check`: passed.
 - `python3 tools/check_links.py`: passed — 28 tracked Markdown files checked, 0 broken links and 0 stale mentions.

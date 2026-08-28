@@ -738,6 +738,15 @@ archive/DASHBOARD_BUILD_LOG.md	2226	31.8	0.7471	VALUE_ONLY	nb2_splitting_and_poo
 archive/DASHBOARD_BUILD_LOG.md	2226	31.8	0.6833	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
 archive/DASHBOARD_BUILD_LOG.md	2226	31.8	0.7335	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
 archive/DASHBOARD_BUILD_LOG.md	2332	33.3	2,092	ORPHAN				Indexes rebuilt after the prune: **109 recipes, 98 assertions, 2,092 claims**.
+archive/preservation/2026-08-28/PRESERVATION_MANIFEST.md	10	-	90,542	ORPHAN				| `DECISIONS.md` | `DECISIONS_2026-08-28.snapshot` | 90,542 | `f1e91ab25d4c1373a754623e9218a905b0c5fb9e5704fac
+archive/preservation/2026-08-28/PRESERVATION_MANIFEST.md	11	-	19,082	ORPHAN				| `docs/demo/DOC_RESTRUCTURE_PLAN.md` | `DOC_RESTRUCTURE_PLAN_2026-08-28.snapshot` | 19,082 | `2b5132e4a63849e
+archive/preservation/2026-08-28/PRESERVATION_MANIFEST.md	21	-	69,363	ORPHAN				| `docs/demo/DASHBOARD_MOCKUP.html` | 69,363 | `ded088936d1e3120be15413977489b7531a8d8ae06a6768c7c79befc1f8174
+archive/preservation/2026-08-28/PRESERVATION_MANIFEST.md	22	-	103,585	ORPHAN				| `docs/demo/DASHBOARD_MOCKUP_V2.html` | 103,585 | `42ce396cfc7409da9f42b391eaf02d57bcfc8246a8e499dc4ee5c47049
+archive/preservation/2026-08-28/PRESERVATION_MANIFEST.md	23	-	122,424	ORPHAN				| `docs/demo/DASHBOARD_MOCKUP_V3.html` | 122,424 | `7f0747a44c9c4608de0713342ed8edc0f8219447d772f15ce82878d03f
+archive/preservation/2026-08-28/PRESERVATION_MANIFEST.md	24	-	14,252	ORPHAN				| `docs/demo/mockup_parity.html` | 14,252 | `c743f911bd956cbc3ccf1ffba83a472894044aa55a051e33ca8efc7d634ed71a`
+archive/preservation/2026-08-28/PRESERVATION_MANIFEST.md	25	-	31,976	ORPHAN				| `docs/demo/panel_selection.html` | 31,976 | `a4bc1237e96d8e35f8017c0b29616489f3d3f61d9a25d2b7955dc59e320a3eb
+archive/preservation/2026-08-28/PRESERVATION_MANIFEST.md	26	-	37,845	ORPHAN				| `docs/demo/flow_map.html` | 37,845 | `924e1eff4db02635a30ce3e7e294da1d55fd7e533eccc3b448db782fbb3d4425` | `b
+archive/preservation/2026-08-28/PRESERVATION_MANIFEST.md	27	-	6,614	ORPHAN				| `archive/webapp-v1/body.html` | 6,614 | `a63e3afaa9f28aac4ab38e622b95811ba03f548e14cbd1f940b159f8942bcb0b` |
 docs/README.md	40	-	95.7	ORPHAN		y		| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) | **Current mockup.** Four interactive acts
 docs/appendix/README.md	8	-	0.9354	ORPHAN				without a snapshot, and its most reusable finding — a gene-popularity lookup table scoring 0.9354 and
 docs/appendix/README.md	14	-	2,010	ORPHAN		y		| `model_comparison.csv` | 2,010 | §6.4 ablation ladder, m1-f7 → m2-f10 → m3-f12 | saved models `Lx5Mz2hY`, `6
@@ -1076,6 +1085,41 @@ docs/graph/GRAPH_BUILDING.md	439	7.3	8,100,498	ORPHAN				| **Total** | **8,100,4
 docs/graph/GRAPH_BUILDING.md	439	7.3	2,851,510	ORPHAN				| **Total** | **8,100,498** | **2,851,510** | |
 docs/graph/GRAPH_BUILDING.md	465	7.3	113,391	ORPHAN				| 2026-08-14 | **Assembly decomposed into 4 recipes**, two visual (§4.4). All outputs reproduce the monolith e
 docs/graph/GRAPH_BUILDING.md	468	7.3	0.03	ORPHAN			hist	| 2026-08-14 | **Reconstruction accepted** (§7.2). 7 of 9 node groups and 14 of 18 relations reproduce **to th
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	37	-	433,238	ORPHAN				| Current documentation | 15 | 433,238 | `docs/`, excluding the restructure plan and `archive/` |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	38	-	19,082	ORPHAN				| Current planning | 1 | 19,082 | `docs/demo/DOC_RESTRUCTURE_PLAN.md` |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	39	-	90,542	ORPHAN				| Decision log | 1 | 90,542 | root `DECISIONS.md` |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	40	-	147,883	ORPHAN			hist	| Historical archive | 2 | 147,883 | `archive/` Markdown before this Phase 0 record |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	41	-	70,166	ORPHAN				| Harness material | 8 | 70,166 | root/nested instructions plus Codex/Claude target-ID skill Markdown; symlink
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	42	-	5,690	ORPHAN				| Evidence support | 1 | 5,690 | `notebooks/README.md` |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	43	-	62,965	ORPHAN				| Supporting webapp material | 3 | 62,965 | remaining tracked Markdown outside the areas above |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	44	-	829,566	ORPHAN				| **Total** | **31** | **829,566** | all tracked Markdown |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	48	-	644,851	ORPHAN				At the capture, `.index/` held 14 regular files / 644,851 bytes: seven TSV indexes (2,984 data-plus-header row
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	48	-	2,984	ORPHAN				At the capture, `.index/` held 14 regular files / 644,851 bytes: seven TSV indexes (2,984 data-plus-header row
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	48	-	405,626	ORPHAN				At the capture, `.index/` held 14 regular files / 644,851 bytes: seven TSV indexes (2,984 data-plus-header row
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	48	-	227,966	ORPHAN				At the capture, `.index/` held 14 regular files / 644,851 bytes: seven TSV indexes (2,984 data-plus-header row
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	48	-	11,259	ORPHAN				At the capture, `.index/` held 14 regular files / 644,851 bytes: seven TSV indexes (2,984 data-plus-header row
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	52	-	11,497	ORPHAN				| `assertions.tsv` | 200 | 11,497 | generated 2026-08-28 12:18:56Z |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	53	-	2,129	ORPHAN				| `claims.tsv` | 2,129 | 334,823 | generated 2026-08-28 12:18:56Z; **stale** against the pre-existing approval
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	53	-	334,823	ORPHAN				| `claims.tsv` | 2,129 | 334,823 | generated 2026-08-28 12:18:56Z; **stale** against the pre-existing approval
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	54	-	10,051	ORPHAN				| `code.tsv` | 108 | 10,051 | generated 2026-08-28 12:19:07Z |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	55	-	14,923	ORPHAN				| `decisions.tsv` | 159 | 14,923 | generated 2026-08-28 12:18:56Z |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	56	-	20,221	ORPHAN				| `features.tsv` | 284 | 20,221 | generated 2026-08-28 12:19:07Z |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	57	-	2,320	ORPHAN				| `models.tsv` | 9 | 2,320 | generated 2026-08-28 12:19:07Z |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	58	-	11,791	ORPHAN				| `recipes.tsv` | 95 | 11,791 | generated 2026-08-28 12:19:07Z |
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	60	-	194,159	ORPHAN				The linked DSS snapshot was present as `.index/dss_snapshot.json` (194,159 bytes; 2026-08-27 12:36:32Z). It wa
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	64	-	3,000	ORPHAN				The ordinary webapp cold-start payload combines the root instruction and the nested webapp overlay. Byte, line
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	68	-	6,712	ORPHAN				| OpenAI Codex | `AGENTS.md` (6,712 B; 79 lines; 980 words) | `webapp/AGENTS.md` (18,724 B; 329 lines; 2,478 w
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	68	-	18,724	ORPHAN				| OpenAI Codex | `AGENTS.md` (6,712 B; 79 lines; 980 words) | `webapp/AGENTS.md` (18,724 B; 329 lines; 2,478 w
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	68	-	2,478	ORPHAN				| OpenAI Codex | `AGENTS.md` (6,712 B; 79 lines; 980 words) | `webapp/AGENTS.md` (18,724 B; 329 lines; 2,478 w
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	68	-	25,436	ORPHAN				| OpenAI Codex | `AGENTS.md` (6,712 B; 79 lines; 980 words) | `webapp/AGENTS.md` (18,724 B; 329 lines; 2,478 w
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	68	-	3,458	ORPHAN				| OpenAI Codex | `AGENTS.md` (6,712 B; 79 lines; 980 words) | `webapp/AGENTS.md` (18,724 B; 329 lines; 2,478 w
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	69	-	6,828	ORPHAN				| Claude Code | `CLAUDE.md` (6,828 B; 116 lines; 1,000 words) | `webapp/CLAUDE.md` → `AGENTS.md` (18,724 B; 32
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	69	-	1,000	ORPHAN				| Claude Code | `CLAUDE.md` (6,828 B; 116 lines; 1,000 words) | `webapp/CLAUDE.md` → `AGENTS.md` (18,724 B; 32
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	69	-	18,724	ORPHAN				| Claude Code | `CLAUDE.md` (6,828 B; 116 lines; 1,000 words) | `webapp/CLAUDE.md` → `AGENTS.md` (18,724 B; 32
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	69	-	2,478	ORPHAN				| Claude Code | `CLAUDE.md` (6,828 B; 116 lines; 1,000 words) | `webapp/CLAUDE.md` → `AGENTS.md` (18,724 B; 32
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	69	-	25,552	ORPHAN				| Claude Code | `CLAUDE.md` (6,828 B; 116 lines; 1,000 words) | `webapp/CLAUDE.md` → `AGENTS.md` (18,724 B; 32
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	69	-	3,478	ORPHAN				| Claude Code | `CLAUDE.md` (6,828 B; 116 lines; 1,000 words) | `webapp/CLAUDE.md` → `AGENTS.md` (18,724 B; 32
+docs/operations/PHASE_0_BASELINE_2026-08-28.md	80	-	2,128	ORPHAN				This repository-only, offline rebuild completed without `--refresh`: `build_index.py` wrote 2,128 claims / 199
 docs/overview/PROJECT_CONTEXT.md	62	2.1	2.6	ORPHAN				| **Genetic evidence works** | Target–disease pairs with human genetic support have **2.6× relative clinical s
 docs/overview/PROJECT_CONTEXT.md	62	2.1	4.8	ORPHAN				| **Genetic evidence works** | Target–disease pairs with human genetic support have **2.6× relative clinical s
 docs/overview/PROJECT_CONTEXT.md	106	2.3	0.81	ORPHAN		y		disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche et al.,

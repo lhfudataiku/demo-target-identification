@@ -23,6 +23,7 @@ flags them as historical dropped.
 | `CLAUDE.md` | 0 | 1 | 8 | 9 |
 | `DECISIONS.md` | 2 | 61 | 348 | 411 |
 | `archive/DASHBOARD_BUILD_LOG.md` | 0 | 109 | 178 | 287 |
+| `archive/preservation/2026-08-28/PRESERVATION_MANIFEST.md` | 0 | 0 | 9 | 9 |
 | `docs/README.md` | 0 | 0 | 1 | 1 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
@@ -31,6 +32,7 @@ flags them as historical dropped.
 | `docs/demo/DOC_RESTRUCTURE_PLAN.md` | 0 | 0 | 1 | 1 |
 | `docs/demo/panel_selection/README.md` | 0 | 3 | 11 | 14 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
+| `docs/operations/PHASE_0_BASELINE_2026-08-28.md` | 0 | 0 | 35 | 35 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
 | `docs/platform/DSS_CHEATSHEET.md` | 0 | 1 | 6 | 7 |
 | `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 19 | 103 | 122 |
@@ -41,11 +43,11 @@ flags them as historical dropped.
 | `notebooks/README.md` | 0 | 2 | 2 | 4 |
 | `webapp/DEPLOYMENT.md` | 0 | 0 | 1 | 1 |
 | `webapp/README.md` | 0 | 6 | 1 | 7 |
-| **total** | **49** | **393** | **1686** | **2128** |
+| **total** | **49** | **393** | **1730** | **2172** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**399 rows.** Of 1686 total orphans, these are the model-dependent ones: the numbers that move
+**399 rows.** Of 1730 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
