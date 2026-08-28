@@ -19,39 +19,38 @@ flags them as historical dropped.
 | `.claude/skills/target-id/references/number-update.md` | 0 | 1 | 5 | 6 |
 | `.codex/skills/target-id/SKILL.md` | 0 | 0 | 6 | 6 |
 | `.codex/skills/target-id/references/number-update.md` | 0 | 1 | 4 | 5 |
-| `AGENTS.md` | 0 | 1 | 8 | 9 |
-| `CLAUDE.md` | 0 | 1 | 8 | 9 |
-| `DECISIONS.md` | 2 | 59 | 350 | 411 |
-| `archive/DASHBOARD_BUILD_LOG.md` | 0 | 109 | 178 | 287 |
+| `AGENTS.md` | 0 | 2 | 7 | 9 |
+| `CLAUDE.md` | 0 | 2 | 7 | 9 |
+| `DECISIONS.md` | 2 | 60 | 349 | 411 |
+| `archive/DASHBOARD_BUILD_LOG.md` | 0 | 114 | 173 | 287 |
 | `docs/README.md` | 0 | 0 | 1 | 1 |
 | `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
-| `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
-| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 51 | 78 | 129 |
+| `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 12 | 14 | 26 |
+| `docs/demo/DASHBOARD_DESIGN.md` | 0 | 52 | 77 | 129 |
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 19 | 3 | 23 |
+| `docs/demo/panel_selection/README.md` | 0 | 0 | 3 | 3 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
-| `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
+| `docs/overview/PROJECT_CONTEXT.md` | 0 | 6 | 14 | 20 |
 | `docs/platform/DSS_CHEATSHEET.md` | 0 | 1 | 6 | 7 |
 | `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 19 | 103 | 122 |
 | `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 16 | 49 | 65 |
-| `docs/prioritizer/TARGET_PRIORITIZER.md` | 46 | 78 | 640 | 764 |
+| `docs/prioritizer/TARGET_PRIORITIZER.md` | 46 | 88 | 630 | 764 |
 | `docs/reference/DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
 | `docs/reference/RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
 | `notebooks/README.md` | 0 | 2 | 2 | 4 |
-| `webapp/DEPLOYMENT.md` | 0 | 0 | 1 | 1 |
+| `webapp/DEPLOYMENT.md` | 0 | 1 | 0 | 1 |
 | `webapp/README.md` | 0 | 6 | 1 | 7 |
-| **total** | **49** | **381** | **1683** | **2113** |
+| **total** | **49** | **403** | **1664** | **2116** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**401 rows.** Of 1683 total orphans, these are the model-dependent ones: the numbers that move
+**392 rows.** Of 1664 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
 |---|---|--:|---|
 | `AGENTS.md:33` | - | 1,100 | Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `st |
-| `AGENTS.md:33` | - | 129,253 | Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `st |
 | `AGENTS.md:73` | - | 0.9354 | - **A benchmark a lookup table wins is measuring the lookup.** Drug-target AUC is dominate |
-| `CLAUDE.md:45` | - | 129,253 | shared `40 Candidate ranking` zone (`dashboard_candidates`, `target_candidates_2`, 129,253 |
 | `archive/DASHBOARD_BUILD_LOG.md:238` | 12.4 | 0.8962 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
 | `archive/DASHBOARD_BUILD_LOG.md:238` | 12.4 | 0.3359 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
 | `archive/DASHBOARD_BUILD_LOG.md:242` | 12.4 | 0.8962 | \| AUROC \| 0.8962 \| **0.8230** \| +7.3 pts — exactly the pooled overstatement the projec |
@@ -59,7 +58,6 @@ when the champion changes and that no notebook would catch.
 | `archive/DASHBOARD_BUILD_LOG.md:243` | 12.4 | 0.1778 | \| AUPRC \| 0.3359 \| **0.1778** \| nearly 2× \| |
 | `archive/DASHBOARD_BUILD_LOG.md:248` | 12.4 | 0.0189 | candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion |
 | `archive/DASHBOARD_BUILD_LOG.md:248` | 12.4 | 0.1778 | candidate pool is **1.89% positive**, so a random ranker scores AUPRC 0.0189. The champion |
-| `archive/DASHBOARD_BUILD_LOG.md:300` | 12.6 | 129,253 | drivers for all 129,253 scored rows. Aggregating gives an empirical importance ranking ove |
 | `archive/DASHBOARD_BUILD_LOG.md:388` | 12.7 | 1.041 | **TNBC's upper bound is 1.041 — impossible for an AUC.** That single fact demonstrates the |
 | `archive/DASHBOARD_BUILD_LOG.md:481` | 12.11 | 2.9 | 1. **`2.9×` degree-matched at top-10 is unguarded and matches no current estimator.** The  |
 | `archive/DASHBOARD_BUILD_LOG.md:578` | 13.4 | 0.06 | from a floor 312× higher than one at 0.06%. Comparing AUPRC across that population compare |
@@ -89,7 +87,7 @@ when the champion changes and that no notebook would catch.
 | `archive/DASHBOARD_BUILD_LOG.md:1889` | 28.1 | 0.7976 | 1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, |
 | `archive/DASHBOARD_BUILD_LOG.md:2026` | 30.2 | 425,469 | and `ot_ab_tractable` (425,469 + 481,777) independently sum to 907,246. If the codified tr |
 | `archive/DASHBOARD_BUILD_LOG.md:2026` | 30.2 | 481,777 | and `ot_ab_tractable` (425,469 + 481,777) independently sum to 907,246. If the codified tr |
-| `docs/README.md:33` | - | 95.7 | \| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) \| **Current mockup.** |
+| `docs/README.md:34` | - | 95.7 | \| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) \| **Current mockup.** |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:97` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:106` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:108` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
@@ -108,8 +106,11 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/DASHBOARD_DESIGN.md:326` | 4 | 7,274 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
 | `docs/demo/DASHBOARD_DESIGN.md:390` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
 | `docs/demo/DASHBOARD_DESIGN.md:390` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/DASHBOARD_DESIGN.md:392` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
+| `docs/overview/PROJECT_CONTEXT.md:106` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
+| `docs/overview/PROJECT_CONTEXT.md:228` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
 
-*341 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*332 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 

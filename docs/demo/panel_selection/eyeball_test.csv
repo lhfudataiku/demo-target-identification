@@ -1,0 +1,114 @@
+disease,gene,why_expected,pool,rank,already_annotated
+acute lymphoblastic leukemia,JAK2,Ph-like,9896,6.0,True
+acute lymphoblastic leukemia,NOTCH1,T-ALL,9896,42.0,True
+acute lymphoblastic leukemia,FLT3,FLT3,9896,126.0,True
+acute lymphoblastic leukemia,ABL1,imatinib in Ph+,9896,136.0,True
+acute lymphoblastic leukemia,IKZF1,risk lesion,9896,445.0,True
+acute lymphoblastic leukemia,BCR,BCR-ABL,9896,584.0,True
+acute lymphoblastic leukemia,CD19,blinatumomab / CAR-T,9896,823.0,False
+acute lymphoblastic leukemia,CRLF2,Ph-like,9896,1023.0,True
+atopic eczema,IL4,type-2 axis,9040,12.0,True
+atopic eczema,IL5,type-2 axis,9040,14.0,False
+atopic eczema,IL13,tralokinumab,9040,20.0,True
+atopic eczema,IL4R,dupilumab,9040,21.0,False
+atopic eczema,JAK1,JAK inhibitors,9040,35.0,True
+atopic eczema,IL31RA,nemolizumab,9040,135.0,False
+atopic eczema,FLG,filaggrin,9040,194.0,True
+atopic eczema,TSLP,tezepelumab class,9040,225.0,False
+dilated cardiomyopathy,TTN,titin,8652,1.0,True
+dilated cardiomyopathy,TNNT2,troponin T,8652,2.0,True
+dilated cardiomyopathy,MYBPC3,myosin-binding protein C,8652,7.0,True
+dilated cardiomyopathy,MYH7,beta-myosin,8652,37.0,True
+dilated cardiomyopathy,LMNA,lamin A/C,8652,90.0,True
+dilated cardiomyopathy,SCN5A,sodium channel,8652,243.0,True
+dilated cardiomyopathy,DSP,desmoplakin,8652,247.0,True
+dilated cardiomyopathy,BAG3,co-chaperone,8652,3355.0,True
+dilated cardiomyopathy,RBM20,splicing,8652,,
+endometrial serous adenocarcinoma,PIK3CA,serous driver,7752,1.0,True
+endometrial serous adenocarcinoma,TP53,serous signature,7752,8.0,True
+endometrial serous adenocarcinoma,ERBB2,HER2 — trastuzumab in serous,7752,18.0,True
+endometrial serous adenocarcinoma,CHD4,serous driver,7752,348.0,True
+endometrial serous adenocarcinoma,FBXW7,serous driver,7752,390.0,True
+endometrial serous adenocarcinoma,PPP2R1A,serous driver,7752,1031.0,True
+endometrium adenocarcinoma,KRAS,endometrioid driver,7519,1.0,True
+endometrium adenocarcinoma,PIK3CA,endometrioid driver,7519,2.0,True
+endometrium adenocarcinoma,CTNNB1,endometrioid driver,7519,10.0,True
+endometrium adenocarcinoma,FGFR2,endometrioid driver,7519,13.0,True
+endometrium adenocarcinoma,ARID1A,endometrioid driver,7519,23.0,True
+endometrium adenocarcinoma,MLH1,MMR / MSI,7519,109.0,True
+endometrium adenocarcinoma,PTEN,endometrioid driver,7519,151.0,True
+endometrium adenocarcinoma,POLE,POLE-ultramutated,7519,194.0,True
+familial hypercholesterolemia,APOE,apoE,5226,3.0,True
+familial hypercholesterolemia,APOB,apoB,5226,7.0,True
+familial hypercholesterolemia,LDLR,LDL receptor,5226,11.0,True
+familial hypercholesterolemia,ANGPTL3,evinacumab,5226,68.0,False
+familial hypercholesterolemia,LDLRAP1,autosomal recessive FH,5226,82.0,True
+familial hypercholesterolemia,PCSK9,evolocumab / alirocumab,5226,144.0,True
+familial hypercholesterolemia,LPA,Lp(a),5226,164.0,True
+gastric adenocarcinoma,TP53,driver,12499,1.0,True
+gastric adenocarcinoma,KRAS,driver,12499,7.0,True
+gastric adenocarcinoma,ERBB2,trastuzumab — standard of care,12499,13.0,True
+gastric adenocarcinoma,FGFR2,bemarituzumab,12499,32.0,True
+gastric adenocarcinoma,MET,MET amplification,12499,69.0,True
+gastric adenocarcinoma,CDH1,diffuse type,12499,195.0,True
+gastric adenocarcinoma,VEGFA,ramucirumab,12499,2246.0,False
+gastric adenocarcinoma,CLDN18,zolbetuximab,12499,,
+multiple sclerosis,TYK2,TYK2 inhibitors,9070,101.0,False
+multiple sclerosis,ITGA4,natalizumab,9070,372.0,False
+multiple sclerosis,HLA-DRB1,risk locus,9070,569.0,False
+multiple sclerosis,MS4A1,ocrelizumab (CD20),9070,583.0,False
+multiple sclerosis,IL2RA,daclizumab,9070,794.0,True
+multiple sclerosis,IL7R,risk locus,9070,922.0,True
+multiple sclerosis,S1PR1,fingolimod,9070,2383.0,False
+multiple sclerosis,CD52,alemtuzumab,9070,2644.0,False
+obesity disorder,MC4R,setmelanotide,13126,38.0,True
+obesity disorder,HTR2C,lorcaserin (withdrawn),13126,85.0,False
+obesity disorder,LEP,metreleptin,13126,135.0,True
+obesity disorder,POMC,monogenic obesity,13126,148.0,True
+obesity disorder,PCSK1,monogenic obesity,13126,277.0,True
+obesity disorder,BDNF,monogenic obesity,13126,300.0,True
+obesity disorder,NTRK2,monogenic obesity,13126,317.0,True
+obesity disorder,LEPR,monogenic obesity,13126,436.0,True
+obesity disorder,GCGR,retatrutide,13126,463.0,False
+obesity disorder,GLP1R,semaglutide / liraglutide,13126,526.0,True
+obesity disorder,GIPR,tirzepatide,13126,830.0,True
+obesity disorder,MRAP2,monogenic obesity,13126,1592.0,True
+obesity disorder,SIM1,monogenic obesity,13126,4216.0,True
+obesity disorder,CNR1,rimonabant (withdrawn),13126,4405.0,False
+obesity disorder,ADRB3,beta-3 adrenergic,13126,4538.0,True
+obesity disorder,FTO,strongest common locus,13126,9011.0,True
+plasma cell myeloma,TP53,driver,12558,1.0,True
+plasma cell myeloma,KRAS,driver,12558,7.0,True
+plasma cell myeloma,NRAS,driver,12558,17.0,True
+plasma cell myeloma,CCND1,t(11;14),12558,44.0,True
+plasma cell myeloma,NFKB1,NF-kB axis,12558,202.0,False
+plasma cell myeloma,CD38,daratumumab,12558,5105.0,False
+plasma cell myeloma,TNFRSF17,BCMA — teclistamab / cilta-cel,12558,5656.0,True
+plasma cell myeloma,SLAMF7,elotuzumab,12558,6672.0,False
+psoriatic arthritis,IL23A,guselkumab / ustekinumab,6837,1.0,False
+psoriatic arthritis,IL23R,IL-23 axis,6837,5.0,True
+psoriatic arthritis,IL12B,ustekinumab (p40),6837,21.0,True
+psoriatic arthritis,TNF,anti-TNF,6837,35.0,False
+psoriatic arthritis,JAK1,JAK inhibitors,6837,123.0,False
+psoriatic arthritis,TYK2,TYK2 inhibitors,6837,355.0,True
+psoriatic arthritis,IL17A,secukinumab,6837,2838.0,False
+rheumatoid arthritis,JAK2,JAK inhibitors,8850,1.0,False
+rheumatoid arthritis,JAK1,JAK inhibitors,8850,2.0,True
+rheumatoid arthritis,JAK3,tofacitinib,8850,7.0,False
+rheumatoid arthritis,IL6,IL-6 axis,8850,9.0,False
+rheumatoid arthritis,TYK2,deucravacitinib class,8850,44.0,True
+rheumatoid arthritis,IL6R,tocilizumab,8850,81.0,True
+rheumatoid arthritis,PTPN22,risk locus,8850,95.0,True
+rheumatoid arthritis,TNF,anti-TNF,8850,129.0,False
+rheumatoid arthritis,IL1B,canakinumab,8850,185.0,False
+rheumatoid arthritis,CTLA4,abatacept,8850,439.0,True
+rheumatoid arthritis,MS4A1,rituximab (CD20),8850,763.0,False
+systemic lupus erythematosus,C1QA,complement,10274,14.0,True
+systemic lupus erythematosus,STAT4,risk locus,10274,48.0,True
+systemic lupus erythematosus,IFNAR1,anifrolumab,10274,56.0,False
+systemic lupus erythematosus,IRF5,risk locus,10274,58.0,True
+systemic lupus erythematosus,TYK2,TYK2 inhibitors,10274,70.0,True
+systemic lupus erythematosus,TNFSF13B,belimumab (BAFF),10274,81.0,False
+systemic lupus erythematosus,CD40LG,CD40L axis,10274,89.0,False
+systemic lupus erythematosus,IFNAR2,IFN axis,10274,110.0,True
+systemic lupus erythematosus,MS4A1,rituximab (CD20),10274,483.0,False

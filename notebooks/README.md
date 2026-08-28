@@ -24,6 +24,7 @@ work happens in. A reviewer coming to this cold should follow the lifecycle:
 | 6 | **Robustness / bias audit** | `nb3b_hub_bias_meter` | §7.2 | zone 31 |
 | 7 | **Impact validation** | `nb4_results_three_axes` | §8 | zone 31, A2, A4 |
 | 8 | **Communication** | `nb6_interrogation_and_close` | demo acts 5–6 | zone 31, A4 |
+| 9 | **Demo panel selection** | `nb7_panel_selection` | which families and diseases the demo carries | zone 31, A2, A4 |
 
 ⚠ **`nb1` spans two stages that the split sits between.** Its §4 half analyses features on the training
 set (stage 2, pre-split); its §6 half chooses the operating threshold (stage 4, post-split). Reading it
@@ -54,6 +55,7 @@ still reading from it has not yet been converted.
 | `nb2` | 2 | `pool_reachability`, `pool_selection_bias` | ⚠️ 2 to convert |
 | `nb3` | 2 | `drug_target_benchmark`, `family_auc_by_family` | ⚠️ 2 to convert |
 | `nb6` | 4 | `novel_discovery_eval`, `drug_target_benchmark`, `tractability_axis`, `tractability_lift`, `safety_lift`, `lung_granularity_check`, `breast_panel_overlap` | ⚠️ 7 — adopts them so they are guarded before deletion |
+| `nb7` | 30 | `family_panel`, `persona_enrichment`, `dashboard_candidates`, `scored_champion`, `gene_crosswalk` — guards every figure in `docs/demo/panel_selection.html` and the tables in `docs/demo/panel_selection/`. Run after any graph rebuild, gate move, champion change or persona-filter repoint |
 | `nb4` | 3 | `breast_panel_metrics`, `breast_panel_overlap`, `known_drug_truth`, `novel_discovery_eval`, `tractability_axis` | ⚠️ 5 to convert — worst |
 
 **Nothing in zone 90 can be deleted while a notebook still reads it.** `safety_lift` and

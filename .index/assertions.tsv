@@ -97,3 +97,80 @@ nb6_interrogation_and_close.py	6.2	6.2 HER2+ top-15 liability-flagged	9.0
 nb6_interrogation_and_close.py	6.2	6.2 HER2+ top-50 liability-flagged	23.0
 nb6_interrogation_and_close.py	6.3	6.3 HER2+ vs TNBC all-gene overlap	14.0
 nb6_interrogation_and_close.py	6.3	6.3 HER2+ vs TNBC novel overlap	2.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	246.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	144.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	23.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	12.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	32.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	17.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	246.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	144.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	23.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	12.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	32.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	17.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	1.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	0.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	49721.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	19.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	14.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	52236.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	17.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	14.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	44244.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	8.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	8.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	43521.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	29.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	20.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	37143.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	2.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	1.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	49721.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	19.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	14.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	52236.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	17.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	14.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	44244.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	8.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	8.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	43521.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	29.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	20.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	37143.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	2.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	1.0
+nb7_panel_selection.py	7.2	7.2 families with 3+ terms	25.0
+nb7_panel_selection.py	7.3	7.3 served diseases	13.0
+nb7_panel_selection.py	7.3	7.3 served rows	129253.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	3.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.4021
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.4935
+nb7_panel_selection.py	7.4	7.4  [loop-table]	1.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.4746
+nb7_panel_selection.py	7.4	7.4  [loop-table]	5.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.5911
+nb7_panel_selection.py	7.4	7.4  [loop-table]	4.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.7076
+nb7_panel_selection.py	7.4	7.4  [loop-table]	3.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.4021
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.4935
+nb7_panel_selection.py	7.4	7.4  [loop-table]	1.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.4746
+nb7_panel_selection.py	7.4	7.4  [loop-table]	5.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.5911
+nb7_panel_selection.py	7.4	7.4  [loop-table]	4.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.7076
+nb7_panel_selection.py	7.5	7.5  [loop-table]	4.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	2.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	3.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	3.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	3.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	4.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	0.0
+nb7_panel_selection.py	7.5	7.5 MS targets in top50	0.0
+nb7_panel_selection.py	7.6	7.6  [loop-table]	9.0
+nb7_panel_selection.py	7.6	7.6  [loop-table]	0.0

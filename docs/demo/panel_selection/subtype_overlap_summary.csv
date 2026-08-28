@@ -1,0 +1,6 @@
+family,mean,max,count,near_duplicates
+breast,0.4021,0.8519,15,3
+heme,0.5911,0.8519,10,5
+lung,0.7076,0.8868,6,4
+stomach,0.4746,0.8519,6,1
+uterine,0.4935,0.5625,10,0

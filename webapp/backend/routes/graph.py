@@ -134,27 +134,6 @@ class SearchBody(BaseModel):
     query: str = Field(min_length=1, max_length=4000)
 
 
-def _explain(exc: Exception, literal: bool) -> str:
-    """Turn a DSS-side failure into something a reader can act on.
-
-    The size ceiling is the one users actually hit, and its native form is a
-    java.lang.IllegalArgumentException about `dku.agents.tools.maxOutputSizeMB`
-    -- true, and useless to a scientist looking at a graph.
-    """
-    msg = str(exc)
-    if "maxOutputSizeMB" in msg or "output size exceeds" in msg:
-        if literal:
-            return ("That query returned more data than the tool can hand back "
-                    "(the ceiling is 50 MB). Add a LIMIT, or aggregate with "
-                    "COUNT/GROUP BY instead of returning whole nodes.")
-        return ("That question produced an unbounded query — it tried to return a "
-                "large share of the graph at once. Try naming a specific gene or "
-                "disease, or asking for a count rather than the records themselves.")
-    if "timeout" in msg.lower():
-        return "The query ran past the 60-second timeout. Narrow it, or add a LIMIT."
-    return f"The graph tool did not answer: {msg}"
-
-
 @router.get("/defaults")
 def defaults() -> dict[str, Any]:
     return {"defaults": [{k: v for k, v in d.items()} for d in DEFAULTS]}

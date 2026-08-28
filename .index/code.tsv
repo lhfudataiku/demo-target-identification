@@ -1,4 +1,5 @@
 path	kind	status	n_refs	referenced_by
+webapp/backend/routes/graph.py	webapp	ORPHAN (referenced by nothing)	0	-
 webapp/frontend/tsconfig.json	webapp	ORPHAN (referenced by nothing)	0	-
 archive/webapp-v1/backend.py	archive	ARCHIVED	12	AGENTS.md,CLAUDE.md,docs/demo/FLOW_MAP.md,docs/demo/flow_map.html
 docs/appendix/manifest.json	docs	LIVE (referenced)	1	docs/appendix/README.md
@@ -61,10 +62,11 @@ notebooks/nb3b_hub_bias_meter.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb4_results_three_axes.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb5_data_exploration.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb6_interrogation_and_close.py	notebook	LIVE (tripwire)	0	-
+notebooks/nb7_panel_selection.py	notebook	LIVE (tripwire)	1	docs/demo/panel_selection/README.md
 reference_baseline.json	root-script	LIVE (referenced)	3	DECISIONS.md,docs/graph/GRAPH_BUILDING.md,docs/prioritizer/TARGET_PRIORITIZER.md
 scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
-tools/build_index.py	tool	LIVE	7	AGENTS.md,CLAUDE.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
+tools/build_index.py	tool	LIVE	8	AGENTS.md,CLAUDE.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
 tools/build_recipe_index.py	tool	LIVE	18	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,AGENTS.md,CLAUDE.md
 tools/check_freshness.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
 tools/check_indexes.sh	tool	LIVE	7	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md

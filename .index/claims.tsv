@@ -26,7 +26,7 @@ AGENTS.md	24	-	113,391	ORPHAN			hist	**Part 1 complete.** 113,391 nodes / 2,851,
 AGENTS.md	24	-	2,851,510	ORPHAN			hist	**Part 1 complete.** 113,391 nodes / 2,851,510 edges / 18 relations, accepted against the frozen reference. `n
 AGENTS.md	26	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		**Part 2 built and validated.** Champion `m7-f14` (`hJLGoYn4`), macro per-disease AUC 0.8230 over 670 diseases
 AGENTS.md	33	-	1,100	ORPHAN		y		Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `style.css`, ~1,100 lin
-AGENTS.md	33	-	129,253	ORPHAN		y		Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `style.css`, ~1,100 lin
+AGENTS.md	33	-	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows	y		Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `style.css`, ~1,100 lin
 AGENTS.md	38	-	6.3	ORPHAN				Measured verdict: **+80% more diseases for ~+20% more pool rows** — a coverage win, not a quality win. Admitte
 AGENTS.md	38	-	2,088	ORPHAN				Measured verdict: **+80% more diseases for ~+20% more pool rows** — a coverage win, not a quality win. Admitte
 AGENTS.md	38	-	1,157	ORPHAN				Measured verdict: **+80% more diseases for ~+20% more pool rows** — a coverage win, not a quality win. Admitte
@@ -35,7 +35,7 @@ CLAUDE.md	29	-	113,391	ORPHAN			hist	**Part 1 complete.** 113,391 nodes / 2,851,
 CLAUDE.md	29	-	2,851,510	ORPHAN			hist	**Part 1 complete.** 113,391 nodes / 2,851,510 edges / 18 relations, accepted against the frozen
 CLAUDE.md	33	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		**Part 2 built and validated.** Champion `m7-f14` (`hJLGoYn4`), macro per-disease AUC 0.8230 over 670
 CLAUDE.md	44	-	1,100	ORPHAN				~1,100 lines), the v3 mockup, and a built serving layer — 29 datasets across zones `A1`–`A4` plus the
-CLAUDE.md	45	-	129,253	ORPHAN		y		shared `40 Candidate ranking` zone (`dashboard_candidates`, `target_candidates_2`, 129,253 ranked rows
+CLAUDE.md	45	-	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows	y		shared `40 Candidate ranking` zone (`dashboard_candidates`, `target_candidates_2`, 129,253 ranked rows
 CLAUDE.md	56	-	6.3	ORPHAN				Admitted diseases carry ~4.5 usable positives each and are 6.3× more dilute than current ones, so the
 CLAUDE.md	57	-	2,088	ORPHAN				honest claim if it succeeds is *"we cover 2,088 diseases instead of 1,157"*, never *"the model got
 CLAUDE.md	57	-	1,157	ORPHAN				honest claim if it succeeds is *"we cover 2,088 diseases instead of 1,157"*, never *"the model got
@@ -130,7 +130,7 @@ DECISIONS.md	78	-	3.31	ORPHAN		y		| 2026-08-19 | **CORRECTION to §8.4 — the d
 DECISIONS.md	78	-	2.86	ORPHAN		y		| 2026-08-19 | **CORRECTION to §8.4 — the degree-matched claim rested on an estimator mismatch.** The table pu
 DECISIONS.md	79	-	0.9354	ORPHAN		y	hist	| 2026-08-19 | **Snapshot-before-delete adopted as standing practice.** Every artifact leaving the flow is fir
 DECISIONS.md	80	-	76,465	ORPHAN				| 2026-08-19 | **Breast cancer and its molecular subtypes added to the persona panel** (§8.10). Six terms join
-DECISIONS.md	80	-	129,253	ORPHAN				| 2026-08-19 | **Breast cancer and its molecular subtypes added to the persona panel** (§8.10). Six terms join
+DECISIONS.md	80	-	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows			| 2026-08-19 | **Breast cancer and its molecular subtypes added to the persona panel** (§8.10). Six terms join
 DECISIONS.md	82	-	0.69	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y	hist	| 2026-08-19 | **The parent-term intuition is backwards for breast.** §3.3 held that coarser terms are the saf
 DECISIONS.md	82	-	0.93	ORPHAN		y	hist	| 2026-08-19 | **The parent-term intuition is backwards for breast.** §3.3 held that coarser terms are the saf
 DECISIONS.md	83	-	2.44	ORPHAN		y		| 2026-08-19 | **A "power" verdict was replaced with an exact test, because the first version was wrong in the
@@ -452,10 +452,10 @@ DECISIONS.md	173	-	0.7976	ORPHAN		y		| 2026-08-21 | **Found a claim surface no i
 DECISIONS.md	173	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| 2026-08-21 | **Found a claim surface no index covers: DSS flow-zone descriptions.** They are demo-facing pro
 DECISIONS.md	173	-	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		| 2026-08-21 | **Found a claim surface no index covers: DSS flow-zone descriptions.** They are demo-facing pro
 archive/DASHBOARD_BUILD_LOG.md	33	11	10,000	ORPHAN				**DSS traps worth keeping** (they apply to any presentation layer): chart sampling defaults to 10,000
-archive/DASHBOARD_BUILD_LOG.md	36	11	129,253	ORPHAN				`dashboard_candidates` pulls all 129,253 rows in one `head` call, which is how every HER2+ figure here was
+archive/DASHBOARD_BUILD_LOG.md	36	11	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows			`dashboard_candidates` pulls all 129,253 rows in one `head` call, which is how every HER2+ figure here was
 archive/DASHBOARD_BUILD_LOG.md	80	12.2	2,851,510	ORPHAN				at most a few hundred rows *once computed*. The app must never read `graph_edges` (2,851,510 rows) to
 archive/DASHBOARD_BUILD_LOG.md	97	12.2	12,272	ORPHAN				**Second question, and it applies to exactly one dataset.** Act 4 needs row-level data: ~12,272 rows ×
-archive/DASHBOARD_BUILD_LOG.md	103	12.2	129,253	ORPHAN				(129,253 × 63).
+archive/DASHBOARD_BUILD_LOG.md	103	12.2	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows			(129,253 × 63).
 archive/DASHBOARD_BUILD_LOG.md	108	12.2	12,272	ORPHAN				`WHERE disease_index = 48537` is pushed to the warehouse and only 12,272 rows transfer. Cold start is
 archive/DASHBOARD_BUILD_LOG.md	126	12.2	2,851,510	ORPHAN				`dku dataset metrics get graph_edges records:COUNT_RECORDS` returns 2,851,510 today. Reading a metric
 archive/DASHBOARD_BUILD_LOG.md	129	12.2	113,391	ORPHAN				*And for the two headline scalars, metrics are strictly better.* 113,391 nodes and 2,851,510 edges are
@@ -495,7 +495,7 @@ archive/DASHBOARD_BUILD_LOG.md	285	12.6	6,754,128	VALUE_ONLY	nb2_splitting_and_p
 archive/DASHBOARD_BUILD_LOG.md	286	12.6	0.6	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability			overlap. And **the GCD ribbon is the drug route at 0.6%**: showing it is honest and preempts a
 archive/DASHBOARD_BUILD_LOG.md	295	12.6	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		Each tab carries its own n and macro: *disease* → 668 / 0.8230, *family* → 503 / 0.8009.
 archive/DASHBOARD_BUILD_LOG.md	295	12.6	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		Each tab carries its own n and macro: *disease* → 668 / 0.8230, *family* → 503 / 0.8009.
-archive/DASHBOARD_BUILD_LOG.md	300	12.6	129,253	ORPHAN		y		drivers for all 129,253 scored rows. Aggregating gives an empirical importance ranking over all 14
+archive/DASHBOARD_BUILD_LOG.md	300	12.6	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows	y		drivers for all 129,253 scored rows. Aggregating gives an empirical importance ranking over all 14
 archive/DASHBOARD_BUILD_LOG.md	305	12.6	76,487	ORPHAN				| 1 | `ppi_evidence_depth` | 76,487 | | 8 | `gene_n_pathways` | 4,666 |
 archive/DASHBOARD_BUILD_LOG.md	305	12.6	4,666	ORPHAN				| 1 | `ppi_evidence_depth` | 76,487 | | 8 | `gene_n_pathways` | 4,666 |
 archive/DASHBOARD_BUILD_LOG.md	306	12.6	46,643	ORPHAN				| 2 | `ppi_multi_source_frac` | 46,643 | | 9 | `ppi_adamic_adar` | 3,220 |
@@ -537,7 +537,7 @@ archive/DASHBOARD_BUILD_LOG.md	482	12.11	3.29	VALUE_ONLY	nb4_results_three_axes.
 archive/DASHBOARD_BUILD_LOG.md	482	12.11	2.42	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @200	y		assertions in `nb4` §8.4 are **pooled 3.29× at K=10** and **2.42× at K=200**, with **macro 3.11× at
 archive/DASHBOARD_BUILD_LOG.md	482	12.11	3.11	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10	y		assertions in `nb4` §8.4 are **pooled 3.29× at K=10** and **2.42× at K=200**, with **macro 3.11× at
 archive/DASHBOARD_BUILD_LOG.md	492	12.11	1,247	ORPHAN				4. **Counting seven node sources overstates the claim.** `MONDO_grouped` (1,247) is a grouping we
-archive/DASHBOARD_BUILD_LOG.md	514	13.1	129,253	ORPHAN				| `shap_driver_frequency` | **Prepare** (split ", " → strip " (…)" → fold to rows) → **Group** | all 129,253 r
+archive/DASHBOARD_BUILD_LOG.md	514	13.1	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows			| `shap_driver_frequency` | **Prepare** (split ", " → strip " (…)" → fold to rows) → **Group** | all 129,253 r
 archive/DASHBOARD_BUILD_LOG.md	530	13.2	27,153	ORPHAN				27,153 disease nodes
 archive/DASHBOARD_BUILD_LOG.md	531	13.2	1,157	ORPHAN				└── 1,157 eligible (module_size ≥ 20 — the seed gate)
 archive/DASHBOARD_BUILD_LOG.md	532	13.2	25,996	ORPHAN				└── 25,996 EXCLUDED (95.7%): fewer than 20 curated gene associations
@@ -615,7 +615,7 @@ archive/DASHBOARD_BUILD_LOG.md	1001	16	1.0410	ORPHAN				| **A2** | `validation_a
 archive/DASHBOARD_BUILD_LOG.md	1003	16	25,996	ORPHAN				| | `disease_eligibility` | 2 | Group | **25,996 / 1,157** |
 archive/DASHBOARD_BUILD_LOG.md	1003	16	1,157	ORPHAN				| | `disease_eligibility` | 2 | Group | **25,996 / 1,157** |
 archive/DASHBOARD_BUILD_LOG.md	1009	16	27,153	ORPHAN				| | `disease_hierarchy_annotation` | 27,153 | moved | — |
-archive/DASHBOARD_BUILD_LOG.md	1010	16	129,253	ORPHAN				| **A4** | `dashboard_candidates` | 129,253 | moved | — |
+archive/DASHBOARD_BUILD_LOG.md	1010	16	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows			| **A4** | `dashboard_candidates` | 129,253 | moved | — |
 archive/DASHBOARD_BUILD_LOG.md	1018	16	3,380,853	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GGD rows			`enriched_dwpc_GGD` (3,380,853), `enriched_dwpc_GPGD` (5,373,706) and `enriched_dwpc_GCD` (42,227),
 archive/DASHBOARD_BUILD_LOG.md	1018	16	5,373,706	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GPGD rows			`enriched_dwpc_GGD` (3,380,853), `enriched_dwpc_GPGD` (5,373,706) and `enriched_dwpc_GCD` (42,227),
 archive/DASHBOARD_BUILD_LOG.md	1018	16	42,227	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GCD rows			`enriched_dwpc_GGD` (3,380,853), `enriched_dwpc_GPGD` (5,373,706) and `enriched_dwpc_GCD` (42,227),
@@ -738,14 +738,14 @@ archive/DASHBOARD_BUILD_LOG.md	2226	31.8	0.7471	VALUE_ONLY	nb2_splitting_and_poo
 archive/DASHBOARD_BUILD_LOG.md	2226	31.8	0.6833	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
 archive/DASHBOARD_BUILD_LOG.md	2226	31.8	0.7335	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
 archive/DASHBOARD_BUILD_LOG.md	2332	33.3	2,092	ORPHAN				Indexes rebuilt after the prune: **109 recipes, 98 assertions, 2,092 claims**.
-docs/README.md	33	-	95.7	ORPHAN		y		| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) | **Current mockup.** Four interactive acts
+docs/README.md	34	-	95.7	ORPHAN		y		| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) | **Current mockup.** Four interactive acts
 docs/appendix/README.md	8	-	0.9354	ORPHAN				without a snapshot, and its most reusable finding — a gene-popularity lookup table scoring 0.9354 and
 docs/appendix/README.md	14	-	2,010	ORPHAN		y		| `model_comparison.csv` | 2,010 | §6.4 ablation ladder, m1-f7 → m2-f10 → m3-f12 | saved models `Lx5Mz2hY`, `6
 docs/appendix/README.md	15	-	1,113	ORPHAN		y		| `validation_auc_by_disease_2.csv` | 1,113 | §7.1 per-split-key AUC (the second metric run) | `scored_m3` |
 docs/appendix/README.md	17	-	27,153	ORPHAN			hist	| `disease_hierarchy_annotation.csv` | 27,153 | §3.2 ontology redundancy, §3.3 granularity trade-off | `diseas
 docs/appendix/README.md	18	-	0.110	ORPHAN		y		| `maturity_confound.csv` | 60 | §8.2 the metabolic/oncology correction (Spearman +0.110) | `novel_discovery_e
 docs/demo/BREAST_SURGEON_BRIEFING.md	15	1	76,465	ORPHAN				`target_candidates_2` from 76,465 rows over 7 diseases to **129,253 over 13**.
-docs/demo/BREAST_SURGEON_BRIEFING.md	15	1	129,253	ORPHAN				`target_candidates_2` from 76,465 rows over 7 diseases to **129,253 over 13**.
+docs/demo/BREAST_SURGEON_BRIEFING.md	15	1	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows			`target_candidates_2` from 76,465 rows over 7 diseases to **129,253 over 13**.
 docs/demo/BREAST_SURGEON_BRIEFING.md	21	1	8,157	ORPHAN				| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
 docs/demo/BREAST_SURGEON_BRIEFING.md	21	1	0.85	ORPHAN				| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
 docs/demo/BREAST_SURGEON_BRIEFING.md	21	1	0.80	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
@@ -857,7 +857,7 @@ docs/demo/DASHBOARD_DESIGN.md	390	4	11,673	ORPHAN		y		| Delete the answer key | 
 docs/demo/DASHBOARD_DESIGN.md	392	4	16.9	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10	y		| Lift vs K, by ground truth | approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, decaying to a ~4× floor |
 docs/demo/DASHBOARD_DESIGN.md	392	4	5.0	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@200	y		| Lift vs K, by ground truth | approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, decaying to a ~4× floor |
 docs/demo/DASHBOARD_DESIGN.md	392	4	7.4	ORPHAN		y		| Lift vs K, by ground truth | approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, decaying to a ~4× floor |
-docs/demo/DASHBOARD_DESIGN.md	392	4	4.0	ORPHAN		y		| Lift vs K, by ground truth | approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, decaying to a ~4× floor |
+docs/demo/DASHBOARD_DESIGN.md	392	4	4.0	VALUE_ONLY	nb7_panel_selection.py:7.4  [loop-table]	y		| Lift vs K, by ground truth | approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, decaying to a ~4× floor |
 docs/demo/DASHBOARD_DESIGN.md	393	4	16.9	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10	y		| Where the mean comes from | the per-disease distribution behind 16.9× |
 docs/demo/DASHBOARD_DESIGN.md	395	4	16.9	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10	y		**The distribution card is not optional.** 16.9× is a *mean of per-disease lifts on a heavy-tailed
 docs/demo/DASHBOARD_DESIGN.md	396	4	252.4	ORPHAN				distribution* — Sjögren syndrome alone is **252.4×** at top-10, and the notebook drops infinities before
@@ -922,6 +922,9 @@ docs/demo/DEMO_NARRATIVE.md	194	-	1.37	VALUE_ONLY	nb6_interrogation_and_close.py
 docs/demo/DEMO_NARRATIVE.md	195	-	4.62	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			| *"Exclude targets with known safety liabilities."* | Liability-flagged genes are **4.62×** enriched among re
 docs/demo/DEMO_NARRATIVE.md	205	-	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r			uncorrelated, r = **+0.002**. And on a drug-target benchmark, a lookup table — *"how many diseases is
 docs/demo/DEMO_NARRATIVE.md	230	-	0.9365	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		| **HER2-positive breast carcinoma** | **the spine.** Reconstructs at AUC **0.9365**; a clinician recognises t
+docs/demo/panel_selection/README.md	29	-	0.749	ORPHAN				triple-negative breast has 8 positives and an interval of 0.749–1.041. A subtype under the
+docs/demo/panel_selection/README.md	29	-	1.041	ORPHAN				triple-negative breast has 8 positives and an interval of 0.749–1.041. A subtype under the
+docs/demo/panel_selection/README.md	34	-	0.887	ORPHAN				members are clinically. Lung is the case in point: adenocarcinoma vs squamous is 0.887.
 docs/graph/GRAPH_BUILDING.md	10	-	113,391	ORPHAN				> **Status: complete.** 113,391 nodes / 2,851,510 edges / 18 relations, rebuilt from source and
 docs/graph/GRAPH_BUILDING.md	10	-	2,851,510	ORPHAN				> **Status: complete.** 113,391 nodes / 2,851,510 edges / 18 relations, rebuilt from source and
 docs/graph/GRAPH_BUILDING.md	43	2	25,906	ORPHAN			hist	| **MONDO** (`MONDO.obo`) | disease backbone + cross-reference hub | `disease` (25,906 MONDO + 1,247 grouped) 
@@ -1078,7 +1081,7 @@ docs/overview/PROJECT_CONTEXT.md	229	4.5	0.6836	ORPHAN		y		| drug-target AUC | 0
 docs/overview/PROJECT_CONTEXT.md	229	4.5	0.6911	ORPHAN		y		| drug-target AUC | 0.6836 | **0.6911** |
 docs/overview/PROJECT_CONTEXT.md	230	4.5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| candidate pool | 6,754,128 | **6,754,128** *(identical)* |
 docs/overview/PROJECT_CONTEXT.md	232	4.5	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		Three individual personas reproduced to within **0.002**, which is stronger evidence than the macro
-docs/overview/PROJECT_CONTEXT.md	240	4.6	129,253	ORPHAN		y		solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying
+docs/overview/PROJECT_CONTEXT.md	240	4.6	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows	y		solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying
 docs/overview/PROJECT_CONTEXT.md	272	4.6	0.01	ORPHAN			hist	| 2026-08-17 | **Migration accepted.** The modelling flow rebuilt on the shared graph reproduces the frozen re
 docs/overview/PROJECT_CONTEXT.md	273	4.6	1,802	ORPHAN		y		| 2026-08-17 | **Discovery adopted as a third reported axis, and it is the strongest result in the POC** (TARG
 docs/platform/DSS_CHEATSHEET.md	16	1	65,536	ORPHAN				`get_dataframe()` reads in fixed-size chunks (65,536 rows) and infers each column's type **within
@@ -1494,7 +1497,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	707	6.4	4.8	ORPHAN				| 61–120 | 238 | 
 docs/prioritizer/TARGET_PRIORITIZER.md	708	6.4	0.5876	ORPHAN				| 121–300 | 193 | 0.5876 | 56.0% / 41.1% / 3.0% |
 docs/prioritizer/TARGET_PRIORITIZER.md	708	6.4	56.0	ORPHAN				| 121–300 | 193 | 0.5876 | 56.0% / 41.1% / 3.0% |
 docs/prioritizer/TARGET_PRIORITIZER.md	708	6.4	41.1	ORPHAN				| 121–300 | 193 | 0.5876 | 56.0% / 41.1% / 3.0% |
-docs/prioritizer/TARGET_PRIORITIZER.md	708	6.4	3.0	ORPHAN				| 121–300 | 193 | 0.5876 | 56.0% / 41.1% / 3.0% |
+docs/prioritizer/TARGET_PRIORITIZER.md	708	6.4	3.0	VALUE_ONLY	nb7_panel_selection.py:7.4  [loop-table]			| 121–300 | 193 | 0.5876 | 56.0% / 41.1% / 3.0% |
 docs/prioritizer/TARGET_PRIORITIZER.md	709	6.4	0.5673	ORPHAN				| **>300** | 139 | **0.5673** | **73.9%** / 24.7% / 1.3% |
 docs/prioritizer/TARGET_PRIORITIZER.md	709	6.4	73.9	ORPHAN				| **>300** | 139 | **0.5673** | **73.9%** / 24.7% / 1.3% |
 docs/prioritizer/TARGET_PRIORITIZER.md	709	6.4	24.7	ORPHAN				| **>300** | 139 | **0.5673** | **73.9%** / 24.7% / 1.3% |
@@ -1653,7 +1656,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	978	7.2	0.026	ORPHAN		y		+0.026, the spre
 docs/prioritizer/TARGET_PRIORITIZER.md	978	7.2	0.110	ORPHAN		y		+0.026, the spread nearly **doubled** (+0.110 → +0.194), and ρ(degree, probability) rose +0.085.
 docs/prioritizer/TARGET_PRIORITIZER.md	978	7.2	0.194	ASSERTED	nb3b_hub_bias_meter.py:7.2 champion spread	y		+0.026, the spread nearly **doubled** (+0.110 → +0.194), and ρ(degree, probability) rose +0.085.
 docs/prioritizer/TARGET_PRIORITIZER.md	978	7.2	0.085	ORPHAN		y		+0.026, the spread nearly **doubled** (+0.110 → +0.194), and ρ(degree, probability) rose +0.085.
-docs/prioritizer/TARGET_PRIORITIZER.md	988	7.2	0.5911	ORPHAN		y		| Q1 mean probability | 0.5911 | 0.5915 | +0.0004 |
+docs/prioritizer/TARGET_PRIORITIZER.md	988	7.2	0.5911	VALUE_ONLY	nb7_panel_selection.py:7.4  [loop-table]	y		| Q1 mean probability | 0.5911 | 0.5915 | +0.0004 |
 docs/prioritizer/TARGET_PRIORITIZER.md	988	7.2	0.5915	ORPHAN		y		| Q1 mean probability | 0.5911 | 0.5915 | +0.0004 |
 docs/prioritizer/TARGET_PRIORITIZER.md	988	7.2	0.0004	ORPHAN		y		| Q1 mean probability | 0.5911 | 0.5915 | +0.0004 |
 docs/prioritizer/TARGET_PRIORITIZER.md	989	7.2	0.7851	ORPHAN		y		| Q5 mean probability | 0.7851 | 0.7833 | −0.0018 |
@@ -1768,7 +1771,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1217	8.2	0.934	ORPHAN				| lung adenocarc
 docs/prioritizer/TARGET_PRIORITIZER.md	1217	8.2	17.6	ORPHAN				| lung adenocarcinoma | 705 | **0.934** | 17.6× | — | — | 146 / **5** / **8.2×** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1217	8.2	8.2	ORPHAN				| lung adenocarcinoma | 705 | **0.934** | 17.6× | — | — | 146 / **5** / **8.2×** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1218	8.2	0.931	ORPHAN				| non-small cell lung carcinoma | 621 | **0.931** | **19.0×** | 0.676 | 33 / 0 / 0 | 379 / **11** / **6.8×** |
-docs/prioritizer/TARGET_PRIORITIZER.md	1218	8.2	19.0	ORPHAN				| non-small cell lung carcinoma | 621 | **0.931** | **19.0×** | 0.676 | 33 / 0 / 0 | 379 / **11** / **6.8×** |
+docs/prioritizer/TARGET_PRIORITIZER.md	1218	8.2	19.0	VALUE_ONLY	nb7_panel_selection.py:7.2  [loop-table]			| non-small cell lung carcinoma | 621 | **0.931** | **19.0×** | 0.676 | 33 / 0 / 0 | 379 / **11** / **6.8×** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1218	8.2	0.676	ORPHAN				| non-small cell lung carcinoma | 621 | **0.931** | **19.0×** | 0.676 | 33 / 0 / 0 | 379 / **11** / **6.8×** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1218	8.2	6.8	ORPHAN				| non-small cell lung carcinoma | 621 | **0.931** | **19.0×** | 0.676 | 33 / 0 / 0 | 379 / **11** / **6.8×** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1219	8.2	0.772	ORPHAN				| lung cancer | 53 | 0.772 | **21.2×** | 0.827 | 4 / 0 / 0 | 258 / **12** / **5.8×** |
@@ -1793,7 +1796,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1222	8.2	1.2	ORPHAN				| type 2 diabetes 
 docs/prioritizer/TARGET_PRIORITIZER.md	1223	8.2	0.712	ORPHAN				| chronic kidney disease | 35 | 0.712 | 2.9× | 0.702 | 11 / 0 / 0 | 244 / 1 / **0.4×** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1223	8.2	2.9	ORPHAN				| chronic kidney disease | 35 | 0.712 | 2.9× | 0.702 | 11 / 0 / 0 | 244 / 1 / **0.4×** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1223	8.2	0.702	ORPHAN				| chronic kidney disease | 35 | 0.712 | 2.9× | 0.702 | 11 / 0 / 0 | 244 / 1 / **0.4×** |
-docs/prioritizer/TARGET_PRIORITIZER.md	1223	8.2	0.4	ORPHAN				| chronic kidney disease | 35 | 0.712 | 2.9× | 0.702 | 11 / 0 / 0 | 244 / 1 / **0.4×** |
+docs/prioritizer/TARGET_PRIORITIZER.md	1223	8.2	0.4	VALUE_ONLY	nb7_panel_selection.py:7.4  [loop-table]			| chronic kidney disease | 35 | 0.712 | 2.9× | 0.702 | 11 / 0 / 0 | 244 / 1 / **0.4×** |
 docs/prioritizer/TARGET_PRIORITIZER.md	1234	8.2	0.110	ORPHAN		y	hist	> denser for it — is **not** the explanation: Spearman(maturity, axis-preference) = **+0.110**, weak.
 docs/prioritizer/TARGET_PRIORITIZER.md	1243	8.2	41.59	ORPHAN				> | diabetes mellitus | **41.59** | 2.00 | approved |
 docs/prioritizer/TARGET_PRIORITIZER.md	1243	8.2	2.00	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 diseases below 50%			> | diabetes mellitus | **41.59** | 2.00 | approved |
@@ -1913,7 +1916,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	41.2	ORPHAN				| diabetes mellit
 docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	40.7	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
 docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	28.6	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
 docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	20.1	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
-docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	17.0	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
+docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	17.0	VALUE_ONLY	nb7_panel_selection.py:7.1  [loop-table]			| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
 docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	16.6	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
 docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	38.5	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
 docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	34.4	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
@@ -1921,7 +1924,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	30.6	ORPHAN				| diabetes mellit
 docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	27.5	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
 docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	28.1	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
 docs/prioritizer/TARGET_PRIORITIZER.md	1544	8.7	22.3	ORPHAN				| diabetes mellitus 41.6× · obesity 41.2× · psoriatic arthritis 40.7× · acute lymphoblastic leukemia 28.6× · *
-docs/prioritizer/TARGET_PRIORITIZER.md	1546	8.7	29.0	ORPHAN		y		Also outstanding on *both*: **myelofibrosis** (ranking 29.0×, drug AUC 0.96, approved 67.0×, JAK2 at
+docs/prioritizer/TARGET_PRIORITIZER.md	1546	8.7	29.0	VALUE_ONLY	nb7_panel_selection.py:7.2  [loop-table]	y		Also outstanding on *both*: **myelofibrosis** (ranking 29.0×, drug AUC 0.96, approved 67.0×, JAK2 at
 docs/prioritizer/TARGET_PRIORITIZER.md	1546	8.7	0.96	ORPHAN		y		Also outstanding on *both*: **myelofibrosis** (ranking 29.0×, drug AUC 0.96, approved 67.0×, JAK2 at
 docs/prioritizer/TARGET_PRIORITIZER.md	1546	8.7	67.0	ORPHAN		y		Also outstanding on *both*: **myelofibrosis** (ranking 29.0×, drug AUC 0.96, approved 67.0×, JAK2 at
 docs/prioritizer/TARGET_PRIORITIZER.md	1548	8.7	0.99	ORPHAN		y		polycythemia vera** (JAK2 at #3), **GIST** (drug AUC 0.99), **anaplastic large cell lymphoma** (drug
@@ -1944,7 +1947,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1635	8.9	4.5	ORPHAN				| **Curated safety
 docs/prioritizer/TARGET_PRIORITIZER.md	1638	8.9	88.2	ORPHAN				The two independent localization sources agree 88.2% on membrane and 95.6% on secreted; where they
 docs/prioritizer/TARGET_PRIORITIZER.md	1638	8.9	95.6	ORPHAN				The two independent localization sources agree 88.2% on membrane and 95.6% on secreted; where they
 docs/prioritizer/TARGET_PRIORITIZER.md	1675	8.10	76,465	ORPHAN				76,465 rows over 7 diseases to **129,253 over 13**.
-docs/prioritizer/TARGET_PRIORITIZER.md	1675	8.10	129,253	ORPHAN				76,465 rows over 7 diseases to **129,253 over 13**.
+docs/prioritizer/TARGET_PRIORITIZER.md	1675	8.10	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows			76,465 rows over 7 diseases to **129,253 over 13**.
 docs/prioritizer/TARGET_PRIORITIZER.md	1679	8.10	2.44	ORPHAN				in the direction that matters: HER2+ sees 46 hits against 2.44 expected, overwhelming regardless of how
 docs/prioritizer/TARGET_PRIORITIZER.md	1684	8.10	12,272	ORPHAN				| HER2 positive breast carcinoma | 12,272 | 599 | **0.93 (0.92–0.95)** | 46 vs 2.44 | significant |
 docs/prioritizer/TARGET_PRIORITIZER.md	1684	8.10	0.93	ORPHAN				| HER2 positive breast carcinoma | 12,272 | 599 | **0.93 (0.92–0.95)** | 46 vs 2.44 | significant |
@@ -1975,7 +1978,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1709	8.10	2,563	ORPHAN		y		2. **PARP1 at 
 docs/prioritizer/TARGET_PRIORITIZER.md	1714	8.10	0.90	ORPHAN		y		score of **0.90** for this disease, i.e. it is one of only two pairs the therapeutic label asserts
 docs/prioritizer/TARGET_PRIORITIZER.md	1720	8.10	1.04	ORPHAN			hist	**1.04%** of diseases. See §5.2.1 and §10.4 for the corrected scope of this problem.
 docs/prioritizer/TARGET_PRIORITIZER.md	1743	9	21,308,578	ORPHAN				| `12 Features - assembly` | 4 | *not shown* | pair spine → 18-input join → feature table (21,308,578 rows) |
-docs/prioritizer/TARGET_PRIORITIZER.md	1785	9.1	129,253	ORPHAN		y		| **Q1** | *"Show me the list."* | `50`, `60` | 129,253 ranked rows; obesity → 65 candidates on the scientist'
+docs/prioritizer/TARGET_PRIORITIZER.md	1785	9.1	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows	y		| **Q1** | *"Show me the list."* | `50`, `60` | 129,253 ranked rows; obesity → 65 candidates on the scientist'
 docs/prioritizer/TARGET_PRIORITIZER.md	1786	9.1	2.9	ORPHAN		y		| **Q2** | *"These are just the famous genes."* | `41` | degree-matched tractability **2.4–2.9×**; strengthens
 docs/prioritizer/TARGET_PRIORITIZER.md	1787	9.1	16.9	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10	y		| **Q3** | *"You already knew all of these."* | `41` | novel-discovery **16.9×** at top-10 approved; **MAPK3 n
 docs/prioritizer/TARGET_PRIORITIZER.md	1789	9.1	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| **Q5** | *"Would this work on a disease you had not tuned?"* | `40`, `42`, `43`, and `30` | macro AUC **0.82
@@ -2019,7 +2022,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1877	10.2	0.87	ORPHAN				| 0.7 – 1.0 | 
 docs/prioritizer/TARGET_PRIORITIZER.md	1878	10.2	0.80	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			| 1.0 – 1.5 | 0.80× | 0.60× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1878	10.2	0.60	ORPHAN				| 1.0 – 1.5 | 0.80× | 0.60× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1879	10.2	0.62	ORPHAN				| > 1.5 *(tolerant)* | **0.62×** | 0.40× |
-docs/prioritizer/TARGET_PRIORITIZER.md	1879	10.2	0.40	ORPHAN				| > 1.5 *(tolerant)* | **0.62×** | 0.40× |
+docs/prioritizer/TARGET_PRIORITIZER.md	1879	10.2	0.40	VALUE_ONLY	nb7_panel_selection.py:7.4  [loop-table]			| > 1.5 *(tolerant)* | **0.62×** | 0.40× |
 docs/prioritizer/TARGET_PRIORITIZER.md	1882	10.2	4.62	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			drugging — and a drug is not a germline knockout. Separately, **`has_safety_liability` is 4.62×
 docs/prioritizer/TARGET_PRIORITIZER.md	1900	10.3	0.6886	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		- **Report drug-target AUC stratified by route support** (§5.2.1) — 0.6886 all positives / **0.7471**
 docs/prioritizer/TARGET_PRIORITIZER.md	1900	10.3	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]	y		- **Report drug-target AUC stratified by route support** (§5.2.1) — 0.6886 all positives / **0.7471**
@@ -2029,7 +2032,7 @@ docs/prioritizer/TARGET_PRIORITIZER.md	1915	10.3	0.9324	ORPHAN		y		model, 3 spli
 docs/prioritizer/TARGET_PRIORITIZER.md	1915	10.3	0.6444	ORPHAN		y		model, 3 splits, 6 evaluation datasets — so **0.9324 / 0.6444, 439-of-1,507 hits@50, the 0.9354
 docs/prioritizer/TARGET_PRIORITIZER.md	1915	10.3	1,507	ORPHAN		y		model, 3 splits, 6 evaluation datasets — so **0.9324 / 0.6444, 439-of-1,507 hits@50, the 0.9354
 docs/prioritizer/TARGET_PRIORITIZER.md	1915	10.3	0.9354	ORPHAN		y		model, 3 splits, 6 evaluation datasets — so **0.9324 / 0.6444, 439-of-1,507 hits@50, the 0.9354
-docs/prioritizer/TARGET_PRIORITIZER.md	1922	10.3	129,253	ORPHAN		y		- **The dashboard.** Data layer is ready: 129,253 ranked rows with tractability, class and safety
+docs/prioritizer/TARGET_PRIORITIZER.md	1922	10.3	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows	y		- **The dashboard.** Data layer is ready: 129,253 ranked rows with tractability, class and safety
 docs/prioritizer/TARGET_PRIORITIZER.md	1944	10.4	98.5	ASSERTED	nb2_splitting_and_pool.py:10.4 reachability ceiling %			the pool contains **98.5%** of curated target–disease pairs, so the reachability ceiling costs
 docs/prioritizer/TARGET_PRIORITIZER.md	1945	10.4	1.5	ORPHAN				**1.5%**, not a category of biology. Three sub-claims were also wrong:
 docs/prioritizer/TARGET_PRIORITIZER.md	1946	10.4	0.081	ASSERTED	nb2_splitting_and_pool.py:10.4 Spearman pool_size vs coverage	y		**(a)** it is not a sparse-disease effect — Spearman(pool size, coverage) = **+0.081**;
@@ -2100,11 +2103,11 @@ docs/reference/RESEARCH_NOTE.md	173	6	2504.08445	ORPHAN				| 2 | [KGE gene–dis
 docs/reference/RESEARCH_NOTE.md	175	6	2105.10578	ORPHAN				| 4 | [KG tensor factorization — arXiv 2022](https://arxiv.org/abs/2105.10578) | primary | deferred (KGE) |
 docs/reference/RESEARCH_NOTE.md	181	6	10.1186	ORPHAN		y		| 10 | [MultiXrank — *BMC Bioinf* 2024](https://link.springer.com/article/10.1186/s12859-024-05683-z) | primar
 docs/reference/RESEARCH_NOTE.md	193	6	10.3389	ORPHAN				| 22 | [BenevolentAI — *Front Pharmacol* 2021](https://www.frontiersin.org/journals/pharmacology/articles/10.3
-notebooks/README.md	35	-	0.59	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability			under-score poorly-connected true targets?"* — about **detection**, and it is the source of the 0.59 →
-notebooks/README.md	36	-	0.79	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability			0.79 finding. They point opposite ways and both are true. `nb6` §5.2 carries `nb3b`'s version for the
-notebooks/README.md	83	-	0.8567	ORPHAN				- **The gene-popularity shortcut reaches the association axis**: `gene_n_diseases` alone scores 0.8567.
-notebooks/README.md	84	-	56.4	ORPHAN				- **§3.3's thesis was backwards** — over 259 parent-child pairs the more specific term wins 56.4%.
-webapp/DEPLOYMENT.md	177	5	129,253	ORPHAN				That is deliberate — `dashboard_candidates` is 129,253 rows and re-reading it per request makes the
+notebooks/README.md	36	-	0.59	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability			under-score poorly-connected true targets?"* — about **detection**, and it is the source of the 0.59 →
+notebooks/README.md	37	-	0.79	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability			0.79 finding. They point opposite ways and both are true. `nb6` §5.2 carries `nb3b`'s version for the
+notebooks/README.md	85	-	0.8567	ORPHAN				- **The gene-popularity shortcut reaches the association axis**: `gene_n_diseases` alone scores 0.8567.
+notebooks/README.md	86	-	56.4	ORPHAN				- **§3.3's thesis was backwards** — over 259 parent-child pairs the more specific term wins 56.4%.
+webapp/DEPLOYMENT.md	177	5	129,253	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows			That is deliberate — `dashboard_candidates` is 129,253 rows and re-reading it per request makes the
 webapp/README.md	63	-	3.11	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10			ENV_NAME=my-code-env # a Python ≥3.11 code env on the DSS instance
 webapp/README.md	293	-	3.11	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10			and `uvicorn` installed. Python ≥3.11 is recommended (see tech notes).
 webapp/README.md	386	-	3.11	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10			**`from __future__ import annotations` / Python ≥3.11**
