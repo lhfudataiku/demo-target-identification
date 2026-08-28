@@ -13,7 +13,7 @@ Grouped by purpose. **Read one section, not a whole file** — several are 20–
 
 | | |
 |---|---|
-| [`demo/DOC_RESTRUCTURE_PLAN.md`](demo/DOC_RESTRUCTURE_PLAN.md) | **Proposed** repository-wide documentation, decision, build-governance and cross-harness context restructure. Not an implementation record or current project authority |
+| [`demo/DOC_RESTRUCTURE_PLAN.md`](demo/DOC_RESTRUCTURE_PLAN.md) | **Approved 2026-08-28:** repository-wide documentation, decision, build-governance and cross-harness context restructure. Not an implementation record or current project authority |
 
 ## Part 1 — the graph (`DEMO_KG_LS`)
 
