@@ -738,7 +738,7 @@ archive/DASHBOARD_BUILD_LOG.md	2226	31.8	0.7471	VALUE_ONLY	nb2_splitting_and_poo
 archive/DASHBOARD_BUILD_LOG.md	2226	31.8	0.6833	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
 archive/DASHBOARD_BUILD_LOG.md	2226	31.8	0.7335	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			| `pool_selection_bias` → nb2 | `SELBIAS\|computed rows=252\|labels=2`; the four AUCs match — 0.6886 / 0.7471 
 archive/DASHBOARD_BUILD_LOG.md	2332	33.3	2,092	ORPHAN				Indexes rebuilt after the prune: **109 recipes, 98 assertions, 2,092 claims**.
-docs/README.md	34	-	95.7	ORPHAN		y		| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) | **Current mockup.** Four interactive acts
+docs/README.md	40	-	95.7	ORPHAN		y		| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) | **Current mockup.** Four interactive acts
 docs/appendix/README.md	8	-	0.9354	ORPHAN				without a snapshot, and its most reusable finding — a gene-popularity lookup table scoring 0.9354 and
 docs/appendix/README.md	14	-	2,010	ORPHAN		y		| `model_comparison.csv` | 2,010 | §6.4 ablation ladder, m1-f7 → m2-f10 → m3-f12 | saved models `Lx5Mz2hY`, `6
 docs/appendix/README.md	15	-	1,113	ORPHAN		y		| `validation_auc_by_disease_2.csv` | 1,113 | §7.1 per-split-key AUC (the second metric run) | `scored_m3` |
@@ -922,9 +922,21 @@ docs/demo/DEMO_NARRATIVE.md	194	-	1.37	VALUE_ONLY	nb6_interrogation_and_close.py
 docs/demo/DEMO_NARRATIVE.md	195	-	4.62	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			| *"Exclude targets with known safety liabilities."* | Liability-flagged genes are **4.62×** enriched among re
 docs/demo/DEMO_NARRATIVE.md	205	-	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r			uncorrelated, r = **+0.002**. And on a drug-target benchmark, a lookup table — *"how many diseases is
 docs/demo/DEMO_NARRATIVE.md	230	-	0.9365	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		| **HER2-positive breast carcinoma** | **the spine.** Reconstructs at AUC **0.9365**; a clinician recognises t
-docs/demo/panel_selection/README.md	29	-	0.749	ORPHAN				triple-negative breast has 8 positives and an interval of 0.749–1.041. A subtype under the
-docs/demo/panel_selection/README.md	29	-	1.041	ORPHAN				triple-negative breast has 8 positives and an interval of 0.749–1.041. A subtype under the
-docs/demo/panel_selection/README.md	34	-	0.887	ORPHAN				members are clinically. Lung is the case in point: adenocarcinoma vs squamous is 0.887.
+docs/demo/DOC_RESTRUCTURE_PLAN.md	166	6.4	3,000	ORPHAN				- Root plus nested auto-loaded project instructions: **at most 3,000 tokens** for an ordinary webapp
+docs/demo/panel_selection/README.md	30	-	0.40	ORPHAN				| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated leaf sets** — breast 0.40 / uterine 0.49
+docs/demo/panel_selection/README.md	30	-	0.49	ORPHAN				| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated leaf sets** — breast 0.40 / uterine 0.49
+docs/demo/panel_selection/README.md	30	-	0.35	ORPHAN				| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated leaf sets** — breast 0.40 / uterine 0.49
+docs/demo/panel_selection/README.md	49	-	0.402	ORPHAN				| breast | 0.402 | 0.430 |
+docs/demo/panel_selection/README.md	49	-	0.430	VALUE_ONLY	nb7_panel_selection.py:7.4  [loop-table]			| breast | 0.402 | 0.430 |
+docs/demo/panel_selection/README.md	50	-	0.494	ORPHAN				| uterine | 0.494 | 0.478 |
+docs/demo/panel_selection/README.md	50	-	0.478	VALUE_ONLY	nb7_panel_selection.py:7.4  [loop-table]			| uterine | 0.494 | 0.478 |
+docs/demo/panel_selection/README.md	51	-	0.350	ORPHAN				| stomach | 0.350 | 0.451 |
+docs/demo/panel_selection/README.md	51	-	0.451	VALUE_ONLY	nb7_panel_selection.py:7.4  [loop-table]			| stomach | 0.350 | 0.451 |
+docs/demo/panel_selection/README.md	56	-	0.961	ORPHAN				`gastric adenocarcinoma` shares 0.961 of its top 50 with its parent `gastric carcinoma`.
+docs/demo/panel_selection/README.md	58	-	0.350	ORPHAN		y		way: Spearman −0.350 over the 148 shipped pairs.
+docs/demo/panel_selection/README.md	63	-	0.749	ORPHAN				triple-negative breast has 8 positives and an interval of 0.749–1.041. A subtype under the
+docs/demo/panel_selection/README.md	63	-	1.041	ORPHAN				triple-negative breast has 8 positives and an interval of 0.749–1.041. A subtype under the
+docs/demo/panel_selection/README.md	68	-	0.887	ORPHAN				members are clinically. Lung is the case in point: adenocarcinoma vs squamous is 0.887.
 docs/graph/GRAPH_BUILDING.md	10	-	113,391	ORPHAN				> **Status: complete.** 113,391 nodes / 2,851,510 edges / 18 relations, rebuilt from source and
 docs/graph/GRAPH_BUILDING.md	10	-	2,851,510	ORPHAN				> **Status: complete.** 113,391 nodes / 2,851,510 edges / 18 relations, rebuilt from source and
 docs/graph/GRAPH_BUILDING.md	43	2	25,906	ORPHAN			hist	| **MONDO** (`MONDO.obo`) | disease backbone + cross-reference hub | `disease` (25,906 MONDO + 1,247 grouped) 

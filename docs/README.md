@@ -9,6 +9,12 @@ Grouped by purpose. **Read one section, not a whole file** — several are 20–
 |---|---|
 | [`overview/PROJECT_CONTEXT.md`](overview/PROJECT_CONTEXT.md) | What the POC is for, the numbers that anchor the pitch, the personas, and **how Parts 1 and 2 fit together** including the 13 shared objects |
 
+## Planning
+
+| | |
+|---|---|
+| [`demo/DOC_RESTRUCTURE_PLAN.md`](demo/DOC_RESTRUCTURE_PLAN.md) | **Proposed** repository-wide documentation, decision, build-governance and cross-harness context restructure. Not an implementation record or current project authority |
+
 ## Part 1 — the graph (`DEMO_KG_LS`)
 
 | | |

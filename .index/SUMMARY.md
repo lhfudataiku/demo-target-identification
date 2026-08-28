@@ -28,7 +28,8 @@ flags them as historical dropped.
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
 | `docs/demo/DASHBOARD_DESIGN.md` | 0 | 52 | 77 | 129 |
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 19 | 3 | 23 |
-| `docs/demo/panel_selection/README.md` | 0 | 0 | 3 | 3 |
+| `docs/demo/DOC_RESTRUCTURE_PLAN.md` | 0 | 0 | 1 | 1 |
+| `docs/demo/panel_selection/README.md` | 0 | 3 | 11 | 14 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 15 | 20 |
 | `docs/platform/DSS_CHEATSHEET.md` | 0 | 1 | 6 | 7 |
@@ -40,11 +41,11 @@ flags them as historical dropped.
 | `notebooks/README.md` | 0 | 2 | 2 | 4 |
 | `webapp/DEPLOYMENT.md` | 0 | 0 | 1 | 1 |
 | `webapp/README.md` | 0 | 6 | 1 | 7 |
-| **total** | **49** | **390** | **1677** | **2116** |
+| **total** | **49** | **393** | **1686** | **2128** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**398 rows.** Of 1677 total orphans, these are the model-dependent ones: the numbers that move
+**399 rows.** Of 1686 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -90,7 +91,7 @@ when the champion changes and that no notebook would catch.
 | `archive/DASHBOARD_BUILD_LOG.md:1889` | 28.1 | 0.7976 | 1. **The six corrections** of §27.2 — all applied, verified none of `scored_m3`, `0.8197`, |
 | `archive/DASHBOARD_BUILD_LOG.md:2026` | 30.2 | 425,469 | and `ot_ab_tractable` (425,469 + 481,777) independently sum to 907,246. If the codified tr |
 | `archive/DASHBOARD_BUILD_LOG.md:2026` | 30.2 | 481,777 | and `ot_ab_tractable` (425,469 + 481,777) independently sum to 907,246. If the codified tr |
-| `docs/README.md:34` | - | 95.7 | \| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) \| **Current mockup.** |
+| `docs/README.md:40` | - | 95.7 | \| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) \| **Current mockup.** |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:97` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:106` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:108` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
@@ -110,7 +111,7 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/DASHBOARD_DESIGN.md:390` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
 | `docs/demo/DASHBOARD_DESIGN.md:390` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
 
-*338 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*339 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 
