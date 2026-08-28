@@ -16,7 +16,6 @@
   import ActStat from '@/components/act/ActStat.vue'
   import { EaSelect, EaEmpty } from '@/components/ui'
   import ActTabs from '@/components/act/ActTabs.vue'
-  import ActGeneGrid from '@/components/act/ActGeneGrid.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
   import ActSay from '@/components/act/ActSay.vue'
   import ActIntervals from '@/components/act/ActIntervals.vue'
@@ -26,7 +25,14 @@
 
   defineOptions({ name: 'TherapeuticAreaView' })
 
-  interface Family { family_id: number; family_name: string; n_terms: number; macro_auc: number; n_trustworthy: number }
+  interface Family { family_id: number; family_name: string; n_terms: number
+    macro_auc: number | null; n_trustworthy: number; n_leaves: number }
+  interface Programme {
+    leaves: string[]; common: string[]; n_common: number
+    specific: Record<string, string[]>
+    excludes_parents: boolean
+  }
+  interface GapRow { depth_gap: number; pairs: number; mean: number }
   interface Term {
     disease_index: number; disease_name: string
     auc: number; lo95: number; hi95: number; trustworthy: boolean; n_pos: number
@@ -37,7 +43,12 @@
   overlap_all: { a: string; b: string; shared: number }[]
   overlap_novel: { a: string; b: string; shared: number }[]
   coverage: { with_data: number; total: number }
-  family_id: number; n_terms: number; macro_auc: number; terms: Term[]; overlap: { a: string; b: string; shared: number }[] }
+  family_id: number; n_terms: number; macro_auc: number | null; terms: Term[]
+  overlap: { a: string; b: string; shared: number }[]
+  programme: Programme
+  gap_profile: GapRow[]
+  mean_overlap: number | null
+  n_near_duplicates: number }
 
   const families = ref<Family[]>([])
   const selected = ref<number | undefined>()
@@ -85,18 +96,6 @@
   const BIOMARKER = /HER2|luminal a|luminal b|triple.?neg/i
   const gridColumns = computed(() =>
     (detail.value?.grid_columns ?? []).filter((c) => BIOMARKER.test(c)))
-  const gridGenes = computed(() => {
-    const cols = new Set(gridColumns.value)
-    return (detail.value?.gene_grid ?? [])
-      .map((g) => ({
-        ...g,
-        ranks: Object.fromEntries(Object.entries(g.ranks).filter(([k]) => cols.has(k))),
-      }))
-      .filter((g) => Object.keys(g.ranks).length > 0)
-      .map((g) => ({ ...g, n_terms: Object.keys(g.ranks).length }))
-      .sort((a, b) => b.n_terms - a.n_terms || a.name.localeCompare(b.name))
-  })
-
   const commonShare = computed(() => {
     const o = detail.value?.overlap ?? []
     if (!o.length) return null
@@ -164,7 +163,7 @@
           </label>
           <div v-if="detail" class="flex gap-8">
             <ActStat label="Terms" :value="detail.n_terms" />
-            <ActStat label="Macro AUC" :value="detail.macro_auc.toFixed(4)" />
+            <ActStat label="Macro AUC" :value="(detail.macro_auc ?? 0).toFixed(4)" />
           </div>
         </div>
         <div v-if="detail" class="mt-4 overflow-x-auto">
@@ -258,16 +257,53 @@
       <ActCard span="col-span-12 lg:col-span-6" :icon="Users" accent="var(--chart-2)"
                title="The common programme, and what is subtype-specific"
                :desc="commonShare !== null ? `Pairs in this family share ${commonShare} of their top 50 on average.` : undefined">
-        <ActGeneGrid v-if="gridGenes.length" :genes="gridGenes.slice(0, 120)"
-                     :columns="gridColumns" :shared-at="Math.min(3, gridColumns.length)" />
+        <template v-if="detail?.programme?.leaves?.length">
+          <!-- The shared core first: it is the answer the title promises. -->
+          <div class="flex flex-col gap-1.5">
+            <p class="font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+              shared by all {{ detail.programme.leaves.length }} subtypes ·
+              {{ detail.programme.n_common }} of 50
+            </p>
+            <div class="flex flex-wrap gap-1">
+              <span v-for="g in detail.programme.common" :key="g"
+                    class="rounded border border-border bg-muted/40 px-1.5 py-0.5
+                           font-mono text-[11px] text-muted-foreground">{{ g }}</span>
+            </div>
+          </div>
+
+          <div class="mt-4 flex flex-col gap-2.5">
+            <p class="font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+              in exactly one subtype's top 50
+            </p>
+            <div v-for="lf in detail.programme.leaves" :key="lf" class="flex flex-col gap-1">
+              <span class="text-[12.5px] font-medium">
+                {{ lf }}
+                <span class="font-mono text-[10.5px] text-muted-foreground">
+                  {{ (detail.programme.specific[lf] ?? []).length }} own
+                </span>
+              </span>
+              <div class="flex flex-wrap gap-1">
+                <span v-for="g in (detail.programme.specific[lf] ?? []).slice(0, 14)" :key="g"
+                      class="rounded border border-primary/40 bg-primary/10 px-1.5 py-0.5
+                             font-mono text-[11px] text-primary-foreground">{{ g }}</span>
+                <span v-if="(detail.programme.specific[lf] ?? []).length > 14"
+                      class="px-1 font-mono text-[10.5px] text-muted-foreground">
+                  +{{ (detail.programme.specific[lf] ?? []).length - 14 }} more
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <ActSay class="mt-3">
+            <b>Leaf subtypes only.</b> The parent terms appear in the two cards above, where the
+            point is that a parent is largely a blend of its children — but a superset has no
+            meaningful "specific" set of its own, so including one here would collapse the shared
+            core to almost nothing.
+          </ActSay>
+        </template>
         <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
-          No top-50 membership computed for this family.
+          No leaf subtypes configured for this family.
         </p>
-        <ActSay class="mt-3">
-          Both halves are useful and they answer different questions. A high overlap is not a
-          failure — it is a statement about the public data, and it tells you where
-          <b>not</b> to expect subtype resolution.
-        </ActSay>
       </ActCard>
 
       </div>

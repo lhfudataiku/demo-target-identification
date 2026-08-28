@@ -1,15 +1,32 @@
-"""Act 3 — the therapeutic area.
+"""Act 3 — does it hold across a therapeutic area?
 
-  GET /api/families         families, largest first
-  GET /api/families/{id}    one family: every term in it, with its uncertainty
+  GET /api/families              the families the demo carries
+  GET /api/families/{family_id}  one family: per-subtype scores, overlap, programme
 
-Most R&D groups own one therapeutic area, so a single cherry-picked disease
-proves nothing. This act shows the same model against EVERY term in a family.
+READS, DOES NOT COMPUTE. Every figure here comes from a dataset the flow built:
 
-Two things it must convey, both of which are in the data rather than the copy:
-  - per-term AUC carries a confidence interval, because a term with 8 known
-    targets and one with 600 do not deserve the same visual weight;
-  - `auc_trustworthy` marks the terms too thin to score at all.
+  demo_panel_config       which terms belong to which family, and their role
+  family_panel_metrics    per-subtype AUC, interval, known-target count
+  family_panel_overlap    pairwise top-50 overlap, with the ontology gap
+  family_panel_programme  common vs subtype-specific, over the leaves
+  family_panel_top50      the gene x term rank matrix
+
+An earlier version derived overlap and the gene grid here, from
+`dashboard_candidates`. That only ever held the persona diseases, so a family's
+remaining terms could not appear at all -- the `coverage` field existed to admit
+that the matrix was a subset. `family_panel_top50` covers every term in the config,
+so the subset caveat is gone and the same numbers now appear in the app, in the
+notebook assertions, and in docs/demo/panel_selection/built/.
+
+THREE THINGS THE CARDS DEPEND ON, in the data rather than in this file:
+
+  * Parents stay in the score and overlap cards. A parent term is largely a blend
+    of its children -- `gastric adenocarcinoma` shares 0.961 of its top 50 with its
+    parent `gastric carcinoma` -- and showing that is the point.
+  * Parents are excluded from the programme card only, where a superset's
+    "specific" genes would be an artefact of aggregation.
+  * Order by `hop_depth`, never by AUC or name. The parent->child AUC gradient
+    (breast 0.707 -> 0.861 -> 0.936 -> 0.951) is only legible in ontology order.
 """
 
 from __future__ import annotations
@@ -23,31 +40,28 @@ from ..dss_client import get_dataiku
 
 router = APIRouter(prefix="/api/families")
 
-PANEL = "family_panel"
-OVERLAP = "pairwise_overlap"
-NODES = "graph_nodes"
+CONFIG = "demo_panel_config"
+METRICS = "family_panel_metrics"
+OVERLAP = "family_panel_overlap"
+PROGRAMME = "family_panel_programme"
+TOP50 = "family_panel_top50"
+ENRICH = "persona_enrichment"
+
+# Above this two subtypes tell the same story. Matches the flow's own threshold.
+NEAR_DUP = 0.6
 
 
-@functools.lru_cache(maxsize=1)
-def _names() -> dict[int, str]:
-    """disease_index -> readable name. graph_nodes is the only place they live."""
-    df = get_dataiku().Dataset(NODES).get_dataframe(
-        columns=["node_index", "node_name", "node_type"])
-    df = df[df.node_type == "disease"]
-    return {int(r.node_index): str(r.node_name) for r in df.itertuples()}
-
-
-@functools.lru_cache(maxsize=1)
-def _panel():
-    return get_dataiku().Dataset(PANEL).get_dataframe()
+@functools.lru_cache(maxsize=8)
+def _ds(name: str):
+    return get_dataiku().Dataset(name).get_dataframe()
 
 
 @functools.lru_cache(maxsize=1)
 def _enrich() -> dict[int, float]:
-    """disease_index -> rank enrichment. v3's thin-disease card plots this, not
-    the known-target count; the count is only the label."""
+    """disease_index -> rank enrichment. The thin-disease card plots this rather
+    than the known-target count, because a count is the label and not a score."""
     try:
-        df = get_dataiku().Dataset("persona_enrichment").get_dataframe(
+        df = get_dataiku().Dataset(ENRICH).get_dataframe(
             columns=["disease_index", "rank_enrichment"])
         return {int(r.disease_index): float(r.rank_enrichment)
                 for r in df.itertuples() if r.rank_enrichment == r.rank_enrichment}
@@ -55,139 +69,158 @@ def _enrich() -> dict[int, float]:
         return {}
 
 
-@functools.lru_cache(maxsize=1)
-def _overlap():
-    try:
-        return get_dataiku().Dataset(OVERLAP).get_dataframe()
-    except Exception:
-        return None
+def _in_a3(df):
+    """Rows that belong to an Act 3 family.
+
+    Tests for an empty string as well as null: an Act 4-only disease (lung
+    adenocarcinoma, rheumatoid arthritis, ...) has no act3_family, and a null
+    survives the parquet round-trip as "" rather than NaN -- so `.notna()` alone
+    let a phantom family through with an empty name.
+    """
+    col = df.act3_family
+    return df[col.notna() & (col.astype(str).str.strip() != "")]
 
 
 @router.get("")
 def families() -> list[dict[str, Any]]:
-    """Families with more than one term — a family of one proves nothing here."""
+    """The families Act 3 carries — three, not all 505 in the validation set."""
     try:
-        p, names = _panel(), _names()
+        cfg = _ds(CONFIG)
+        met = _ds(METRICS)
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Could not read {PANEL}: {e}")
+        raise HTTPException(status_code=502, detail=f"Could not read the panel config: {e}")
 
     out = []
-    for fid, g in p.groupby("disease_family_id"):
-        if len(g) < 2:
-            continue
+    for fam, g in _in_a3(cfg).groupby("act3_family"):
+        scored = met[met.act3_family == fam]
+        scored = scored[scored.in_act3.astype(bool)]
         out.append({
-            "family_id": int(fid),
-            # The family takes the name of its largest member, which is the
-            # anchor term in practice.
-            "family_name": names.get(int(g.sort_values("n_pos", ascending=False)
-                                        .disease_index.iloc[0]), f"family {int(fid)}"),
+            "family": str(fam),
+            "family_id": int(g.disease_family_id.dropna().iloc[0]),
+            "family_name": str(fam),
             "n_terms": int(len(g)),
-            "macro_auc": round(float(g.auc_disease.mean()), 4),
-            "n_trustworthy": int(g.auc_trustworthy.sum()),
+            "n_scored": int(len(scored)),
+            # Macro over the terms with a trustworthy interval. A term below the
+            # 50-positive floor carries a list, never a quotable AUC.
+            "macro_auc": (round(float(scored[scored.auc_trustworthy.astype(bool)]
+                                      .auc_disease.mean()), 4)
+                          if len(scored) else None),
+            "n_leaves": int((g.act3_role == "leaf").sum()),
+            # kept under its old name too -- the frontend reads n_trustworthy
+            "n_trustworthy": int(scored[scored.auc_trustworthy.astype(bool)].shape[0]),
         })
-    return sorted(out, key=lambda r: (-r["n_terms"], r["family_name"]))
+    return sorted(out, key=lambda r: -(r["n_terms"]))
 
 
 @router.get("/{family_id}")
 def family(family_id: int) -> dict[str, Any]:
-    """Every term in one family, with its AUC, interval and known-target count."""
     try:
-        p, names = _panel(), _names()
+        cfg = _ds(CONFIG)
+        met = _ds(METRICS)
+        ov = _ds(OVERLAP)
+        pg = _ds(PROGRAMME)
+        top = _ds(TOP50)
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Could not read {PANEL}: {e}")
+        raise HTTPException(status_code=502, detail=f"Could not read a panel dataset: {e}")
 
-    g = p[p.disease_family_id == family_id]
-    if g.empty:
+    fam_rows = cfg[cfg.disease_family_id == family_id]
+    if fam_rows.empty:
         raise HTTPException(status_code=404, detail=f"No family {family_id}")
+    fam = str(fam_rows.act3_family.dropna().iloc[0])
 
+    m = met[met.act3_family == fam].copy()
+    m = m.sort_values(["hop_depth", "n_pos"], ascending=[True, False])
     enr = _enrich()
     terms = [{
         "disease_index": int(r.disease_index),
-        "enrichment": round(enr[int(r.disease_index)], 2) if int(r.disease_index) in enr else None,
-        "disease_name": names.get(int(r.disease_index), str(int(r.disease_index))),
+        "enrichment": (round(enr[int(r.disease_index)], 2)
+                       if int(r.disease_index) in enr else None),
+        "disease_name": str(r.disease),
         "auc": round(float(r.auc_disease), 4),
-        "lo95": round(float(r.auc_lo95), 4),
-        "hi95": round(float(r.auc_hi95), 4),
-        # 0 means the interval is too wide to read as a score -- show the term,
-        # but never quote its AUC.
+        "lo95": round(float(r.auc_lo95), 4) if r.auc_lo95 == r.auc_lo95 else None,
+        "hi95": round(float(r.auc_hi95), 4) if r.auc_hi95 == r.auc_hi95 else None,
+        # False means the interval is too wide to read as a score. Show the term,
+        # never quote its AUC -- triple-negative breast is 0.895 on 8 positives,
+        # interval 0.749-1.041.
         "trustworthy": bool(r.auc_trustworthy),
         "n_pos": int(r.n_pos),
-        # Depth in the disease ontology, so the term list can be drawn as the
-        # hierarchy it actually is rather than a flat list.
         "hop_depth": int(r.hop_depth) if r.hop_depth == r.hop_depth else 0,
-    } for r in g.sort_values("n_pos", ascending=False).itertuples()]
+        "role": str(r.act3_role) if r.act3_role == r.act3_role else None,
+        "scored": bool(r.in_act3),
+        "in_shortlist": bool(r.in_act4),
+    } for r in m.itertuples()]
 
-    # Subtype overlap among this family's terms, where it was computed.
-    idx = {t["disease_index"] for t in terms}
-    pairs: list[dict[str, Any]] = []
-    ov = _overlap()
-    if ov is not None:
-        m = ov[ov.disease_index.isin(idx) & ov.disease_b.isin(idx)]
-        pairs = [{
-            "a": names.get(int(r.disease_index), str(int(r.disease_index))),
-            "b": names.get(int(r.disease_b), str(int(r.disease_b))),
-            "shared": int(r["count"]),
-        } for _, r in m.iterrows()]
+    # ── the overlap card ────────────────────────────────────────────────────
+    fo = ov[ov.act3_family == fam].sort_values("jaccard_top50", ascending=False)
+    overlap = [{
+        "a": str(r.disease_a), "b": str(r.disease_b),
+        "shared": int(r.all_overlap),
+        "shared_novel": int(r.novel_overlap),
+        "jaccard": round(float(r.jaccard_top50), 4),
+        "depth_gap": int(r.depth_gap),
+        "kind": str(r.pair_kind),
+        "near_duplicate": bool(r.near_duplicate),
+    } for r in fo.itertuples()]
 
-    # One pass over dashboard_candidates gives everything acts 3 needs about
-    # membership: the top-50 list per term (all and novel-only), the pairwise
-    # overlap for both modes, and the gene x term RANK matrix the grid encodes.
-    TOP = 50
-    tops: dict[int, list[tuple[str, int]]] = {}
-    tops_novel: dict[int, list[tuple[str, int]]] = {}
-    try:
-        cols = ["disease_index", "gene_name", "rank_in_disease", "is_target"]
-        cand = get_dataiku().Dataset("dashboard_candidates").get_dataframe(columns=cols)
-        cand = cand[cand.disease_index.isin(idx)]
-        # NB: do not name this `g` -- the outer `g` is the family_panel slice the
-        # return still needs, and shadowing it here cost a 500 on every family.
-        for di, cg in cand.groupby("disease_index"):
-            cg = cg.sort_values("rank_in_disease")
-            tops[int(di)] = [(str(r.gene_name), int(r.rank_in_disease))
-                             for r in cg.head(TOP).itertuples()]
-            cgn = cg[cg.is_target == 0].head(TOP)
-            tops_novel[int(di)] = [(str(r.gene_name), int(r.rank_in_disease))
-                                   for r in cgn.itertuples()]
-    except Exception:
-        tops, tops_novel = {}, {}
+    # Overlap tracks ontology distance; the card says so rather than leaving the
+    # reader to infer it from a matrix.
+    by_gap: dict[int, list[float]] = {}
+    for r in fo.itertuples():
+        by_gap.setdefault(int(r.depth_gap), []).append(float(r.jaccard_top50))
+    gap_profile = [{"depth_gap": k, "pairs": len(v), "mean": round(sum(v) / len(v), 4)}
+                   for k, v in sorted(by_gap.items())]
 
-    def _pairs(src: dict[int, list[tuple[str, int]]]) -> list[dict[str, Any]]:
-        out = []
-        ids = [i for i in _with_data if i in src and src[i]]
-        for a in range(len(ids)):
-            for b in range(a + 1, len(ids)):
-                ia, ib = ids[a], ids[b]
-                shared = len({n for n, _ in src[ia]} & {n for n, _ in src[ib]})
-                out.append({"a": names.get(ia, str(ia)), "b": names.get(ib, str(ib)),
-                            "shared": shared})
-        return out
+    # ── the common-vs-specific card ────────────────────────────────────────
+    fp = pg[pg.act3_family == fam]
+    leaves = sorted(fp.subtype.unique())
+    common = sorted(fp[fp.scope == "common"].gene.unique())
+    specific = {
+        str(sub): [str(x.gene) for x in
+                   sg[sg.scope == "specific"].sort_values("rank_in_subtype").itertuples()]
+        for sub, sg in fp.groupby("subtype")
+    }
+    programme = {
+        "leaves": leaves,
+        "common": common,
+        "n_common": len(common),
+        "specific": specific,
+        # Parents are deliberately absent here. Stated so the omission reads as a
+        # decision rather than missing data.
+        "excludes_parents": True,
+    }
 
-    # Gene x term rank matrix. Dot size/opacity encodes rank, so the rank has to
-    # travel per cell -- membership alone is not enough.
-    # Ordered by hop depth, like the term table -- not by dict insertion.
-    _depth = {int(t["disease_index"]): (t["hop_depth"], -t["n_pos"]) for t in terms}
-    _with_data = sorted((i for i in idx if i in tops and tops[i]),
-                        key=lambda i: _depth.get(i, (99, 0)))
-    cols_order = [names.get(i, str(i)) for i in _with_data]
+    # ── the gene x term rank matrix ────────────────────────────────────────
+    fam_terms = [t["disease_name"] for t in terms]
+    ft = top[top.disease.isin(fam_terms) & (top.rank_in_disease <= 50)]
+    cols_order = [t["disease_name"] for t in terms
+                  if t["disease_name"] in set(ft.disease)]
     rank_of: dict[str, dict[str, int]] = {}
-    for i in idx:
-        for n, rk in tops.get(i, []):
-            rank_of.setdefault(n, {})[names.get(i, str(i))] = rk
-    gene_grid = [{"name": n, "ranks": r, "n_terms": len(r)}
-                 for n, r in sorted(rank_of.items(), key=lambda kv: (-len(kv[1]), kv[0]))]
+    for r in ft.itertuples():
+        rank_of.setdefault(str(r.gene), {})[str(r.disease)] = int(r.rank_in_disease)
+    gene_grid = [{"name": n, "ranks": rk, "n_terms": len(rk)}
+                 for n, rk in sorted(rank_of.items(), key=lambda kv: (-len(kv[1]), kv[0]))]
+
+    scored_terms = [t for t in terms if t["trustworthy"]]
+    # The overlap tab switches between all-gene and novel-only. Both come from the
+    # one table now, rather than two derivations that could disagree.
+    overlap_all = [{"a": o["a"], "b": o["b"], "shared": o["shared"]} for o in overlap]
+    overlap_novel = [{"a": o["a"], "b": o["b"], "shared": o["shared_novel"]} for o in overlap]
 
     return {
-        "gene_grid": gene_grid,
-        "grid_columns": cols_order,
-        # Only the 13 personas carry ranked candidates, so a family's remaining
-        # terms cannot appear in the matrix. Say how many, rather than showing a
-        # silent subset.
-        "coverage": {"with_data": len(_with_data), "total": len(terms)},
-        "overlap_all": _pairs(tops),
-        "overlap_novel": _pairs(tops_novel),
+        "family": fam,
+        "overlap_all": overlap_all,
+        "overlap_novel": overlap_novel,
         "family_id": family_id,
         "n_terms": len(terms),
-        "macro_auc": round(float(g.auc_disease.mean()), 4),
+        "macro_auc": (round(sum(t["auc"] for t in scored_terms) / len(scored_terms), 4)
+                      if scored_terms else None),
         "terms": terms,
-        "overlap": sorted(pairs, key=lambda r: -r["shared"]),
+        "overlap": overlap,
+        "gap_profile": gap_profile,
+        "mean_overlap": round(float(fo.jaccard_top50.mean()), 4) if len(fo) else None,
+        "n_near_duplicates": int(fo.near_duplicate.sum()),
+        "programme": programme,
+        "gene_grid": gene_grid,
+        "grid_columns": cols_order,
+        "coverage": {"with_data": len(cols_order), "total": len(terms)},
     }

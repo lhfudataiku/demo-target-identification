@@ -1,0 +1,4 @@
+act3_family,pairs,mean_overlap,max_overlap,near_duplicates,analysis_mean_curated_leaves,note
+breast,105,0.4299,0.8868,22,0.4021,built covers all usable terms + leaves (parents included); analysis used curated leaves only
+stomach,15,0.451,0.9608,3,0.35,built covers all usable terms + leaves (parents included); analysis used curated leaves only
+uterine,28,0.4777,0.6129,1,0.4935,built covers all usable terms + leaves (parents included); analysis used curated leaves only

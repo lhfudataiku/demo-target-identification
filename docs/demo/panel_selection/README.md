@@ -4,24 +4,58 @@ The evidence behind [`../panel_selection.html`](../panel_selection.html): which 
 families Act 3 can support, and which diseases Act 4 should shortlist. Measured 2026-08-27
 over all 670 validation diseases against champion `m7-f14`.
 
-**Every number in these tables is regenerated and asserted by
-[`notebooks/nb7_panel_selection.py`](../../../notebooks/nb7_panel_selection.py).** Run it after
-any graph rebuild, seed-gate move, champion change, or persona-filter repoint — a `STALE`
-line means the document and the flow have diverged and one of them has to move.
+**Every number in `built/` is regenerated and asserted by
+[`notebooks/nb7_panel_selection.py`](../../../notebooks/nb7_panel_selection.py)** — 51 checks,
+green as of 2026-08-28. Run it after any graph rebuild, seed-gate move, champion change, or
+config edit; a `STALE` line means the flow and the document have diverged and one of them has
+to move.
 
-## The tables
+Six diseases in `analysis/eyeball_test.csv` are no longer served (obesity, multiple
+sclerosis, SLE, atopic eczema, myeloma, ALL). Their ranks are the *evidence for rejecting
+them* — obesity's GLP1R at #526, MS's 0-of-8 — so nb7 asserts only the served diseases;
+there is nothing live left to guard for the rest.
+
+## Two folders, and the difference matters
+
+**`analysis/` — the decision record.** What was measured *before* the build, on the
+curated candidate sets, to decide which families and diseases to carry. These files do
+not change when the flow is rebuilt; they are the argument, and rewriting them would
+erase why the panel looks the way it does.
 
 | file | rows | what it settles |
 |---|--:|---|
-| `area_coverage.csv` | 3 | **The finding that decides Act 3.** Subtype structure exists only in oncology: autoimmune has one family with ≥2 terms, CVRM has none with ≥2 *usable* terms |
-| `family_catalogue.csv` | 25 | Every family with ≥3 validation terms — term count, usable count, median/best/worst AUC |
-| `family_subtypes.csv` | 82 | Per-subtype AUC with 95% intervals for the six candidate families (breast, lung, uterine, heme, stomach, obesity) |
-| `subtype_overlap.csv` | 47 | Pairwise top-50 Jaccard within each candidate family — what the "how much do the subtypes overlap" card measures |
-| `subtype_overlap_summary.csv` | 5 | Mean / max overlap and near-duplicate count per family. **This is the Act 3 ranking** |
-| `common_programme.csv` | 105 | Genes common to *every* subtype of a family — the "common programme vs subtype-specific" split |
-| `panel_current.csv` | 13 | The currently served panel on both bars: association AUC and enrichment, plus approved-drug-target hits |
-| `eyeball_test.csv` | 113 | Per (disease, expected target): where the field's validated target actually ranks, and whether it was already annotated |
-| `eyeball_test_summary.csv` | 13 | Targets in top 20 / top 50 per disease. **This is the Act 4 ranking** |
+| `area_coverage.csv` | 3 | **The finding that decides Act 3.** Subtype structure exists only in oncology |
+| `family_catalogue.csv` | 25 | Every family with ≥3 validation terms |
+| `family_subtypes.csv` | 82 | Per-subtype AUC with 95% intervals for the six candidate families |
+| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated leaf sets** — breast 0.40 / uterine 0.49 / stomach 0.35 |
+| `common_programme.csv` | 105 | The common-vs-specific split as first computed |
+| `eyeball_test.csv` + summary | 113 + 13 | **The Act 4 ranking.** Where the field's validated targets rank, and why each was expected |
+| `panel_before.csv` | 13 | The panel this replaced, on both bars |
+
+**`built/` — what actually ships.** Dumped from the DSS datasets the app reads.
+
+| file | rows | DSS dataset |
+|---|--:|---|
+| `demo_panel_config.csv` | 35 | `demo_panel_config` — membership as data |
+| `family_metrics.csv` | 35 | `family_panel_metrics` — Act 3 cards 1–3 |
+| `subtype_overlap.csv` | 148 | `family_panel_overlap` — the overlap card |
+| `common_programme.csv` | 550 | `family_panel_programme` — common vs specific |
+| `overlap_summary.csv` | 3 | reconciles the built figures against the analysis ones |
+
+### Why the two overlap numbers differ, and why both are right
+
+| family | analysis (curated leaves) | built (all usable terms + leaves) |
+|---|--:|--:|
+| breast | 0.402 | 0.430 |
+| uterine | 0.494 | 0.478 |
+| stomach | 0.350 | 0.451 |
+
+The analysis compared only the terminal subtypes, to judge whether a family could
+support a subtype-specific card. The built table includes the **parent terms**, because
+showing that a parent is largely a blend of its children is the point of the card —
+`gastric adenocarcinoma` shares 0.961 of its top 50 with its parent `gastric carcinoma`.
+Different question, different set, both correct. Overlap tracks ontology distance either
+way: Spearman −0.350 over the 148 shipped pairs.
 
 ## Two conventions worth knowing
 

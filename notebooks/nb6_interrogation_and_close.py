@@ -370,7 +370,10 @@ if len(erbb2):
 # 6.3  Subtype limits — what it cannot do.
 # ============================================================================
 try:
-    bo = dataiku.Dataset("breast_panel_overlap").get_dataframe()
+    # breast_panel_overlap retired; family_panel_overlap is a superset that
+    # reproduces its novel_overlap exactly (13/13 shared pairs).
+    bo = dataiku.Dataset("family_panel_overlap").get_dataframe()
+    bo = bo[bo.act3_family == "breast"]
     kp = bo[(bo.disease_a.str.contains("HER2") & bo.disease_b.str.contains("triple")) |
             (bo.disease_b.str.contains("HER2") & bo.disease_a.str.contains("triple"))]
     if len(kp):

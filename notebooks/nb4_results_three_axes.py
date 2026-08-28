@@ -199,7 +199,10 @@ for _,r in bm.sort_values("n_known_targets",ascending=False).iterrows():
 h=bm[bm.disease.str.contains("HER2")]; t=bm[bm.disease.str.contains("triple")]
 if len(h): check("8.10 HER2+ AUC",0.9365,round(float(h.auc.iloc[0]),4),tol=0.0006,fmt="{:.4f}")
 if len(t): check("8.10 TNBC known targets",8,int(t.n_known_targets.iloc[0]))
-bo=dataiku.Dataset("breast_panel_overlap").get_dataframe()
+bo=dataiku.Dataset("family_panel_overlap").get_dataframe()
+# breast_panel_overlap retired -- family_panel_overlap covers all three Act 3
+# families and reproduces its novel_overlap exactly (13/13 shared pairs).
+bo=bo[bo.act3_family=="breast"]
 kp=bo[(bo.disease_a.str.contains("HER2")&bo.disease_b.str.contains("triple"))|
       (bo.disease_b.str.contains("HER2")&bo.disease_a.str.contains("triple"))]
 if len(kp): check("8.10 HER2+ vs TNBC novel overlap",2,int(kp.novel_overlap.iloc[0]))

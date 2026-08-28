@@ -23,7 +23,6 @@ regenerated here rather than stored. Only the tidy derived tables live in git.
 
 from __future__ import annotations
 
-import itertools
 import json
 import os
 
@@ -101,78 +100,94 @@ for label, fid, doc_terms, doc_usable in [("breast", 49721, 19, 14),
 dash = dataiku.Dataset("dashboard_candidates").get_dataframe(
     columns=["gene_index", "disease_index", "disease_name", "gene_name",
              "rank_in_disease", "is_target"])
-check("7.3 served diseases", 13, dash.disease_name.nunique())
-check("7.3 served rows", 129253, len(dash))
+check("7.3 served diseases", 12, dash.disease_name.nunique())
+check("7.3 served rows", 105702, len(dash))
 
-# ── 7.4  separability — what the overlap card measures ───────────────────────
-# Read the curated membership from the committed table rather than restating it,
-# so the notebook and the document cannot disagree about WHICH subtypes are compared.
-HERE = os.path.dirname(os.path.abspath(__file__)) if "__file__" in dir() else "."
-OV = os.path.join(HERE, "..", "docs", "demo", "panel_selection", "subtype_overlap.csv")
-members: dict[str, set] = {}
-for _, r in pd.read_csv(OV).iterrows():
-    members.setdefault(r.family, set()).update([r.subtype_a, r.subtype_b])
+# ── 7.4  separability — what the overlap card measures ──────────────────────
+# Reads the BUILT dataset now, not a recomputation. The card is `family_panel_overlap`
+# and if that table drifts the card drifts with it, so this is the thing to assert.
+#
+# These figures cover every usable term PLUS the leaves, parents included -- which is
+# the card's actual basis. They differ from the pre-build analysis in
+# docs/demo/panel_selection/, which used the curated leaf sets only (breast 0.40 /
+# uterine 0.49 / stomach 0.35). Both are correct about different sets; this one is
+# what ships.
+ov = dataiku.Dataset("family_panel_overlap").get_dataframe()
+check("7.4 overlap pairs", 148, len(ov))
+check("7.4 spearman depth_gap vs jaccard", -0.350,
+      round(ov.depth_gap.rank().corr(ov.jaccard_top50.rank()), 3), tol=0.02, fmt="{:.3f}")
 
-NEAR_DUP = 0.6          # above this, two subtypes tell the same story
-need = sorted({d for v in members.values() for d in v})
-scored = dataiku.Dataset("scored_champion").get_dataframe(
-    columns=["disease_index", "gene_index", "proba_1"])
-idx = dict(zip(fp.disease_index, fp.disease))
-scored["disease"] = scored.disease_index.map(idx)
-scored = scored[scored.disease.isin(need)]
-genes = dataiku.Dataset("gene_crosswalk").get_dataframe(columns=["node_index", "node_name"])
-scored = scored.merge(genes.rename(columns={"node_index": "gene_index", "node_name": "gene"}),
-                      on="gene_index", how="left")
-scored["rank"] = scored.groupby("disease_index").proba_1.rank(ascending=False, method="first")
-top50 = {d: set(g.nsmallest(50, "rank").gene) for d, g in scored.groupby("disease")}
-
-for label, doc_dups, doc_mean in [("breast", 3, 0.4021), ("uterine", 0, 0.4935),
-                                  ("stomach", 1, 0.4746), ("heme", 5, 0.5911),
-                                  ("lung", 4, 0.7076)]:
-    subs = [s for s in members.get(label, ()) if s in top50]
-    js = [len(top50[a] & top50[b]) / len(top50[a] | top50[b])
-          for a, b in itertools.combinations(sorted(subs), 2)]
-    if not js:
-        continue
-    check(f"7.4 {label} near-duplicate pairs", doc_dups, sum(1 for j in js if j > NEAR_DUP))
-    check(f"7.4 {label} mean overlap", doc_mean, round(sum(js) / len(js), 4),
+for fam, doc_pairs, doc_mean, doc_near in [("breast", 105, 0.4299, 22),
+                                           ("uterine", 28, 0.4777, 1),
+                                           ("stomach", 15, 0.4510, 3)]:
+    g = ov[ov.act3_family == fam]
+    check(f"7.4 {fam} overlap pairs", doc_pairs, len(g))
+    check(f"7.4 {fam} mean overlap", doc_mean, round(g.jaccard_top50.mean(), 4),
           tol=0.01, fmt="{:.4f}")
+    check(f"7.4 {fam} near-duplicate pairs", doc_near, int(g.near_duplicate.sum()))
+
+# The pair nb4 and nb6 also assert on -- kept here so a change to the novel ranking
+# is caught in one place rather than three.
+kp = ov[(ov.disease_a.str.contains("HER2") & ov.disease_b.str.contains("triple"))
+        | (ov.disease_b.str.contains("HER2") & ov.disease_a.str.contains("triple"))]
+check("7.4 HER2+ vs TNBC novel overlap", 2, int(kp.novel_overlap.iloc[0]))
+check("7.4 HER2+ vs TNBC all overlap", 14, int(kp.all_overlap.iloc[0]))
+
+# ── 7.4b  the common-vs-specific card ───────────────────────────────────────
+# One classification axis per family. Breast is molecular only: including the
+# histology terms (ductal, lobular) left HER2+ with ONE specific gene, because
+# ductal overlaps it 85% and absorbed the rest.
+pg = dataiku.Dataset("family_panel_programme").get_dataframe()
+for fam, doc_leaves, doc_common in [("breast", 4, 8), ("uterine", 4, 24), ("stomach", 3, 17)]:
+    g = pg[pg.act3_family == fam]
+    check(f"7.4b {fam} leaves", doc_leaves, g.subtype.nunique())
+    check(f"7.4b {fam} common genes", doc_common,
+          g[g.scope == "common"].gene.nunique())
+
+# ── 7.4c  the config is the single source of panel membership ───────────────
+cfgd = dataiku.Dataset("demo_panel_config").get_dataframe()
+check("7.4c config rows", 35, len(cfgd))
+check("7.4c act3 terms", 28, int(cfgd.in_act3.sum()))
+check("7.4c act4 diseases", 12, int(cfgd.in_act4.sum()))
 
 # ── 7.5  the eyeball test — the bar a scientist actually applies ─────────────
-# The expectations are committed in eyeball_test.csv (gene + why it is expected),
-# written down BEFORE the ranks were looked up. Re-derive the ranks, not the list.
-ET = os.path.join(HERE, "..", "docs", "demo", "panel_selection", "eyeball_test.csv")
+# The expectations live in docs/demo/panel_selection/eyeball_test.csv, one row per
+# (disease, gene) with a `why_expected` naming the drug or the biology. That list was
+# written down BEFORE the ranks were looked up; this re-derives the RANKS only, so
+# the test cannot be quietly reshaped to fit the result.
+#
+# Only the SERVED diseases are asserted. Six diseases in that file are no longer in
+# the panel (obesity, multiple sclerosis, SLE, atopic eczema, myeloma, ALL) -- their
+# ranks are the evidence for rejecting them, recorded in the CSV, and there is
+# nothing live left to guard. Obesity's GLP1R #526 and MS's 0-of-8 are the two that
+# decided those cuts.
+HERE = os.path.dirname(os.path.abspath(__file__)) if "__file__" in dir() else "."
+ET = os.path.join(HERE, "..", "docs", "demo", "panel_selection", "analysis", "eyeball_test.csv")
 expect = pd.read_csv(ET)
-pool = pd.concat([
-    scored[["disease", "gene", "rank"]],
-    dash.rename(columns={"disease_name": "disease", "gene_name": "gene",
-                         "rank_in_disease": "rank"})[["disease", "gene", "rank"]],
-]).drop_duplicates(subset=["disease", "gene"])
-live = expect[["disease", "gene"]].merge(pool, on=["disease", "gene"], how="left")
 
-# The Act 4 ranking. Obesity's 0 and MS's 0 are the two rejections that rest on
-# this test rather than on an aggregate, so they are asserted like any other figure.
-for dis, short, doc_20 in [("rheumatoid arthritis", "RA", 4),
-                           ("psoriatic arthritis", "PsA", 2),
-                           ("atopic eczema", "eczema", 3),
+served = dash.rename(columns={"disease_name": "disease", "gene_name": "gene",
+                              "rank_in_disease": "rank"})[["disease", "gene", "rank"]]
+live = expect[["disease", "gene"]].merge(served, on=["disease", "gene"], how="left")
+
+for dis, short, doc_20 in [("endometrium adenocarcinoma", "endometrioid", 4),
+                           ("rheumatoid arthritis", "RA", 4),
                            ("dilated cardiomyopathy", "DCM", 3),
+                           ("endometrial serous adenocarcinoma", "serous", 3),
                            ("familial hypercholesterolemia", "FH", 3),
-                           ("endometrium adenocarcinoma", "endometrioid", 4),
-                           ("obesity disorder", "obesity", 0)]:
+                           ("gastric adenocarcinoma", "gastric", 3),
+                           ("psoriatic arthritis", "PsA", 2)]:
     check(f"7.5 {short} targets in top20", doc_20,
           int((live[live.disease == dis]["rank"] <= 20).sum()))
-check("7.5 MS targets in top50", 0,
-      int((live[live.disease == "multiple sclerosis"]["rank"] <= 50).sum()))
 
-# ── 7.6  the module bias, stated as a number ─────────────────────────────────
-# Obesity's top 50 is dominated by the BBSome -- a dense protein complex, which is
-# exactly what PPI-topology features reward. Neither diabetes term shows it, so this
-# is specific rather than a general artefact. If that stops being true, the reason
-# obesity was cut stops being true with it.
+# ── 7.6  the module bias, recorded rather than re-derived ───────────────────
+# Obesity's top 50 was 9/50 Bardet-Biedl (BBSome) genes while neither diabetes term
+# had one -- a dense protein complex lighting up PPI-topology features. That is why
+# obesity was cut, and with it out of the panel there is no live table to re-measure
+# it from; the figure lives in docs/demo/panel_selection/. What IS still checkable is
+# that the diabetes contrast holds, since diabetes mellitus is still served.
 BBS = r"^(BBS\d+|BBIP1|ARL6|TTC8|MKKS|LZTFL1|SDCCAG8|WDPCP|TRIM32|IFT27|IFT172)$"
-for dis, doc_bbs in [("obesity disorder", 9), ("diabetes mellitus", 0)]:
-    g = dash[dash.disease_name == dis].nsmallest(50, "rank_in_disease")
-    check(f"7.6 {dis} BBS genes in top50", doc_bbs, int(g.gene_name.str.match(BBS).sum()))
+g = dash[dash.disease_name == "diabetes mellitus"].nsmallest(50, "rank_in_disease")
+check("7.6 diabetes BBS genes in top50", 0, int(g.gene_name.str.match(BBS).sum()))
 
 # ── close ────────────────────────────────────────────────────────────────────
 out = pd.DataFrame(RESULTS)
