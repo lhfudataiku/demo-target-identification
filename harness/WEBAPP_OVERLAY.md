@@ -1,5 +1,3 @@
-<!-- GENERATED FILE: edit the canonical harness source, then run python3 tools/sync_harness.py --write. -->
-
 # Webapp overlay
 
 This is a Vue 3 + FastAPI Dataiku DSS webapp. Keep a change narrow: one view, route, and, when

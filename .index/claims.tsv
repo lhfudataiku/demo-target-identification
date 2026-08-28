@@ -1,45 +1,4 @@
 file	line	section	value	status	guarded_by	model_dep	hint	context
-.claude/skills/target-id/SKILL.md	36	-	0.8197	ORPHAN				`TARGET_PRIORITIZER.md` corrupts six of ten `0.8197`s. Classify each hit before touching it.
-.claude/skills/target-id/SKILL.md	39	-	4.4	ORPHAN				admitted rows were *denser* in positives; like-for-like they are 4.4× more dilute).
-.claude/skills/target-id/SKILL.md	67	-	2.38	ORPHAN				after. And an unescaped `.` in `grep 2.38` matches `0.2738`; use `-F`.
-.claude/skills/target-id/SKILL.md	67	-	0.2738	ORPHAN				after. And an unescaped `.` in `grep 2.38` matches `0.2738`; use `-F`.
-.claude/skills/target-id/SKILL.md	69	-	1,630	ORPHAN				is a `.md` file; the claims index grew 1,630 → 1,744 per run until excluded.
-.claude/skills/target-id/SKILL.md	69	-	1,744	ORPHAN				is a `.md` file; the claims index grew 1,630 → 1,744 per run until excluded.
-.claude/skills/target-id/references/number-update.md	48	3	0.8197	ORPHAN				Of ten `0.8197`s in `TARGET_PRIORITIZER.md`, only four were current-state. A global replace corrupts
-.claude/skills/target-id/references/number-update.md	81	6	0.024	ORPHAN				- **Coincidental digit collisions** — §7.2's hub delta `+0.024` survived a grep for the orthogonality
-.claude/skills/target-id/references/number-update.md	82	6	0.024	ORPHAN				`r = +0.024`. Different quantity, same digits.
-.claude/skills/target-id/references/number-update.md	84	6	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			`0.7471 − 0.6911 ≠ +0.0585`.
-.claude/skills/target-id/references/number-update.md	84	6	0.6911	ORPHAN				`0.7471 − 0.6911 ≠ +0.0585`.
-.claude/skills/target-id/references/number-update.md	84	6	0.0585	ORPHAN				`0.7471 − 0.6911 ≠ +0.0585`.
-.codex/skills/target-id/SKILL.md	29	-	0.8197	ORPHAN		y	hist	- **Never global-replace a metric.** Most occurrences are *historical and correct*: the ablation ladder, the m
-.codex/skills/target-id/SKILL.md	30	-	4.4	ORPHAN		y	hist	- **Never put a pooled number beside a macro one**, or a route-only numerator beside a full-pool denominator. 
-.codex/skills/target-id/SKILL.md	45	-	2.38	ORPHAN				- `grep -E '^(COST|EVAL)\|'` does **not** match `COST_GAP|` — the alternation needs the `|` right after. And a
-.codex/skills/target-id/SKILL.md	45	-	0.2738	ORPHAN				- `grep -E '^(COST|EVAL)\|'` does **not** match `COST_GAP|` — the alternation needs the `|` right after. And a
-.codex/skills/target-id/SKILL.md	46	-	1,630	ORPHAN				- A generated artifact that lands in the namespace it scans will feed on itself. `.index/SUMMARY.md` is a `.md
-.codex/skills/target-id/SKILL.md	46	-	1,744	ORPHAN				- A generated artifact that lands in the namespace it scans will feed on itself. `.index/SUMMARY.md` is a `.md
-.codex/skills/target-id/references/number-update.md	41	3	0.8197	ORPHAN				Of ten `0.8197`s in `TARGET_PRIORITIZER.md`, only four were current-state. A global replace corrupts the other
-.codex/skills/target-id/references/number-update.md	64	6	0.024	ORPHAN				- **Coincidental digit collisions** — §7.2's hub delta `+0.024` survived a grep for the orthogonality `r = +0.
-.codex/skills/target-id/references/number-update.md	65	6	0.7471	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1  [loop-table]			- **Derived quantities in the same table** — updating a delta without its baseline leaves `0.7471 − 0.6911 ≠ +
-.codex/skills/target-id/references/number-update.md	65	6	0.6911	ORPHAN				- **Derived quantities in the same table** — updating a delta without its baseline leaves `0.7471 − 0.6911 ≠ +
-.codex/skills/target-id/references/number-update.md	65	6	0.0585	ORPHAN				- **Derived quantities in the same table** — updating a delta without its baseline leaves `0.7471 − 0.6911 ≠ +
-AGENTS.md	24	-	113,391	ORPHAN			hist	**Part 1 complete.** 113,391 nodes / 2,851,510 edges / 18 relations, accepted against the frozen reference. `n
-AGENTS.md	24	-	2,851,510	ORPHAN			hist	**Part 1 complete.** 113,391 nodes / 2,851,510 edges / 18 relations, accepted against the frozen reference. `n
-AGENTS.md	26	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		**Part 2 built and validated.** Champion `m7-f14` (`hJLGoYn4`), macro per-disease AUC 0.8230 over 670 diseases
-AGENTS.md	33	-	1,100	ORPHAN		y		Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `style.css`, ~1,100 lin
-AGENTS.md	33	-	129,253	ORPHAN		y		Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `style.css`, ~1,100 lin
-AGENTS.md	38	-	6.3	ORPHAN				Measured verdict: **+80% more diseases for ~+20% more pool rows** — a coverage win, not a quality win. Admitte
-AGENTS.md	38	-	2,088	ORPHAN				Measured verdict: **+80% more diseases for ~+20% more pool rows** — a coverage win, not a quality win. Admitte
-AGENTS.md	38	-	1,157	ORPHAN				Measured verdict: **+80% more diseases for ~+20% more pool rows** — a coverage win, not a quality win. Admitte
-AGENTS.md	73	-	0.9354	ORPHAN		y		- **A benchmark a lookup table wins is measuring the lookup.** Drug-target AUC is dominated by gene popularity
-CLAUDE.md	29	-	113,391	ORPHAN			hist	**Part 1 complete.** 113,391 nodes / 2,851,510 edges / 18 relations, accepted against the frozen
-CLAUDE.md	29	-	2,851,510	ORPHAN			hist	**Part 1 complete.** 113,391 nodes / 2,851,510 edges / 18 relations, accepted against the frozen
-CLAUDE.md	33	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		**Part 2 built and validated.** Champion `m7-f14` (`hJLGoYn4`), macro per-disease AUC 0.8230 over 670
-CLAUDE.md	44	-	1,100	ORPHAN				~1,100 lines), the v3 mockup, and a built serving layer — 29 datasets across zones `A1`–`A4` plus the
-CLAUDE.md	45	-	129,253	ORPHAN		y		shared `40 Candidate ranking` zone (`dashboard_candidates`, `target_candidates_2`, 129,253 ranked rows
-CLAUDE.md	56	-	6.3	ORPHAN				Admitted diseases carry ~4.5 usable positives each and are 6.3× more dilute than current ones, so the
-CLAUDE.md	57	-	2,088	ORPHAN				honest claim if it succeeds is *"we cover 2,088 diseases instead of 1,157"*, never *"the model got
-CLAUDE.md	57	-	1,157	ORPHAN				honest claim if it succeeds is *"we cover 2,088 diseases instead of 1,157"*, never *"the model got
-CLAUDE.md	104	-	0.9354	ORPHAN				popularity: a no-graph lookup scores 0.9354, beating a drug-trained model. Report it as a warning
 DECISIONS.md	22	-	0.946	ORPHAN		y		| 2026-08-08 | **A candidate filter can leak even when the feature is rejected.** A filter on a random-walk fe
 DECISIONS.md	22	-	0.43	VALUE_ONLY	nb7_panel_selection.py:7.4  [loop-table]	y		| 2026-08-08 | **A candidate filter can leak even when the feature is rejected.** A filter on a random-walk fe
 DECISIONS.md	24	-	0.704	ORPHAN				| 2026-08-09 | **Granularity: split by family, report by disease** (§3.3). Family aggregation lifts the weakes

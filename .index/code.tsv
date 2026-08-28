@@ -1,7 +1,13 @@
 path	kind	status	n_refs	referenced_by
+webapp/backend/routes/chat.py	webapp	ORPHAN (referenced by nothing)	0	-
+webapp/backend/routes/documents.py	webapp	ORPHAN (referenced by nothing)	0	-
 webapp/backend/routes/graph.py	webapp	ORPHAN (referenced by nothing)	0	-
+webapp/backend/services/chat_agent.py	webapp	ORPHAN (referenced by nothing)	0	-
+webapp/backend/services/db.py	webapp	ORPHAN (referenced by nothing)	0	-
+webapp/backend/services/document_describer.py	webapp	ORPHAN (referenced by nothing)	0	-
+webapp/backend/services/permission_broker.py	webapp	ORPHAN (referenced by nothing)	0	-
 webapp/frontend/tsconfig.json	webapp	ORPHAN (referenced by nothing)	0	-
-archive/webapp-v1/backend.py	archive	ARCHIVED	12	AGENTS.md,CLAUDE.md,docs/demo/FLOW_MAP.md,docs/demo/flow_map.html
+archive/webapp-v1/backend.py	archive	ARCHIVED	8	docs/demo/FLOW_MAP.md,docs/demo/flow_map.html,tools/recipe_classes.json,webapp/README.md
 docs/appendix/manifest.json	docs	LIVE (referenced)	1	docs/appendix/README.md
 docs/demo/model_recovery.json	docs	LIVE (referenced)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/attach_node_index.py	recipe-mirror	MIRROR (graph-build project)	0	-
@@ -66,11 +72,11 @@ notebooks/nb7_panel_selection.py	notebook	LIVE (tripwire)	1	docs/demo/panel_sele
 reference_baseline.json	root-script	LIVE (referenced)	4	DECISIONS.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/graph/GRAPH_BUILDING.md,docs/prioritizer/TARGET_PRIORITIZER.md
 scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
-tools/build_index.py	tool	LIVE	10	AGENTS.md,CLAUDE.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
-tools/build_recipe_index.py	tool	LIVE	20	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,AGENTS.md,CLAUDE.md
+tools/build_index.py	tool	LIVE	8	DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot
+tools/build_recipe_index.py	tool	LIVE	18	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
 tools/check_freshness.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
-tools/check_indexes.sh	tool	LIVE	9	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md
-tools/check_links.py	tool	LIVE	7	AGENTS.md,CLAUDE.md,DECISIONS.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md
+tools/check_indexes.sh	tool	LIVE	7	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md
+tools/check_links.py	tool	LIVE	5	DECISIONS.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/operations/PHASE_0_BASELINE_2026-08-28.md
 tools/model_registry.json	tool	LIVE	6	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,DECISIONS.md,archive/DASHBOARD_BUILD_LOG.md
 tools/pull_notebooks.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
 tools/recipe_classes.json	tool	LIVE	5	DECISIONS.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/prioritizer/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py
@@ -79,29 +85,23 @@ webapp/backend/app.py	webapp	LIVE (referenced)	7	tools/recipe_classes.json,webap
 webapp/backend/config.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/app.env,webapp/dss_webapp/backend.py
 webapp/backend/dss_client.py	webapp	LIVE (referenced)	6	docs/demo/DASHBOARD_DESIGN.md,webapp/AGENTS.md,webapp/CLAUDE.md,webapp/DEPLOYMENT.md
 webapp/backend/routes/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
-webapp/backend/routes/agents.py	webapp	LIVE (referenced)	3	webapp/AGENTS.md,webapp/CLAUDE.md,webapp/frontend/src/types/agents.ts
+webapp/backend/routes/agents.py	webapp	LIVE (referenced)	1	webapp/frontend/src/types/agents.ts
 webapp/backend/routes/calibration.py	webapp	LIVE (referenced)	1	webapp/DEPLOYMENT.md
 webapp/backend/routes/candidates.py	webapp	LIVE (referenced)	1	webapp/DEPLOYMENT.md
-webapp/backend/routes/chat.py	webapp	LIVE (referenced)	2	webapp/AGENTS.md,webapp/CLAUDE.md
-webapp/backend/routes/documents.py	webapp	LIVE (referenced)	2	webapp/AGENTS.md,webapp/CLAUDE.md
 webapp/backend/routes/evidence.py	webapp	LIVE (referenced)	1	webapp/DEPLOYMENT.md
-webapp/backend/routes/example.py	webapp	LIVE (referenced)	4	webapp/AGENTS.md,webapp/CLAUDE.md,webapp/README.md,webapp/backend/tools/registry.py
+webapp/backend/routes/example.py	webapp	LIVE (referenced)	2	webapp/README.md,webapp/backend/tools/registry.py
 webapp/backend/routes/families.py	webapp	LIVE (referenced)	1	webapp/DEPLOYMENT.md
-webapp/backend/routes/flow.py	webapp	LIVE (referenced)	3	webapp/AGENTS.md,webapp/CLAUDE.md,webapp/frontend/src/types/flow.ts
-webapp/backend/routes/system.py	webapp	LIVE (referenced)	3	webapp/AGENTS.md,webapp/CLAUDE.md,webapp/README.md
-webapp/backend/routes/wizard.py	webapp	LIVE (referenced)	5	webapp/AGENTS.md,webapp/CLAUDE.md,webapp/README.md,webapp/frontend/src/types/wizard.ts
+webapp/backend/routes/flow.py	webapp	LIVE (referenced)	1	webapp/frontend/src/types/flow.ts
+webapp/backend/routes/system.py	webapp	LIVE (referenced)	1	webapp/README.md
+webapp/backend/routes/wizard.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/frontend/src/types/wizard.ts,webapp/frontend/src/views/wizard/WizardFlowView.vue
 webapp/backend/services/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
-webapp/backend/services/chat_agent.py	webapp	LIVE (referenced)	2	webapp/AGENTS.md,webapp/CLAUDE.md
-webapp/backend/services/db.py	webapp	LIVE (referenced)	2	webapp/AGENTS.md,webapp/CLAUDE.md
-webapp/backend/services/document_describer.py	webapp	LIVE (referenced)	2	webapp/AGENTS.md,webapp/CLAUDE.md
-webapp/backend/services/documents_service.py	webapp	LIVE (referenced)	3	webapp/AGENTS.md,webapp/CLAUDE.md,webapp/README.md
-webapp/backend/services/memory_state.py	webapp	LIVE (referenced)	3	webapp/AGENTS.md,webapp/CLAUDE.md,webapp/README.md
-webapp/backend/services/permission_broker.py	webapp	LIVE (referenced)	2	webapp/AGENTS.md,webapp/CLAUDE.md
-webapp/backend/services/settings.py	webapp	LIVE (referenced)	5	webapp/AGENTS.md,webapp/CLAUDE.md,webapp/README.md,webapp/backend/tools/registry.py
+webapp/backend/services/documents_service.py	webapp	LIVE (referenced)	1	webapp/README.md
+webapp/backend/services/memory_state.py	webapp	LIVE (referenced)	1	webapp/README.md
+webapp/backend/services/settings.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/backend/tools/registry.py,webapp/frontend/src/views/SettingsView.vue
 webapp/backend/tools/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
-webapp/backend/tools/registry.py	webapp	LIVE (referenced)	3	webapp/AGENTS.md,webapp/CLAUDE.md,webapp/README.md
-webapp/dss_webapp/backend.py	webapp	LIVE (referenced)	12	AGENTS.md,CLAUDE.md,docs/demo/FLOW_MAP.md,docs/demo/flow_map.html
-webapp/dss_webapp/deploy.sh	webapp	LIVE (referenced)	8	docs/demo/DASHBOARD_DESIGN.md,webapp/AGENTS.md,webapp/CLAUDE.md,webapp/DEPLOYMENT.md
+webapp/backend/tools/registry.py	webapp	LIVE (referenced)	1	webapp/README.md
+webapp/dss_webapp/backend.py	webapp	LIVE (referenced)	8	docs/demo/FLOW_MAP.md,docs/demo/flow_map.html,tools/recipe_classes.json,webapp/README.md
+webapp/dss_webapp/deploy.sh	webapp	LIVE (referenced)	6	docs/demo/DASHBOARD_DESIGN.md,webapp/DEPLOYMENT.md,webapp/Makefile,webapp/README.md
 webapp/frontend/package-lock.json	webapp	LIVE (referenced)	1	webapp/Makefile
 webapp/frontend/package.json	webapp	LIVE (referenced)	2	webapp/Makefile,webapp/README.md
 webapp/frontend/tsconfig.app.json	webapp	LIVE (referenced)	1	webapp/frontend/tsconfig.json

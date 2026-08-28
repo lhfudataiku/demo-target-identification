@@ -1,5 +1,3 @@
-<!-- GENERATED FILE: edit the canonical harness source, then run python3 tools/sync_harness.py --write. -->
-
 # demo-target-identification
 
 Two linked Dataiku DSS proof-of-concepts: Part 1 is a biomedical knowledge graph and Part 2 is an

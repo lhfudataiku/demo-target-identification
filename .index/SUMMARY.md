@@ -15,12 +15,6 @@ flags them as historical dropped.
 
 | file | asserted | value-only | orphan | total |
 |---|--:|--:|--:|--:|
-| `.claude/skills/target-id/SKILL.md` | 0 | 0 | 6 | 6 |
-| `.claude/skills/target-id/references/number-update.md` | 0 | 1 | 5 | 6 |
-| `.codex/skills/target-id/SKILL.md` | 0 | 0 | 6 | 6 |
-| `.codex/skills/target-id/references/number-update.md` | 0 | 1 | 4 | 5 |
-| `AGENTS.md` | 0 | 1 | 8 | 9 |
-| `CLAUDE.md` | 0 | 1 | 8 | 9 |
 | `DECISIONS.md` | 2 | 61 | 348 | 411 |
 | `archive/DASHBOARD_BUILD_LOG.md` | 0 | 109 | 178 | 287 |
 | `archive/preservation/2026-08-28/PRESERVATION_MANIFEST.md` | 0 | 0 | 9 | 9 |
@@ -43,19 +37,15 @@ flags them as historical dropped.
 | `notebooks/README.md` | 0 | 2 | 2 | 4 |
 | `webapp/DEPLOYMENT.md` | 0 | 0 | 1 | 1 |
 | `webapp/README.md` | 0 | 6 | 1 | 7 |
-| **total** | **49** | **393** | **1730** | **2172** |
+| **total** | **49** | **389** | **1693** | **2131** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**399 rows.** Of 1730 total orphans, these are the model-dependent ones: the numbers that move
+**395 rows.** Of 1693 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
 |---|---|--:|---|
-| `AGENTS.md:33` | - | 1,100 | Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `st |
-| `AGENTS.md:33` | - | 129,253 | Already in place: a webapp skeleton in `webapp/` (`backend.py`, `app.js`, `body.html`, `st |
-| `AGENTS.md:73` | - | 0.9354 | - **A benchmark a lookup table wins is measuring the lookup.** Drug-target AUC is dominate |
-| `CLAUDE.md:45` | - | 129,253 | shared `40 Candidate ranking` zone (`dashboard_candidates`, `target_candidates_2`, 129,253 |
 | `archive/DASHBOARD_BUILD_LOG.md:238` | 12.4 | 0.8962 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
 | `archive/DASHBOARD_BUILD_LOG.md:238` | 12.4 | 0.3359 | `auc = 0.8962` and `averagePrecision = 0.3359`. Both are **pooled, on the model's internal |
 | `archive/DASHBOARD_BUILD_LOG.md:242` | 12.4 | 0.8962 | \| AUROC \| 0.8962 \| **0.8230** \| +7.3 pts — exactly the pooled overstatement the projec |
@@ -112,8 +102,12 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/DASHBOARD_DESIGN.md:326` | 4 | 7,274 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
 | `docs/demo/DASHBOARD_DESIGN.md:390` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
 | `docs/demo/DASHBOARD_DESIGN.md:390` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/DASHBOARD_DESIGN.md:392` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
+| `docs/demo/panel_selection/README.md:58` | - | 0.350 | way: Spearman −0.350 over the 148 shipped pairs. |
+| `docs/overview/PROJECT_CONTEXT.md:106` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
+| `docs/overview/PROJECT_CONTEXT.md:228` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
 
-*339 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*335 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## DECISIONS.md jump table
 

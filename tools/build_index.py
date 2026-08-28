@@ -67,6 +67,16 @@ RECORD_FILES = {
     "DECISIONS.md",                 # append-only log; corrections are new entries, never edits
     "docs/appendix/README.md",      # describes m3-era frozen snapshots
 }
+# Harness guidance is operational policy, not project evidence. Indexing it makes numerical examples
+# and context-budget measurements look like live model claims. Keep source files and generated copies
+# out of the claims scan; `tools/check_harness.py` owns their freshness and parity instead.
+CLAIM_EXCLUDED_FILES = {
+    "AGENTS.md",
+    "CLAUDE.md",
+    "webapp/AGENTS.md",
+    "webapp/CLAUDE.md",
+}
+CLAIM_EXCLUDED_PREFIXES = ("harness/", ".claude/", ".codex/")
 # a hint only -- never used to decide ORPHAN status
 HIST = re.compile(
     r"SUPERSEDED|CORRECTED|REFUTED|retired|reference|previously|deleted|"
@@ -197,7 +207,11 @@ def build_claims(assertions):
         return "ORPHAN", ""
 
     rows = []
-    for path in sorted(tracked("*.md")):
+    markdown_paths = [
+        path for path in tracked("*.md")
+        if path not in CLAIM_EXCLUDED_FILES and not path.startswith(CLAIM_EXCLUDED_PREFIXES)
+    ]
+    for path in sorted(markdown_paths):
         sec = ""
         for i, raw in enumerate(open(os.path.join(ROOT, path)), 1):
             h = HEADING.match(raw)
