@@ -1,5 +1,11 @@
 # Flow map
 
+> **Lifecycle:** Generated · **Audience:** flow maintainers and reviewers considering pruning or changing
+> a data contract · **Authority:** live DSS zones, datasets, producers and consumers · **Update when:**
+> the DSS flow or its generation inputs change · **Generated dependencies:** live DSS, recipe graph,
+> notebooks and `webapp/backend.py` · **Excludes:** hand-authored rationale, design policy and build
+> chronology. **Never edit by hand; regenerate from its source inputs.**
+
 Live DSS: **100 datasets across 14 zones**, cross-referenced against the recipe graph, `notebooks/*.py`, and `webapp/backend.py`.
 
 **`downstream` counts recipes whose CODE reads the dataset**, not recipes that merely declare it as an input. Those differ: `dku recipe replace-input` rewires the declaration and leaves the code alone, which is how five recipes ended up declaring `_v2` while reading the old name.

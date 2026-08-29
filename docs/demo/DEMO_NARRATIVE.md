@@ -1,5 +1,11 @@
 # Demo narrative — reconstructing known biology from public knowledge
 
+> **Lifecycle:** Canonical · **Audience:** research scientists, computational biologists and the
+> data-platform team supporting them · **Authority:** business story, act order, audience voice and stable
+> interpretation · **Update when:** the demo claim, audience or act order changes · **Generated
+> dependencies:** notebook assertions; [`FLOW_MAP.md`](FLOW_MAP.md) for live flow lineage · **Excludes:**
+> API design, DSS topology and build procedure.
+
 **Who we are in this room.** An AI platform company. We are not a drug-discovery vendor, we are not
 proposing to run anyone's target programme, and we are not going to tell a research team how to do
 science. We build the machinery that lets their people test their own ideas quickly and show their
@@ -22,8 +28,8 @@ the same pipeline at *your* data, where nobody knows the answer yet.
 data-platform people who would own this internally. The second group is not an afterthought — they are
 the ones who have to believe it is reproducible.
 
-The technical companion — what each claim rests on, which zone and dataset serve it, which notebook
-re-derives it — is [DASHBOARD_DESIGN.md](DASHBOARD_DESIGN.md). Every number below is asserted in a
+The technical companion — the implementation architecture, data contracts and guardrails that support
+each act — is [WEBAPP_DESIGN.md](WEBAPP_DESIGN.md). Every number below is asserted in a
 notebook and re-checked on every run.
 
 ---

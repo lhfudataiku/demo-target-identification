@@ -1,5 +1,10 @@
 # Target Identification POC — project context & index
 
+> **Lifecycle:** Canonical · **Audience:** POC sponsors, architects and contributors · **Authority:**
+> stable purpose, personas and the Part 1/Part 2 shared-object contract · **Update when:** that purpose,
+> contract or its named owners change · **Generated dependencies:** none · **Excludes:** volatile build
+> status, experiment chronology and implementation procedures.
+
 > **Start here.** This file explains *why* the work exists, *who* it serves, and *how the two
 > projects fit together*. It carries no implementation detail — each project has its own
 > technical document.

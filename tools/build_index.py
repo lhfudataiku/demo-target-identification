@@ -231,7 +231,7 @@ def build_claims(assertions):
                     "status": status, "guarded_by": by,
                     "hint": "hist" if HIST.search(raw) else "",
                     "model_dep": "y" if MODELDEP.search(raw) else "",
-                    "context": re.sub(r"\s+", " ", raw.strip())[:110],
+                    "context": re.sub(r"\s+", " ", raw.strip())[:110].rstrip(),
                 })
     return rows
 

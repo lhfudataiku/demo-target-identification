@@ -1,4 +1,12 @@
-# Dashboard design — the technical companion to the demo narrative
+# Webapp design — the technical companion to the demo narrative
+
+> **Lifecycle:** Canonical · **Audience:** webapp implementers and technical reviewers · **Authority:**
+> Vue/FastAPI architecture, routes, state, interaction and data contracts · **Update when:** an app
+> contract, route, interaction or backing-data contract changes · **Generated dependencies:**
+> [`FLOW_MAP.md`](FLOW_MAP.md) for live flow lineage and the notebook assertions cited in §9 ·
+> **Excludes:** hand-authored DSS-flow inventories, native-dashboard evaluation and build chronology.
+> Detailed analytical rationale remains temporarily co-located until Phase 3 reconciles validation
+> evidence with its webapp consumers; do not duplicate it elsewhere.
 
 **Read [`DEMO_NARRATIVE.md`](DEMO_NARRATIVE.md) first.** This document is derived from it and has no
 independent authority. The narrative says *what we claim and in what order*; this says *what each
@@ -14,12 +22,12 @@ platform company demonstrating machinery, not a drug-discovery vendor proposing 
 are about the platform rather than the biology.
 
 **Status.** Mockup iteration 3 — [`DASHBOARD_MOCKUP_V3.html`](DASHBOARD_MOCKUP_V3.html) is the current
-artefact. Iterations 1 and 2 are kept alongside for reference.
+artefact. Earlier iterations are historical material in
+[`../../archive/dashboard-mockup-iterations/`](../../archive/dashboard-mockup-iterations/).
 
-**Where the rest lives.** The flow — every zone, every dataset, and which act or notebook consumes it —
-is [`FLOW_MAP.md`](FLOW_MAP.md) and its published map. The chronological build record and the traps
-found along the way are archived under `archive/` at the repo root. Durable decisions are in
-`DECISIONS.md`.
+**Where the rest lives.** [`FLOW_MAP.md`](FLOW_MAP.md) is the generated flow authority. Historical
+native-dashboard evaluation is in [`../../archive/NATIVE_DASHBOARD_EVALUATION.md`](../../archive/NATIVE_DASHBOARD_EVALUATION.md),
+and build chronology remains in [`../../archive/DASHBOARD_BUILD_LOG.md`](../../archive/DASHBOARD_BUILD_LOG.md).
 
 ---
 
@@ -101,30 +109,7 @@ top-15 table.
 
 ## 3. Architecture — one Vue SPA, deployed as a DSS webapp
 
-### 3.1 Why not the native DSS dashboard
-
-The native attempt was built (dashboard `Cn8oSQC`, nine tiles, acts 1–2, pre-flight clean) and is being
-retired. Not on taste — on five findings from building it:
-
-| finding | consequence |
-|---|---|
-| **A `web_app` insight cannot be bound over the API.** DSS accepts the save and silently drops every params key — `webAppId`, `webAppSmartName`, `webapp`, `webAppName`, `smartName` all round-trip to `{}`, on both `insight create -d` and `insight set-definition`. No `webapp publish` verb, no raw-API passthrough | every webapp tile is a manual UI step, so the deck cannot be built or rebuilt reproducibly |
-| **No `TEXT` tiles via the API.** `dashboard add-tile` writes only `INSIGHT` tiles, and DSS drops unknown tile fields on save | *"the point to make out loud"* had to be crammed into tile titles. A narrative deck whose narration lives in chart titles is not a narrative deck |
-| **Chart sampling defaults to `maxRecords: 10000`.** On `graph_edges` (2,851,510 rows) that misreports relation counts by two orders of magnitude while looking entirely plausible | every chart needs a manual sampling patch and an independent verification, forever |
-| **Filter semantics are ambiguous by default.** A filter written as `{selectedValues: {x: true}}` returns with `includeEmptyValues: true`, `excludeOtherValues: false` — configured-looking and non-filtering | act 2's `level` filter is worth 73 basis points of AUC. A silent filter failure ships a wrong number |
-| **No row-level drill, and no display-only columns.** A `dataset_table` hands the viewer sort and filter over every column it exposes | the three guardrails in §6 are *unimplementable* natively. That is the disqualifying one |
-
-That last row is the argument. Three columns must be **visible and not actionable**:
-
-- `approved_for_disease` / `investigational_for_disease` — the labels act 5's discovery lift is measured
-  against. A viewer who filters by them has made the headline circular.
-- `has_safety_liability` — act 6's point is that filtering on it deletes ERBB2.
-- `prediction` — at the F1-optimised threshold, 590 of 762 known obesity targets score negative.
-
-Native DSS offers exactly one guardrail — *don't expose the column* — which also removes it from
-display. In our own code, display-only is three lines.
-
-### 3.2 The stack
+### 3.1 The stack
 
 Copied from `~/Documents/GitHub/bs-blueprint` via `make copy DEST=…`. Vue 3 + Vite + Tailwind 4 +
 ECharts + Pinia + vue-router, with a FastAPI backend and `dss_webapp/deploy.sh`, which builds the bundle,
@@ -135,7 +120,7 @@ STANDARD webapp definition to serve it.
 itself from route `meta`; real prose beside real charts; display-only columns; row-level drill; a single
 deploy command; and a design system already themed to the Dataiku brand.
 
-### 3.3 The lineage rule — non-negotiable
+### 3.2 The lineage rule — non-negotiable
 
 A custom app is opaque to lineage, and act 6 closes on *"the record of why is in the flow, not someone's
 inbox."* A screenshot-grade SPA would undercut the pitch it exists to deliver. So:
@@ -147,7 +132,7 @@ Provenance moves *into* the UI rather than being borrowed from native tiles. Thi
 requirement, not a nice-to-have: it is what lets us claim the platform while shipping custom code. The
 mockup implements it as a `dataset · recipe` footer on every card.
 
-### 3.4 Route → view → data map
+### 3.3 Route → view → data map
 
 Sidebar order is act order. `menu: 'primary'`, `order` = act number.
 
@@ -166,7 +151,7 @@ components rather than rewritten. Its `SECRETED` rule, its `TIPS` copy and its r
 `prediction` are **validated behaviour** — carry them across verbatim and re-read the comments before
 changing any of them.
 
-### 3.5 Mock first, then swap
+### 3.4 Mock first, then swap
 
 Every view reads from a module in `frontend/src/data/mock/`, following the blueprint's own idiom
 (`data/mock/medical-info-tickets.ts`). Numbers are the verified ones, hard-coded.
@@ -188,7 +173,7 @@ same shape** — define the shape in `types/` first, and have both conform to it
 dataset and the notebook assertion each figure came from, so a stale value is traceable. When a view
 swaps to live data, its mock module is deleted, not commented out.
 
-### 3.6 Conventions that are not negotiable
+### 3.5 Conventions that are not negotiable
 
 From the blueprint's agent instructions (`AGENTS` at its repo root); violating them means the app stops looking like a Dataiku product.
 
@@ -206,7 +191,7 @@ From the blueprint's agent instructions (`AGENTS` at its repo root); violating t
 - Python: `from __future__ import annotations`, type hints, `routes/` parses and returns JSON while
   `services/` does the Dataiku calls, DSS access via `get_project()` from `dss_client.py`.
 
-### 3.7 Build and deploy
+### 3.6 Build and deploy
 
 ```bash
 make copy DEST=~/Documents/GitHub/target-prioritizer-app   # seed from the blueprint
@@ -490,7 +475,7 @@ the pivot matters more than it looks.
 | One "enrichment" series | approved and investigational mean different things | never OR'd, never merged, separately labelled |
 | Report pooled AUC because it is bigger | pooled overstates by ~7 points | macro only, never adjacent to a pooled figure |
 | Quote a filtered count without its rank cut-off | how the obesity landing count acquired two values (§10.3) | every funnel count renders its cut-off in the same component |
-| A number with no provenance | undercuts the platform claim the deck closes on | §3.3 — every card footers its source dataset |
+| A number with no provenance | undercuts the platform claim the deck closes on | §3.2 — every card footers its source dataset |
 | A tooltip-free "novel" or "no liability" label | *"novel"* reads as *undiscovered*, *"no liability"* reads as *safe* — both wrong | the old webapp's `TIPS` copy ports across verbatim |
 | A discovery-enrichment figure on a summary tile or opening screen | the narrative makes a **reconstruction** claim, not a discovery one; a headline number turns one into the other and the slide is not recoverable in the room | the enrichment lives below the fold in act 4, labelled as an observation, and appears on no tile |
 | Language that prescribes research direction — *"you should pursue…"*, *"the next target is…"* | we are a platform company, not a domain authority. Prescribing costs the room | the app ranks and explains; every verb in the copy is about evidence, never about what to do next |
@@ -631,55 +616,12 @@ warning flag; never optimise against it.
 
 ---
 
-## 10. The flow: zones and the datasets behind each act
+## 10. Flow lineage
 
-The full map — every dataset, its zone, its producing recipe and its consumer — is
-[`FLOW_MAP.md`](FLOW_MAP.md), regenerated from live DSS. This is the shape of it.
-
-**The zone order is acyclic.** Two cycles existed among the serving zones until 2026-08-26; both were
-removed by relocating misfiled datasets rather than by adding indirection.
-
-```
-00 Imported  →  10 Cypher · 11 Matrix  →  12 Assembly
-             →  20 Annotations  →  30 Split  →  31 Train & score
-             →  40 Candidate ranking (shared by acts)
-             →  A1 · A2  →  A3 · A4        →  90 Notebook
-```
-
-| zone | what it holds | serves |
-|---|---|---|
-| `00 Imported from DEMO_KG_LS` | the graph, synced from Part 1 | act 1, and everything downstream |
-| `10 / 11 / 12` | graph-traversal, matrix and assembled features | the model |
-| `20 Annotations & split key` | druggability, safety, ontology split key | acts 3, 4 |
-| `30 / 31` | split, modelling table, champion scoring | act 2 |
-| `40 Candidate ranking` | the chain ending at `dashboard_candidates` | **acts 2, 3 and 4** — shared, which is why it is its own zone |
-| `A1 Evidence base` | graph counts, provenance, acceptance | act 1 |
-| `A2 Calibration` | AUC distribution, SHAP drivers, persona calibration | act 2 |
-| `A3 Therapeutic area` | family panel, subtype overlap, ontology hierarchy | act 3 |
-| `A4 Shortlist` | persona trust, the three-axis filter, drug truth | act 4 |
-| `90 Notebook` | validation evidence a notebook reads | the talk track |
-
-### 10.1 Two rules the map exists to enforce
-
-**A dataset is safe to delete when a notebook recomputes it and the assertions still pass — never
-because a reference check comes back empty.** Three separate times, a "delete what nothing reads"
-pass pointed at the entire A1–A4 serving layer, because the webapp UI that reads it is not built yet.
-The same check would have removed `family_auc_by_family`, the only surviving copy of a number `nb3`
-asserts.
-
-**Zone membership, not reference counting, separates a serving dataset from an orphan.** That is the
-single most important thing the map encodes, and it is why the map is generated rather than written.
-
-### 10.2 Serving-layer status
-
-Acts 1, 3 and 4 can be built against real data today. Act 2 needs two aggregates that currently exist
-only inside notebooks — the hub-bias meter (`nb3b`) and the orthogonality join (`nb3` §7.4). Both are
-one visual recipe each, landing in `A2`.
-
-Moving acts 5 and 6 to the talk track removed most of what used to block this: they were argument, not
-exploration, and they owned five of the nine original gaps.
-
-House rules: **joins go in visual Join recipes**, new datasets on the S3 connection as parquet.
+[`FLOW_MAP.md`](FLOW_MAP.md) is the generated authority for zones, datasets, producers and consumers.
+Read it before pruning or changing a backing contract; do not duplicate it here. In particular, use its
+notebook-provenance and zone-membership rules rather than reference counts to judge whether a serving
+dataset is safe to remove.
 
 ---
 

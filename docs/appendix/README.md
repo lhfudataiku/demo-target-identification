@@ -1,5 +1,10 @@
 # Appendix snapshots
 
+> **Lifecycle:** Historical · **Audience:** reviewers reproducing retired analyses · **Authority:**
+> frozen, versioned evidence captured when the corresponding flow artifacts were removed · **Update
+> when:** never, except to repair provenance or successor pointers · **Generated dependencies:** the
+> listed live inputs · **Excludes:** current champion claims and current demo guidance.
+
 Frozen results for analyses **removed from the DSS flow** on 2026-08-19. They back specific claims in
 [TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md) but no scientist asks about them in a demo, so
 they were pruned from the flow and preserved here instead.

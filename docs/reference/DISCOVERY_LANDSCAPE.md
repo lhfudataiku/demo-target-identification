@@ -1,5 +1,10 @@
 # Discovery Landscape — from target identification to candidate nomination
 
+> **Lifecycle:** Canonical · **Audience:** platform-side teams scoping the wider discovery landscape ·
+> **Authority:** the explanatory framework and its cited sources · **Update when:** the framework or a
+> load-bearing source is revised · **Generated dependencies:** none · **Excludes:** project build plans,
+> implementation contracts and unverified client-facing claims.
+
 > **What this is.** A scoping companion for the *molecular screening* AI solution framework
 > (the Story 1 / Story 2 personas), written to place our existing POC
 > (`PROJECT_CONTEXT.md`, `TARGET_PRIORITIZER.md`) on the wider drug-discovery value chain.

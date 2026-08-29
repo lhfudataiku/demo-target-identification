@@ -1,5 +1,10 @@
 # Blueprint — Dataiku DSS Webapp Starter
 
+> **Lifecycle:** Canonical · **Audience:** contributors configuring or extending the webapp ·
+> **Authority:** architecture, setup, feature-block and local-development reference · **Update when:**
+> those contracts or supported workflows change · **Generated dependencies:** current frontend,
+> backend and configuration structure · **Excludes:** project analytical claims and deployment history.
+
 A copy-to-start template for building on-brand webapps on Dataiku DSS.
 If you know Python and data but have never shipped a web frontend, this gets you there:
 the plumbing — local dev, DSS deployment, sidebar, settings, data access — is already wired up.

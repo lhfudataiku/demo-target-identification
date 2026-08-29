@@ -1,5 +1,10 @@
 # Dataiku DSS — platform behaviours & CLI patterns
 
+> **Lifecycle:** Canonical · **Audience:** DSS builders and reviewers · **Authority:** reusable
+> platform behaviours and command patterns verified during this work · **Update when:** a behaviour is
+> refuted, corrected or materially changes by DSS version · **Generated dependencies:** none ·
+> **Excludes:** project-specific flow status and domain methodology.
+
 > Findings from building a large multi-project flow (≈160 recipes, 2.9M-edge graph, Visual ML,
 > plugin recipes, cross-project sharing). **Written generically** — nothing here depends on this
 > POC's domain, so it should transfer to any DSS project.

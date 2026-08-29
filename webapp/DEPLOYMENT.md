@@ -1,5 +1,10 @@
 # Deploying this webapp
 
+> **Lifecycle:** Canonical · **Audience:** webapp deployers and reviewers · **Authority:** deployment,
+> embedding and runtime verification procedure · **Update when:** the build, upload, restart or iframe
+> contract changes · **Generated dependencies:** the deployment scripts and current webapp structure ·
+> **Excludes:** UI design rationale and analytical evidence.
+
 **The one thing to know before anything else:**
 
 > **`git push` does not deploy the webapp. `make deploy` does.**
@@ -141,7 +146,7 @@ Blue+Green must never be co-dominant surfaces.
 ## Guardrails the UI must keep
 
 These are demo requirements, not style preferences. They are enforced in
-`ShortlistView.vue` and documented in `docs/demo/DASHBOARD_DESIGN.md`:
+`ShortlistView.vue` and documented in `docs/demo/WEBAPP_DESIGN.md`:
 
 - **Drug badges and the liability flag render, but are never filter controls.** The badges
   are the ground truth the enrichment is measured against — filtering on them makes the

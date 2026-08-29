@@ -1,5 +1,10 @@
 # Documentation and agent-context restructure plan
 
+> **Lifecycle:** Decision · **Audience:** maintainers executing or reviewing the migration ·
+> **Authority:** the approved restructure direction, phase boundaries and acceptance criteria ·
+> **Update when:** an explicit approval changes scope or phase status · **Generated dependencies:**
+> none · **Excludes:** implementation logs and current project facts owned by routed documents.
+
 **Status: APPROVED — 2026-08-28.** Implementation remains phased, and the separate approval gates
 defined below still apply. This plan supersedes the narrower plan raised on 2026-08-26, preserved
 verbatim in the repository archive as the dated 2026-08-26 restructure plan.
@@ -30,8 +35,9 @@ The restructure should make five things true:
 
 ### 2.1 Mixed document responsibilities
 
-`TARGET_PRIORITIZER.md` combines method, validation and presentation. `DASHBOARD_DESIGN.md` combines
-webapp contracts, analytical justification, DSS topology and build history. This makes a local change
+`TARGET_PRIORITIZER.md` combines method, validation and presentation. Before Phase 2, the
+dashboard-design document combined webapp contracts, analytical justification, DSS topology and
+build history. This makes a local change
 appear to require a review of several large documents and creates multiple homes for the same fact.
 
 ### 2.2 Current truth and history share a search surface
@@ -287,7 +293,7 @@ endpoint instead of duplicating them in source code.
 ### Phase 2 — current versus historical documents
 
 1. Add lifecycle metadata and scope statements to current documents.
-2. Rename `DASHBOARD_DESIGN.md` to the planned `WEBAPP_DESIGN` document and update links.
+2. Rename the technical design document to the planned `WEBAPP_DESIGN.md` and update links.
 3. Move native-dashboard evaluation and build chronology to the archive, not the current decision
    register.
 4. Archive older mockups and leave one current mockup in the active map.

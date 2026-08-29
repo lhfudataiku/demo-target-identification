@@ -1,5 +1,10 @@
 # Breast panel — pre-flight briefing before the surgeon review
 
+> **Lifecycle:** Evidence · **Audience:** reviewers preparing the breast-panel clinical review ·
+> **Authority:** measured pre-flight findings and disclosed panel limitations · **Update when:** the
+> champion, served breast panel or its supporting measurements change · **Generated dependencies:**
+> notebook assertions and the cited shortlist artifacts · **Excludes:** general demo architecture.
+
 Built 2026-08-19, **re-measured 2026-08-21 on champion `m7-f14`** (previously `m3-f12`). Read this
 before sending `breast_shortlist.csv` to anyone clinical.
 

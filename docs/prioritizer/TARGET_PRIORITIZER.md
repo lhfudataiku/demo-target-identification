@@ -1,5 +1,11 @@
 # Explainable Target Prioritizer — `DEMO_TARGET_IDENTIFICATION`
 
+> **Lifecycle:** Canonical · **Audience:** Part 2 data scientists and reviewers · **Authority:** model
+> method, features, split, training, ablation and selection rationale · **Update when:** those method
+> choices change · **Generated dependencies:** notebook assertions and flow datasets named by source lines
+> · **Excludes:** demo copy and migration diary. Detailed validation remains temporarily co-located until
+> the planned Phase 3 evidence split; it is not to be duplicated elsewhere.
+
 > Technical documentation for the **modelling, validation and result-visualisation** project: what
 > the data exploration found, why these features and this model, and how well it actually works.
 >

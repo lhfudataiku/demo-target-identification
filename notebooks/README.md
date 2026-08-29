@@ -1,5 +1,10 @@
 # Assertion notebooks
 
+> **Lifecycle:** Evidence · **Audience:** reviewers re-deriving documented numbers · **Authority:** the
+> assertion map and execution order for the DSS-hosted notebooks · **Update when:** a notebook, guarded
+> claim or execution dependency changes · **Generated dependencies:** the live DSS notebooks and their
+> mirrored scripts · **Excludes:** modelling rationale and narrative interpretation.
+
 Seven `.py` mirrors of the DSS-hosted Jupyter notebooks on the **`primekg_kg`** code env. The notebooks
 themselves live in `DEMO_TARGET_IDENTIFICATION` and are the ones to run; these files exist so a change
 is diffable in git.

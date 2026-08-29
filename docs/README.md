@@ -1,19 +1,19 @@
 # Document set
 
-Grouped by purpose. **Read one section, not a whole file** — several are 20–40k tokens, and
-`.index/` answers most factual questions without opening any of them (see `../CLAUDE.md`).
+> **Lifecycle:** Canonical · **Audience:** repository contributors and reviewers · **Authority:** the
+> current-state document router · **Update when:** a canonical, evidence or generated document moves,
+> changes role or gains a successor · **Generated dependencies:** `.index/` for bounded factual retrieval
+> · **Excludes:** historical chronology and implementation detail held by the routed documents.
+
+Grouped by purpose. **Read one section, not a whole file** — several are 20–40k tokens, and `.index/`
+answers most factual questions without opening any of them (see `../CLAUDE.md`). Current canonical,
+evidence and generated documents appear first; planning and historical material are separated below.
 
 ## Start
 
 | | |
 |---|---|
 | [`overview/PROJECT_CONTEXT.md`](overview/PROJECT_CONTEXT.md) | What the POC is for, the numbers that anchor the pitch, the personas, and **how Parts 1 and 2 fit together** including the 13 shared objects |
-
-## Planning
-
-| | |
-|---|---|
-| [`demo/DOC_RESTRUCTURE_PLAN.md`](demo/DOC_RESTRUCTURE_PLAN.md) | **Approved 2026-08-28:** repository-wide documentation, decision, build-governance and cross-harness context restructure. Not an implementation record or current project authority |
 
 ## Part 1 — the graph (`DEMO_KG_LS`)
 
@@ -34,12 +34,10 @@ Grouped by purpose. **Read one section, not a whole file** — several are 20–
 | | |
 |---|---|
 | [`demo/DEMO_NARRATIVE.md`](demo/DEMO_NARRATIVE.md) | The demo as **four acts on screen and two in a talk track**, in the order a sceptical scientist asks: what can the model see → how far can it be trusted → does it hold across my area → show me the list. **Derive the app from this, not the reverse** |
-| [`demo/DASHBOARD_DESIGN.md`](demo/DASHBOARD_DESIGN.md) | The **technical companion** to the narrative: the Vue/DSS architecture, the data contract per act, the analytic reasoning each claim rests on, and the zone-by-zone flow. Build log archived separately |
+| [`demo/WEBAPP_DESIGN.md`](demo/WEBAPP_DESIGN.md) | The technical companion to the narrative: Vue/FastAPI architecture, routes, interactions and data contracts. `FLOW_MAP.md` remains the generated flow authority |
 | [`demo/FLOW_MAP.md`](demo/FLOW_MAP.md) | Every dataset by zone, its producing recipe and its consuming act or notebook — generated from live DSS. **Read before pruning anything**: a reference check alone flags the whole serving layer |
 | [`demo/panel_selection.html`](demo/panel_selection.html) | **Which families and diseases the demo carries.** Measured 2026-08-27 over all 670 validation diseases: subtype structure exists only in oncology, so Act 3 is breast + uterine and therapeutic-area breadth comes from Act 4's singletons. Every candidate tested by looking up where the field's validated targets actually rank. **Read before repointing the persona filter.** Supporting tables in [`demo/panel_selection/`](demo/panel_selection/), all asserted by `nb7` |
 | [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) | **Current mockup.** Four interactive acts. The Sankey opens on the whole ontology and shows the 95.7% the seed gate excludes; panel and ontology tree merged; full ranked list with search, tractability and class filters |
-| [`demo/DASHBOARD_MOCKUP_V2.html`](demo/DASHBOARD_MOCKUP_V2.html) | Iteration 2, kept for comparison |
-| [`demo/DASHBOARD_MOCKUP.html`](demo/DASHBOARD_MOCKUP.html) | Iteration 1, six static acts |
 | [`demo/BREAST_SURGEON_BRIEFING.md`](demo/BREAST_SURGEON_BRIEFING.md) | Clinician-facing validation set for the breast panel, including the defects a surgeon finds immediately |
 
 ## Platform and reference
@@ -50,6 +48,18 @@ Grouped by purpose. **Read one section, not a whole file** — several are 20–
 | [`reference/RESEARCH_NOTE.md`](reference/RESEARCH_NOTE.md) | Evidence base behind the modelling choices. **Unvalidated corpus — verify before client-facing use** |
 | [`reference/DISCOVERY_LANDSCAPE.md`](reference/DISCOVERY_LANDSCAPE.md) | The wider discovery chain (stages 1–6). A **separate framework** from the target-identification work above |
 | [`appendix/`](appendix/) | Frozen snapshot CSVs backing the ablation-ladder sections. **`m3-f12`-era** — not the current champion |
+
+## Planning
+
+| | |
+|---|---|
+| [`demo/DOC_RESTRUCTURE_PLAN.md`](demo/DOC_RESTRUCTURE_PLAN.md) | **Approved 2026-08-28:** repository-wide documentation, decision, build-governance and cross-harness context restructure. Not an implementation record or current project authority |
+
+## Historical material
+
+| | |
+|---|---|
+| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, mockup iterations 1–2 and the retired hand-authored flow view. Do not load by default; use only for an explicit history investigation |
 
 ## Not in this directory
 

@@ -1,5 +1,10 @@
 # Feature recipe audit — §4.1 and §4.2
 
+> **Lifecycle:** Evidence · **Audience:** feature engineers and reviewers planning gate changes ·
+> **Authority:** measured per-feature recipe and seed-gate audit · **Update when:** an audited recipe,
+> feature set or gate changes · **Generated dependencies:** `.index/features.tsv`,
+> `.index/recipes.tsv` and the cited live measurements · **Excludes:** model-selection rationale.
+
 Every recipe producing a feature in TARGET_PRIORITIZER §4.1 (the champion's 12) and §4.2 (computed
 and rejected), read for four things: **the module-size threshold**, **self-path exclusion**,
 **leave-one-out module normalisation**, and **null semantics**. Audited 2026-08-20.
@@ -296,4 +301,3 @@ predictions, and the committed adopt/reject rule.
 not significant) while helping every larger bucket — and the 931 diseases this change admits are all in
 or near that regime. The pre-registered prediction should say so, and the decision rule stays the one
 that rejected `m8`: an association gain must be corroborated on the degree-matched tractability axis.
-

@@ -1,14 +1,19 @@
 # Dashboard & flow build log — archived 2026-08-26
 
+> **Lifecycle:** Historical · **Audience:** maintainers investigating build chronology and retired
+> approaches · **Authority:** the dated build journal and incident record · **Update when:** never,
+> except to repair a successor or archived-artifact pointer · **Generated dependencies:** none ·
+> **Excludes:** current implementation guidance. Do not load by default.
+
 Sections 11–35 of the former `docs/demo/DASHBOARD_DESIGN.md`: the chronological record of the
 webapp/native-dashboard evaluation, the flow migration, notebook codification, the pruning passes
 and the incidents found along the way.
 
-Moved out because `DASHBOARD_DESIGN.md` is now a technical supporting document to
-`DEMO_NARRATIVE.md`, not a build journal. Kept rather than deleted: several entries are the only
-record of traps that cost real time — the stale middle link (17), `replace-input` not touching
-Python code (30.1), the frozen reference masking stale mirrors (33.3), and three separate occasions
-where a "delete what nothing reads" pass pointed at the serving layer.
+Moved out when the technical companion was named `DASHBOARD_DESIGN.md`; its current successor is
+[`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md), not this build journal. Kept rather than deleted:
+several entries are the only record of traps that cost real time — the stale middle link (17),
+`replace-input` not touching Python code (30.1), the frozen reference masking stale mirrors (33.3),
+and three separate occasions where a "delete what nothing reads" pass pointed at the serving layer.
 
 Durable decisions belong in `DECISIONS.md`; durable traps in the `target-id` skill.
 
@@ -52,7 +57,7 @@ was computed from the live datasets on 2026-08-21, not copied from prose.
 
 ## 12. Mockup iteration 2 — decisions and revision plan
 
-Review of [`DASHBOARD_MOCKUP.html`](DASHBOARD_MOCKUP.html) iteration 1. Everything below was checked
+Review of [`DASHBOARD_MOCKUP.html`](dashboard-mockup-iterations/DASHBOARD_MOCKUP.html) iteration 1. Everything below was checked
 against the live project before being recommended. **§12.7 lists four numbers this review found wrong**
 — two of them are on the current mockup and one is in the narrative's one-page summary.
 
@@ -497,7 +502,7 @@ Four, found while checking the suggestions. Two are on the mockup now.
 
 ## 13. Iteration 3 — answers and revisions
 
-Review of [`DASHBOARD_MOCKUP_V2.html`](DASHBOARD_MOCKUP_V2.html). **Two of the challenges here were
+Review of [`DASHBOARD_MOCKUP_V2.html`](dashboard-mockup-iterations/DASHBOARD_MOCKUP_V2.html). **Two of the challenges here were
 right and change the build plan** (§13.2 and §13.7). One caught a guardrail I broke in v2 (§13.9).
 
 ### 13.1 All-disease aggregates, and visual over Python

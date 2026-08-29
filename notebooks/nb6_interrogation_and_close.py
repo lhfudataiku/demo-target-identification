@@ -177,7 +177,7 @@ print(f"TRUTH|share from multi-target drugs: {pct_multi:.1f}%  |  surviving a si
 # NOT asserted against 82% / 8%. Those figures appear in TARGET_PRIORITIZER's Q4 summary line with no
 # traceable computation behind them, and asserting a number whose derivation cannot be found is how
 # stale figures survive. Report the measured values; pin the assertion once the source is agreed.
-print("TRUTH|⚠ documented 82% / 8% NOT asserted — no traceable source; see DASHBOARD_DESIGN section 24")
+print("TRUTH|⚠ documented 82% / 8% NOT asserted — no traceable source; see archive/DASHBOARD_BUILD_LOG.md section 24")
 
 # ============================================================================
 # 5.5  Orthogonality — association AUC does not predict therapeutic relevance.

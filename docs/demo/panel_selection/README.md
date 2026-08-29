@@ -1,5 +1,10 @@
 # Panel selection — the supporting analysis
 
+> **Lifecycle:** Evidence · **Audience:** demo owners and reviewers selecting therapeutic areas and
+> diseases · **Authority:** asserted panel-selection measurements and their interpretation · **Update
+> when:** the champion, graph, seed gate, persona configuration or served panel changes · **Generated
+> dependencies:** `nb7_panel_selection.py` and `built/` · **Excludes:** webapp implementation policy.
+
 The evidence behind [`../panel_selection.html`](../panel_selection.html): which disease
 families Act 3 can support, and which diseases Act 4 should shortlist. Measured 2026-08-27
 over all 670 validation diseases against champion `m7-f14`.

@@ -1,5 +1,10 @@
 # Phase 3 pre-registration — lowering the pool-route seed gate 20 → 5
 
+> **Lifecycle:** Decision · **Audience:** reviewers deciding whether to run or accept the registered
+> intervention · **Authority:** the pre-committed gates, predictions and adopt/reject rule · **Update
+> when:** never after execution begins; corrections require a dated successor · **Generated
+> dependencies:** the cited sizing evidence and recipe classification · **Excludes:** experiment results.
+
 **Written 2026-08-21, before the branch project exists.** Every number in it is measured on the current
 project; nothing here has been fitted to a Phase 3 result, because no Phase 3 result exists yet.
 

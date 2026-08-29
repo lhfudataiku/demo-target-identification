@@ -1,5 +1,10 @@
 # Research Note — evidence behind the Target Prioritizer's features & model
 
+> **Lifecycle:** Evidence · **Audience:** reviewers tracing modelling choices to literature ·
+> **Authority:** per-reference summaries and the stated verification caveats · **Update when:** a cited
+> source is re-verified, refuted or replaced · **Generated dependencies:** none · **Excludes:** current
+> model measurements and independent validation not explicitly recorded here.
+
 > **Companion to [TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md).** That doc is the *design*
 > (what we build). This note is the *evidence*: per-reference summaries with the methodology
 > mapped to each feature and modeling choice — the "why these features" audit trail.
