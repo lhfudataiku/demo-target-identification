@@ -1,11 +1,11 @@
 ---
 name: target-id
-description: Navigate the demo-target-identification repo without reading its large docs. Use when asked about this project's models (m1-m8), metrics, features, recipes, seed gates, past decisions, or when updating documented numbers after a model change. Answers most questions with a grep over .index/ instead of loading 135k tokens of markdown.
+description: Navigate the demo-target-identification repo without reading its large docs. Use when asked about this project's models (m1-m8), metrics, features, recipes, seed gates, past decisions, or when updating documented numbers after a model change. Answers most questions with a grep over .index/ instead of loading about 130k tokens of markdown.
 ---
 
 # Navigating this repo cheaply
 
-The docs are well over 140k tokens and the recipes ~93k. **Do not read them to answer a factual question.** Generated indexes answer most of it; `docs/prioritizer/TARGET_PRIORITIZER.md` is a last resort, and even then read one section, not the file. `docs/README.md` maps the whole doc set. Query `.index/index_metadata.tsv` for an index's owner, scope and freshness command.
+The docs are about 130k tokens and the recipes about 70k. **Do not read them to answer a factual question.** Generated indexes answer most of it; `docs/prioritizer/TARGET_PRIORITIZER.md` is a last resort, and even then read one section, not the file. `docs/README.md` maps the whole doc set. Query `.index/index_metadata.tsv` for an index's owner, scope and freshness command.
 
 Regenerate after editing any doc or recipe: `./tools/check_indexes.sh` verifies, the two `tools/build_*.py` scripts rebuild. `build_recipe_index.py --refresh` also re-snapshots DSS (slow, ~3 min) — only needed when a recipe changed in the UI.
 
@@ -22,7 +22,7 @@ Regenerate after editing any doc or recipe: `./tools/check_indexes.sh` verifies,
 | "what is unguarded and could drift" | `.index/SUMMARY.md`, "Risk surface" section |
 | "which entry points consume the champion" | `awk -F'\t' '$3=="yes"{print $16}' .index/models.tsv` |
 
-`grep -i prox_kernel .index/decisions.tsv | head -n 20` costs ~100 tokens. The 22k-token retired chronology is
+`grep -i prox_kernel .index/decisions.tsv | head -n 20` costs ~100 tokens. The 30k-token retired chronology is
 loaded only for an explicit historical investigation.
 
 ## Hard-won traps

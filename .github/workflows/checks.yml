@@ -28,7 +28,7 @@ jobs:
       - name: Indexes, harness parity and links
         run: ./tools/check_indexes.sh
 
-      # Enumerated from git rather than discovered: tools/ has no __init__.py, so
+      # Enumerated from git rather than discovered: tools/ carries no package marker, so
       # `unittest discover` cannot import the start directory, and naming modules by hand would let
       # a new test file be skipped in silence.
       - name: Unit tests

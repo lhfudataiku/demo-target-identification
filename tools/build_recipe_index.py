@@ -420,7 +420,12 @@ def main():
     haystack = {}
     for f in (sh(["git", "ls-files"]).split("\n")):
         f = f.strip()
+        # `.claude/`/`.codex/` are excluded as reference sources for the same reason they are
+        # excluded as entries: a permission allowlist that names a tool is not a consumer of it, and
+        # the skill copies there would count one document as four independent references.
         if not f or f.startswith(".index/") or "__pycache__" in f:
+            continue
+        if f.startswith(".claude/") or f.startswith(".codex/"):
             continue
         fp = os.path.join(ROOT, f)
         if os.path.isfile(fp) and os.path.getsize(fp) < 4_000_000:

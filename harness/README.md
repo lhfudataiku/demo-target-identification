@@ -16,7 +16,8 @@ the generated copies before review.
 - `skills/target-id/` is the canonical target-ID skill package, including its task procedure.
 - `tools/sync_harness.py --write` copies these sources to the Codex and Claude discovery paths.
 - `tools/sync_harness.py --check` verifies byte-for-byte parity and is safe for hooks or CI.
-- `tools/check_harness.py` verifies routing rules and reports the reproducible cold-start budget.
+- `tools/check_harness.py` verifies routing shape, both cold-start budgets and the skill's
+  magnitude claims.
 
 The generated files deliberately use copies rather than symlinks: both harnesses discover ordinary
 files reliably across team machines. The synchroniser is deterministic and adds no timestamp.
@@ -29,9 +30,22 @@ python3 tools/sync_harness.py --check
 python3 tools/check_harness.py
 ```
 
-`check_harness.py` uses an installed tokenizer when one is available. This checkout has no shared
-Claude/Codex tokenizer, so its fallback is explicitly labelled as a conservative, reproducible
-byte-based proxy rather than an exact harness-token measurement.
+`check_harness.py` gates on a conservative byte proxy — UTF-8 bytes divided by three — and never on
+an installed tokenizer, so the same commit cannot pass on a laptop and fail in CI because one
+machine happens to have `tiktoken` for an unrelated project. When `tiktoken` is present its count is
+printed alongside, labelled as an OpenAI encoding and informational: neither harness's real
+tokenizer is available here, so no exact token guarantee is claimed.
+
+Beyond parity it checks four properties. Entry points must contain no unconditional read, matched by
+the shape of the directive rather than by one phrasing, while an overlay stays free to forbid the
+same read. Every routing bullet must state the condition it routes on, because a bullet with no
+trigger is an instruction that always fires. The entry points must name the skill path, and both
+they and the skill must stay inside their budgets. Finally the skill's magnitude claims — how large
+the docs, the recipes and the retired chronology are — are re-measured against the tracked files.
+Those claims justify "do not read the docs", no claim index guards them because harness material is
+excluded from the claim manifest by design, and three of the four had drifted by up to 36% before
+this check existed. `tools/tests/test_check_harness.py` pins the behaviour, including the
+filename-dot case that a literal blocklist and a naive pattern both miss.
 
 ## Reaching the skill from any harness
 
