@@ -1,5 +1,9 @@
 """Act 2 — calibration.
 
+Governed claims consumed: TI-DATA-001 TI-MOD-001 TI-VAL-001 TI-VAL-002,
+TI-VAL-003, TI-VAL-004 and TI-VAL-005. The IDs govern meaning, fallback provenance and review;
+this route still derives live values where available.
+
   GET /api/calibration   the AUC distribution, the hub-bias meter, orthogonality
 
 Read the AUC as RECONSTRUCTION FIDELITY, not predictive power: across 670

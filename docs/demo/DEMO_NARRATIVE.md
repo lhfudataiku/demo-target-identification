@@ -1,5 +1,7 @@
 # Demo narrative — reconstructing known biology from public knowledge
 
+<!-- Governed claims consumed here: TI-DATA-001 TI-MOD-001 TI-VAL-001 TI-VAL-002 TI-VAL-003 TI-VAL-004 TI-VAL-007 TI-VAL-008 TI-VAL-009 -->
+
 > **Lifecycle:** Canonical · **Audience:** research scientists, computational biologists and the
 > data-platform team supporting them · **Authority:** business story, act order, audience voice and stable
 > interpretation · **Update when:** the demo claim, audience or act order changes · **Generated

@@ -1,5 +1,7 @@
 # Breast panel — pre-flight briefing before the surgeon review
 
+<!-- Governed claims consumed here: TI-MOD-001 TI-VAL-006 TI-VAL-009 TI-LIM-001 -->
+
 > **Lifecycle:** Evidence · **Audience:** reviewers preparing the breast-panel clinical review ·
 > **Authority:** measured pre-flight findings and disclosed panel limitations · **Update when:** the
 > champion, served breast panel or its supporting measurements change · **Generated dependencies:**
@@ -141,7 +143,7 @@ Arriving with your own list of defects is what makes the rest credible.
 
 **Do not present the liability column as a safety verdict.** 48 of 118 rows carry the flag. It is
 *enriched* for good targets, because liabilities are discovered *by* drugging something — see the
-ADRB2 case in TARGET_PRIORITIZER §10.2.
+ADRB2 case in [VALIDATION.md](../prioritizer/VALIDATION.md) §5.
 
 ---
 
@@ -162,7 +164,8 @@ ADRB2 case in TARGET_PRIORITIZER §10.2.
   pool contains **98.5%** of curated target–disease pairs, and coverage does **not** track how sparsely
   a disease is annotated (Spearman +0.081). TNBC is one of only two diseases below 50% coverage. Do not
   present this as a systemic failure — present it as the specific reason TACSTD2 is missing here.
-- **A separate and larger pool problem was found while checking this** (TARGET_PRIORITIZER §5.2.1): the
+- **A separate and larger pool problem was found while checking this**
+  ([TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md) §2.2): the
   third route in the pool filter is drug-mediated, which admits 25% of approved drug-target pairs to the
   evaluation *because of the relationship being evaluated*. Fixing it raises drug-target AUC from 0.689
   to 0.747. Not clinician-facing, but it changes numbers that are.

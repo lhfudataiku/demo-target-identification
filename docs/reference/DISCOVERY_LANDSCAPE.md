@@ -369,7 +369,8 @@ broad expression scores **+1**. Confirm against the live UI colouring before rep
 
 > **Note for our roadmap:** the four bolded rows above — DepMap essentiality, gnomAD LOEUF,
 > GTEx/Tabula Sapiens specificity, COSMIC driver status — are **exactly** the deferred
-> value-prop (b) in `TARGET_PRIORITIZER.md` §11 (efficacy × safety traffic light). Resuming it
+> value-prop (b) in [PROJECT_CONTEXT.md](../overview/PROJECT_CONTEXT.md) §4.6 (efficacy × safety
+> traffic light). Resuming it
 > puts us *on* the industry reference rather than near it. All four sources are free.
 
 ### The honest limits — and a trap worth naming
@@ -381,8 +382,9 @@ discovery-first prioritiser they must be excluded from the feature set, or used 
 evaluation labels.
 
 Our POC already solves the structurally identical problem with edge masking
-(`TARGET_PRIORITIZER.md` §6: when scoring a known gene–disease pair, that edge is removed from
-the graph and the gene dropped from the disease's seed set). **Make this a talking point** — it
+([TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md) §3.1: when scoring a known
+gene–disease pair, that edge is removed from the graph and the gene dropped from the disease's seed
+set). **Make this a talking point** — it
 is the thing that separates an honest demo from a circular one, and most demos in this space
 are circular.
 

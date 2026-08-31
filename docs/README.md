@@ -25,7 +25,9 @@ evidence and generated documents appear first; planning and historical material 
 
 | | |
 |---|---|
-| [`prioritizer/TARGET_PRIORITIZER.md`](prioritizer/TARGET_PRIORITIZER.md) | The methodology document. Data exploration §3, features §4, splitting and leakage §5, model selection §6, validation §7, results §8, flow zones §9, migration §10 |
+| [`prioritizer/TARGET_PRIORITIZER.md`](prioritizer/TARGET_PRIORITIZER.md) | Canonical Part 2 modelling method: population, leakage controls, features, training and model-selection rule |
+| [`prioritizer/VALIDATION.md`](prioritizer/VALIDATION.md) | Compact evidence map: governed claims, notebook assertions, historical comparisons, negative results and limitations |
+| [`prioritizer/CLAIM_REGISTRY.json`](prioritizer/CLAIM_REGISTRY.json) | Machine-readable governed claim-to-consumer registry; indexed as `.index/governed_claims.tsv` |
 | [`prioritizer/FEATURE_AUDIT.md`](prioritizer/FEATURE_AUDIT.md) | Per-feature recipe audit, the seed-threshold table, the Phase 1/2 rollout results, and the Phase 3 sizing |
 | [`prioritizer/PHASE3_PREREGISTRATION.md`](prioritizer/PHASE3_PREREGISTRATION.md) | Written before the Phase 3 branch exists: the intervention, pre-flight gates, seven falsifiable predictions, and the committed adopt/reject rule |
 

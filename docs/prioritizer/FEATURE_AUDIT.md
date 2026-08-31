@@ -1,20 +1,22 @@
-# Feature recipe audit — §4.1 and §4.2
+# Feature recipe audit — method §3.1 and §3.2
+
+<!-- Governed claims consumed here: TI-DATA-001 TI-MOD-001 TI-VAL-001 TI-VAL-005 TI-VAL-006 TI-VAL-007 TI-VAL-008 -->
 
 > **Lifecycle:** Evidence · **Audience:** feature engineers and reviewers planning gate changes ·
 > **Authority:** measured per-feature recipe and seed-gate audit · **Update when:** an audited recipe,
 > feature set or gate changes · **Generated dependencies:** `.index/features.tsv`,
 > `.index/recipes.tsv` and the cited live measurements · **Excludes:** model-selection rationale.
 
-Every recipe producing a feature in TARGET_PRIORITIZER §4.1 (the champion's 12) and §4.2 (computed
-and rejected), read for four things: **the module-size threshold**, **self-path exclusion**,
+Every recipe producing the original 12-feature core now embedded in TARGET_PRIORITIZER §3.1, plus
+the candidates in §3.2, read for four things: **the module-size threshold**, **self-path exclusion**,
 **leave-one-out module normalisation**, and **null semantics**. Audited 2026-08-20.
 
 ---
 
-## 1. The headline: one constant gates 7 of the 12 champion features
+## 1. The headline: one constant gates 7 of the 12-feature core
 
 `module_size >= 20` is not a `prox_closest` quirk. It appears in **ten recipes**, and gates **seven of
-the twelve champion inputs**:
+the twelve core inputs**:
 
 | Recipe | Form | Features it gates | In champion? |
 |---|---|---|:--|
@@ -36,7 +38,7 @@ the twelve champion inputs**:
 
 ### What that means for the 43 excluded diseases
 
-Those diseases have **7 of 12 champion features NULL**, leaving only the five gene-level ones — and
+Those diseases have **7 of 12 core features NULL**, leaving only the five gene-level ones — and
 §6.1 measured that `gene_ppi_degree` and `gene_n_pathways` show **0.00% variation across diseases**.
 
 > **For 43 diseases (1.23% of pool rows) the model has no disease-specific signal at all. It is
@@ -185,7 +187,7 @@ Add the graded distance (mean distance to module genes, or a kernel Σexp(−d))
 | discovery lift@50 | 7.46 | 7.09 | 9.08 | 7.43 | **9.43** | t = +1.47, **90% ties — n.s.** |
 | discovery lift@200 | 4.53 | 4.83 | **5.52** | 4.78 | 5.04 | t = +0.70, **78% ties — n.s.** |
 
-**Two significant gains, both on axes that matter: association (the headline) and tractability (§8.4's
+**Two significant gains, both on axes that matter: association (the headline) and tractability ([VALIDATION.md](VALIDATION.md) §3.2's
 "most robust positive claim", uninflated label, degree-matched null).** Discovery is a non-finding in
 both directions. Two costs: hub spread worsens slightly, and therapeutic-on-all-positives is the worst
 of the five — though route-supported is the best, which under §5.2.1 is the more meaningful of the pair.
@@ -247,7 +249,8 @@ validates the method.
 
 > **⚠ CORRECTED before use.** This section first claimed the admitted rows were *denser* in positives
 > — 2.10% against the pool's 1.89%. **That compared the gap's GGD-route-only row count against the
-> full pool's rate: two different denominators.** It is the same estimator mismatch §8.4 had to correct.
+> full pool's rate: two different denominators.** It is the same estimator mismatch
+> [VALIDATION.md](VALIDATION.md) §3.2 warns against.
 > Measured like-for-like on the GGD route, the conclusion reverses.
 
 **The admitted rows are substantially more dilute, and this is the finding that should temper the

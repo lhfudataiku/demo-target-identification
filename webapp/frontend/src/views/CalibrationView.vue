@@ -1,6 +1,7 @@
 <script setup lang="ts">
   /**
    * Act 2 — calibration. Rebuilt against DASHBOARD_MOCKUP_V3's card set.
+   * Governed claims consumed: TI-MOD-001 TI-VAL-001 TI-VAL-002 TI-VAL-003.
    *
    * Corrections from the parity review:
    *  - "Where the candidates come from" is TWO plots: a disease-eligibility

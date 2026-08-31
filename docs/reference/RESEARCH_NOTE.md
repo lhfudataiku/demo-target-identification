@@ -19,7 +19,7 @@ are landmark results corroborated from established knowledge; specific figures a
 "as reported."
 
 - **Only independently verified (3-0):** the TxGNN interpretability findings.
-- **Decision (see TARGET_PRIORITIZER §12 / this session):** validation was *deliberately not*
+- **Decision (see TARGET_PRIORITIZER §7 / this session):** literature validation was *deliberately not*
   finished — the claims driving the design are landmark or already-verified, and the real
   proof for our purpose is the prototype's held-out edge-recovery, not literature figures.
 - **Before any client/account-facing use, verify the specific claims you cite.** The raw
@@ -45,7 +45,7 @@ complementary, non-redundant views + controls + an explainable wrapper:
 
 Using all of views 1–4 (not just one) is what lets the model recover targets any single lens
 would miss — e.g. the obesity inflammatory genes (TNF/IL6/IL1B) sparse under `genetic_association`
-but recoverable via PPI/pathway topology (TARGET_PRIORITIZER §9).
+but recoverable via PPI/pathway topology (TARGET_PRIORITIZER §3).
 
 ## 2. Feature-defining references
 
@@ -106,7 +106,7 @@ but recoverable via PPI/pathway topology (TARGET_PRIORITIZER §9).
 - *Summary:* Production supervised **gradient-boosting (XGBoost)** classifier, trained on ~445
   curated gold-standard loci, integrating graph/genomics features, emitting a **calibrated
   0–1 score** explained with **per-feature SHAP** attributions.
-- *→ Our model:* The template for the entire ML formulation (TARGET_PRIORITIZER §4) — learn a
+- *→ Our model:* The template for the full modelling formulation (TARGET_PRIORITIZER §1–5) — learn a
   ranker from graph-derived features against a positive set, calibrated score, SHAP. Why the
   flagship is XGBoost+SHAP (CPU, interpretable, Dataiku-native), not a GNN.
 

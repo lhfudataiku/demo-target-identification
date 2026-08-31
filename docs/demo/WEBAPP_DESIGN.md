@@ -1,12 +1,15 @@
 # Webapp design — the technical companion to the demo narrative
 
+<!-- Governed claims consumed here: TI-DATA-001 TI-MOD-001 TI-VAL-001 TI-VAL-002 TI-VAL-003 TI-VAL-004 TI-VAL-005 TI-VAL-007 TI-VAL-008 TI-VAL-009 -->
+
 > **Lifecycle:** Canonical · **Audience:** webapp implementers and technical reviewers · **Authority:**
 > Vue/FastAPI architecture, routes, state, interaction and data contracts · **Update when:** an app
 > contract, route, interaction or backing-data contract changes · **Generated dependencies:**
-> [`FLOW_MAP.md`](FLOW_MAP.md) for live flow lineage and the notebook assertions cited in §9 ·
+> [`FLOW_MAP.md`](FLOW_MAP.md) for live flow lineage, the notebook assertions cited in §9 and
+> [`../prioritizer/CLAIM_REGISTRY.json`](../prioritizer/CLAIM_REGISTRY.json) for governed consumers ·
 > **Excludes:** hand-authored DSS-flow inventories, native-dashboard evaluation and build chronology.
-> Detailed analytical rationale remains temporarily co-located until Phase 3 reconciles validation
-> evidence with its webapp consumers; do not duplicate it elsewhere.
+> Detailed analytical rationale lives in [`../prioritizer/VALIDATION.md`](../prioritizer/VALIDATION.md);
+> do not duplicate it here beyond the contract details the app must enforce.
 
 **Read [`DEMO_NARRATIVE.md`](DEMO_NARRATIVE.md) first.** This document is derived from it and has no
 independent authority. The narrative says *what we claim and in what order*; this says *what each

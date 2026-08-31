@@ -5,6 +5,8 @@
 > contract or its named owners change · **Generated dependencies:** none · **Excludes:** volatile build
 > status, experiment chronology and implementation procedures.
 
+<!-- Governed claims consumed here: TI-DATA-001 TI-MOD-001 TI-VAL-001 TI-VAL-004 TI-VAL-007 TI-VAL-009 -->
+
 > **Start here.** This file explains *why* the work exists, *who* it serves, and *how the two
 > projects fit together*. It carries no implementation detail — each project has its own
 > technical document.
@@ -13,7 +15,8 @@
 > |---|---|---|
 > | **this file** | purpose, market evidence, personas, how the pieces fit | — |
 > | **[GRAPH_BUILDING.md](../graph/GRAPH_BUILDING.md)** | input sources, pipeline, graph schema, graph statistics, the graph webapp | `DEMO_KG_LS` |
-> | **[TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md)** | data exploration, feature & model selection, validation, results | `DEMO_TARGET_IDENTIFICATION` |
+> | **[TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md)** | candidate population, features, split, training and model-selection method | `DEMO_TARGET_IDENTIFICATION` |
+> | **[VALIDATION.md](../prioritizer/VALIDATION.md)** | governed validation evidence, negative results and limitations | `DEMO_TARGET_IDENTIFICATION` |
 > | **[DEMO_NARRATIVE.md](../demo/DEMO_NARRATIVE.md)** | **what we show scientists and in what order** — the objection ladder, the punch line, what not to show | both |
 > | **[DISCOVERY_LANDSCAPE.md](../reference/DISCOVERY_LANDSCAPE.md)** | the wider drug-discovery chain (stages 1–6) and where a platform belongs | — |
 > | **[RESEARCH_NOTE.md](../reference/RESEARCH_NOTE.md)** | per-reference evidence base for the Part 2 method choices | — |
@@ -25,7 +28,7 @@
 >
 > **Read [DEMO_NARRATIVE.md](../demo/DEMO_NARRATIVE.md) before designing the dashboard or pruning the flow.**
 > Both should be derived from the story. We tried the reverse and it produced a plan to delete our
-> strongest evidence — see TARGET_PRIORITIZER §9.1.
+> strongest evidence — see [VALIDATION.md](../prioritizer/VALIDATION.md) §3–6.
 
 ## 1. Purpose
 
@@ -123,10 +126,11 @@ targets, (b) early prediction of off-target liability, therefore (c) reduced ear
 | 1 | Computational biologist, early R&D (metabolic diseases) | Understand obesity-related biological networks to identify key inflammatory and metabolic targets (IL6, TNF, IL1B; LEP/LEPR and insulin signalling → GLP-1 agonists) as intervention points. |
 | 2 | Oncology data scientist, cancer center | Investigate signalling hubs in breast-cancer progression to validate and extend targets across tumour biology and immune response (PI3K/AKT/mTOR — PIK3CA, AKT1, MTOR, PTEN; hormone signalling — ESR1). |
 
-Persona diseases drive both graph exploration and model validation (TARGET_PRIORITIZER §9).
+Persona diseases drive both graph exploration and model validation
+([VALIDATION.md](../prioritizer/VALIDATION.md) §6.3).
 
 **Demo diseases are now chosen by measurement** — see [DEMO_NARRATIVE.md](../demo/DEMO_NARRATIVE.md) §6 and
-TARGET_PRIORITIZER §8.7, §8.10. The panel is **non-small cell lung carcinoma** (the MAPK3 discovery
+[VALIDATION.md](../prioritizer/VALIDATION.md) §6.3. The panel is **non-small cell lung carcinoma** (the MAPK3 discovery
 story), **HER2-positive breast carcinoma** (passes clinical sanity outright: ERBB2 at rank 13, AUC
 0.93 on 599 known targets), **diabetes mellitus** and **obesity disorder**.
 
@@ -180,7 +184,8 @@ SHAP attributions and on-graph evidence paths.
 ladder, two independent validation metrics cross-checking to 1.9×10⁻⁴, and a documented negative
 result.
 
-→ **[TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md)**
+→ Method: **[TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md)** · Evidence:
+**[VALIDATION.md](../prioritizer/VALIDATION.md)**
 
 ### 4.3 The interface between them
 
@@ -209,7 +214,7 @@ sync is not a supported DSS pattern.
 | `raw_go_hierarchy` | 1 | functional-annotation hierarchy → gene localization |
 | `raw_ot_druggability` | 1 | Open Targets tractability buckets → druggability class annotation |
 | `raw_ot_safety` | 1 | Open Targets safety liabilities → display-only annotation |
-| `raw_ot_known_drug` | 1 | the curated `known_drug` evaluation label (TARGET_PRIORITIZER §8.1) |
+| `raw_ot_known_drug` | 1 | the curated `known_drug` evaluation label ([VALIDATION.md](../prioritizer/VALIDATION.md) §3.2) |
 
 **Everything else the modelling project needs, it owns.** One source recipe stays on the modelling
 side deliberately — the split-control disease vocabulary — because it contributes no nodes or edges to
@@ -226,7 +231,8 @@ against, and it should not be modified or rebuilt.
 
 **The split is done.** The modelling flow was rebuilt end to end against the shared graph on
 2026-08-17 and **the reconstruction is confirmed**: every metric landed within ±0.01 of the frozen
-reference, against a ±0.02 tolerance set in advance (TARGET_PRIORITIZER §10.1).
+reference, against a ±0.02 tolerance set in advance (historical comparison in
+[VALIDATION.md](../prioritizer/VALIDATION.md) §4.1).
 
 | | Reference | Rebuilt |
 |---|--:|--:|
@@ -246,21 +252,22 @@ average because nothing averages out.
   tractability, target class and known-liability annotations, so a scientist filters instead of
   receiving a pre-cut list. But the two freely-available safety signals were measured and **rejected
   as filters** — genetic constraint runs *with* druggability and curated liabilities mark drug
-  precedent, not risk (TARGET_PRIORITIZER §10.2). A real safety axis needs a direct measurement
+  precedent, not risk ([VALIDATION.md](../prioritizer/VALIDATION.md) §5). A real safety axis needs a direct measurement
   (essentiality, tissue-expression breadth), which means a new source. That plus the dashboard is the
   largest remaining increment of demo value.
 - **Re-pick the persona panel on evidence.** The flagship metabolic disease is the weakest case on
   both metrics while two non-persona cancers are the strongest therapeutic showcases
-  (TARGET_PRIORITIZER §8.1).
+  ([VALIDATION.md](../prioritizer/VALIDATION.md) §6.3).
 - **Minor:** regenerate the demo query literals, rebuild the drug-label chain, and materialise the
-  hub-bias meter as a recipe (TARGET_PRIORITIZER §10.2).
+  hub-bias meter as a recipe ([VALIDATION.md](../prioritizer/VALIDATION.md) §3.3).
 
 ---
 
 ## Appendix — decision log
 
 Project-level decisions only. Pipeline decisions are in [GRAPH_BUILDING.md](../graph/GRAPH_BUILDING.md);
-modelling decisions in [TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md).
+modelling decisions in [TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md), with measured
+evidence in [VALIDATION.md](../prioritizer/VALIDATION.md).
 
 | Date | Decision |
 |---|---|
@@ -275,7 +282,7 @@ modelling decisions in [TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER
 | 2026-08-17 | **The cross-project interface is an explicit object contract** (§4.3), not "whatever the modelling project happens to read". Everything else in the graph project is free to change. |
 | 2026-08-17 | **Documentation restructured to mirror the project split** — one technical document per project, a shared index, and platform/tooling findings extracted into a generic cheatsheet so they stay useful outside this POC. |
 | 2026-08-17 | **Migration accepted.** The modelling flow rebuilt on the shared graph reproduces the frozen reference within ±0.01 on every metric (§4.5). The two-project split is therefore complete and validated end to end, and the reference can be retired. |
-| 2026-08-17 | **Discovery adopted as a third reported axis, and it is the strongest result in the POC** (TARGET_PRIORITIZER §8.3). Ranking accuracy and therapeutic agreement say nothing about whether the model surfaces *unannotated* targets — the deliverable's actual claim. Measured against the drug layer, the novel candidates are **4–13× enriched above chance** for real drug targets, recovering 206 approved and 1,802 trial-stage targets in the top-200 novel. Report against **both** ground truths (approved and in-trial); the choice reverses per-disease conclusions. |
-| 2026-08-17 | **Both stage-2 design questions settled by measurement, not training** (TARGET_PRIORITIZER §10.2). Druggability as a model input is **rejected** — under the association label it is *inverted*, not merely neutral, so it would reinforce the ligand-vs-receptor failure; a class-grouped presentation recovers the benefit at no risk. Safety as a filter is **rejected on a refuted prediction** — the free signals point the same way as efficacy, so filtering on them would remove the best candidates. Both answers cost three recipes rather than three training runs. |
-| 2026-08-17 | **Recorded a general hazard for any identifier migration:** three separate rules in the modelling layer depended on integer *ordering* rather than on identity — a split modulo, a family tie-break, and a parent-selection minimum. Remapping the literals is not sufficient; every rule that ranks, mods or minimises on an identifier has to be audited (TARGET_PRIORITIZER §10.2). |
+| 2026-08-17 | **Discovery adopted as a third reported axis, and it is the strongest result in the POC** ([VALIDATION.md](../prioritizer/VALIDATION.md) §3.2). Ranking accuracy and therapeutic agreement say nothing about whether the model surfaces *unannotated* targets — the deliverable's actual claim. Measured against the drug layer, the novel candidates are **4–13× enriched above chance** for real drug targets, recovering 206 approved and 1,802 trial-stage targets in the top-200 novel. Report against **both** ground truths (approved and in-trial); the choice reverses per-disease conclusions. |
+| 2026-08-17 | **Both stage-2 design questions settled by measurement, not training** ([VALIDATION.md](../prioritizer/VALIDATION.md) §5). Druggability as a model input is **rejected** — under the association label it is *inverted*, not merely neutral, so it would reinforce the ligand-vs-receptor failure; a class-grouped presentation recovers the benefit at no risk. Safety as a filter is **rejected on a refuted prediction** — the free signals point the same way as efficacy, so filtering on them would remove the best candidates. Both answers cost three recipes rather than three training runs. |
+| 2026-08-17 | **Recorded a general hazard for any identifier migration:** three separate rules in the modelling layer depended on integer *ordering* rather than on identity — a split modulo, a family tie-break, and a parent-selection minimum. Remapping the literals is not sufficient; every rule that ranks, mods or minimises on an identifier has to be audited ([TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md) §2.3). |
 | 2026-08-18 | **The contract grew to 13 objects and changed shape** (§4.3). The three Open Targets extractions were relocated into `DEMO_KG_LS` — source ingestion belongs to the graph project even when only the modelling project consumes it. More importantly, the 12 dataset references are now consumed via **local synced copies**: each foreign ref feeds exactly one Sync recipe and nothing else. The import surface is auditable in one zone, and a rename upstream breaks 1 recipe instead of 26. **The Kuzu folder stays a direct cross-project read** — folder sync is not a supported DSS pattern. |

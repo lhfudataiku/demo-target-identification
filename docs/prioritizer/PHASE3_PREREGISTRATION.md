@@ -1,5 +1,7 @@
 # Phase 3 pre-registration — lowering the pool-route seed gate 20 → 5
 
+<!-- Governed claims consumed here: TI-DATA-001 TI-MOD-001 TI-VAL-001 TI-VAL-005 -->
+
 > **Lifecycle:** Decision · **Audience:** reviewers deciding whether to run or accept the registered
 > intervention · **Authority:** the pre-committed gates, predictions and adopt/reject rule · **Update
 > when:** never after execution begins; corrections require a dated successor · **Generated

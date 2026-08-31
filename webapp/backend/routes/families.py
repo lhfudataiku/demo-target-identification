@@ -1,5 +1,8 @@
 """Act 3 — does it hold across a therapeutic area?
 
+Governed claim consumed: TI-VAL-009. Thin-disease AUC and subtype-overlap interpretation remain
+governed even though this route reads the current panel datasets live.
+
   GET /api/families              the families the demo carries
   GET /api/families/{family_id}  one family: per-subtype scores, overlap, programme
 

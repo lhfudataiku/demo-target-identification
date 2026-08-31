@@ -1,5 +1,7 @@
 # Panel selection — the supporting analysis
 
+<!-- Governed claims consumed here: TI-MOD-001 TI-VAL-001 -->
+
 > **Lifecycle:** Evidence · **Audience:** demo owners and reviewers selecting therapeutic areas and
 > diseases · **Authority:** asserted panel-selection measurements and their interpretation · **Update
 > when:** the champion, graph, seed gate, persona configuration or served panel changes · **Generated
