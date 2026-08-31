@@ -32,3 +32,46 @@ python3 tools/check_harness.py
 `check_harness.py` uses an installed tokenizer when one is available. This checkout has no shared
 Claude/Codex tokenizer, so its fallback is explicitly labelled as a conservative, reproducible
 byte-based proxy rather than an exact harness-token measurement.
+
+## Reaching the skill from any harness
+
+Claude Code discovers `.claude/skills/target-id/`. A harness without a skill mechanism cannot, so the
+root instructions name `harness/skills/target-id/SKILL.md` as the equivalent read and
+`check_harness.py` fails if that path stops being named. Without it the routing rule "load the
+target-ID skill first" would dead-end on those harnesses, and the skill is where the load-bearing
+traps live — the retrieval and `dku` failures that return plausible values rather than errors. Keep
+the traps in the skill and the pointer in the instructions; do not copy the traps into the entry
+files, which are budgeted for cold start.
+
+## Enforcement
+
+`.github/workflows/checks.yml` runs the full gate on every push to `main` and every pull request, so
+generated artifacts cannot drift into `main` on the strength of someone remembering:
+
+```bash
+./tools/check_indexes.sh
+git ls-files 'tools/tests/test_*.py' | sed 's|/|.|g; s|\.py$||' | xargs python3 -m unittest
+```
+
+Both are offline: the checks read the committed DSS snapshot, and no tool needs a third-party
+package. The test line is enumerated from git because `tools/` carries no package marker, so
+`unittest discover` cannot import the start directory; naming the modules by hand would let a new
+test file be skipped in silence. Do not name the marker file here: the code index matches references
+by basename, so writing it out invents references from four unrelated webapp packages. Optionally
+run the same gate before each commit:
+
+```bash
+ln -s ../../tools/check_indexes.sh .git/hooks/pre-commit
+```
+
+## Permissions
+
+`.claude/settings.json` is tracked and shared: it allowlists the read-only retrieval and check
+commands this harness runs constantly, so a new contributor does not re-approve them one by one.
+`.claude/settings.local.json` is the per-developer override and is now ignored by this repository's
+own `.gitignore`.
+
+Two exclusions are deliberate. Commit and push stay absent from the allowlist, because the boundary
+is approval per change rather than a blanket grant, and `dku` is allowlisted only for read-only
+verbs, never as a prefix. Codex has no tracked per-repository equivalent to add here; its approval
+settings are user-level, so a Codex contributor configures them once locally.

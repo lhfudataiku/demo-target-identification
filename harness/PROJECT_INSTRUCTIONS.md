@@ -9,13 +9,18 @@ object contract matters; use `docs/README.md` to route a documentation task.
 Classify the request, then load only its authority:
 
 - Facts about models, metrics, recipes, features, seed gates, past decisions, or documented numbers:
-  invoke the `target-id` skill first and query `.index/`; do not load large project documents by
+  load the target-ID skill first, then query `.index/`; do not load large project documents by
   default. Use bounded searches, not whole TSV files.
 - Webapp work: follow the nested `webapp/AGENTS.md` or `webapp/CLAUDE.md` overlay and its task route.
 - DSS build, deployment, or configuration work: inspect live state with `dku` before relying on the
   repository; load the relevant task procedure before acting.
 - Documentation changes: preserve each document's stated authority and update trigger. Regenerate
   indexes after an approved relevant change; use `--refresh` only when a DSS recipe changed in the UI.
+
+Load the target-ID skill by invoking the `target-id` skill when your harness discovers skills, and
+otherwise by reading `harness/skills/target-id/SKILL.md`, which is the same file. Do not skip it
+because a task looks small: it carries the retrieval and DSS traps whose failures return plausible
+values rather than errors, including why replacing a metric across a document corrupts history.
 
 ## Non-negotiable boundaries
 

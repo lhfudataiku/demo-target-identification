@@ -410,6 +410,10 @@ def main():
     code_files = [f for f in (sh(["git", "ls-files"]).split("\n")) if f.strip()
                   and (f.endswith(".py") or f.endswith(".json") or f.endswith(".cypher")
                        or f.endswith(".sh"))
+                  # Harness configuration is not project code. `.claude/`/`.codex/` are already
+                  # excluded from the claim manifest for the same reason; without this a tracked
+                  # .claude/settings.json would enter the code index and stale it on every edit.
+                  and not f.startswith(".claude/") and not f.startswith(".codex/")
                   and not f.startswith(".index/") and not f.startswith("__pycache__")]
     recipe_names = {n for n in snap if not n.startswith("_")}
     entry_points = set(classes.get("entry_points") or [])

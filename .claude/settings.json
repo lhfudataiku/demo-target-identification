@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./tools/check_indexes.sh)",
+      "Bash(python3 tools/build_index.py --check)",
+      "Bash(python3 tools/build_recipe_index.py --check)",
+      "Bash(python3 tools/check_claim_registry.py --check)",
+      "Bash(python3 tools/check_harness.py)",
+      "Bash(python3 tools/check_links.py)",
+      "Bash(python3 tools/check_freshness.py:*)",
+      "Bash(python3 tools/sync_harness.py:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(sed -n:*)",
+      "Bash(grep:*)",
+      "Bash(rg:*)",
+      "Bash(awk:*)",
+      "Bash(cut:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(column:*)",
+      "Bash(wc:*)",
+      "Bash(ls:*)",
+      "Bash(git status:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(dku --version)",
+      "Bash(dku job list:*)",
+      "Bash(dku flow zones:*)",
+      "Bash(dku ml settings:*)",
+      "Bash(dku recipe get-settings:*)"
+    ]
+  }
+}

@@ -87,7 +87,7 @@ tools/capture_build_governance.py	tool	LIVE	1	docs/operations/BUILD_GOVERNANCE.m
 tools/check_claim_registry.py	tool	LIVE	3	docs/prioritizer/VALIDATION.md,tools/check_indexes.sh,tools/index_manifest.json
 tools/check_freshness.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
 tools/check_harness.py	tool	LIVE	2	harness/README.md,tools/check_indexes.sh
-tools/check_indexes.sh	tool	LIVE	11	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md
+tools/check_indexes.sh	tool	LIVE	12	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md
 tools/check_links.py	tool	LIVE	6	archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/operations/PHASE_0_BASELINE_2026-08-28.md
 tools/index_manifest.json	tool	LIVE	3	docs/README.md,docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md,tools/build_index.py
 tools/model_registry.json	tool	LIVE	10	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md

@@ -15,6 +15,10 @@ ENTRIES = {
     "Claude": (ROOT / "CLAUDE.md", ROOT / "webapp/CLAUDE.md"),
 }
 BUDGET = 3000
+# Claude Code discovers the skill package; a harness without a skill mechanism can only reach it by
+# path. The routing rule "load the target-ID skill first" therefore dead-ends unless the entry files
+# name this file, and the traps it carries are load-bearing rather than convenience.
+SKILL_PATH = "harness/skills/target-id/SKILL.md"
 
 
 def words(text: str) -> int:
@@ -49,6 +53,9 @@ def main() -> int:
         forbidden = ("**read `readme.md` first**", "read `webapp/readme.md` first")
         if any(phrase in text.lower() for phrase in forbidden):
             print(f"{harness}: unconditional README loading found", file=sys.stderr)
+            failed = True
+        if SKILL_PATH not in text:
+            print(f"{harness}: skill unreachable without a skill mechanism -- name {SKILL_PATH}", file=sys.stderr)
             failed = True
         tokens, method = token_measure(text)
         print(
