@@ -24,7 +24,8 @@ Classify the request, then load only its authority:
 - Never commit or push without the user's explicit approval after a change summary.
 - `KNOWLEDGE_GRAPH_PRIMEKG` is frozen: do not modify or rebuild it. Never recompute `compute_kg` or
   the graph unless explicitly asked.
-- `DECISIONS.md` is append-only; corrections are new entries. Never commit `data/`.
+- Add to `docs/decisions/DECISION_REGISTER.md` only when the durable-decision admission rule there is
+  satisfied. The retired log under `archive/decisions/` is immutable. Never commit `data/`.
 - New DSS datasets use `dataiku-managed-storage` / Parquet. Use visual Join recipes rather than
   pandas `.merge()` for joins.
 - Do not run a DSS build, deployment, or live scenario as a side effect of inspection or code work.

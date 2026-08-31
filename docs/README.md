@@ -51,6 +51,13 @@ evidence and generated documents appear first; planning and historical material 
 | [`reference/DISCOVERY_LANDSCAPE.md`](reference/DISCOVERY_LANDSCAPE.md) | The wider discovery chain (stages 1–6). A **separate framework** from the target-identification work above |
 | [`appendix/`](appendix/) | Frozen snapshot CSVs backing the ablation-ladder sections. **`m3-f12`-era** — not the current champion |
 
+## Decisions
+
+| | |
+|---|---|
+| [`decisions/DECISION_REGISTER.md`](decisions/DECISION_REGISTER.md) | Current durable choices, stable IDs, rationale, evidence and consequences; query `.index/decisions.tsv` first |
+| [`decisions/adrs/`](decisions/adrs/) | Short rationale records only for decisions too consequential for one register entry |
+
 ## Planning
 
 | | |
@@ -62,11 +69,13 @@ evidence and generated documents appear first; planning and historical material 
 | | |
 |---|---|
 | [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, mockup iterations 1–2 and the retired hand-authored flow view. Do not load by default; use only for an explicit history investigation |
+| [`../archive/decisions/`](../archive/decisions/) | Immutable retired decision chronology and its five-way triage; query `.index/decisions_history.tsv` before opening it |
 
 ## Not in this directory
 
-- **`../DECISIONS.md`** — append-only decision log, including refuted hypotheses and corrections.
-  Query `../.index/decisions.tsv` for a jump table rather than reading it.
+- **`../.index/decisions.tsv`** — default bounded query over current durable decisions.
+- **`../.index/decisions_history.tsv`** — explicit historical query over experiments, incidents,
+  operations, reusable traps and promoted durable entries.
 - **`../CLAUDE.md`** — orientation, the three DSS projects, and the rules.
 - **`../notebooks/`** — the assertion notebooks. They are the source of truth for every documented
   number here; a figure with no assertion will drift.

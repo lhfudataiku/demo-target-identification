@@ -18,7 +18,8 @@ deliberate historical record.
 
 Outputs (committed, so `ASSERTED -> ORPHAN` shows up in review):
     .index/claims.tsv     every numeric claim in the docs, with its guard
-    .index/decisions.tsv  a jump table for DECISIONS.md
+    .index/decisions.tsv  current durable decisions, with stable IDs
+    .index/decisions_history.tsv  classified jump table for the retired log
     .index/SUMMARY.md     counts and the orphan list
 
 Usage:  python3 tools/build_index.py [--check]
@@ -26,6 +27,8 @@ Usage:  python3 tools/build_index.py [--check]
 """
 
 import ast
+import hashlib
+import json
 import os
 import re
 import subprocess
@@ -64,7 +67,6 @@ MODELDEP = re.compile(
 # is correct behaviour, not risk. Excluding them is the difference between a 583-row list dominated
 # by the append-only decision log and a list of live claims someone might quote.
 RECORD_FILES = {
-    "DECISIONS.md",                 # append-only log; corrections are new entries, never edits
     "docs/appendix/README.md",      # describes m3-era frozen snapshots
 }
 # Harness guidance is operational policy, not project evidence. Indexing it makes numerical examples
@@ -262,6 +264,7 @@ def build_claims(assertions):
     markdown_paths = [
         path for path in tracked("*.md")
         if path not in CLAIM_EXCLUDED_FILES and not path.startswith(CLAIM_EXCLUDED_PREFIXES)
+        and os.path.isfile(os.path.join(ROOT, path))
     ]
     for path in sorted(markdown_paths):
         sec = ""
@@ -288,11 +291,77 @@ def build_claims(assertions):
     return rows
 
 
-# ---------------------------------------------------------------- decisions jump table
-def build_decisions():
-    path = os.path.join(ROOT, "DECISIONS.md")
+# ---------------------------------------------------------------- decision indexes
+DECISION_HEADING = re.compile(r"^##\s+(DEC-[A-Z0-9]+-\d{3})\s+—\s+(.+?)\s*$")
+DECISION_FIELD = re.compile(r"^-\s+\*\*(.+?):\*\*\s*(.*?)\s*$")
+REQUIRED_DECISION_FIELDS = {
+    "Date", "Domain", "Status", "Decision", "Rationale", "Evidence", "Consequences",
+    "Supersedes", "Superseded by", "Historical sources",
+}
+
+
+def build_current_decisions():
+    path = os.path.join(ROOT, "docs/decisions/DECISION_REGISTER.md")
     if not os.path.exists(path):
-        return []
+        raise ValueError("missing current decision register: docs/decisions/DECISION_REGISTER.md")
+    records = []
+    current = None
+    for i, raw in enumerate(open(path), 1):
+        heading = DECISION_HEADING.match(raw.rstrip("\n"))
+        if heading:
+            if current:
+                records.append(current)
+            current = {"id": heading.group(1), "topic": heading.group(2), "line": i, "fields": {}}
+            continue
+        field = DECISION_FIELD.match(raw.rstrip("\n"))
+        if current and field:
+            current["fields"][field.group(1)] = field.group(2)
+    if current:
+        records.append(current)
+    if not records:
+        raise ValueError("current decision register contains no records")
+
+    errors, seen = [], set()
+    rows = []
+    for rec in records:
+        rid, fields = rec["id"], rec["fields"]
+        if rid in seen:
+            errors.append("duplicate current decision ID %s" % rid)
+        seen.add(rid)
+        missing = sorted(REQUIRED_DECISION_FIELDS - set(fields))
+        extra = sorted(set(fields) - REQUIRED_DECISION_FIELDS)
+        if missing:
+            errors.append("%s missing fields: %s" % (rid, ", ".join(missing)))
+        if extra:
+            errors.append("%s unexpected fields: %s" % (rid, ", ".join(extra)))
+        blank = sorted(name for name in REQUIRED_DECISION_FIELDS - {"Historical sources"}
+                       if not fields.get(name, "").strip())
+        if blank:
+            errors.append("%s has blank fields: %s" % (rid, ", ".join(blank)))
+        if fields.get("Historical sources", "").strip() in {"", "lines"}:
+            errors.append("%s must declare historical line numbers or an em dash" % rid)
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", fields.get("Date", "")):
+            errors.append("%s has invalid date %r" % (rid, fields.get("Date")))
+        if fields.get("Status") not in {"accepted", "approved-not-executed", "rejected", "superseded"}:
+            errors.append("%s has invalid status %r" % (rid, fields.get("Status")))
+        sources = []
+        for token in re.findall(r"\d+", fields.get("Historical sources", "")):
+            sources.append(int(token))
+        rows.append({
+            "id": rid, "date": fields.get("Date", ""), "domain": fields.get("Domain", ""),
+            "status": fields.get("Status", ""), "line": rec["line"], "topic": rec["topic"],
+            "decision": fields.get("Decision", ""), "evidence": fields.get("Evidence", ""),
+            "historical_sources": sources,
+        })
+    if errors:
+        raise ValueError("current decision register invalid:\n- " + "\n- ".join(errors))
+    return rows
+
+
+def build_historical_decisions():
+    path = os.path.join(ROOT, "archive/decisions/DECISIONS_2026-08-31.md")
+    if not os.path.exists(path):
+        raise ValueError("missing archived decision log")
     rows = []
     for i, raw in enumerate(open(path), 1):
         m = re.match(r"^\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(.*?)\s*\|\s*$", raw)
@@ -307,6 +376,64 @@ def build_decisions():
     return rows
 
 
+def apply_decision_triage(history, current):
+    path = os.path.join(ROOT, "archive/decisions/TRIAGE.json")
+    triage = json.load(open(path))
+    source = triage.get("source", "")
+    source_path = os.path.join(ROOT, source)
+    if not os.path.isfile(source_path):
+        raise ValueError("triage source does not exist: %s" % source)
+    actual_hash = hashlib.sha256(open(source_path, "rb").read()).hexdigest()
+    if actual_hash != triage.get("source_sha256"):
+        raise ValueError("archived decision log hash changed: %s" % actual_hash)
+
+    allowed = {"durable_decision", "reusable_trap", "experiment_evidence", "incident_history", "operation"}
+    categories = triage.get("categories", {})
+    if set(categories) != allowed:
+        raise ValueError("triage categories must be exactly: %s" % ", ".join(sorted(allowed)))
+    routes = triage.get("routes", {})
+    if set(routes) != allowed or any(not routes[key].strip() for key in allowed):
+        raise ValueError("triage must declare one non-empty route per category")
+    assigned = {}
+    for category, lines in categories.items():
+        for line in lines:
+            if line in assigned:
+                raise ValueError("historical line %d classified twice" % line)
+            assigned[line] = category
+    history_lines = {row["line"] for row in history}
+    if set(assigned) != history_lines:
+        missing = sorted(history_lines - set(assigned))
+        extra = sorted(set(assigned) - history_lines)
+        raise ValueError("triage coverage mismatch; missing=%s extra=%s" % (missing, extra))
+
+    current_ids = {row["id"] for row in current}
+    promotions = {int(line): ids for line, ids in triage.get("promotions", {}).items()}
+    durable = set(categories["durable_decision"])
+    if set(promotions) != durable:
+        raise ValueError("every durable historical entry must have exactly one promotion mapping")
+    for line, ids in promotions.items():
+        if not ids or len(ids) != len(set(ids)):
+            raise ValueError("historical line %d has an empty or duplicate promotion" % line)
+        unknown = sorted(set(ids) - current_ids)
+        if unknown:
+            raise ValueError("historical line %d promotes unknown IDs: %s" % (line, unknown))
+
+    reverse = defaultdict(set)
+    for line, ids in promotions.items():
+        for rid in ids:
+            reverse[rid].add(line)
+    for row in current:
+        declared = set(row.pop("historical_sources"))
+        if declared != reverse.get(row["id"], set()):
+            raise ValueError("%s historical sources disagree with TRIAGE.json" % row["id"])
+
+    for row in history:
+        row["category"] = assigned[row["line"]]
+        row["promoted_to"] = ",".join(promotions.get(row["line"], [])) or "-"
+        row["route"] = routes[row["category"]]
+    return history
+
+
 # ---------------------------------------------------------------- output
 def tsv(rows, cols):
     out = ["\t".join(cols)]
@@ -315,7 +442,7 @@ def tsv(rows, cols):
     return "\n".join(out) + "\n"
 
 
-def render(claims, decisions):
+def render(claims, decisions, decision_history):
     files = {}
     for r in claims:
         d = files.setdefault(r["file"], defaultdict(int))
@@ -335,7 +462,7 @@ def render(claims, decisions):
          "wording suggests a historical record; it is a hint, never a verdict.", "",
          "The risk surface is narrowed three ways: **model-derived** only (a frozen graph statistic",
          "cannot drift, since `compute_kg` is never recomputed), **records-by-design excluded**",
-         "(`DECISIONS.md` and friends state what was true at a date), and lines whose wording already",
+         "(archived records state what was true at a date), and lines whose wording already",
          "flags them as historical dropped.",
          "", "## Claims by file", "",
          "| file | asserted | value-only | orphan | total |", "|---|--:|--:|--:|--:|"]
@@ -362,10 +489,17 @@ def render(claims, decisions):
         L.append("")
         L.append("*%d more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*"
                  % (len(orphans) - 60))
-    L += ["", "## DECISIONS.md jump table", "",
-          "%d entries, %d chars. Query `.index/decisions.tsv` rather than reading the file — it is"
-          % (len(decisions), sum(d["chars"] for d in decisions)),
-          "the densest file in the repo (~146 tokens per line).", ""]
+    triage_counts = defaultdict(int)
+    for row in decision_history:
+        triage_counts[row["category"]] += 1
+    L += ["", "## Decision indexes", "",
+          "**%d current durable decisions.** Query `.index/decisions.tsv` by stable ID, domain or"
+          % len(decisions),
+          "topic; open `docs/decisions/DECISION_REGISTER.md` only for the rationale and consequences.",
+          "", "The retired log remains recoverable as **%d classified historical entries** in"
+          % len(decision_history),
+          "`.index/decisions_history.tsv`: %s."
+          % ", ".join("%s=%d" % (key, triage_counts[key]) for key in sorted(triage_counts)), ""]
     return "\n".join(L) + "\n"
 
 
@@ -373,7 +507,8 @@ def main():
     check = "--check" in sys.argv
     assertions = parse_assertions()
     claims = build_claims(assertions)
-    decisions = build_decisions()
+    decisions = build_current_decisions()
+    decision_history = apply_decision_triage(build_historical_decisions(), decisions)
 
     files = {
         "assertions.tsv": tsv(
@@ -382,8 +517,11 @@ def main():
             ["notebook", "section", "check", "expected"]),
         "claims.tsv": tsv(claims, ["file", "line", "section", "value", "status",
                                    "guarded_by", "model_dep", "hint", "context"]),
-        "decisions.tsv": tsv(decisions, ["date", "line", "chars", "topic"]),
-        "SUMMARY.md": render(claims, decisions),
+        "decisions.tsv": tsv(decisions, ["id", "date", "domain", "status", "line", "topic", "decision", "evidence"]),
+        "decisions_history.tsv": tsv(
+            decision_history,
+            ["date", "line", "chars", "category", "promoted_to", "route", "topic"]),
+        "SUMMARY.md": render(claims, decisions, decision_history),
     }
 
     if check:
@@ -393,17 +531,17 @@ def main():
         if stale:
             print("STALE index: %s — run `python3 tools/build_index.py`" % ", ".join(stale))
             return 1
-        print("index up to date (%d claims, %d assertions, %d decisions)"
-              % (len(claims), len(assertions), len(decisions)))
+        print("index up to date (%d claims, %d assertions, %d current decisions, %d historical)"
+              % (len(claims), len(assertions), len(decisions), len(decision_history)))
         return 0
 
     os.makedirs(INDEX, exist_ok=True)
     for n, body in files.items():
         open(os.path.join(INDEX, n), "w").write(body)
     orph = sum(1 for r in claims if r["status"] == "ORPHAN")
-    print("wrote .index/  claims=%d (asserted=%d orphan=%d)  assertions=%d  decisions=%d"
+    print("wrote .index/  claims=%d (asserted=%d orphan=%d)  assertions=%d  decisions=%d history=%d"
           % (len(claims), sum(1 for r in claims if r["status"] == "ASSERTED"),
-             orph, len(assertions), len(decisions)))
+             orph, len(assertions), len(decisions), len(decision_history)))
     return 0
 
 

@@ -1,159 +1,28 @@
-date	line	chars	topic
-2026-07-08	16	188	Flagship = explainable target prioritizer
-2026-07-08	17	167	Feature engineering pushed into graph-plugin recipes over the materialized graph rather than a monolithic graph library. *(Substantially reversed 2026
-2026-07-08	18	226	Degree-corrected proximity dropped
-2026-07-28	19	268	Leaks 1 & 2 diagnosed
-2026-08-05	20	214	Feature candidates drafted
-2026-08-08	21	331	Leak 3 found: ontology hierarchy
-2026-08-08	22	405	A candidate filter can leak even when the feature is rejected
-2026-08-09	23	128	Report per-disease AUC, never pooled
-2026-08-09	24	181	Granularity: split by family, report by disease
-2026-08-09	25	322	Case study accepted as a known limitation, not a bug
-2026-08-09	26	206	Feature audit
-2026-08-10	27	264	Ablation ladder complete
-2026-08-10	28	271	Metapaths implemented as matrix code, not graph queries
-2026-08-10	29	186	Feature-handling standard made mandatory
-2026-08-10	30	221	Priorities inverted by results
-2026-08-11	31	236	Druggability annotation added
-2026-08-11	32	235	Candidate list extended to top-50
-2026-08-11	33	328	The candidate-pool restriction NOT expanded to the functional metapaths
-2026-08-13	34	362	Flow restructured into zones by function
-2026-08-13	35	335	Drug-validated targets adopted as a mandatory second metric
-2026-08-13	36	207	`prox_closest` dropped on measurement
-2026-08-14	37	364	Training on the drug label tested and rejected — a documented negative result
-2026-08-14	38	532	The drug-target benchmark is itself a gene-popularity shortcut
-2026-08-17	39	356	Migrated into a dedicated project
-2026-08-17	40	217	The two source recipes that feed no graph edge stay on this side
-2026-08-17	41	715	All 14 hardcoded node indices remapped
-2026-08-17	42	389	Retrain tolerance widened to ±0.02
-2026-08-17	43	577	Rebuilt end to end on the shared graph — reconstruction CONFIRMED
-2026-08-17	44	567	Three rules were found to depend on integer ordering, not one
-2026-08-17	45	517	Subtype-granularity diagnostic repointed from the split key to the disease family
-2026-08-17	46	354	Per-family tables reclassified as a view of the validation sample, not a property of the graph
-2026-08-17	47	472	Druggability / target class REJECTED as a model input
-2026-08-17	48	377	Shipped the presentational fix instead: top-N within druggability class
-2026-08-17	49	701	Safety/toxicity: the lift gate REFUTED the stated prediction and blocked the filter
-2026-08-17	50	379	A real safety axis requires a direct measurement
-2026-08-17	51	424	Deliverable changed from pre-cut to filterable
-2026-08-17	52	645	Filter validated per persona
-2026-08-17	53	532	Clearest single piece of evidence for dropping clause 4:
-2026-08-17	54	354	Filtering improves the ranking's usefulness but cannot fix its head
-2026-08-17	55	552	DISCOVERY adopted as a third reported axis
-2026-08-17	56	522	Both ground truths reported, never one
-2026-08-17	57	576	CORRECTION — the persona criterion was inverted, and it changed a recommendation
-2026-08-17	58	430	MAPK3 verified as the worked example of the deliverable working
-2026-08-17	59	500	The drug ground truth is an INFERRED pair, and it needed a sensitivity analysis
-2026-08-17	60	513	First reading — WRONG, and withdrawn the same day
-2026-08-18	61	738	Second reading — settled, using a curated label
-2026-08-18	62	875	Validation overhaul COMPLETE — the filter re-evaluated on all three axes
-2026-08-18	63	580	CORRECTION — the metabolic/oncology split is not a class property
-2026-08-18	64	479	A recurring error pattern in my own analysis, named so it stops repeating: over-generalising from a small favourable subset
-2026-08-18	65	867	TRACTABILITY adopted as a third evaluation axis, and it is now the most robust positive claim in the document
-2026-08-18	66	915	CORRECTION — the ligand-vs-receptor failure does NOT generalise, and I had been repeating that it did
-2026-08-18	67	492	`known_drug` is a strict SUPERSET of our approved join
-2026-08-17	68	454	Persona panel: keep one lung term, retire type 2 diabetes, drop CKD
-2026-08-17	69	492	Candidate-decoration tail collapsed 5 recipes → 2
-2026-08-17	70	470	Recorded three join mechanics that are not discoverable from the payload
-2026-08-17	71	320	Correction:
-2026-08-17	72	440	Two decisions reached by measurement rather than training
-2026-08-18	73	667	Flow restructured to four validation zones, numerically prefixed
-2026-08-18	74	759	The `m7-drug-label` experiment was DELETED rather than rebuilt
-2026-08-18	75	373	Zone naming rule adopted: a zone is named for the question it answers, not the tool it uses
-2026-08-19	76	366	The demo is an objection ladder, and the flow zones now say so
-2026-08-19	77	603	A pruning plan derived from the dashboard was rejected as circular, and it was dangerous
-2026-08-19	78	763	CORRECTION to §8.4 — the degree-matched claim rested on an estimator mismatch
-2026-08-19	79	376	Snapshot-before-delete adopted as standing practice
-2026-08-19	80	467	Breast cancer and its molecular subtypes added to the persona panel
-2026-08-19	81	549	§3.4 NARROWED — the model resolves molecular subtype, just not morphological subtype
-2026-08-19	82	375	The parent-term intuition is backwards for breast
-2026-08-19	83	586	A "power" verdict was replaced with an exact test, because the first version was wrong in the dangerous direction
-2026-08-19	84	495	Four defects found in the triple-negative list before any clinician saw it
-2026-08-19	85	554	Expert review adopted as a validation axis where labels cannot reach
-2026-08-19	86	773	`dwpc_GCD` identified as the DRUG route, and it selects the evaluation population on the outcome
-2026-08-19	87	659	CORRECTION — I over-promoted the reachability problem to "top modelling priority" on a single disease
-2026-08-19	88	576	REFUTED — the "graph under-represents surface biology" hypothesis
-2026-08-19	89	503	What the reachability work did establish, net of the corrections:
-2026-08-19	90	594	CORRECTION to §5.2.1's own recommendation, within the hour
-2026-08-19	91	515	Dropping GCD would NOT have helped the triple-negative/TACSTD2 case, and the two findings were never connected
-2026-08-19	92	555	No route-set expansion reaches TACSTD2 either — the constraint is the graph
-2026-08-19	93	664	The split-integrity audit had been silently broken since the migration
-2026-08-19	94	401	The gene-popularity shortcut exists on the ASSOCIATION axis too, not just the drug axis
-2026-08-19	95	540	CORRECTION — §6.1's third claim was wrong
-2026-08-19	96	558	Assertion-first notebooks adopted, and they earned their keep on the first run
-2026-08-19	97	434	REFUTED — the champion does NOT improve under-studied targets
-2026-08-19	98	566	`prox_closest` was dropped as "neutral" on the strength of two metrics, and it was load-bearing on a third
-2026-08-19	99	353	The demo is an objection ladder, not a scorecard
-2026-08-19	100	389	Rejected deriving the flow from the dashboard
-2026-08-19	101	284	The platform pitch is the gate, not the model
-2026-08-19	102	697	CORRECTION to TARGET_PRIORITIZER §8.4, found while fact-checking this document
-2026-08-19	103	420	Every headline number in §7 was re-verified against live project data before this document was written
-2026-08-20	104	621	REFUTED — `prox_closest` is not the hub-fairness lever, and my causal story for §7.2 was wrong
-2026-08-20	105	526	`m4-f13` measured on four axes and it is neutral-to-better on all of them
-2026-08-20	106	704	`m5-f13` (prox_closest imputed with constant 4) trades association for discovery, and the trade is worth taking
-2026-08-20	107	613	The leak-2 concern about constant imputation was tested and did NOT materialise
-2026-08-20	108	572	AUPRC adopted for model selection, rejected for per-disease reporting
-2026-08-20	109	449	Third consecutive `prox_closest` hypothesis of mine corrected by measurement
-2026-08-20	110	518	Tractability measured for `m4`/`m5` — the axis I had omitted, and it favours `m4`
-2026-08-20	111	560	No model dominates across six axes, and the split is coherent
-2026-08-20	112	633	Adding `prox_closest` as a fourth pool route: tested counterfactually and REJECTED
-2026-08-20	113	573	The reachability problem is a feature-family problem, not a gate problem
-2026-08-20	114	585	`MIN_SEEDS = 20` in `compute_enriched_prox_closest` has no recorded justification and the evidence argues for lowering it
-2026-08-20	115	639	The seed threshold excludes the regime where `prox_closest` works best
-2026-08-20	116	621	The 20-seed threshold is not one constant but three, gating four features — and only one recipe earned it
-2026-08-20	117	506	`prox_closest` has its own floor at k = 1, and it is a leak, not an instability
-2026-08-20	118	410	Open question raised while auditing the threshold, not yet answered:
-2026-08-20	119	623	Audit answered the open GO-metapath question: NO leak, and that recipe is the most careful of the set
-2026-08-20	120	529	`module_size >= 20` gates SEVEN of the twelve champion features, across ten recipes
-2026-08-20	121	638	Rollout agreed as one change per model, adopting only at the end
-2026-08-20	122	852	Phase 1 executed, and its pre-registered prediction was REFUTED
-2026-08-20	123	637	What Phase 1 did produce: a small GLOBAL gain, by a different mechanism than predicted
-2026-08-20	124	426	An unplanned control validated the causal chain even though the effect was not significant
-2026-08-20	125	512	Paired discovery test: m5 and m6 are the SAME RANKER for ~90% of diseases
-2026-08-20	126	530	Recommended `m6-f13-new-pc` for adoption, weighting evidence by how well supported it is:
-2026-08-20	127	717	Reporting rule adopted: an aggregate lift difference without a TIE COUNT is close to uninterpretable in this project
-2026-08-21	128	701	REFUTED — the graded proximity variants are NOT degree proxies; the MEAN is the degree-entangled one
-2026-08-21	129	257	`prox_n_reach` dropped before training: ρ = +0.982 with `prox_kernel` and single-feature AUC 0.4864
-2026-08-21	130	707	`prox_kernel` chosen for m7 over `prox_mean`, accepting a worse discriminator to avoid feeding the hub axis
-2026-08-21	131	536	`m7-f14` deployed (saved model `hJLGoYn4`, session s11 XGBoost) and is the first model in the sequence whose improvement survives a paired test
-2026-08-21	132	769	REFUTED — the module-size mechanism `prox_kernel` was built on
-2026-08-21	133	598	Paired tests locate m7's real gains: association and TRACTABILITY, not discovery
-2026-08-21	134	596	m7's costs, stated alongside the gains:
-2026-08-21	135	642	`m8-f14-pm` (`prox_mean` swapped in for `prox_kernel`) tested and REJECTED — the pre-registered trade was confirmed
-2026-08-21	136	650	The decisive signature: m8 buys AUPRC without buying TRACTABILITY
-2026-08-21	137	625	RECOMMENDED CHAMPION: `m7-f14` (`hJLGoYn4`)
-2026-08-21	138	564	A sed-adapted comparison script silently compared m8 with itself
-2026-08-21	139	561	`m7-f14` adopted as champion and every headline number re-measured on it
-2026-08-21	140	617	Three nb1 assertions had been firing STALE against a document that was already correct
-2026-08-21	141	676	§8.4's estimator crossover MOVED on m7, and only a direction check caught it
-2026-08-21	142	686	The §8.3 ADOPTED row had no source at all
-2026-08-21	143	693	Model-specific claims beyond the metric tables also had to move, and they are the easiest to miss
-2026-08-21	144	749	§6.4 was recommending `m5` while the header named `m7-f14` as champion
-2026-08-21	145	333	Naming collision resolved: the retired `m7-drug-label` probe (§7.5, deleted 2026-08-18) is renamed `drug-label-probe`,
-2026-08-21	146	826	The MIN_SEEDS recommendation in §6.4 carried a claim that its own consequence later invalidated
-2026-08-21	147	737	Phase 3 sizing measured — lowering the pool-route gate 20 → 5 admits 931 diseases (+80%, from 1,157 to 2,088) for only ~+12% more pool rows
-2026-08-21	148	763	CORRECTION to my own rollout sequence: the "cheap probe before branching" is not possible
-2026-08-21	149	830	CORRECTED my own Phase 3 density claim within an hour of writing it — same estimator mismatch as §8.4
-2026-08-21	150	796	Phase 3 design decision: `compute_dwpc_go_metapaths` is HELD at `MIN_MODULE = 20` while the other nine recipes go to 5
-2026-08-21	151	559	Pre-registration written before the branch project exists
-2026-08-21	152	804	Built `tools/build_index.py` + `.index/` after the doc sweep showed navigation was the real cost
-2026-08-21	153	654	The first index build was useless and the reason is worth recording: 1,444 orphans of 1,630 claims
-2026-08-21	154	806	The index found four stale numbers the manual sweep had missed, two of them in external-audience documents
-2026-08-21	155	675	A client-facing monotonicity claim is now false and was caught the same way
-2026-08-21	156	700	The Cypher recipes were NOT under version control, and neither were two Python ones
-2026-08-21	157	516	`compute_enriched_disease_context_1` classified Class 1 — settled by reading the newly mirrored Cypher
-2026-08-21	158	871	TRAP: `dku ml settings <analysis> <mltask>` returns the CURRENT mltask state, not a deployed model's config
-2026-08-21	159	495	The index was indexing its own output
-2026-08-21	160	754	`.index/models.tsv` built, and made PROTECTIVE rather than merely convenient
-2026-08-21	161	834	The champion-metric cross-check found a bug in my own indexer within a minute of existing
-2026-08-21	162	782	`target-id` skill written as the entry point to the index layer — 80 lines (~1k tokens), with the long procedures behind pointers so they load only wh
-2026-08-21	163	825	`CLAUDE.md` added — the project had none, so every standing rule lived only in assistant memory and would not survive a teammate cloning the repo
-2026-06-30	164	619	RWR implemented with `scipy.sparse` + `ThreadPoolExecutor`, not `networkx`
-2026-08-21	165	1034	Deleted 12 files that no longer describe the project, rather than indexing them
-2026-08-21	166	993	`chat_starter.md` was wrong to delete outright — it carried the only BOTH-PARTS overview, and the `CLAUDE.md` I wrote to replace it covered Part 2 onl
-2026-08-21	167	890	Markdown reorganised from scattered root + `docs/` into purpose-based directories
-2026-08-21	168	631	Tested the cold-start path for Phase 3 instead of assuming it worked, and it failed in one place: nothing auto-loaded said what the next step was
-2026-08-21	169	592	The link checker had a blind spot that the cold-start test exposed: a bare prose mention with a valid BASENAME but a stale PATH passed
-2026-08-21	170	948	Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions before the experiment ran
-2026-08-21	171	492	P5/P6 revised in place, with the originals struck through rather than deleted, and the reason stated: no experiment has run
-2026-08-21	172	618	Phase 3 verdict for the handoff: defensible as a COVERAGE play, weak as a quality play
-2026-08-21	173	584	Found a claim surface no index covers: DSS flow-zone descriptions
+id	date	domain	status	line	topic	decision	evidence
+DEC-PROD-001	2026-07-08	product	accepted	14	Explainable prioritization is the flagship	Prioritize explainable disease-to-target ranking with SHAP and evidence paths; discovery is the primary use case and toxicity is not inferred from indirect proxies.	[`PROJECT_CONTEXT.md`](../overview/PROJECT_CONTEXT.md), [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md)
+DEC-PROD-002	2026-08-17	product	accepted	27	The deliverable is filterable, not pre-cut	Serve a ranked candidate list with user-controlled filters and annotations rather than a single pre-filtered shortlist.	[`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md), [`WEBAPP_DESIGN.md`](../demo/WEBAPP_DESIGN.md)
+DEC-PROD-003	2026-08-01	product	accepted	40	The pitch separates efficacy from developability	Frame the POC around two distinct questions: genetic/biological evidence for efficacy and chemical/therapeutic evidence for developability.	[`PROJECT_CONTEXT.md` §2.1](../overview/PROJECT_CONTEXT.md), [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md)
+DEC-GRAPH-001	2026-06-01	graph	accepted	53	Build the graph from auditable sources	Recreate the graph pipeline from sources, substitute unavailable licensed inputs with compatible public sources, and retain the published graph only as a frozen reference.	[`GRAPH_BUILDING.md`](../graph/GRAPH_BUILDING.md), [`PROJECT_CONTEXT.md` §4](../overview/PROJECT_CONTEXT.md)
+DEC-ARCH-001	2026-08-17	architecture	accepted	66	Graph and prioritizer remain separate DSS projects	`DEMO_KG_LS` owns graph construction; `DEMO_TARGET_IDENTIFICATION` consumes 12 synced datasets plus one direct-read Kuzu folder through an explicit shared-object contract and owns modeling, validation and serving.	[ADR-001](adrs/ADR-001-project-boundary.md), [`PROJECT_CONTEXT.md` §4](../overview/PROJECT_CONTEXT.md)
+DEC-ARCH-002	2026-08-13	architecture	accepted	79	Graph rebuild acceptance is structural	Accept a graph rebuild on declared structural invariants and provenance rather than byte-identical output from live public sources.	[`GRAPH_BUILDING.md`](../graph/GRAPH_BUILDING.md), [`PROJECT_CONTEXT.md` §4.5](../overview/PROJECT_CONTEXT.md)
+DEC-ARCH-003	2026-08-18	architecture	accepted	92	Flow zones are named for questions	Organize validation and serving zones by the question they answer, not by the DSS tool used.	[`FLOW_MAP.md`](../demo/FLOW_MAP.md), [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md)
+DEC-ARCH-004	2026-08-10	architecture	accepted	105	Compute metapaths as factorized matrices	Implement functional metapaths as factorized right-to-left matrix operations rather than graph queries.	[`TARGET_PRIORITIZER.md` §3.3](../prioritizer/TARGET_PRIORITIZER.md)
+DEC-ARCH-005	2026-06-30	architecture	accepted	118	Random walks use sparse bounded computation	Implement random-walk scoring with sparse arrays and bounded parallelism rather than a monolithic in-memory graph library.	[`GRAPH_BUILDING.md`](../graph/GRAPH_BUILDING.md)
+DEC-METH-001	2026-08-08	methodology	accepted	131	Candidate eligibility is an evidence boundary	Apply the evidence-bearing candidate population to train and test; reject filters whose missingness is created by label lookup, and do not widen eligibility merely because a rejected feature has broader coverage.	[ADR-002](adrs/ADR-002-candidate-and-evaluation-boundary.md), [`TARGET_PRIORITIZER.md` §2](../prioritizer/TARGET_PRIORITIZER.md)
+DEC-METH-002	2026-08-09	methodology	accepted	144	Split by curated family and report by disease	Assign related diseases through an external curated family antichain, split by family and report ranking metrics per disease.	[`TARGET_PRIORITIZER.md` §§2.1, 2.3](../prioritizer/TARGET_PRIORITIZER.md), [`VALIDATION.md` §3.1](../prioritizer/VALIDATION.md)
+DEC-METH-003	2026-08-17	methodology	accepted	157	Subtype diagnostics use disease family, not split-key identity	Select subtype-granularity comparisons by curated disease family rather than by an arbitrary split-key integer.	[`TARGET_PRIORITIZER.md` §2.3](../prioritizer/TARGET_PRIORITIZER.md), [`DSS_CHEATSHEET.md` §1](../platform/DSS_CHEATSHEET.md)
+DEC-METH-004	2026-08-19	methodology	accepted	170	Outcome-linked routes do not define their own benchmark	Exclude route-only outcome-selected pairs from drug-evaluation denominators and report both the full and supported benchmarks rather than dropping whole diseases.	[ADR-002](adrs/ADR-002-candidate-and-evaluation-boundary.md), [`VALIDATION.md` §§3.2, 6.2](../prioritizer/VALIDATION.md)
+DEC-METH-005	2026-08-10	methodology	accepted	183	Numeric feature handling is explicit	Standard-rescale and mean-impute every numeric model input, and audit per-feature handling after each deployment.	[`TARGET_PRIORITIZER.md` §4](../prioritizer/TARGET_PRIORITIZER.md), [`DSS_CHEATSHEET.md` §1](../platform/DSS_CHEATSHEET.md)
+DEC-MEAS-001	2026-08-09	measurement	accepted	196	Headline metrics are paired and disease-level	Headline AUROC is macro per disease, never pooled; AUPRC supports model selection and head-of-list analysis but is not reported as an unqualified per-disease aggregate. Report tie counts before small mean differences and prefer stratified paired tests.	[`VALIDATION.md` §3.1](../prioritizer/VALIDATION.md), [`TARGET_PRIORITIZER.md` §5](../prioritizer/TARGET_PRIORITIZER.md)
+DEC-MEAS-002	2026-08-13	measurement	accepted	209	Validation uses multiple axes and both ground truths	Evaluate association ranking, therapeutic evidence, tractability and discovery separately; report both association and drug-supported labels, and use expert review where labels cannot resolve plausibility.	[`VALIDATION.md` §§3.2, 6](../prioritizer/VALIDATION.md)
+DEC-MEAS-003	2026-08-14	measurement	accepted	222	Drug-label training is rejected; lookup baselines are warnings	Keep the association objective; do not optimize the drug-target benchmark, and always compare such benchmarks with the simplest gene-popularity lookup.	[`VALIDATION.md` §5](../prioritizer/VALIDATION.md), [`TARGET_PRIORITIZER.md` §5](../prioritizer/TARGET_PRIORITIZER.md)
+DEC-DATA-001	2026-08-11	data	accepted	235	Druggability and target class annotate but do not rank	Keep druggability and target-class data as per-gene annotations and filters, not model inputs or graph topology.	[`TARGET_PRIORITIZER.md` §3.2](../prioritizer/TARGET_PRIORITIZER.md), [`DEMO_NARRATIVE.md` Act 4](../demo/DEMO_NARRATIVE.md)
+DEC-SAFE-001	2026-08-17	safety	accepted	248	Indirect safety proxies cannot filter candidates	Do not filter targets using loss-of-function intolerance or positive-only safety-liability annotations; a safety axis requires direct measurements such as essentiality and expression breadth.	[`VALIDATION.md` §5](../prioritizer/VALIDATION.md), [`DEMO_NARRATIVE.md` Acts 5–6](../demo/DEMO_NARRATIVE.md)
+DEC-DEMO-001	2026-08-19	demo	accepted	261	The demo is an objection ladder	Present the POC as an ordered set of scientist objections, with leakage controls, refuted gates and limitations in the main story; the reusable platform claim is disciplined hypothesis gating, not a single model score.	[`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md)
+DEC-DEMO-002	2026-08-19	demo	accepted	274	The narrative governs the dashboard	Derive the dashboard and flow-facing presentation from the approved demo narrative, never prune evidence because it is absent from a hypothetical UI.	[`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md), [`WEBAPP_DESIGN.md`](../demo/WEBAPP_DESIGN.md)
+DEC-OPS-001	2026-08-17	operations	accepted	287	Identifier remapping audits ordering semantics	When graph identifiers are reassigned, audit every rule that ranks, minimizes or applies modulo to them; literal substitution alone is insufficient.	[`DSS_CHEATSHEET.md` §1](../platform/DSS_CHEATSHEET.md)
+DEC-OPS-002	2026-08-19	operations	accepted	300	Snapshot before destructive DSS changes	Capture recoverable configuration and evidence before deleting or materially replacing DSS objects.	[`DSS_CHEATSHEET.md` §6](../platform/DSS_CHEATSHEET.md)
+DEC-OPS-003	2026-08-19	operations	accepted	313	Notebook assertions govern documented numbers	Make notebooks the computational authority for every governed documented number.	[`VALIDATION.md` §§1, 7](../prioritizer/VALIDATION.md), [`CLAIM_REGISTRY.json`](../prioritizer/CLAIM_REGISTRY.json)
+DEC-OPS-004	2026-08-20	operations	accepted	326	Population interventions use pre-registered staged rollout	Change one population or feature-family intervention per model, declare predictions and adopt/reject rules before execution, and adopt only after the complete comparison.	[`PHASE3_PREREGISTRATION.md`](../prioritizer/PHASE3_PREREGISTRATION.md)
+DEC-MODEL-001	2026-08-21	model	accepted	339	`m7-f14` is the current champion	Use saved model `m7-f14` (`hJLGoYn4`) as the champion; retain `prox_kernel` rather than the higher-AUPRC `prox_mean` alternative.	[`VALIDATION.md` §§2, 4.2](../prioritizer/VALIDATION.md), [`TARGET_PRIORITIZER.md` §5](../prioritizer/TARGET_PRIORITIZER.md), `tools/model_registry.json`
+DEC-PH3-001	2026-08-21	methodology	approved-not-executed	352	Phase 3 is a pre-registered coverage intervention	Test the seed-gate widening only in a duplicated Part 2 project; widen the nine Class 1 recipes while holding the Class 2 GO-metapath aggregate at 20, score before retraining and apply the pre-registered rule without post-result revision.	[`PHASE3_PREREGISTRATION.md`](../prioritizer/PHASE3_PREREGISTRATION.md), [`TARGET_PRIORITIZER.md` §6](../prioritizer/TARGET_PRIORITIZER.md)

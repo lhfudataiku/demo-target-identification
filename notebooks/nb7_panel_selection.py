@@ -196,6 +196,7 @@ if FAIL:
     print("\nSTALE figures — the document and the flow disagree:")
     for name, doc, liveval in FAIL:
         print(f"  {name}: documented {doc}, live {liveval}")
-    print("\nDecide which moves. Do not edit DECISIONS.md in place — append a correction.")
+    print("\nDecide which moves. Record only a durable choice in docs/decisions/DECISION_REGISTER.md;")
+    print("routine refresh results belong in the build ledger, not the decision register.")
 else:
     print("\nEvery figure in docs/demo/panel_selection.html still matches the flow.")

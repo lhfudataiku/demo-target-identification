@@ -37,7 +37,7 @@
     "model was trained last.",
     "",
     "This list is that output with prox_mean -> prox_kernel, per the documented m7 decision",
-    "(DECISIONS.md 2026-08-21, TARGET_PRIORITIZER 6.4). Two independent corroborations:",
+    "(DEC-MODEL-001, TARGET_PRIORITIZER 5). Two independent corroborations:",
     "  - exactly 7 of these 14 carry `module_size >= 20`, matching the documented",
     "    'seven of the twelve champion features' (dwpc_GBGD, dwpc_GFGD, dwpc_GGD, dwpc_GPGD,",
     "    ppi_adamic_adar, ppi_jaccard, shared_pathway_frac)",

@@ -90,4 +90,5 @@ OOM-killed (exit 137). A quarter resolves null rates to ~0.1 pp, far finer than 
 - **The gene-popularity shortcut reaches the association axis**: `gene_n_diseases` alone scores 0.8567.
 - **§3.3's thesis was backwards** — over 259 parent-child pairs the more specific term wins 56.4%.
 
-All fixed or recorded — see [DECISIONS.md](../DECISIONS.md), 2026-08-19.
+All fixed or recorded — see the
+[historical decision index](../.index/decisions_history.tsv), 2026-08-19.

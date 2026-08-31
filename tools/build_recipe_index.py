@@ -327,9 +327,12 @@ def main():
     mreg = reg.get("models", {})
 
     blob = {n: json.dumps(r) for n, r in snap.items() if not n.startswith("_")}
-    dec_lines = {}
-    dpath = os.path.join(ROOT, "DECISIONS.md")
-    dec_txt = open(dpath).read().split("\n") if os.path.exists(dpath) else []
+    decision_sources = []
+    for rel in ("docs/decisions/DECISION_REGISTER.md",
+                "archive/decisions/DECISIONS_2026-08-31.md"):
+        path = os.path.join(ROOT, rel)
+        if os.path.exists(path):
+            decision_sources.append((rel, open(path).read().split("\n")))
 
     # Cross-check the champion's hand-recorded metrics against .index/assertions.tsv. Without this
     # the registry becomes another unguarded number surface -- the very thing the indexes exist to
@@ -377,8 +380,8 @@ def main():
         if rec is None:
             unrecorded.append("%s (%s)" % (name, mid))
             rec = {}
-        refs = [str(i + 1) for i, ln in enumerate(dec_txt) if name in ln]
-        dec_lines[mid] = refs
+        refs = ["%s:%d" % (rel, i + 1)
+                for rel, lines in decision_sources for i, ln in enumerate(lines) if name in ln]
 
         def g(k):
             v = rec.get(k)
@@ -397,7 +400,7 @@ def main():
             "delta": rec.get("delta", "?"),
             "verdict": rec.get("verdict", "NOT RECORDED"),
             "consumers": ",".join(consumers) or "-",
-            "decisions_lines": ",".join(refs) or "-",
+            "decision_refs": ",".join(refs) or "-",
         })
 
     # ---- code index: every tracked .py/.json, and whether anything references it ----
@@ -464,7 +467,7 @@ def main():
         "models.tsv": tsv(mrows, ["model", "id", "in_flow", "role", "n_feat", "assoc_auroc", "assoc_auprc",
                                   "hub_spread", "drug_all", "drug_supported", "tract_dm200",
                                   "disc_lift50", "disc_lift200", "delta", "verdict",
-                                  "consumers", "decisions_lines"]),
+                                  "consumers", "decision_refs"]),
         "recipes.tsv": tsv(sorted(rows, key=lambda r: (r["gate"] == "-", r["recipe"])),
                            ["recipe", "type", "gate", "class", "auto_hint", "source",
                             "inputs", "outputs"]),

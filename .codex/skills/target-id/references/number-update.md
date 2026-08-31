@@ -7,7 +7,7 @@ The procedure that produced the 2026-08-21 sweep, including the four mistakes it
 Both champion entry points move, not one:
 
 ```bash
-awk -F'\t' '$3=="CHAMPION"{print $15}' .index/models.tsv
+awk -F'\t' '$3=="yes"{print $16}' .index/models.tsv
 ```
 
 `sync_scored_champion` is the obvious one. `score_persona_candidates` is the one that was missed and sat on `m3-f12` after the champion moved. `compute_model_comparison` **stays** on `scored_m1/m2/m3` — it is the ablation ladder, not a champion consumer.
@@ -36,7 +36,9 @@ For each stale value, `grep -nF` it and classify each occurrence:
 - **current-state claim** → update
 - **per-model comparison table row** → leave, it is correct for that model
 - **reconstruction / cross-validation record** → leave, it is a dated record
-- **`DECISIONS.md`** → never edit, append-only
+- **current decision register** → update only when a durable decision changes; never use it as a
+  metric-refresh log
+- **retired decision log** → immutable history; never edit
 
 Of ten `0.8197`s in `TARGET_PRIORITIZER.md`, only four were current-state. A global replace corrupts the other six.
 
@@ -49,7 +51,7 @@ The three §8.4 magnitude assertions all passed after updating, while the claim 
 ## 5. Hunt the numbers no notebook guards
 
 ```bash
-awk -F'\t' '$5=="ORPHAN" && $7=="y" && $8=="" && $1!="DECISIONS.md"' .index/claims.tsv
+awk -F'\t' '$5=="ORPHAN" && $7=="y" && $8==""' .index/claims.tsv
 ```
 
 Start with the small client-facing files — `DEMO_NARRATIVE.md`, `docs/demo/BREAST_SURGEON_BRIEFING.md`. Both carried stale numbers into external-audience documents in the last sweep.
@@ -72,6 +74,9 @@ Orphans found this way that mattered: the §8.3 **adopted** discovery row (headl
 ./tools/check_indexes.sh
 ```
 
-Then append `DECISIONS.md` entries for anything refuted, corrected, or newly unguarded — including your own mistakes, with the mechanism. That log is the reason the same errors get caught faster each time.
+Then classify the result. Update `docs/decisions/DECISION_REGISTER.md` only if it changes a durable
+choice and satisfies all four admission tests stated there. Experiment evidence belongs in the
+validation authority, reusable platform traps in the skill or DSS cheatsheet, and build/incident
+chronology in the machine ledger. Never edit the retired decision log.
 
 Ask before committing.

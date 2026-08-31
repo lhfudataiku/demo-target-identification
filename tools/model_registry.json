@@ -1,10 +1,10 @@
 {
  "_README": [
   "Hand-recorded model facts that cannot be derived from DSS. Identity, consumer edges and",
-  "DECISIONS.md cross-references are GENERATED into .index/models.tsv -- do not hand-edit that.",
+  "current and historical decision cross-references are GENERATED into .index/models.tsv -- do not hand-edit that.",
   "",
   "Metrics are transcribed from docs/prioritizer/FEATURE_AUDIT.md section 4 (m3-m7), TARGET_PRIORITIZER 6.4",
-  "(the m1-m3 ladder) and DECISIONS.md (m8). A blank means NOT MEASURED or not recoverable --",
+  "(the m1-m3 ladder) and the archived decision log (m8). A blank means NOT MEASURED or not recoverable --",
   "never a guess. `?` in the rendered table means exactly that.",
   "",
   "DO NOT source feature lists from `dku ml settings`: it returns the CURRENT mltask state, not a",

@@ -29,12 +29,14 @@ def main():
     for f in files:
         basenames.setdefault(os.path.basename(f), []).append(f)
 
-    # DECISIONS.md is append-only and legitimately names files that were later deleted -- a mention
-    # there is a historical record, not a stale pointer. Links are still checked everywhere.
-    NO_MENTION_CHECK = {"DECISIONS.md"}
-    # archive/ is a historical record: its links pointed somewhere real when it was
-    # written, and rewriting them would falsify the record. Skipped entirely, the same
-    # way DECISIONS.md is exempt from the mention check.
+    # These two dated records name the former root DECISIONS.md as the object being migrated. Allow
+    # only that historical filename; all their other file mentions still receive normal stale checks.
+    ALLOWED_HISTORICAL_MENTIONS = {
+        ("docs/demo/DOC_RESTRUCTURE_PLAN.md", "DECISIONS.md"),
+        ("docs/operations/PHASE_0_BASELINE_2026-08-28.md", "DECISIONS.md"),
+    }
+    # archive/ is a historical record: its links pointed somewhere real when it was written, and
+    # rewriting them would falsify the record. Skip archived Markdown entirely.
     md = [f for f in md if not f.startswith("archive/")]
     bad_links, bad_mentions = [], []
     for f in md:
@@ -47,13 +49,13 @@ def main():
                 resolved = os.path.normpath(os.path.join(d, target))
                 if resolved not in known and not os.path.exists(os.path.join(ROOT, resolved)):
                     bad_links.append((f, i, target))
-            if f in NO_MENTION_CHECK:
-                continue
             # A bare .md mention is stale if (a) its basename matches no file, or (b) it carries a
             # PATH that does not resolve. (b) was added after the 2026-08-21 reorganisation left
             # `docs/FEATURE_AUDIT.md` in prose when the file had moved to docs/prioritizer/ -- the
             # basename still matched, so the original check passed it.
             for m in MENTION.findall(line):
+                if (f, m) in ALLOWED_HISTORICAL_MENTIONS:
+                    continue
                 base = os.path.basename(m)
                 if base not in basenames and m not in known:
                     bad_mentions.append((f, i, m))
