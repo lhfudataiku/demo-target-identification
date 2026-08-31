@@ -9,6 +9,7 @@
     {"path": "docs/prioritizer/VALIDATION.md", "index": "governed_registry"},
     {"path": "docs/demo/DEMO_NARRATIVE.md", "index": "heuristic"},
     {"path": "docs/demo/WEBAPP_DESIGN.md", "index": "heuristic"},
+    {"path": "docs/demo/FLOW_MAP.md", "index": "heuristic"},
     {"path": "docs/demo/BREAST_SURGEON_BRIEFING.md", "index": "heuristic"},
     {"path": "docs/demo/panel_selection/README.md", "index": "heuristic"}
   ],
