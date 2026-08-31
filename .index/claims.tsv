@@ -1,10 +1,4 @@
 file	line	section	value	status	guarded_by	model_dep	hint	context
-docs/README.md	42	-	95.7	ORPHAN		y		| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) | **Current mockup.** Four interactive acts
-docs/appendix/README.md	13	-	0.9354	ORPHAN				without a snapshot, and its most reusable finding — a gene-popularity lookup table scoring 0.9354 and
-docs/appendix/README.md	19	-	2,010	ORPHAN		y		| `model_comparison.csv` | 2,010 | §6.4 ablation ladder, m1-f7 → m2-f10 → m3-f12 | saved models `Lx5Mz2hY`, `6
-docs/appendix/README.md	20	-	1,113	ORPHAN		y		| `validation_auc_by_disease_2.csv` | 1,113 | §7.1 per-split-key AUC (the second metric run) | `scored_m3` |
-docs/appendix/README.md	22	-	27,153	ORPHAN			hist	| `disease_hierarchy_annotation.csv` | 27,153 | §3.2 ontology redundancy, §3.3 granularity trade-off | `diseas
-docs/appendix/README.md	23	-	0.110	ORPHAN		y		| `maturity_confound.csv` | 60 | §8.2 the metabolic/oncology correction (Spearman +0.110) | `novel_discovery_e
 docs/demo/BREAST_SURGEON_BRIEFING.md	22	1	76,465	ORPHAN				`target_candidates_2` from 76,465 rows over 7 diseases to **129,253 over 13**.
 docs/demo/BREAST_SURGEON_BRIEFING.md	22	1	129,253	ORPHAN				`target_candidates_2` from 76,465 rows over 7 diseases to **129,253 over 13**.
 docs/demo/BREAST_SURGEON_BRIEFING.md	28	1	8,157	ORPHAN				| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
@@ -54,7 +48,6 @@ docs/demo/DEMO_NARRATIVE.md	202	-	1.37	VALUE_ONLY	nb6_interrogation_and_close.py
 docs/demo/DEMO_NARRATIVE.md	203	-	4.62	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			| *"Exclude targets with known safety liabilities."* | Liability-flagged genes are **4.62×** enriched among re
 docs/demo/DEMO_NARRATIVE.md	213	-	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r			uncorrelated, r = **+0.002**. And on a drug-target benchmark, a lookup table — *"how many diseases is
 docs/demo/DEMO_NARRATIVE.md	238	-	0.9365	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		| **HER2-positive breast carcinoma** | **the spine.** Reconstructs at AUC **0.9365**; a clinician recognises t
-docs/demo/DOC_RESTRUCTURE_PLAN.md	173	6.4	3,000	ORPHAN				- Root plus nested auto-loaded project instructions: **at most 3,000 tokens** for an ordinary webapp
 docs/demo/WEBAPP_DESIGN.md	62	2	0.9365	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		**Why a spine at all:** the eyeball test needs a disease the audience knows cold. HER2+ reconstructs at AUC 0.
 docs/demo/WEBAPP_DESIGN.md	67	2	12,272	ORPHAN				**The clinical sanity check, unprompted.** HER2+ breast carcinoma scores 12,272 candidates. Top 15:
 docs/demo/WEBAPP_DESIGN.md	80	2	12,272	ORPHAN				The model was never told which gene this disease is named after. **ERBB2 lands at 14 of 12,272**, and the
@@ -336,41 +329,6 @@ docs/graph/GRAPH_BUILDING.md	444	7.3	8,100,498	ORPHAN				| **Total** | **8,100,4
 docs/graph/GRAPH_BUILDING.md	444	7.3	2,851,510	ORPHAN				| **Total** | **8,100,498** | **2,851,510** | |
 docs/graph/GRAPH_BUILDING.md	470	7.3	113,391	ORPHAN				| 2026-08-14 | **Assembly decomposed into 4 recipes**, two visual (§4.4). All outputs reproduce the monolith e
 docs/graph/GRAPH_BUILDING.md	473	7.3	0.03	ORPHAN			hist	| 2026-08-14 | **Reconstruction accepted** (§7.2). 7 of 9 node groups and 14 of 18 relations reproduce **to th
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	37	-	433,238	ORPHAN				| Current documentation | 15 | 433,238 | `docs/`, excluding the restructure plan and `archive/` |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	38	-	19,082	ORPHAN				| Current planning | 1 | 19,082 | `docs/demo/DOC_RESTRUCTURE_PLAN.md` |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	39	-	90,542	ORPHAN				| Decision log | 1 | 90,542 | root `DECISIONS.md` |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	40	-	147,883	ORPHAN			hist	| Historical archive | 2 | 147,883 | `archive/` Markdown before this Phase 0 record |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	41	-	70,166	ORPHAN				| Harness material | 8 | 70,166 | root/nested instructions plus Codex/Claude target-ID skill Markdown; symlink
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	42	-	5,690	ORPHAN				| Evidence support | 1 | 5,690 | `notebooks/README.md` |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	43	-	62,965	ORPHAN				| Supporting webapp material | 3 | 62,965 | remaining tracked Markdown outside the areas above |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	44	-	829,566	ORPHAN				| **Total** | **31** | **829,566** | all tracked Markdown |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	48	-	644,851	ORPHAN				At the capture, `.index/` held 14 regular files / 644,851 bytes: seven TSV indexes (2,984 data-plus-header row
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	48	-	2,984	ORPHAN				At the capture, `.index/` held 14 regular files / 644,851 bytes: seven TSV indexes (2,984 data-plus-header row
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	48	-	405,626	ORPHAN				At the capture, `.index/` held 14 regular files / 644,851 bytes: seven TSV indexes (2,984 data-plus-header row
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	48	-	227,966	ORPHAN				At the capture, `.index/` held 14 regular files / 644,851 bytes: seven TSV indexes (2,984 data-plus-header row
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	48	-	11,259	ORPHAN				At the capture, `.index/` held 14 regular files / 644,851 bytes: seven TSV indexes (2,984 data-plus-header row
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	52	-	11,497	ORPHAN				| `assertions.tsv` | 200 | 11,497 | generated 2026-08-28 12:18:56Z |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	53	-	2,129	ORPHAN				| `claims.tsv` | 2,129 | 334,823 | generated 2026-08-28 12:18:56Z; **stale** against the pre-existing approval
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	53	-	334,823	ORPHAN				| `claims.tsv` | 2,129 | 334,823 | generated 2026-08-28 12:18:56Z; **stale** against the pre-existing approval
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	54	-	10,051	ORPHAN				| `code.tsv` | 108 | 10,051 | generated 2026-08-28 12:19:07Z |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	55	-	14,923	ORPHAN				| `decisions.tsv` | 159 | 14,923 | generated 2026-08-28 12:18:56Z |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	56	-	20,221	ORPHAN				| `features.tsv` | 284 | 20,221 | generated 2026-08-28 12:19:07Z |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	57	-	2,320	ORPHAN				| `models.tsv` | 9 | 2,320 | generated 2026-08-28 12:19:07Z |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	58	-	11,791	ORPHAN				| `recipes.tsv` | 95 | 11,791 | generated 2026-08-28 12:19:07Z |
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	60	-	194,159	ORPHAN				The linked DSS snapshot was present as `.index/dss_snapshot.json` (194,159 bytes; 2026-08-27 12:36:32Z). It wa
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	64	-	3,000	ORPHAN				The ordinary webapp cold-start payload combines the root instruction and the nested webapp overlay. Byte, line
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	68	-	6,712	ORPHAN				| OpenAI Codex | `AGENTS.md` (6,712 B; 79 lines; 980 words) | `webapp/AGENTS.md` (18,724 B; 329 lines; 2,478 w
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	68	-	18,724	ORPHAN				| OpenAI Codex | `AGENTS.md` (6,712 B; 79 lines; 980 words) | `webapp/AGENTS.md` (18,724 B; 329 lines; 2,478 w
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	68	-	2,478	ORPHAN				| OpenAI Codex | `AGENTS.md` (6,712 B; 79 lines; 980 words) | `webapp/AGENTS.md` (18,724 B; 329 lines; 2,478 w
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	68	-	25,436	ORPHAN				| OpenAI Codex | `AGENTS.md` (6,712 B; 79 lines; 980 words) | `webapp/AGENTS.md` (18,724 B; 329 lines; 2,478 w
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	68	-	3,458	ORPHAN				| OpenAI Codex | `AGENTS.md` (6,712 B; 79 lines; 980 words) | `webapp/AGENTS.md` (18,724 B; 329 lines; 2,478 w
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	69	-	6,828	ORPHAN				| Claude Code | `CLAUDE.md` (6,828 B; 116 lines; 1,000 words) | `webapp/CLAUDE.md` → `AGENTS.md` (18,724 B; 32
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	69	-	1,000	ORPHAN				| Claude Code | `CLAUDE.md` (6,828 B; 116 lines; 1,000 words) | `webapp/CLAUDE.md` → `AGENTS.md` (18,724 B; 32
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	69	-	18,724	ORPHAN				| Claude Code | `CLAUDE.md` (6,828 B; 116 lines; 1,000 words) | `webapp/CLAUDE.md` → `AGENTS.md` (18,724 B; 32
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	69	-	2,478	ORPHAN				| Claude Code | `CLAUDE.md` (6,828 B; 116 lines; 1,000 words) | `webapp/CLAUDE.md` → `AGENTS.md` (18,724 B; 32
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	69	-	25,552	ORPHAN				| Claude Code | `CLAUDE.md` (6,828 B; 116 lines; 1,000 words) | `webapp/CLAUDE.md` → `AGENTS.md` (18,724 B; 32
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	69	-	3,478	ORPHAN				| Claude Code | `CLAUDE.md` (6,828 B; 116 lines; 1,000 words) | `webapp/CLAUDE.md` → `AGENTS.md` (18,724 B; 32
-docs/operations/PHASE_0_BASELINE_2026-08-28.md	80	-	2,128	ORPHAN				This repository-only, offline rebuild completed without `--refresh`: `build_index.py` wrote 2,128 claims / 199
 docs/overview/PROJECT_CONTEXT.md	70	2.1	2.6	ORPHAN				| **Genetic evidence works** | Target–disease pairs with human genetic support have **2.6× relative clinical s
 docs/overview/PROJECT_CONTEXT.md	70	2.1	4.8	ORPHAN				| **Genetic evidence works** | Target–disease pairs with human genetic support have **2.6× relative clinical s
 docs/overview/PROJECT_CONTEXT.md	114	2.3	0.81	ORPHAN		y		disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche et al.,
@@ -389,13 +347,6 @@ docs/overview/PROJECT_CONTEXT.md	240	4.5	0.6911	ORPHAN		y		| drug-target AUC | 0
 docs/overview/PROJECT_CONTEXT.md	241	4.5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| candidate pool | 6,754,128 | **6,754,128** *(identical)* |
 docs/overview/PROJECT_CONTEXT.md	243	4.5	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		Three individual personas reproduced to within **0.002**, which is stronger evidence than the macro
 docs/overview/PROJECT_CONTEXT.md	251	4.6	129,253	ORPHAN		y		solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying
-docs/platform/DSS_CHEATSHEET.md	21	1	65,536	ORPHAN				`get_dataframe()` reads in fixed-size chunks (65,536 rows) and infers each column's type **within
-docs/platform/DSS_CHEATSHEET.md	26	1	983,040	ORPHAN				> One occurrence silently dropped **983,040 rows = 15 × 65,536** — the chunk-size multiple is the
-docs/platform/DSS_CHEATSHEET.md	26	1	65,536	ORPHAN				> One occurrence silently dropped **983,040 rows = 15 × 65,536** — the chunk-size multiple is the
-docs/platform/DSS_CHEATSHEET.md	27	1	65,536	ORPHAN				> tell. If an unresolved-row count is a clean multiple of 65,536, this is why.
-docs/platform/DSS_CHEATSHEET.md	139	1	2.2	ORPHAN				caused a 2.2× row-count discrepancy that survived repeated clean rebuilds.
-docs/platform/DSS_CHEATSHEET.md	172	1	58.8	ORPHAN				| assign a split by `mod(id, 10)` | the integer's residue | 58.8% of records changed split |
-docs/platform/DSS_CHEATSHEET.md	173	1	0.3	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)	y		| pick the nearest ancestor, ties on lowest id | ordering among ties | 0.3% of records changed group |
 docs/prioritizer/FEATURE_AUDIT.md	42	1	0.00	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 			§6.1 measured that `gene_ppi_degree` and `gene_n_pathways` show **0.00% variation across diseases**.
 docs/prioritizer/FEATURE_AUDIT.md	44	1	1.23	ORPHAN				> **For 43 diseases (1.23% of pool rows) the model has no disease-specific signal at all. It is
 docs/prioritizer/FEATURE_AUDIT.md	46	1	3.7	ORPHAN				> model being served for 3.7% of the disease population.
@@ -583,76 +534,3 @@ docs/prioritizer/PHASE3_PREREGISTRATION.md	224	9	2.00	VALUE_ONLY	nb2_splitting_a
 docs/prioritizer/PHASE3_PREREGISTRATION.md	224	9	4.4	ORPHAN				**6.3× more dilute** (0.32% against 2.00%) — worse than the 4.4× measured on GGD alone, because pathway
 docs/prioritizer/PHASE3_PREREGISTRATION.md	229	9	0.62	ORPHAN				when this document was written, and P2's 0.62–0.75 band should now be read as optimistic rather than
 docs/prioritizer/PHASE3_PREREGISTRATION.md	229	9	0.75	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1 approved join auc_supported			when this document was written, and P2's 0.62–0.75 band should now be read as optimistic rather than
-docs/reference/DISCOVERY_LANDSCAPE.md	73	2	2.6	ORPHAN				- Target–disease pairs with human genetic support have **2.6× relative success**
-docs/reference/DISCOVERY_LANDSCAPE.md	78	2	4.8	ORPHAN				- Only **~4.8%** of current Phase I–III target–disease pairs have this kind of support
-docs/reference/DISCOVERY_LANDSCAPE.md	85	2	10.1371	ORPHAN				King 2019 ([PLoS Genet](https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1008489))
-docs/reference/DISCOVERY_LANDSCAPE.md	235	5	26.06	ORPHAN				attributions. Release 26.06 added *trans*-pQTL features.
-docs/reference/DISCOVERY_LANDSCAPE.md	252	5	49.2	ORPHAN				with no approved therapy at all, +49.2% over eight baselines, and it ships a **multi-hop path
-docs/reference/DISCOVERY_LANDSCAPE.md	267	5	33,579	ORPHAN				lines) and **CRISPRbrain** iPSC-neuron screens (33,579 associations, ~73.7% of them novel) as
-docs/reference/DISCOVERY_LANDSCAPE.md	267	5	73.7	ORPHAN				lines) and **CRISPRbrain** iPSC-neuron screens (33,579 associations, ~73.7% of them novel) as
-docs/reference/DISCOVERY_LANDSCAPE.md	269	5	17,647	ORPHAN				screens across 17,647 genes and 27 cancer types** produced 143 targetable dependencies
-docs/reference/DISCOVERY_LANDSCAPE.md	285	5	4.8	ORPHAN				- Only ~4.8% of clinical target–indication pairs have genetic support at all — so for most
-docs/reference/DISCOVERY_LANDSCAPE.md	324	6	1.644	ORPHAN				by π²/6 ≈ 1.644) with noisy sources deliberately down-weighted — Europe PMC, Expression Atlas
-docs/reference/DISCOVERY_LANDSCAPE.md	345	6	0.01	ORPHAN				| **Precedence** | Target in clinic | ChEMBL clinical phase | 0.01 (preclinical) → 1.0 (approved) |
-docs/reference/DISCOVERY_LANDSCAPE.md	362	6	26.06	ORPHAN				Release **26.06** split baseline expression into four separate rows (tissue and cell-type ×
-docs/reference/DISCOVERY_LANDSCAPE.md	437	7	10.1371	ORPHAN				([benchmark framework](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1012463)).
-docs/reference/DISCOVERY_LANDSCAPE.md	465	8	10.1021	ORPHAN				([JCIM](https://pubs.acs.org/doi/10.1021/acs.jcim.2c01253))
-docs/reference/DISCOVERY_LANDSCAPE.md	494	8	0.62	ORPHAN		y		**Boltz-2** is the one being talked about: claimed Pearson r ≈ 0.62 on the FEP+/OpenFE
-docs/reference/DISCOVERY_LANDSCAPE.md	496	8	10.1101	ORPHAN				([preprint](https://www.biorxiv.org/content/10.1101/2025.06.14.659707v1)). See the limits
-docs/reference/DISCOVERY_LANDSCAPE.md	496	8	2025.06	ORPHAN				([preprint](https://www.biorxiv.org/content/10.1101/2025.06.14.659707v1)). See the limits
-docs/reference/DISCOVERY_LANDSCAPE.md	508	8	10.1021	ORPHAN				([JCIM](https://pubs.acs.org/doi/abs/10.1021/acs.jcim.3c01976)) — i.e. **AlphaFold behaves like
-docs/reference/DISCOVERY_LANDSCAPE.md	520	8	10.1186	ORPHAN				([J Cheminform](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-025-00973-x)).
-docs/reference/DISCOVERY_LANDSCAPE.md	572	8	1,312	ORPHAN				**PoseX** (2025, 23 methods, 718 self-docking + 1,312 cross-docking cases) then found the
-docs/reference/DISCOVERY_LANDSCAPE.md	576	8	2505.01700	ORPHAN				physics-inspired potentials ([arXiv](https://arxiv.org/pdf/2505.01700)).
-docs/reference/DISCOVERY_LANDSCAPE.md	600	8	10.1021	ORPHAN				([JCIM](https://pubs.acs.org/doi/10.1021/acs.jcim.2c01073))
-docs/reference/DISCOVERY_LANDSCAPE.md	622	8	2507.17783	ORPHAN				geometric mean changes the labels** ([chembl-downloader](https://arxiv.org/pdf/2507.17783)).
-docs/reference/DISCOVERY_LANDSCAPE.md	629	8	10.1021	ORPHAN				chemistry ([Phantom PAINS](https://pubs.acs.org/doi/10.1021/acs.jcim.6b00465)).
-docs/reference/DISCOVERY_LANDSCAPE.md	639	8	1,455	ORPHAN				- **CACHE #5** (MCHR1, a GPCR): ~1,455–1,553 compounds nominated across 23 participants.
-docs/reference/DISCOVERY_LANDSCAPE.md	639	8	1,553	ORPHAN				- **CACHE #5** (MCHR1, a GPCR): ~1,455–1,553 compounds nominated across 23 participants.
-docs/reference/DISCOVERY_LANDSCAPE.md	701	9	10,000	ORPHAN				synthesise. *Decide* is active-learning prioritisation: of these 10,000 designs, which 40 do we
-docs/reference/DISCOVERY_LANDSCAPE.md	721	9	1.73	ORPHAN				| **58 public systems** | **1.73 kcal/mol** [1.53–1.96] | 10 |
-docs/reference/DISCOVERY_LANDSCAPE.md	721	9	1.53	ORPHAN				| **58 public systems** | **1.73 kcal/mol** [1.53–1.96] | 10 |
-docs/reference/DISCOVERY_LANDSCAPE.md	721	9	1.96	ORPHAN				| **58 public systems** | **1.73 kcal/mol** [1.53–1.96] | 10 |
-docs/reference/DISCOVERY_LANDSCAPE.md	722	9	2.44	ORPHAN				| **37 private industrial systems** | **2.44 kcal/mol** [1.94–3.06] | **2** |
-docs/reference/DISCOVERY_LANDSCAPE.md	722	9	1.94	ORPHAN				| **37 private industrial systems** | **2.44 kcal/mol** [1.94–3.06] | **2** |
-docs/reference/DISCOVERY_LANDSCAPE.md	722	9	3.06	ORPHAN				| **37 private industrial systems** | **2.44 kcal/mol** [1.94–3.06] | **2** |
-docs/reference/DISCOVERY_LANDSCAPE.md	724	9	10.1021	ORPHAN		y		([JCIM](https://pubs.acs.org/doi/10.1021/acs.jcim.6c00089)) — ranking quality was comparable to
-docs/reference/DISCOVERY_LANDSCAPE.md	728	9	2.44	ORPHAN				> **2.44 kcal/mol is state-of-the-art physics on unseen industrial molecule series.** For
-docs/reference/DISCOVERY_LANDSCAPE.md	759	9	10.1186	ORPHAN				([J Cheminform 2025](https://link.springer.com/article/10.1186/s13321-025-01059-4)).
-docs/reference/DISCOVERY_LANDSCAPE.md	791	9	10.1021	ORPHAN				ensemble conformal calibration ([JCIM](https://pubs.acs.org/doi/10.1021/acs.jcim.4c01139)).
-docs/reference/DISCOVERY_LANDSCAPE.md	930	11.2	1,000	ORPHAN			hist	| **DepMap** | S1 S2 S3 | CRISPR knockout dependency across ~1,000+ cancer cell lines; the essentiality refere
-docs/reference/DISCOVERY_LANDSCAPE.md	943	11.2	17,080	ORPHAN				| **PrimeKG** | S1 S2 | Precomputed biomedical KG: 4.05M edges, 29 edge types, 17,080 diseases — **what our PO
-docs/reference/DISCOVERY_LANDSCAPE.md	957	11.2	13,130	ORPHAN		y		| **TDC (Therapeutics Data Commons)** | S4 S5 | Benchmark suite: 22 ADMET datasets, 475–13,130 molecules each
-docs/reference/DISCOVERY_LANDSCAPE.md	979	11.3	1.73	ORPHAN				| **OpenFE** (+ alchemiscale) | S5 | Open free energy; **1.73 public / 2.44 private kcal/mol RMSE** | MIT | 🔌
-docs/reference/DISCOVERY_LANDSCAPE.md	979	11.3	2.44	ORPHAN				| **OpenFE** (+ alchemiscale) | S5 | Open free energy; **1.73 public / 2.44 private kcal/mol RMSE** | MIT | 🔌
-docs/reference/DISCOVERY_LANDSCAPE.md	1191	13.3	0.28	ORPHAN				| `nearest_train_analog` | CHEMBL… , Tanimoto 0.28 | nearest-neighbour lookup |
-docs/reference/DISCOVERY_LANDSCAPE.md	1199	13.3	0.28	ORPHAN				is outside the model's applicability domain (nearest training analog Tanimoto 0.28), so treat the
-docs/reference/DISCOVERY_LANDSCAPE.md	1259	13.5	0.31	ORPHAN			hist	**contextualises each prediction against a reference set of approved drugs**, so "0.31" becomes
-docs/reference/DISCOVERY_LANDSCAPE.md	1384	14	0.96	ORPHAN		y		| **hERG AUC ~0.96** | Split-dependent; do not quote without stating the split |
-docs/reference/DISCOVERY_LANDSCAPE.md	1390	14	2.6	ORPHAN				| **Minikel 2024 2.6×** and the **Phase I 80–90% / Phase II ~40%** split | Primary, peer-reviewed, load-bearin
-docs/reference/RESEARCH_NOTE.md	54	2	141,296	ORPHAN				- *Summary:* Built a human interactome (~141,296 interactions among ~13,460 proteins) and
-docs/reference/RESEARCH_NOTE.md	54	2	13,460	ORPHAN				- *Summary:* Built a human interactome (~141,296 interactions among ~13,460 proteins) and
-docs/reference/RESEARCH_NOTE.md	76	2	1,206	ORPHAN				- *Summary:* On a heterogeneous network, enumerated **~1,206 typed metapaths** and computed the
-docs/reference/RESEARCH_NOTE.md	85	2	10.1186	ORPHAN				([s12859-024-05683-z](https://link.springer.com/article/10.1186/s12859-024-05683-z))
-docs/reference/RESEARCH_NOTE.md	89	2	0.85	ORPHAN				BA ≈ 0.85 / F1 ≈ 0.79 on held-out gene–disease associations — our exact pipeline shape.
-docs/reference/RESEARCH_NOTE.md	89	2	0.79	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability			BA ≈ 0.85 / F1 ≈ 0.79 on held-out gene–disease associations — our exact pipeline shape.
-docs/reference/RESEARCH_NOTE.md	153	5	2504.08445	ORPHAN				*KGE gene–disease benchmark* ([arXiv 2504.08445](https://arxiv.org/abs/2504.08445)),
-docs/reference/RESEARCH_NOTE.md	155	5	2105.10578	ORPHAN				*KG-enhanced tensor factorization* ([arXiv 2105.10578](https://arxiv.org/abs/2105.10578)),
-docs/reference/RESEARCH_NOTE.md	164	5	0.92	ORPHAN		y		ADR prediction from a drug-target-ADR KG (AUC 0.92). Add DepMap + GTEx (per-gene features) →
-docs/reference/RESEARCH_NOTE.md	168	5	10.3389	ORPHAN				*BenevolentAI baricitinib* ([Front Pharmacol 2021](https://www.frontiersin.org/journals/pharmacology/articles/
-docs/reference/RESEARCH_NOTE.md	178	6	2504.08445	ORPHAN				| 2 | [KGE gene–disease benchmark — arXiv 2025](https://arxiv.org/abs/2504.08445) | primary | deferred (KGE) |
-docs/reference/RESEARCH_NOTE.md	180	6	2105.10578	ORPHAN				| 4 | [KG tensor factorization — arXiv 2022](https://arxiv.org/abs/2105.10578) | primary | deferred (KGE) |
-docs/reference/RESEARCH_NOTE.md	186	6	10.1186	ORPHAN		y		| 10 | [MultiXrank — *BMC Bioinf* 2024](https://link.springer.com/article/10.1186/s12859-024-05683-z) | primar
-docs/reference/RESEARCH_NOTE.md	198	6	10.3389	ORPHAN				| 22 | [BenevolentAI — *Front Pharmacol* 2021](https://www.frontiersin.org/journals/pharmacology/articles/10.3
-notebooks/README.md	41	-	0.59	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability			under-score poorly-connected true targets?"* — about **detection**, and it is the source of the 0.59 →
-notebooks/README.md	42	-	0.79	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability			0.79 finding. They point opposite ways and both are true. `nb6` §5.2 carries `nb3b`'s version for the
-notebooks/README.md	90	-	0.8567	ORPHAN				- **The gene-popularity shortcut reaches the association axis**: `gene_n_diseases` alone scores 0.8567.
-notebooks/README.md	91	-	56.4	ORPHAN				- **§3.3's thesis was backwards** — over 259 parent-child pairs the more specific term wins 56.4%.
-webapp/DEPLOYMENT.md	182	5	129,253	ORPHAN				That is deliberate — `dashboard_candidates` is 129,253 rows and re-reading it per request makes the
-webapp/README.md	68	-	3.11	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10			ENV_NAME=my-code-env # a Python ≥3.11 code env on the DSS instance
-webapp/README.md	298	-	3.11	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10			and `uvicorn` installed. Python ≥3.11 is recommended (see tech notes).
-webapp/README.md	391	-	3.11	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10			**`from __future__ import annotations` / Python ≥3.11**
-webapp/README.md	394	-	3.10	ORPHAN				generics) require Python 3.10+. DSS's default Python environment may be 3.9. The backend
-webapp/README.md	396	-	3.11	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10			still: create a code env with Python 3.11+ and set it in `app.env` as `ENV_NAME`.
-webapp/README.md	414	-	3.11	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10			| `ENV_NAME` | `deploy.sh` | Code env on the DSS instance (Python ≥3.11 recommended) |
-webapp/README.md	739	-	3.11	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10			- **Python ≥3.11** — recommended for the code env. The backend uses `from __future__ import annotations` as a

@@ -19,7 +19,7 @@ LOG_DIR  := $(RUN_DIR)/logs
 UV_STAMP := $(RUN_DIR)/.uv-synced
 NPM_STAMP := $(RUN_DIR)/.npm-installed
 
-.PHONY: dev stop status logs deploy help deps copy
+.PHONY: dev stop status logs logs-follow deploy help deps copy
 
 # ──────────────────────────────────────────────────────────────────────────────
 help:
@@ -30,7 +30,8 @@ help:
 	@echo "  make deps             Force re-run uv sync + npm install"
 	@echo "  make stop             Kill processes on both ports"
 	@echo "  make status           Show which ports are bound"
-	@echo "  make logs             Tail .run/logs/*.log"
+	@echo "  make logs             Show the last 200 lines of each .run/logs/*.log"
+	@echo "  make logs-follow      Follow .run/logs/*.log interactively"
 	@echo "  make deploy           Build + deploy to DSS; creates project/webapp if missing"
 	@echo "  make copy DEST=~/path Copy source to a new directory (then edit app.env)"
 	@echo ""
@@ -105,6 +106,9 @@ status:
 	@echo ""
 
 logs:
+	@tail -n 200 $(LOG_DIR)/*.log
+
+logs-follow:
 	@tail -f $(LOG_DIR)/*.log
 
 # ──────────────────────────────────────────────────────────────────────────────

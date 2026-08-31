@@ -9,7 +9,7 @@ webapp/backend/services/permission_broker.py	webapp	ORPHAN (referenced by nothin
 webapp/frontend/tsconfig.json	webapp	ORPHAN (referenced by nothing)	0	-
 archive/decisions/TRIAGE.json	archive	ARCHIVED	2	archive/decisions/README.md,tools/build_index.py
 archive/webapp-v1/backend.py	archive	ARCHIVED	8	archive/flow-map-iterations/flow_map.html,docs/demo/FLOW_MAP.md,tools/recipe_classes.json,webapp/README.md
-docs/appendix/manifest.json	docs	LIVE (referenced)	1	docs/appendix/README.md
+docs/appendix/manifest.json	docs	LIVE (referenced)	4	docs/README.md,docs/appendix/README.md,docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md,tools/build_index.py
 docs/demo/model_recovery.json	docs	LIVE (referenced)	1	archive/DASHBOARD_BUILD_LOG.md
 docs/operations/build-governance/POLICY.json	docs	LIVE (referenced)	2	docs/operations/BUILD_GOVERNANCE.md,tools/build_governance.py
 docs/operations/build-governance/accepted-baseline.schema.json	docs	LIVE (referenced)	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
@@ -81,14 +81,15 @@ reference_baseline.json	root-script	LIVE (referenced)	4	archive/decisions/DECISI
 scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 tools/build_governance.py	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
-tools/build_index.py	tool	LIVE	9	archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/decisions/README.md
-tools/build_recipe_index.py	tool	LIVE	19	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md
+tools/build_index.py	tool	LIVE	11	archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/decisions/README.md
+tools/build_recipe_index.py	tool	LIVE	20	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md
 tools/capture_build_governance.py	tool	LIVE	1	docs/operations/BUILD_GOVERNANCE.md
-tools/check_claim_registry.py	tool	LIVE	3	docs/prioritizer/VALIDATION.md,tools/build_index.py,tools/check_indexes.sh
+tools/check_claim_registry.py	tool	LIVE	3	docs/prioritizer/VALIDATION.md,tools/check_indexes.sh,tools/index_manifest.json
 tools/check_freshness.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
-tools/check_harness.py	tool	LIVE	3	harness/README.md,tools/build_index.py,tools/check_indexes.sh
-tools/check_indexes.sh	tool	LIVE	10	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md
-tools/check_links.py	tool	LIVE	5	archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/operations/PHASE_0_BASELINE_2026-08-28.md
+tools/check_harness.py	tool	LIVE	2	harness/README.md,tools/check_indexes.sh
+tools/check_indexes.sh	tool	LIVE	11	.claude/skills/target-id/SKILL.md,.claude/skills/target-id/references/number-update.md,.codex/skills/target-id/SKILL.md,.codex/skills/target-id/references/number-update.md
+tools/check_links.py	tool	LIVE	6	archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/operations/PHASE_0_BASELINE_2026-08-28.md
+tools/index_manifest.json	tool	LIVE	3	docs/README.md,docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md,tools/build_index.py
 tools/model_registry.json	tool	LIVE	10	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md
 tools/pull_notebooks.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
 tools/recipe_classes.json	tool	LIVE	5	archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/prioritizer/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py
@@ -96,6 +97,7 @@ tools/sync_harness.py	tool	LIVE	6	AGENTS.md,CLAUDE.md,harness/README.md,tools/ch
 tools/tests/fixtures/build_governance/accepted-baseline.json	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
 tools/tests/fixtures/build_governance/no-change-event.json	tool	LIVE	1	tools/tests/test_build_governance.py
 tools/tests/test_build_governance.py	tool	LIVE	1	docs/operations/BUILD_GOVERNANCE.md
+tools/tests/test_index_manifest.py	tool	LIVE	0	-
 webapp/backend/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
 webapp/backend/app.py	webapp	LIVE (referenced)	7	tools/recipe_classes.json,webapp/DEPLOYMENT.md,webapp/README.md,webapp/backend/routes/chat.py
 webapp/backend/config.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/app.env,webapp/dss_webapp/backend.py
@@ -115,7 +117,7 @@ webapp/backend/services/documents_service.py	webapp	LIVE (referenced)	1	webapp/R
 webapp/backend/services/memory_state.py	webapp	LIVE (referenced)	1	webapp/README.md
 webapp/backend/services/settings.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/backend/tools/registry.py,webapp/frontend/src/views/SettingsView.vue
 webapp/backend/tools/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
-webapp/backend/tools/registry.py	webapp	LIVE (referenced)	5	docs/prioritizer/VALIDATION.md,tools/build_index.py,tools/check_claim_registry.py,tools/check_indexes.sh
+webapp/backend/tools/registry.py	webapp	LIVE (referenced)	5	docs/prioritizer/VALIDATION.md,tools/check_claim_registry.py,tools/check_indexes.sh,tools/index_manifest.json
 webapp/dss_webapp/backend.py	webapp	LIVE (referenced)	8	archive/flow-map-iterations/flow_map.html,docs/demo/FLOW_MAP.md,tools/recipe_classes.json,webapp/README.md
 webapp/dss_webapp/deploy.sh	webapp	LIVE (referenced)	6	docs/demo/WEBAPP_DESIGN.md,webapp/DEPLOYMENT.md,webapp/Makefile,webapp/README.md
 webapp/frontend/package-lock.json	webapp	LIVE (referenced)	1	webapp/Makefile

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "current_claim_documents": [
+    {"path": "docs/overview/PROJECT_CONTEXT.md", "index": "heuristic"},
+    {"path": "docs/graph/GRAPH_BUILDING.md", "index": "heuristic"},
+    {"path": "docs/prioritizer/TARGET_PRIORITIZER.md", "index": "heuristic"},
+    {"path": "docs/prioritizer/FEATURE_AUDIT.md", "index": "heuristic"},
+    {"path": "docs/prioritizer/PHASE3_PREREGISTRATION.md", "index": "heuristic"},
+    {"path": "docs/prioritizer/VALIDATION.md", "index": "governed_registry"},
+    {"path": "docs/demo/DEMO_NARRATIVE.md", "index": "heuristic"},
+    {"path": "docs/demo/WEBAPP_DESIGN.md", "index": "heuristic"},
+    {"path": "docs/demo/BREAST_SURGEON_BRIEFING.md", "index": "heuristic"},
+    {"path": "docs/demo/panel_selection/README.md", "index": "heuristic"}
+  ],
+  "historical_claim_documents": [
+    "archive/DASHBOARD_BUILD_LOG.md",
+    "archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md",
+    "archive/NATIVE_DASHBOARD_EVALUATION.md",
+    "archive/decisions/DECISIONS_2026-08-31.md",
+    "archive/decisions/PROJECT_CONTEXT_DECISION_APPENDIX_2026-08-31.md",
+    "archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md",
+    "docs/appendix/README.md",
+    "docs/operations/PHASE_0_BASELINE_2026-08-28.md"
+  ],
+  "current_scan_exclusions": {
+    "prefixes": ["archive/", "harness/", ".claude/", ".codex/", ".index/"],
+    "files": [
+      "AGENTS.md", "CLAUDE.md", "docs/README.md", "docs/demo/DOC_RESTRUCTURE_PLAN.md",
+      "docs/decisions/DECISION_REGISTER.md", "docs/decisions/adrs/ADR-001-project-boundary.md",
+      "docs/decisions/adrs/ADR-002-candidate-and-evaluation-boundary.md",
+      "docs/operations/BUILD_GOVERNANCE.md",
+      "docs/operations/PHASE_0_BASELINE_2026-08-28.md", "docs/appendix/README.md",
+      "docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md", "docs/platform/DSS_CHEATSHEET.md",
+      "docs/reference/DISCOVERY_LANDSCAPE.md", "docs/reference/RESEARCH_NOTE.md",
+      "harness/README.md", "notebooks/README.md", "webapp/AGENTS.md", "webapp/CLAUDE.md",
+      "webapp/DEPLOYMENT.md", "webapp/README.md"
+    ]
+  },
+  "index_metadata": [
+    {"path": ".index/assertions.tsv", "owner": "notebook assertions", "freshness": "python3 tools/build_index.py --check", "scope": "literal notebook check() expectations"},
+    {"path": ".index/claims.tsv", "owner": "current claim manifest", "freshness": "python3 tools/build_index.py --check", "scope": "current heuristic numeric claims only"},
+    {"path": ".index/historical_claims.tsv", "owner": "historical claim manifest", "freshness": "python3 tools/build_index.py --check", "scope": "explicit historical comparison only"},
+    {"path": ".index/governed_claims.tsv", "owner": "prioritizer claim registry", "freshness": "python3 tools/check_claim_registry.py --check", "scope": "current governed Part 2 claims and consumers"},
+    {"path": ".index/decisions.tsv", "owner": "current decision register", "freshness": "python3 tools/build_index.py --check", "scope": "current durable decisions"},
+    {"path": ".index/decisions_history.tsv", "owner": "archived decision log and triage", "freshness": "python3 tools/build_index.py --check", "scope": "explicit historical decision lookup"},
+    {"path": ".index/models.tsv", "owner": "model registry and DSS snapshot", "freshness": "python3 tools/build_recipe_index.py --check", "scope": "model identities, consumers and guarded measurements"},
+    {"path": ".index/features.tsv", "owner": "recipe classes and DSS snapshot", "freshness": "python3 tools/build_recipe_index.py --check", "scope": "feature producers and gate classification"},
+    {"path": ".index/recipes.tsv", "owner": "DSS snapshot and recipe classes", "freshness": "python3 tools/build_recipe_index.py --check", "scope": "recipe inventory and gate classification"},
+    {"path": ".index/code.tsv", "owner": "tracked code and DSS snapshot", "freshness": "python3 tools/build_recipe_index.py --check", "scope": "code ownership and reference tripwires"}
+  ]
+}

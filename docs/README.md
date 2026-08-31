@@ -74,6 +74,12 @@ evidence and generated documents appear first; planning and historical material 
 
 ## Not in this directory
 
+- **`../.index/index_metadata.tsv`** — owner, scope and offline freshness check for every current,
+  historical, claim, model, feature, recipe and code index.
+- **`../.index/claims.tsv`** — default bounded current numeric-claim surface, selected only from
+  `tools/index_manifest.json`; governed Part 2 claims remain in `governed_claims.tsv`.
+- **`../.index/historical_claims.tsv`** — explicit historical-comparison surface; never use it for a
+  current claim-risk query.
 - **`../.index/decisions.tsv`** — default bounded query over current durable decisions.
 - **`../.index/decisions_history.tsv`** — explicit historical query over experiments, incidents,
   operations, reusable traps and promoted durable entries.

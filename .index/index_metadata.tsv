@@ -1,0 +1,11 @@
+path	owner	freshness	scope
+.index/assertions.tsv	notebook assertions	python3 tools/build_index.py --check	literal notebook check() expectations
+.index/claims.tsv	current claim manifest	python3 tools/build_index.py --check	current heuristic numeric claims only
+.index/historical_claims.tsv	historical claim manifest	python3 tools/build_index.py --check	explicit historical comparison only
+.index/governed_claims.tsv	prioritizer claim registry	python3 tools/check_claim_registry.py --check	current governed Part 2 claims and consumers
+.index/decisions.tsv	current decision register	python3 tools/build_index.py --check	current durable decisions
+.index/decisions_history.tsv	archived decision log and triage	python3 tools/build_index.py --check	explicit historical decision lookup
+.index/models.tsv	model registry and DSS snapshot	python3 tools/build_recipe_index.py --check	model identities, consumers and guarded measurements
+.index/features.tsv	recipe classes and DSS snapshot	python3 tools/build_recipe_index.py --check	feature producers and gate classification
+.index/recipes.tsv	DSS snapshot and recipe classes	python3 tools/build_recipe_index.py --check	recipe inventory and gate classification
+.index/code.tsv	tracked code and DSS snapshot	python3 tools/build_recipe_index.py --check	code ownership and reference tripwires

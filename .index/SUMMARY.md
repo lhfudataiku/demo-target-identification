@@ -10,43 +10,32 @@ is intentionally excluded from this heuristic numeric scan.
 record or an unguarded claim that can drift silently. The `hint` column flags lines whose
 wording suggests a historical record; it is a hint, never a verdict.
 
-The risk surface is narrowed three ways: **model-derived** only (a frozen graph statistic
-cannot drift, since `compute_kg` is never recomputed), **records-by-design excluded**
-(archived records state what was true at a date), and lines whose wording already
-flags them as historical dropped.
+The current-doc manifest excludes archived material, harness instructions and setup guides
+before scanning. The risk surface is further narrowed to **model-derived** claims only
+(a frozen graph statistic cannot drift, since `compute_kg` is never recomputed), and lines
+whose wording already flags them as historical are dropped.
 
 ## Claims by file
 
 | file | asserted | value-only | orphan | total |
 |---|--:|--:|--:|--:|
-| `docs/README.md` | 0 | 0 | 1 | 1 |
-| `docs/appendix/README.md` | 0 | 0 | 5 | 5 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 19 | 3 | 23 |
-| `docs/demo/DOC_RESTRUCTURE_PLAN.md` | 0 | 0 | 1 | 1 |
 | `docs/demo/WEBAPP_DESIGN.md` | 0 | 52 | 76 | 128 |
 | `docs/demo/panel_selection/README.md` | 0 | 3 | 11 | 14 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
-| `docs/operations/PHASE_0_BASELINE_2026-08-28.md` | 0 | 0 | 35 | 35 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 13 | 18 |
-| `docs/platform/DSS_CHEATSHEET.md` | 0 | 1 | 6 | 7 |
 | `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 19 | 103 | 122 |
 | `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 16 | 49 | 65 |
-| `docs/reference/DISCOVERY_LANDSCAPE.md` | 0 | 0 | 47 | 47 |
-| `docs/reference/RESEARCH_NOTE.md` | 0 | 1 | 13 | 14 |
-| `notebooks/README.md` | 0 | 2 | 2 | 4 |
-| `webapp/DEPLOYMENT.md` | 0 | 0 | 1 | 1 |
-| `webapp/README.md` | 0 | 6 | 1 | 7 |
-| **total** | **1** | **135** | **521** | **657** |
+| **total** | **1** | **125** | **409** | **535** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**103 rows.** Of 521 total orphans, these are the model-dependent ones: the numbers that move
+**96 rows.** Of 409 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
 |---|---|--:|---|
-| `docs/README.md:42` | - | 95.7 | \| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) \| **Current mockup.** |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:104` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:113` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:115` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
@@ -106,8 +95,9 @@ when the champion changes and that no notebook would catch.
 | `docs/prioritizer/FEATURE_AUDIT.md:182` | 4 | 3.18 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
 | `docs/prioritizer/FEATURE_AUDIT.md:183` | 4 | 0.1954 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
 | `docs/prioritizer/FEATURE_AUDIT.md:183` | 4 | 0.1932 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
+| `docs/prioritizer/FEATURE_AUDIT.md:183` | 4 | 0.1915 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
 
-*43 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*36 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## Decision indexes
 

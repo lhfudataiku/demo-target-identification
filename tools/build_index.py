@@ -17,7 +17,8 @@ ORPHAN rows are the risk surface. Everything else is either guarded by a noteboo
 deliberate historical record.
 
 Outputs (committed, so `ASSERTED -> ORPHAN` shows up in review):
-    .index/claims.tsv     every numeric claim in the docs, with its guard
+    .index/claims.tsv     numeric claims from the explicit current-doc manifest
+    .index/historical_claims.tsv  separately named historical comparison surface
     .index/decisions.tsv  current durable decisions, with stable IDs
     .index/decisions_history.tsv  classified jump table for the retired log
     .index/SUMMARY.md     counts and the orphan list
@@ -37,6 +38,7 @@ from collections import defaultdict
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, ".index")
+MANIFEST = os.path.join(ROOT, "tools", "index_manifest.json")
 
 # ---------------------------------------------------------------- number extraction
 # Claim-shaped numbers only. A bare small integer is almost never a claim, and section numbers,
@@ -63,28 +65,6 @@ MODELDEP = re.compile(
     r"|\bt = |\bdm\b|degree-matched|per-disease|per-family|split-key|null gap|single-feature",
     re.I,
 )
-# RECORDS BY DESIGN. These files state what was true at a past date, so an unguarded number in them
-# is correct behaviour, not risk. Excluding them is the difference between a 583-row list dominated
-# by the append-only decision log and a list of live claims someone might quote.
-RECORD_FILES = {
-    "docs/appendix/README.md",      # describes m3-era frozen snapshots
-}
-# Harness guidance is operational policy, not project evidence. Indexing it makes numerical examples
-# and context-budget measurements look like live model claims. Keep source files and generated copies
-# out of the claims scan; `tools/check_harness.py` owns their freshness and parity instead.
-CLAIM_EXCLUDED_FILES = {
-    "AGENTS.md",
-    "CLAUDE.md",
-    # Governed current claims are validated structurally and indexed from CLAIM_REGISTRY.json by
-    # check_claim_registry.py. Re-scanning the evidence map heuristically would create a second,
-    # weaker claim inventory with false ORPHAN rows.
-    "docs/prioritizer/VALIDATION.md",
-    "webapp/AGENTS.md",
-    "webapp/CLAUDE.md",
-}
-# Archives preserve what was true at a date. Re-indexing them as current claim risk after the Phase 3
-# method/evidence split would duplicate every moved number and make the current risk surface unusable.
-CLAIM_EXCLUDED_PREFIXES = ("harness/", ".claude/", ".codex/", "archive/")
 # a hint only -- never used to decide ORPHAN status
 HIST = re.compile(
     r"SUPERSEDED|CORRECTED|REFUTED|retired|reference|previously|deleted|"
@@ -103,6 +83,67 @@ def tracked(pattern):
     out = subprocess.run(["git", "ls-files", pattern], cwd=ROOT,
                          capture_output=True, text=True).stdout.split("\n")
     return [f for f in out if f.strip() and not f.startswith(".index/")]
+
+
+def load_manifest():
+    """Load and strictly validate the bounded current/history claim surfaces.
+
+    The manifest is intentionally a reviewed source file rather than an inferred directory walk:
+    new Markdown, harness material and setup guides cannot silently become current claim risk.
+    """
+    with open(MANIFEST) as handle:
+        manifest = json.load(handle)
+    required = {"schema_version", "current_claim_documents", "historical_claim_documents",
+                "current_scan_exclusions", "index_metadata"}
+    if set(manifest) != required or manifest["schema_version"] != 1:
+        raise ValueError("invalid tools/index_manifest.json schema")
+    exclusions = manifest["current_scan_exclusions"]
+    if set(exclusions) != {"prefixes", "files"}:
+        raise ValueError("manifest exclusions must declare prefixes and files")
+    prefixes, files = exclusions["prefixes"], exclusions["files"]
+    if not all(isinstance(x, str) for x in prefixes + files):
+        raise ValueError("manifest exclusions must be strings")
+    tracked_md = set(tracked("*.md"))
+    current, seen = [], set()
+    for item in manifest["current_claim_documents"]:
+        if set(item) != {"path", "index"} or item["index"] not in {"heuristic", "governed_registry"}:
+            raise ValueError("each current manifest entry needs path and supported index")
+        path = item["path"]
+        if (not isinstance(path, str) or path not in tracked_md or path in seen
+                or any(path.startswith(p) for p in prefixes) or path in files):
+            raise ValueError("invalid or excluded current claim document: %r" % path)
+        seen.add(path)
+        current.append(item)
+    historical, hseen = [], set()
+    for path in manifest["historical_claim_documents"]:
+        if (not isinstance(path, str) or path not in tracked_md or path in hseen
+                or not (path.startswith("archive/") or path in {
+                    "docs/appendix/README.md", "docs/operations/PHASE_0_BASELINE_2026-08-28.md"})):
+            raise ValueError("invalid historical claim document: %r" % path)
+        hseen.add(path)
+        historical.append(path)
+    if seen & hseen:
+        raise ValueError("a claim document cannot be both current and historical")
+    classified = seen | hseen | set(files)
+    unclassified = sorted(path for path in tracked_md
+                          if path not in classified
+                          and not any(path.startswith(prefix) for prefix in prefixes))
+    if unclassified:
+        raise ValueError("tracked Markdown lacks a manifest role: %s" % ", ".join(unclassified))
+    required_indexes = {
+        ".index/claims.tsv", ".index/historical_claims.tsv", ".index/decisions.tsv",
+        ".index/decisions_history.tsv", ".index/models.tsv", ".index/features.tsv",
+        ".index/recipes.tsv", ".index/code.tsv",
+    }
+    metadata = manifest["index_metadata"]
+    paths = set()
+    for item in metadata:
+        if set(item) != {"path", "owner", "freshness", "scope"} or not all(item.values()):
+            raise ValueError("each index metadata entry needs path, owner, freshness and scope")
+        paths.add(item["path"])
+    if not required_indexes <= paths or len(paths) != len(metadata):
+        raise ValueError("manifest metadata is missing a required index or repeats a path")
+    return manifest, current, historical
 
 
 def scrub(line):
@@ -130,7 +171,8 @@ def parse_assertions():
     """
     rows = []
     for path in tracked("notebooks/*.py"):
-        src = open(os.path.join(ROOT, path)).read()
+        with open(os.path.join(ROOT, path)) as handle:
+            src = handle.read()
         try:
             tree = ast.parse(src)
         except SyntaxError as e:
@@ -242,7 +284,7 @@ def literal(node):
 
 
 # ---------------------------------------------------------------- claims
-def build_claims(assertions):
+def build_claims(assertions, markdown_paths):
     by_sec = defaultdict(list)
     all_vals = []
     for sec, val, nb, name in assertions:
@@ -261,33 +303,29 @@ def build_claims(assertions):
         return "ORPHAN", ""
 
     rows = []
-    markdown_paths = [
-        path for path in tracked("*.md")
-        if path not in CLAIM_EXCLUDED_FILES and not path.startswith(CLAIM_EXCLUDED_PREFIXES)
-        and os.path.isfile(os.path.join(ROOT, path))
-    ]
     for path in sorted(markdown_paths):
         sec = ""
-        for i, raw in enumerate(open(os.path.join(ROOT, path)), 1):
-            h = HEADING.match(raw)
-            if h:
-                sec = h.group(2)
-                continue
-            line = scrub(raw)
-            seen = set()
-            for m in NUM.finditer(line):
-                tok = m.group(1)
-                if tok in seen:
+        with open(os.path.join(ROOT, path)) as handle:
+            for i, raw in enumerate(handle, 1):
+                h = HEADING.match(raw)
+                if h:
+                    sec = h.group(2)
                     continue
-                seen.add(tok)
-                status, by = guard(sec, tok)
-                rows.append({
-                    "file": path, "line": i, "section": sec or "-", "value": tok,
-                    "status": status, "guarded_by": by,
-                    "hint": "hist" if HIST.search(raw) else "",
-                    "model_dep": "y" if MODELDEP.search(raw) else "",
-                    "context": re.sub(r"\s+", " ", raw.strip())[:110].rstrip(),
-                })
+                line = scrub(raw)
+                seen = set()
+                for m in NUM.finditer(line):
+                    tok = m.group(1)
+                    if tok in seen:
+                        continue
+                    seen.add(tok)
+                    status, by = guard(sec, tok)
+                    rows.append({
+                        "file": path, "line": i, "section": sec or "-", "value": tok,
+                        "status": status, "guarded_by": by,
+                        "hint": "hist" if HIST.search(raw) else "",
+                        "model_dep": "y" if MODELDEP.search(raw) else "",
+                        "context": re.sub(r"\s+", " ", raw.strip())[:110].rstrip(),
+                    })
     return rows
 
 
@@ -450,7 +488,7 @@ def render(claims, decisions, decision_history):
     # risk surface = model-derived AND unguarded AND not obviously a historical record
     orphans = [r for r in claims
                if r["status"] == "ORPHAN" and not r["hint"] and r["model_dep"]
-               and r["file"] not in RECORD_FILES]
+               ]
 
     L = ["# Index summary", "",
          "Generated by `tools/build_index.py`. Do not edit by hand.", "",
@@ -460,10 +498,10 @@ def render(claims, decisions, decision_history):
          "`ORPHAN` = no notebook assertion covers this value. That is either a deliberate historical",
          "record or an unguarded claim that can drift silently. The `hint` column flags lines whose",
          "wording suggests a historical record; it is a hint, never a verdict.", "",
-         "The risk surface is narrowed three ways: **model-derived** only (a frozen graph statistic",
-         "cannot drift, since `compute_kg` is never recomputed), **records-by-design excluded**",
-         "(archived records state what was true at a date), and lines whose wording already",
-         "flags them as historical dropped.",
+         "The current-doc manifest excludes archived material, harness instructions and setup guides",
+         "before scanning. The risk surface is further narrowed to **model-derived** claims only",
+         "(a frozen graph statistic cannot drift, since `compute_kg` is never recomputed), and lines",
+         "whose wording already flags them as historical are dropped.",
          "", "## Claims by file", "",
          "| file | asserted | value-only | orphan | total |", "|---|--:|--:|--:|--:|"]
     for f in sorted(files):
@@ -505,8 +543,11 @@ def render(claims, decisions, decision_history):
 
 def main():
     check = "--check" in sys.argv
+    manifest, current_documents, historical_documents = load_manifest()
     assertions = parse_assertions()
-    claims = build_claims(assertions)
+    claims = build_claims(assertions, [item["path"] for item in current_documents
+                                       if item["index"] == "heuristic"])
+    historical_claims = build_claims(assertions, historical_documents)
     decisions = build_current_decisions()
     decision_history = apply_decision_triage(build_historical_decisions(), decisions)
 
@@ -517,11 +558,14 @@ def main():
             ["notebook", "section", "check", "expected"]),
         "claims.tsv": tsv(claims, ["file", "line", "section", "value", "status",
                                    "guarded_by", "model_dep", "hint", "context"]),
+        "historical_claims.tsv": tsv(historical_claims, ["file", "line", "section", "value", "status",
+                                                           "guarded_by", "model_dep", "hint", "context"]),
         "decisions.tsv": tsv(decisions, ["id", "date", "domain", "status", "line", "topic", "decision", "evidence"]),
         "decisions_history.tsv": tsv(
             decision_history,
             ["date", "line", "chars", "category", "promoted_to", "route", "topic"]),
         "SUMMARY.md": render(claims, decisions, decision_history),
+        "index_metadata.tsv": tsv(manifest["index_metadata"], ["path", "owner", "freshness", "scope"]),
     }
 
     if check:
@@ -531,17 +575,17 @@ def main():
         if stale:
             print("STALE index: %s — run `python3 tools/build_index.py`" % ", ".join(stale))
             return 1
-        print("index up to date (%d claims, %d assertions, %d current decisions, %d historical)"
-              % (len(claims), len(assertions), len(decisions), len(decision_history)))
+        print("index up to date (%d current claims, %d historical claims, %d assertions, %d current decisions, %d historical)"
+              % (len(claims), len(historical_claims), len(assertions), len(decisions), len(decision_history)))
         return 0
 
     os.makedirs(INDEX, exist_ok=True)
     for n, body in files.items():
         open(os.path.join(INDEX, n), "w").write(body)
     orph = sum(1 for r in claims if r["status"] == "ORPHAN")
-    print("wrote .index/  claims=%d (asserted=%d orphan=%d)  assertions=%d  decisions=%d history=%d"
-          % (len(claims), sum(1 for r in claims if r["status"] == "ASSERTED"),
-             orph, len(assertions), len(decisions), len(decision_history)))
+    print("wrote .index/  current_claims=%d (asserted=%d orphan=%d) historical_claims=%d assertions=%d decisions=%d history=%d"
+          % (len(claims), sum(1 for r in claims if r["status"] == "ASSERTED"), orph,
+             len(historical_claims), len(assertions), len(decisions), len(decision_history)))
     return 0
 
 
