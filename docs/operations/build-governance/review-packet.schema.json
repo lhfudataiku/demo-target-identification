@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:target-id:build-governance:review-packet:v1",
+  "title": "Compact targeted build review packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "event_id", "job_id", "project_key", "targets", "outcome", "baseline_id", "classification", "review_required", "reasons", "changed_claims", "changed_contracts", "changed_data", "changed_metrics", "changed_refresh_state", "failed_assertions", "consumers", "recommended_action"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "event_id": {"type": "string", "minLength": 1},
+    "job_id": {"type": "string", "minLength": 1},
+    "project_key": {"type": "string", "minLength": 1},
+    "targets": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "outcome": {"enum": ["SUCCESS", "FAILED", "ABORTED"]},
+    "baseline_id": {"type": "string", "minLength": 1},
+    "classification": {"enum": ["NO_CHANGE", "REFRESH_ONLY", "EXPECTED_DATA_DELTA", "CLAIM_DELTA", "CONTRACT_DELTA", "INCIDENT"]},
+    "review_required": {"type": "boolean"},
+    "reasons": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "changed_claims": {"type": "array", "items": {"$ref": "#/$defs/claimDelta"}},
+    "changed_contracts": {"type": "array", "items": {"$ref": "#/$defs/contractDelta"}},
+    "changed_data": {"type": "array", "items": {"type": "string"}},
+    "changed_metrics": {"type": "array", "items": {"type": "string"}},
+    "changed_refresh_state": {"type": "array", "items": {"type": "string"}},
+    "failed_assertions": {"type": "array", "items": {"$ref": "#/$defs/failedAssertion"}},
+    "consumers": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "recommended_action": {"enum": ["append_machine_event_only", "refresh_machine_state_only", "rerun_mapped_checks_and_refresh_generated_status", "targeted_claim_review", "targeted_contract_review", "fail_or_flag_and_preserve_diagnostics"]}
+  },
+  "$defs": {
+    "scalar": {"type": ["string", "number", "integer", "boolean", "null"]},
+    "pathList": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "claimDelta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "measurement", "accepted", "observed", "absolute_tolerance", "documentation_consumers", "webapp_api_consumers", "review_policy"],
+      "properties": {
+        "claim_id": {"type": "string", "minLength": 1},
+        "measurement": {"type": "string", "minLength": 1},
+        "accepted": {"$ref": "#/$defs/scalar"},
+        "observed": {"$ref": "#/$defs/scalar"},
+        "absolute_tolerance": {"type": ["number", "integer", "null"]},
+        "documentation_consumers": {"$ref": "#/$defs/pathList"},
+        "webapp_api_consumers": {"$ref": "#/$defs/pathList"},
+        "review_policy": {"type": "string", "minLength": 1}
+      }
+    },
+    "contractDelta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract", "accepted", "observed", "consumers"],
+      "properties": {
+        "contract": {"type": "string", "pattern": "^(recipe|schema):.+$"},
+        "accepted": {"type": ["string", "null"]},
+        "observed": {"type": ["string", "null"]},
+        "consumers": {"$ref": "#/$defs/pathList"}
+      }
+    },
+    "failedAssertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "status": {"enum": ["FAIL", "ERROR"]}
+      }
+    }
+  }
+}

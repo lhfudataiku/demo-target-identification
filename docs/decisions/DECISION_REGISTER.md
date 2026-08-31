@@ -336,6 +336,19 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Superseded by:** —
 - **Historical sources:** lines 121
 
+## DEC-OPS-005 — Build review is routed by semantic delta
+
+- **Date:** 2026-08-31
+- **Domain:** operations
+- **Status:** accepted
+- **Decision:** Classify governed DSS builds deterministically against an explicitly accepted baseline; keep no-change and refresh-only events machine-readable, and request targeted review only for claim, contract or incident deltas.
+- **Rationale:** Sending every routine dataset or recipe operation through an agent repeats unchanged context, burns tokens and recreates documentation drift without adding review value.
+- **Evidence:** [`BUILD_GOVERNANCE.md`](../operations/BUILD_GOVERNANCE.md), [`DOC_RESTRUCTURE_PLAN.md` §8](../demo/DOC_RESTRUCTURE_PLAN.md)
+- **Consequences:** Build events never write prose directly; live execution uses explicit target and evidence contracts, and scenario creation or a pilot build remains separately authorized.
+- **Supersedes:** per-operation agent review and turn-by-turn Markdown build logging
+- **Superseded by:** —
+- **Historical sources:** —
+
 ## DEC-MODEL-001 — `m7-f14` is the current champion
 
 - **Date:** 2026-08-21

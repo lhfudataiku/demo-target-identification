@@ -47,6 +47,7 @@ evidence and generated documents appear first; planning and historical material 
 | | |
 |---|---|
 | [`platform/DSS_CHEATSHEET.md`](platform/DSS_CHEATSHEET.md) | DSS behaviours and CLI patterns. **Read §1 before trusting any output** — those failures produce plausible results rather than errors |
+| [`operations/BUILD_GOVERNANCE.md`](operations/BUILD_GOVERNANCE.md) | Deterministic Part 2 build-event, accepted-baseline and targeted-review contract; read before designing or operating the approved DSS pilot |
 | [`reference/RESEARCH_NOTE.md`](reference/RESEARCH_NOTE.md) | Evidence base behind the modelling choices. **Unvalidated corpus — verify before client-facing use** |
 | [`reference/DISCOVERY_LANDSCAPE.md`](reference/DISCOVERY_LANDSCAPE.md) | The wider discovery chain (stages 1–6). A **separate framework** from the target-identification work above |
 | [`appendix/`](appendix/) | Frozen snapshot CSVs backing the ablation-ladder sections. **`m3-f12`-era** — not the current champion |

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "fixture-no-change-event",
+  "observed_at": "2026-08-31T12:00:00Z",
+  "project_key": "DEMO_TARGET_IDENTIFICATION",
+  "job_id": "fixture-job-001",
+  "targets": ["breast_panel_metrics"],
+  "outcome": "SUCCESS",
+  "accepted_baseline_id": "baseline-part2-breast-panel-001",
+  "fingerprints": {
+    "recipe_settings": {"compute_breast_panel": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"},
+    "schemas": {"breast_panel_metrics": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"},
+    "data": {"breast_panel_metrics": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"},
+    "refresh_state": {"breast_panel_metrics": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"}
+  },
+  "metrics": {"breast_panel_metrics.row_count": 42},
+  "claim_values": {
+    "TI-VAL-009": {
+      "her2_positive_auroc": 0.9365,
+      "her2_tnbc_novel_overlap": 2,
+      "tnbc_known_targets": 8
+    }
+  },
+  "assertions": [
+    {"id": "TI-VAL-009", "status": "PASS"},
+    {"id": "breast-panel-contract", "status": "PASS"}
+  ]
+}

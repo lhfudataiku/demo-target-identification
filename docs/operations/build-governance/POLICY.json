@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "scope": "Repository-side policy for a future safe Part 2 leaf-build pilot. Presence here does not approve a live build or scenario.",
+  "allowed_projects": ["DEMO_TARGET_IDENTIFICATION"],
+  "allowed_targets": {
+    "DEMO_TARGET_IDENTIFICATION": [
+      "breast_panel_metrics",
+      "breast_panel_overlap"
+    ]
+  },
+  "target_requirements": {
+    "DEMO_TARGET_IDENTIFICATION": {
+      "breast_panel_metrics": {
+        "recipe_settings": ["compute_breast_panel"],
+        "schemas": ["breast_panel_metrics"],
+        "data": ["breast_panel_metrics"],
+        "refresh_state": ["breast_panel_metrics"],
+        "metrics": ["breast_panel_metrics.row_count"],
+        "claim_values": ["TI-VAL-009"],
+        "assertions": ["TI-VAL-009", "breast-panel-contract"]
+      },
+      "breast_panel_overlap": {
+        "recipe_settings": ["compute_breast_panel"],
+        "schemas": ["breast_panel_overlap"],
+        "data": ["breast_panel_overlap"],
+        "refresh_state": ["breast_panel_overlap"],
+        "metrics": ["breast_panel_overlap.row_count"],
+        "claim_values": ["TI-VAL-009"],
+        "assertions": ["TI-VAL-009", "breast-panel-contract"]
+      }
+    }
+  },
+  "denied_projects": ["KNOWLEDGE_GRAPH_PRIMEKG"],
+  "denied_targets": ["KNOWLEDGE_GRAPH_PRIMEKG"],
+  "denied_recipes": ["compute_kg"],
+  "contract_consumers": {
+    "recipe:compute_breast_panel": [
+      "docs/demo/FLOW_MAP.md",
+      "docs/demo/WEBAPP_DESIGN.md",
+      "dss_recipes/compute_breast_panel.py"
+    ],
+    "schema:breast_panel_metrics": [
+      "docs/demo/DASHBOARD_MOCKUP_V3.html",
+      "docs/demo/WEBAPP_DESIGN.md"
+    ],
+    "schema:breast_panel_overlap": [
+      "docs/demo/DASHBOARD_MOCKUP_V3.html",
+      "docs/demo/WEBAPP_DESIGN.md"
+    ]
+  }
+}
