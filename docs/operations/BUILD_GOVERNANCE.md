@@ -50,7 +50,7 @@ policy and code. Any target not explicitly allowed is refused before classificat
 scenario change or build still requires separate explicit user approval.
 
 The repository classifier operates on a captured event; it is not a build launcher or an
-authorization mechanism. Before any future job starts, the approved DSS pilot must apply the same
+authorization mechanism. Before any future governed job starts, DSS automation must apply the same
 project/target policy as a preflight and use only the producing Part 2 leaf recipe. Recursive builds,
 upstream propagation and policy expansion remain unapproved. Missing or extra capture fields are an
 incident, never evidence of `NO_CHANGE`.
@@ -69,5 +69,16 @@ given. It has no DSS dependency, invokes no agent and edits no documentation. Th
 all six routes, canonical fingerprint stability, target denials, fail-closed evidence capture and the
 zero-review/no-Markdown-write no-change path. Metric keys are target-qualified (for example,
 `breast_panel_metrics.row_count`) so a future multi-target event cannot collapse two measurements.
-Live event capture, ledger append, baseline acceptance and the leaf-build pilot remain deferred until
-separately approved.
+
+## Pilot result
+
+The approved Part 2 leaf pilot completed on 2026-08-31 using one direct non-recursive
+`compute_breast_panel` run. The `breast_panel_metrics` output matched the pilot-only accepted
+baseline across recipe, schema, data, refresh, metric and governed-claim fingerprints, producing
+`NO_CHANGE` with no review or prose edit. The read-only
+[`capture_build_governance.py`](../../tools/capture_build_governance.py) adapter and immutable
+pilot-only [accepted baseline](build-governance/pilot/phase5-breast-panel-accepted-baseline.json),
+[post-build event](build-governance/pilot/phase5-breast-panel-leaf-build-event.json) and
+[machine ledger](build-governance/pilot/phase5-breast-panel-machine-ledger.jsonl) preserve the test.
+A production DSS scenario and durable DSS-owned ledger remain deferred and require separate
+approval.

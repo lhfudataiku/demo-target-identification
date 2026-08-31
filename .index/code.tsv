@@ -14,6 +14,8 @@ docs/demo/model_recovery.json	docs	LIVE (referenced)	1	archive/DASHBOARD_BUILD_L
 docs/operations/build-governance/POLICY.json	docs	LIVE (referenced)	2	docs/operations/BUILD_GOVERNANCE.md,tools/build_governance.py
 docs/operations/build-governance/accepted-baseline.schema.json	docs	LIVE (referenced)	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
 docs/operations/build-governance/machine-event.schema.json	docs	LIVE (referenced)	3	docs/operations/BUILD_GOVERNANCE.md,docs/operations/build-governance/accepted-baseline.schema.json,tools/tests/test_build_governance.py
+docs/operations/build-governance/pilot/phase5-breast-panel-accepted-baseline.json	docs	LIVE (referenced)	1	docs/operations/BUILD_GOVERNANCE.md
+docs/operations/build-governance/pilot/phase5-breast-panel-leaf-build-event.json	docs	LIVE (referenced)	1	docs/operations/BUILD_GOVERNANCE.md
 docs/operations/build-governance/review-packet.schema.json	docs	LIVE (referenced)	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
 docs/prioritizer/CLAIM_REGISTRY.json	docs	LIVE (referenced)	8	docs/README.md,docs/decisions/DECISION_REGISTER.md,docs/demo/WEBAPP_DESIGN.md,docs/prioritizer/TARGET_PRIORITIZER.md
 dss_recipes/attach_node_index.py	recipe-mirror	MIRROR (graph-build project)	0	-
@@ -81,6 +83,7 @@ scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 tools/build_governance.py	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
 tools/build_index.py	tool	LIVE	9	archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/decisions/README.md
 tools/build_recipe_index.py	tool	LIVE	19	.claude/skills/target-id/SKILL.md,.codex/skills/target-id/SKILL.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md
+tools/capture_build_governance.py	tool	LIVE	1	docs/operations/BUILD_GOVERNANCE.md
 tools/check_claim_registry.py	tool	LIVE	3	docs/prioritizer/VALIDATION.md,tools/build_index.py,tools/check_indexes.sh
 tools/check_freshness.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
 tools/check_harness.py	tool	LIVE	3	harness/README.md,tools/build_index.py,tools/check_indexes.sh
