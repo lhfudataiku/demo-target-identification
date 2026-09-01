@@ -2,6 +2,7 @@
 
   GET  /api/graph/defaults   the pinned starter queries
   POST /api/graph/search     ask the graph, return an answer plus what to render
+  POST /api/graph/mechanism  every evidence route from one gene to one disease
 
 This module is TRANSPORT, deliberately. The behaviour -- how to write Cypher for
 this graph, what to refuse, how to phrase an answer -- lives in the system prompt
@@ -30,6 +31,7 @@ from __future__ import annotations
 
 import json
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
@@ -346,3 +348,217 @@ def search(body: SearchBody) -> dict[str, Any]:
                   # Recovered from the trace so the panel can be edited and re-run
                   # without the LLM. This is the whole audit trail for an NL ask.
                   cypher=_generated_cypher(raw))
+
+
+# ── Act 4: the mechanism behind one candidate ────────────────────────────────
+# FIVE ROUTES, FIVE QUERIES, MERGED HERE -- and the reason is not stylistic.
+#
+# The natural way to write this is one query with an OPTIONAL MATCH per route.
+# It does not survive the engine. Consecutive OPTIONAL MATCH clauses MULTIPLY
+# rows rather than adding them, so for HRAS against HER2+ breast carcinoma the
+# four graph routes join to roughly 40 x 148 x 20 x 139 ~ 16M rows before
+# `LIMIT 400` trims anything -- LIMIT bounds the OUTPUT, not the join. Measured:
+# 173s, then `AIQueryExecutionException: Interrupted`. A UNION ALL rewrite timed
+# out too (and Kuzu's binder rejects branches whose mediator binds different
+# node tables anyway).
+#
+# Run separately each route is 2-5s, so they are issued concurrently and the
+# subgraphs are merged by node and edge id. That also produces something the
+# single query could not: a PER-ROUTE COUNT, which is the honest answer to "why
+# this gene?" -- it says which kinds of evidence exist and which are absent.
+#
+# Each route carries its own LIMIT so one hub-heavy route cannot swamp the
+# canvas with the others invisible underneath it.
+MECHANISM_ROUTES: list[dict[str, Any]] = [
+    {
+        "key": "ppi", "label": "a direct interaction", "feature": "dwpc_GGD",
+        "limit": 100,
+        "pattern": ("MATCH (g)-[r1:protein_protein]-(m:protein)-[a:disease_protein]-(D)\n"
+                    "  WHERE m.node_index <> g.node_index\n"
+                    "RETURN g, D, r1, m, a"),
+    },
+    {
+        "key": "pathway", "label": "a shared pathway", "feature": "dwpc_GPGD",
+        "limit": 100,
+        "pattern": ("MATCH (g)-[r1:pathway_protein]-(x:pathway)-[r2:pathway_protein]"
+                    "-(m:protein)-[a:disease_protein]-(D)\n"
+                    "  WHERE m.node_index <> g.node_index\n"
+                    "RETURN g, D, r1, x, r2, m, a"),
+    },
+    {
+        # The GO routes need the degree cap. Without it a top-level term like
+        # "protein binding" pulls in thousands of proteins that share nothing
+        # specific -- the hub is the match, not the biology.
+        "key": "molfunc", "label": "a shared molecular function", "feature": "dwpc_GFGD",
+        "limit": 60,
+        "pattern": ("MATCH (g)-[r1:molfunc_protein]-(x:molecular_function)-[r2:molfunc_protein]"
+                    "-(m:protein)-[a:disease_protein]-(D)\n"
+                    "  WHERE m.node_index <> g.node_index\n"
+                    "    AND COUNT { MATCH (x)-[:molfunc_protein]-() } <= 200\n"
+                    "RETURN g, D, r1, x, r2, m, a"),
+    },
+    {
+        "key": "bioprocess", "label": "a shared biological process", "feature": "dwpc_GBGD",
+        "limit": 100,
+        "pattern": ("MATCH (g)-[r1:bioprocess_protein]-(x:biological_process)-[r2:bioprocess_protein]"
+                    "-(m:protein)-[a:disease_protein]-(D)\n"
+                    "  WHERE m.node_index <> g.node_index\n"
+                    "    AND COUNT { MATCH (x)-[:bioprocess_protein]-() } <= 200\n"
+                    "RETURN g, D, r1, x, r2, m, a"),
+    },
+    {
+        # NOT A MODEL FEATURE -- and the distinction matters enough that the card
+        # states it. No feature traverses a drug node, so nothing here fed the
+        # score. It IS one of three routes admitting a pair into the candidate
+        # pool, so it shaped the scored population: "not a feature", never
+        # "not used". Only the two drug_disease relations this graph actually
+        # holds; contraindication was never built (GRAPH_BUILDING.md 7.3).
+        "key": "drug", "label": "a drug linking both", "feature": None,
+        "limit": 40,
+        "pattern": ("MATCH (g)-[r1:drug_protein]-(x:drug)-[r2:drug_disease]-(D)\n"
+                    "  WHERE r2.display_relation IN ['indication', 'drug_investigated_for']\n"
+                    "RETURN g, D, r1, x, r2"),
+    },
+]
+
+
+def _mechanism_cypher(route: dict[str, Any], disease: int, gene: int) -> str:
+    """One route's query, with the live node indices bound in.
+
+    Indices are snapshot-specific, so they are always generated from the current
+    row rather than taken from a literal in a document.
+    """
+    return (f"MATCH (D:disease {{node_index: {disease}}})\n"
+            f"MATCH (g:protein {{node_index: {gene}}})\n"
+            f"{route['pattern']} LIMIT {route['limit']}")
+
+
+# The same five routes as ONE query, for the Visual Graph Explorer.
+#
+# This is the form to reach for by hand, and it is the form the card offers for
+# copying -- the Explorer talks to Kuzu directly and returns it in about a
+# second. It is NOT what this webapp executes: the agent tool's Kuzu instance
+# runs in a memory-constrained kernel, where the chained OPTIONAL MATCH product
+# exhausts the buffer pool ("Buffer manager exception: the buffer pool is full",
+# reproduced on three warm attempts at 68-108s). Same query, different execution
+# context, and only one of them is available to a webapp backend.
+EXPLORER_TEMPLATE = """// Why {gene_name}? Every evidence route to genes already
+// annotated for {disease_name}.
+MATCH (D:disease {{node_index: {disease}}})
+MATCH (g:protein {{node_index: {gene}}})
+
+OPTIONAL MATCH (g)-[ppi:protein_protein]-(m1:protein)-[a1:disease_protein]-(D)
+  WHERE m1.node_index <> g.node_index
+
+OPTIONAL MATCH (g)-[pp1:pathway_protein]-(P:pathway)-[pp2:pathway_protein]-(m2:protein)-[a2:disease_protein]-(D)
+  WHERE m2.node_index <> g.node_index
+
+OPTIONAL MATCH (g)-[mf1:molfunc_protein]-(F:molecular_function)-[mf2:molfunc_protein]-(m3:protein)-[a3:disease_protein]-(D)
+  WHERE m3.node_index <> g.node_index
+    AND COUNT {{ MATCH (F)-[:molfunc_protein]-() }} <= 200
+
+OPTIONAL MATCH (g)-[bp1:bioprocess_protein]-(B:biological_process)-[bp2:bioprocess_protein]-(m4:protein)-[a4:disease_protein]-(D)
+  WHERE m4.node_index <> g.node_index
+    AND COUNT {{ MATCH (B)-[:bioprocess_protein]-() }} <= 200
+
+OPTIONAL MATCH (g)-[dp:drug_protein]-(DR:drug)-[dd:drug_disease]-(D)
+  WHERE dd.display_relation IN ['indication', 'drug_investigated_for']
+
+RETURN g, D,
+       ppi, m1, a1,
+       pp1, P, pp2, m2, a2,
+       mf1, F, mf2, m3, a3,
+       bp1, B, bp2, m4, a4,
+       dp, DR, dd
+LIMIT 400"""
+
+
+class MechanismBody(BaseModel):
+    disease: int
+    gene: int
+    # Only for the copyable Explorer query's comment header; never interpolated
+    # into anything executed here.
+    disease_name: str = Field(default="this disease", max_length=200)
+    gene_name: str = Field(default="this gene", max_length=100)
+
+
+@router.post("/mechanism")
+def mechanism(body: MechanismBody) -> dict[str, Any]:
+    """Every evidence route from one candidate to one disease, as one subgraph.
+
+    Literal Cypher throughout -- no LLM, so the picture is deterministic and the
+    queries below it are exactly what ran.
+    """
+    def fetch(route: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any] | None, str | None]:
+        cypher = _mechanism_cypher(route, body.disease, body.gene)
+        try:
+            raw = get_project().get_agent_tool(GRAPH_TOOL_ID).run({"query": cypher})
+        except Exception as e:
+            logger.warning("mechanism route %s failed: %s", route["key"], type(e).__name__)
+            return route, None, _explain(e)
+        if raw.get("error"):
+            return route, None, str(raw["error"])
+        return route, _find_graph(raw) or {"nodes": [], "edges": []}, None
+
+    # Concurrent because sequential is 5 x 2-5s and this sits behind a click
+    # someone makes in front of an audience.
+    with ThreadPoolExecutor(max_workers=len(MECHANISM_ROUTES)) as pool:
+        results = list(pool.map(fetch, MECHANISM_ROUTES))
+
+    nodes: dict[str, dict[str, Any]] = {}
+    edges: dict[str, dict[str, Any]] = {}
+    routes_out: list[dict[str, Any]] = []
+
+    for route, graph, err in results:
+        r_nodes = (graph or {}).get("nodes") or []
+        r_edges = (graph or {}).get("edges") or []
+        # g and D come back on every route; they are context, not evidence, so
+        # the per-route count reports the edges -- the thing that is actually
+        # this route's finding.
+        # NO "capped" BOOLEAN HERE. The LIMIT bounds ROWS and this counts EDGES,
+        # and the two are not comparable: one pathway row returns three edges
+        # (gene->term, term->neighbour, neighbour->disease), one PPI row returns
+        # two. Comparing 161 edges against a limit of 100 would have flagged
+        # "capped" on routes that returned everything they had. The limit is
+        # reported as what it is -- the per-route bound -- and the card states
+        # it rather than inferring truncation it cannot actually observe.
+        routes_out.append({
+            "key": route["key"], "label": route["label"], "feature": route["feature"],
+            "n_edges": len(r_edges), "row_limit": route["limit"], "error": err,
+        })
+        for n in r_nodes:
+            nodes.setdefault(n["id"], {"id": n["id"], "label": n.get("label"),
+                                       "group_name": n.get("group_name")})
+        for e in r_edges:
+            edges.setdefault(e["id"], {
+                "id": e["id"], "src": e["src"], "dst": e["dst"],
+                "group_name": e.get("group_name"),
+                "display_relation": (e.get("properties") or {}).get("display_relation"),
+            })
+
+    out_nodes = list(nodes.values())
+    out_edges = list(edges.values())
+    truncated = len(out_nodes) > MAX_NODES
+    dropped = 0
+    if truncated:
+        kept = {n["id"] for n in out_nodes[:MAX_NODES]}
+        dropped = len(out_nodes) - len(kept)
+        out_nodes = [n for n in out_nodes if n["id"] in kept]
+        out_edges = [e for e in out_edges if e["src"] in kept and e["dst"] in kept]
+
+    return {
+        "mode": "graph" if out_nodes else "empty",
+        "nodes": out_nodes, "edges": out_edges,
+        "n_nodes": len(out_nodes), "n_edges": len(out_edges),
+        "truncated": truncated, "dropped_nodes": dropped,
+        "table": _edge_table(out_nodes, out_edges) if out_edges else None,
+        "routes": routes_out,
+        # What actually ran, so the card can show and copy it.
+        "queries": [{"key": r["key"], "label": r["label"],
+                     "cypher": _mechanism_cypher(r, body.disease, body.gene)}
+                    for r in MECHANISM_ROUTES],
+        # The one-query form, for the Explorer rather than for here.
+        "explorer_cypher": EXPLORER_TEMPLATE.format(
+            disease=body.disease, gene=body.gene,
+            disease_name=body.disease_name, gene_name=body.gene_name),
+    }

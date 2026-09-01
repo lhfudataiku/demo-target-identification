@@ -26,6 +26,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 
 from ..dss_client import get_dataiku, get_project
+from ..feature_glossary import GLOSSARY, KIND
 from ..services import dataset_cache
 
 logger = logging.getLogger(__name__)
@@ -198,36 +199,9 @@ def calibration() -> dict[str, Any]:
 
     # v3 colours the driver bars in TWO groups, not a cycle: provenance features
     # against everything else. The grouping is a curation, not data -- it is the
-    # same "kind" column the feature-glossary card renders.
-    KIND = {
-        "dwpc_GGD": "path", "dwpc_GPGD": "path", "dwpc_GBGD": "path", "dwpc_GFGD": "path",
-        "prox_closest": "proximity", "prox_kernel": "proximity", "rwr_score": "proximity",
-        "rwr_norm": "proximity", "disease_context": "proximity",
-        "ppi_common_neighbors_z": "topology", "ppi_adamic_adar": "topology",
-        "ppi_jaccard": "topology", "ppi_common_neighbors": "topology",
-        "gene_ppi_degree": "topology", "gene_n_pathways": "topology",
-        "gene_n_diseases": "topology", "module_size": "topology",
-        "shared_pathway_count": "topology", "shared_pathway_frac": "topology",
-        "ppi_evidence_depth": "provenance", "ppi_multi_source_frac": "provenance",
-        "ppi_edges_with_provenance": "provenance",
-    }
-    GLOSSARY = [
-        ("dwpc_GGD", "path", "degree-weighted count of paths reaching the disease through an interacting gene"),
-        ("dwpc_GPGD", "path", "the same, through a shared pathway"),
-        ("dwpc_GBGD", "path", "the same, through a shared biological process"),
-        ("dwpc_GFGD", "path", "the same, through a shared molecular function"),
-        ("prox_closest", "proximity", "hops to the nearest gene already annotated for this disease"),
-        ("prox_kernel", "proximity", "diffusion proximity to the whole disease module, distance-weighted"),
-        ("ppi_common_neighbors_z", "topology", "partners shared with the module, z-scored against what degree alone predicts"),
-        ("ppi_adamic_adar", "topology", "shared partners, weighted so rare partners count for more"),
-        ("ppi_jaccard", "topology", "shared partners as a fraction of the union"),
-        ("gene_ppi_degree", "topology", "how many interaction partners the gene has at all"),
-        ("gene_n_pathways", "topology", "how many pathways the gene belongs to"),
-        ("module_size", "topology", "how many genes are already annotated for the disease"),
-        ("ppi_evidence_depth", "provenance", "how many independent sources assert the gene's interactions"),
-        ("ppi_multi_source_frac", "provenance", "the share of its interactions carrying more than one source"),
-    ]
-
+    # same "kind" column the feature-glossary card renders, and it now lives in
+    # backend/feature_glossary.py because act 4's detail card names the same
+    # features and the two acts must not describe the model differently.
     tot_elig = int(elig["count"].sum())
     n_elig = int(elig.loc[elig.is_eligible == 1, "count"].sum())
 
@@ -265,7 +239,8 @@ def calibration() -> dict[str, Any]:
         "routes": routes,
         "route_admissions": admissions,
         "duplicates_removed": admissions - union_rows,
-        "glossary": [{"feature": f, "kind": k, "what": w} for f, k, w in GLOSSARY],
+        "glossary": [{"feature": f, "kind": k, "label": n, "what": w}
+                     for f, k, n, w in GLOSSARY],
         "family_auc_values": [round(v, 4) for v in fam_vals],
         "personas": sorted(persona_vals, key=lambda r: -r["value"]),
         "drivers_kind": {str(r.feature): KIND.get(str(r.feature), "topology") for r in drv.itertuples()},

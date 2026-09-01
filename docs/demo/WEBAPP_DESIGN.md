@@ -152,7 +152,8 @@ Act 4 absorbs the existing hand-written webapp (`V2ZpfdV`, 1,086 lines): the dis
 three-clause filter with its live count, the class lanes and the detail drawer are all ported to Vue
 components rather than rewritten. Its `SECRETED` rule, its `TIPS` copy and its refusal to fetch
 `prediction` are **validated behaviour** — carry them across verbatim and re-read the comments before
-changing any of them.
+changing any of them. **One exception, found on the port:** the drawer's five-feature list is stale
+against the current champion and must NOT be carried across — see act 4 below.
 
 ### 3.4 Mock first, then swap
 
@@ -312,8 +313,28 @@ TNBC's 8 known targets on screen *before* act 6 claims anything about it.
 | The contract | prose | the deliverable in one sentence, and **the three things it does not do** |
 | The ranked list | virtualised table | 12,272 rows, rank + percentile + score + SHAP drivers + status badges |
 | The validated filter | three checkboxes + live count | **12,272 → novel 11,673 → tractable 7,951 → not secreted 7,274 → rank ≤ 200 → 38** |
-| Candidate detail | drawer | rank against pool, SHAP drivers, each feature against **this disease's own distribution**, generated Cypher |
-| The mechanism, on the graph | query + link | the PI3K/AKT + RAS–MAPK axis behind the head of the list |
+| Candidate detail | card, follows the selected row | rank against pool, SHAP drivers, **every champion feature** against **this disease's own distribution** |
+| The mechanism, on the graph | five merged route queries + rendered subgraph | every evidence route from the selected gene to the disease's own annotated genes, counted per route |
+
+**Selection, not two pickers.** Clicking a row in the ranked list drives BOTH cards and scrolls the
+page to the detail card — the act's move is *judge a row, then ask why that row*, and separate pickers
+would let the drawer and the subgraph describe different genes at once. The subgraph is the one thing
+that does **not** follow automatically: it costs a DSS round-trip (~2.7 s), so it waits for its own
+button rather than firing once per row while someone scans the list.
+
+**The detail card shows the champion's own inputs, not a selection.** webapp v1's drawer showed five
+features, of which three — `rwr_score`, `ppi_common_neighbors`, `shared_pathway_count` — are **not
+inputs to m7-f14**; they are columns `dashboard_candidates` happens to carry. A non-feature under the
+heading *"why this gene?"* answers a question the model never asked, so the set is derived from
+`backend/feature_glossary.py` and moves when the champion does. One champion input, `prox_kernel`,
+never reaches `dashboard_candidates`, and the card says so rather than showing 13 of 14 as if that
+were all of them.
+
+**Percentile direction is per feature.** The bar is the share of this disease's pool the candidate is
+*stronger* than — a higher value everywhere except `prox_closest`, where fewer hops is stronger.
+Ranking hop distance upward like the rest put a gene one hop from the disease module at the 0th
+percentile and drew it an empty bar, which reads as *no evidence* for the best value the feature can
+take. Ties count toward neither side.
 
 The three *does not do* clauses — no safety axis, no morphological subtype resolution, association
 ranking does not predict therapeutic relevance — go **here, on the page that carries the deliverable**,
@@ -322,6 +343,31 @@ not held to act 6. A vendor who leads with its limits has bought the right to be
 **Thirty-eight is a shortlist a team clears in a week.** State the rank cut-off as part of the definition
 — the count is meaningless without it, which is how the obesity version acquired two conflicting values
 (§10.3).
+
+**Five routes, and only four are features.** The mechanism card runs one query per evidence route —
+interaction (`dwpc_GGD`), shared pathway (`dwpc_GPGD`), shared molecular function (`dwpc_GFGD`),
+shared biological process (`dwpc_GBGD`), and the drug route — and merges the subgraphs by node and
+edge id. The per-route edge counts are part of the answer: *"no pathway route"* is a fact about the
+candidate, not a gap in the picture. The two GO routes cap the term's own degree at 200, or a hub like
+*protein binding* matches everything and means nothing.
+
+The drug route carries the §4 caveat **on the card**: no model feature traverses a drug node, so
+nothing on it fed the score, but it is one of three routes admitting a pair into the candidate pool.
+*Not a feature*, never *not used*. Only `indication` and `drug_investigated_for` exist in this graph —
+contraindication was never built.
+
+⚠ **The single-query form does not run in the webapp, and the card says so.** Written as one query with
+an `OPTIONAL MATCH` per route it is the natural form, and the **Visual Graph Explorer returns it in
+about a second** because it talks to Kuzu directly. The webapp's only path is the graph agent tool
+(`b6Rpbve`), whose Kuzu runs in a memory-capped kernel: the chained clauses *multiply* rows rather than
+adding them, `LIMIT` bounds the output and not the join, and the engine answers
+`Buffer manager exception: the buffer pool is full` after 68–108s (reproduced on three warm attempts;
+an earlier run reported `Interrupted` at 173s). Hence five queries here, issued concurrently, ~4s warm.
+**The card renders the merged canvas and its copy button hands over the single query for the Explorer** —
+the constraint is ours, so it should not be exported to the person holding the mouse.
+
+⚠ **Cold start.** The first call after the graph tool has been idle cost **147s** against ~4s warm.
+Act 1 uses the same tool, so a run-through that opens the evidence base first arrives here warm.
 
 **The on-graph shot.** Interactive explorer, never a query recipe. Traversal is **undirected**,
 relationship variables must be **bound and returned** or the canvas shows floating nodes, and the engine's
