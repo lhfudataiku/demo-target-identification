@@ -21,7 +21,8 @@
   import ActIntervals from '@/components/act/ActIntervals.vue'
   import ActMatrix from '@/components/act/ActMatrix.vue'
   import ActBar from '@/components/act/ActBar.vue'
-  import { Network, GitCompare, Ruler, Users } from 'lucide-vue-next'
+  import ActGeneGrid from '@/components/act/ActGeneGrid.vue'
+  import { Network, GitCompare, Ruler, Users, Grid3x3 } from 'lucide-vue-next'
 
   defineOptions({ name: 'TherapeuticAreaView' })
 
@@ -91,6 +92,13 @@
   const overlapLabels = computed(() => detail.value?.grid_columns ?? [])
 
   // v3's common-programme grid is the four biomarker subtypes, not every term.
+  // The grid caps at GRID_MAX genes. `gene_grid` arrives sorted by n_terms
+  // descending, so the cap keeps the most widely shared genes -- exactly what this
+  // card is about -- but the count is rendered so the truncation is never silent.
+  const GRID_MAX = 120
+  const gridGenes = computed(() => (detail.value?.gene_grid ?? []).slice(0, GRID_MAX))
+  const gridTotal = computed(() => detail.value?.gene_grid?.length ?? 0)
+
   const commonShare = computed(() => {
     const o = detail.value?.overlap ?? []
     if (!o.length) return null
@@ -300,6 +308,30 @@
         <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
           No leaf subtypes configured for this family.
         </p>
+      </ActCard>
+
+      <ActCard span="col-span-12" :icon="Grid3x3" accent="var(--chart-3)"
+               title="Every gene, against every term it reaches"
+               :chips="[['live', 'live']]"
+               :desc="gridTotal
+                 ? `${gridTotal} genes across ${overlapLabels.length} terms. A filled cell means the gene is in that term's top 50; dot size and opacity encode the rank.`
+                 : undefined"
+               :src="['family_panel_top50']">
+        <ActGeneGrid v-if="gridGenes.length" :genes="gridGenes" :columns="overlapLabels"
+                     :shared-at="Math.min(3, overlapLabels.length)" />
+        <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
+          No top-50 membership computed for this family.
+        </p>
+        <p v-if="gridTotal > gridGenes.length"
+           class="mt-2 font-mono text-[10.5px] text-muted-foreground">
+          showing the {{ gridGenes.length }} most widely shared of {{ gridTotal }} genes
+        </p>
+        <ActSay class="mt-3">
+          The card above says <b>which</b> genes are shared; this one says <b>where</b>. A row of
+          filled cells straight across is a gene the whole family runs on; a single filled cell is
+          a gene only one subtype reaches. Read the columns in ontology order — the broad terms sit
+          left of the narrow ones.
+        </ActSay>
       </ActCard>
 
       </div>

@@ -87,10 +87,23 @@ that surfaces in the UI as an unexplained HTTP 500.
 make dev            # Vite on :5173, FastAPI on :5000
 ```
 
-Layout and routing can be checked here. **Live DSS data may not work locally** — it needs
-a valid API key in `~/.dataiku/config.json`, and a stale key returns 401. This does not
-affect deployment: `backend/dss_client.py` is dual-mode and uses `dataiku.api_client()`
-inside DSS.
+Live DSS data works locally. `dss_client._local_creds()` checks the environment first —
+`DSS_URL` + `DSS_API_KEY`, or the `DKU_URL` + `DKU_API_KEY` pair that `dku` exports — and
+falls back to `~/.dataiku/config.json`. So the reliable start is:
+
+```bash
+eval "$(dku auth export-env)"
+make dev
+```
+
+**Why env comes first.** `dku` keeps its credential in the OS keyring, so
+`~/.dataiku/config.json` can hold a long-dead `api_key` while `dku whoami` works perfectly.
+Before 2026-09-01 the file was checked first with no way to override it, so every route
+returned `Unknown API Key` while the CLI succeeded — which sends you debugging the CLI
+instead of the credential lookup. If you get that error now, your env is not exported.
+
+None of this affects deployment: `backend/dss_client.py` is dual-mode and uses
+`dataiku.api_client()` inside DSS, where no local credential is involved.
 
 Read logs with `tail .run/logs/backend.log`. Do not use `make logs` in a script — it
 follows and will block.
@@ -110,7 +123,8 @@ Do not trust "deploy succeeded". Grep the deployed bundle for a string unique to
 change:
 
 ```bash
-dku library read python/target_prioritizer/frontend_dist/assets/index.js \
+# note: `dku library read` takes the path as a POSITIONAL argument, with a leading slash
+dku library read /python/target_prioritizer/frontend_dist/assets/index.js \
   -P DEMO_TARGET_IDENTIFICATION | grep -c "some new string you added"
 
 dku webapp logs OlmPX9a -P DEMO_TARGET_IDENTIFICATION | tail -20
@@ -118,6 +132,20 @@ dku webapp logs OlmPX9a -P DEMO_TARGET_IDENTIFICATION | tail -20
 
 A `0` from the first command means the build did not include your change, or the upload
 did not happen. This check has caught a stale deploy at least once.
+
+**Also check the backend contract, not only the bundle.** On 2026-09-01 the deployed
+`routes/families.py` was found still reading `family_panel` / `pairwise_overlap` — a whole
+generation behind the repo's `demo_panel_config` / `family_panel_*` chain, and matching no
+commit on any branch, so it had been deployed from an uncommitted tree. A bundle grep would
+not have caught it:
+
+```bash
+dku library read /python/target_prioritizer/backend/routes/families.py \
+  -P DEMO_TARGET_IDENTIFICATION | grep -c demo_panel_config    # expect 1+
+```
+
+If a deployed file is ever *larger* than its local counterpart, someone edited the library
+directly and `make deploy` is about to overwrite it. Diff before deploying.
 
 ### 5. Commit and push
 
@@ -166,7 +194,8 @@ These are demo requirements, not style preferences. They are enforced in
 | Deployed, but the UI is unchanged | Browser cached `assets/index.js` — the filename has no content hash. The backend now sends `no-store`, so this should be historical. |
 | Synced the project, UI still old | Git does not carry the built bundle. Run `make deploy`. |
 | UI shows old *data* after a dataset rebuild | The route caches the dataframe per process — see “Dataset caching” below. Restart the backend (`dku webapp restart OlmPX9a`) until the fix lands. |
-| Local dev: HTTP 500 on every API call | Either the stale key in `~/.dataiku/config.json`, or `BACKEND_PORT` no longer matching the Vite proxy. |
+| Local dev: HTTP 502 `Unknown API Key` | No credential in the environment and a stale `api_key` in `~/.dataiku/config.json`. Run `eval "$(dku auth export-env)"`. `dku whoami` succeeding does **not** mean the webapp can authenticate — different credential store. |
+| Local dev: HTTP 500 on every API call | `BACKEND_PORT` no longer matches the Vite proxy. |
 | `nginx: could not open error log file` in the logs | Harmless. Gunicorn binds fine afterwards. |
 
 ## Dataset caching — the known staleness, and the fix
@@ -179,8 +208,9 @@ def _frame():
     return get_dataiku().Dataset("dashboard_candidates").get_dataframe(columns=COLS)
 ```
 
-That is deliberate — `dashboard_candidates` is 129,253 rows and re-reading it per request makes the
-demo feel slow. The cost is real: **if the dataset is rebuilt, the webapp keeps serving the old rows
+That is deliberate — `dashboard_candidates` is 105,702 rows and re-reading it per request makes the
+demo feel slow. (`dku dataset info` reports 129,253 for it; that field is a stored metric and was
+stale. `dku dataset count` is the live figure and matches nb7's `7.3 served rows` assertion.) The cost is real: **if the dataset is rebuilt, the webapp keeps serving the old rows
 until the backend restarts.** In front of an audience that is the worst kind of stale — the numbers
 look fine and are simply out of date.
 

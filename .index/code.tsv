@@ -20,6 +20,7 @@ docs/operations/build-governance/review-packet.schema.json	docs	LIVE (referenced
 docs/prioritizer/CLAIM_REGISTRY.json	docs	LIVE (referenced)	8	docs/README.md,docs/decisions/DECISION_REGISTER.md,docs/demo/WEBAPP_DESIGN.md,docs/prioritizer/TARGET_PRIORITIZER.md
 dss_recipes/attach_node_index.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_breast_panel.py	recipe-mirror	MIRROR	4	archive/DASHBOARD_BUILD_LOG.md,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V2.html,docs/demo/DASHBOARD_MOCKUP_V3.html,docs/operations/build-governance/POLICY.json
+dss_recipes/compute_demo_panel_config.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_eligibility.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_family_id.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_group_map.py	recipe-mirror	MIRROR (graph-build project)	0	-
@@ -30,6 +31,9 @@ dss_recipes/compute_drug_target_benchmark_staged.py	recipe-mirror	MIRROR (graph-
 dss_recipes/compute_dwpc_go_metapaths.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_enriched_prox_closest.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_enriched_rwr_score_1.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_family_panel_overlap.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_family_panel_programme.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_family_panel_top50.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_filter_three_axes.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_gene_druggability.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_gene_localization.py	recipe-mirror	MIRROR	0	-

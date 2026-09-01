@@ -24,7 +24,8 @@
     "docs/operations/PHASE_0_BASELINE_2026-08-28.md"
   ],
   "current_scan_exclusions": {
-    "prefixes": ["archive/", "harness/", ".claude/", ".codex/", ".index/"],
+    "prefixes": ["archive/", "harness/", ".claude/", ".codex/", ".index/",
+                 "docs/graph/wiki/"],
     "files": [
       "README.md", "AGENTS.md", "CLAUDE.md", "docs/README.md", "docs/demo/DOC_RESTRUCTURE_PLAN.md",
       "docs/decisions/DECISION_REGISTER.md", "docs/decisions/adrs/ADR-001-project-boundary.md",
