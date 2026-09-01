@@ -66,6 +66,7 @@ _panel = demo_identity.panel()
 _names = list(_panel["breast_panel_terms"])
 _labels = dict(_panel.get("breast_panel_labels", {}))
 _idx = demo_identity.name_to_index(_names)
+_TRUST_N_POS = int(demo_identity.thresholds()["trust_n_pos"])
 PANEL = {_idx[n]: _labels.get(n, n) for n in _names}
 K = 50
 
@@ -142,7 +143,9 @@ for di, g in sc.groupby("disease_index"):
            "enrichment_at_50": (hits / exp) if exp > 0 else np.nan,
            "hits50_poisson_p": p_hits, "hits50_verdict": verdict,
            "n_novel": len(nov),
-           "auc_trustworthy": bool(npos >= 30)}
+           # the flow-wide trust test, from the `trust_n_pos` project variable.
+           # Was a hardcoded 30 here while docs and other recipes said 50.
+           "auc_trustworthy": bool(npos >= _TRUST_N_POS)}
     # tractability of the novel head -- can a chemist act on it? (§8.4)
     nv50 = top_nov[di]
     rec["novel50_tractable"] = sum(1 for x in nv50 if x in tractable)
@@ -181,7 +184,8 @@ key = overlap[overlap.disease_a.str.contains("HER2|triple", case=False)
 print(key.to_string(index=False, float_format=lambda x: f"{x:.1f}"))
 
 print("\n=== the clinically decisive pair ===")
-h, t = 48537, 47807
+# resolved by name, not pinned -- see DEC-OPS-006
+h, t = (_idx["HER2 positive breast carcinoma"], _idx["triple-negative breast carcinoma"])
 inter = set(top_nov[h]) & set(top_nov[t])
 print(f"  HER2+ vs triple-negative, top-50 novel: {len(inter)}/{K} shared "
       f"({100*len(inter)/K:.0f}%)")
@@ -213,6 +217,7 @@ dataiku.Dataset("breast_panel_metrics").write_with_schema(metrics)
 # (13/13 shared pairs); nb4 and nb6 read that instead. The overlap is still
 # computed and printed above, because the printout is part of this recipe's
 # diagnostic value -- it is simply no longer written to a dataset of its own.
+
 
 
 

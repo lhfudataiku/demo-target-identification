@@ -24,6 +24,7 @@
 import dataiku
 import numpy as np
 import pandas as pd
+import demo_identity
 
 CURRENT = {"lung cancer", "obesity disorder", "type 2 diabetes mellitus",
            "chronic kidney disease", "lung adenocarcinoma", "non-small cell lung carcinoma"}
@@ -64,7 +65,10 @@ d["is_current"] = d.disease.isin(CURRENT)
 d["best_lift50"] = d[["approved_lift50", "investigational_lift50"]].max(axis=1)
 d["best_found50"] = d[["approved_found50", "investigational_found50"]].max(axis=1)
 
-d["ok_size"]     = d.n_pos >= 30
+# `trust_n_pos` project variable -- the same test compute_validation_auc_ci applies.
+# Was a third hardcoded copy of 30 (DEC-OPS-006).
+_TRUST_N_POS = int(demo_identity.thresholds()["trust_n_pos"])
+d["ok_size"]     = d.n_pos >= _TRUST_N_POS
 d["ok_auc"]      = d.auc_disease >= 0.75
 d["ok_ranking"]  = d.rank_enrichment >= 5           # truth concentrated 5x over base rate
 d["ok_discovery"] = d.best_lift50 >= 3              # novel head enriched 3x for real targets
@@ -73,7 +77,8 @@ CRIT = ["ok_size", "ok_auc", "ok_ranking", "ok_discovery", "ok_found"]
 d["n_criteria"] = d[CRIT].sum(axis=1)
 
 print(f"=== criterion funnel over {len(d)} validation diseases ===")
-for c, lbl in zip(CRIT, ["n_pos >= 30", "association AUC >= 0.75",
+# the label is derived, so it cannot disagree with the threshold it describes
+for c, lbl in zip(CRIT, [f"n_pos >= {_TRUST_N_POS}", "association AUC >= 0.75",
                          "ranking enrichment >= 5x", "discovery lift@50 >= 3x",
                          ">= 3 real targets in the top-50 novel"]):
     print(f"  {lbl:44s}{int(d[c].sum()):>5}")
@@ -104,4 +109,5 @@ print(d[d.investigational_found50.fillna(0) >= 5].nlargest(12, "investigational_
 dataiku.Dataset("persona_candidates").write_with_schema(
     d[SHOW + ["disease_index", "module_size", "known_pct50", "is_current",
               "best_lift50", "best_found50", "recall_at_20"] + CRIT])
+
 

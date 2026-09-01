@@ -10,6 +10,7 @@ compute_enriched_prox_closest	python	MIN_SEEDS 5; POOL_MIN 20	1		dss_recipes/com
 compute_enriched_rwr_score_1	python	MIN_SEEDS 20	1		dss_recipes/compute_enriched_rwr_score_1.py	graph_edges,graph_nodes	enriched_rwr_score_1
 compute_enriched_shared_pathway_count_1	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_shared_pathway_count_1.cypher	DEMO_KG_LS.Lg8lbpl5	enriched_shared_pathway_count_1
 _models		-	-		DSS-only	-	-
+_variables		-	-		DSS-only	-	-
 compute_DEMO_KG_drug_disease_edges_copy	sync	-	-		DSS-only	DEMO_KG_LS.drug_disease_edges	drug_disease_edges
 compute_DEMO_KG_drug_protein_edges_copy	sync	-	-		DSS-only	DEMO_KG_LS.drug_protein_edges	drug_protein_edges
 compute_DEMO_KG_edge_metadata_copy	sync	-	-		DSS-only	DEMO_KG_LS.edge_metadata	edge_metadata

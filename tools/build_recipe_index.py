@@ -156,6 +156,16 @@ def refresh():
     snap["_sibling_recipes"] = sorted(sibling)
     snap["_models"] = models
     snap["_schemas"] = schemas
+    # Snapshot the project variables. They are a governed surface with no other repo
+    # copy: DEC-MEAS-004 pins trust_n_pos and panel_n_pos, and until this existed a
+    # change to either was invisible to review and to check_governed_values.py.
+    raw_vars = sh(["dku", "project", "get-variables", "-P", PROJECT, "--format", "json"])
+    try:
+        snap["_variables"] = json.loads(raw_vars).get("standard", {})
+    except (ValueError, AttributeError):
+        print("  WARN could not read project variables", file=sys.stderr)
+        snap["_variables"] = {}
+
     os.makedirs(INDEX, exist_ok=True)
     json.dump(snap, open(SNAP, "w"), indent=1, sort_keys=True)
 

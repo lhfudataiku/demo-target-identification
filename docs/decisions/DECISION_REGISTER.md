@@ -284,6 +284,19 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Superseded by:** —
 - **Historical sources:** lines 77, 100
 
+## DEC-MEAS-004 — The positive-count floor is two thresholds, not one
+
+- **Date:** 2026-09-01
+- **Domain:** measurement
+- **Status:** accepted
+- **Decision:** Keep `trust_n_pos = 30` and `panel_n_pos = 50` as distinct project variables. `trust_n_pos` is the flow-wide test for whether an AUROC may be quoted at all, applied as `auc_hi95 <= 1.0 AND n_pos >= trust_n_pos`. `panel_n_pos` is the stricter bar for admitting a term to an Act 3 family panel. Do not collapse them into one number.
+- **Rationale:** They answer different questions — *can this number be quoted* versus *does this term go on stage* — and the interval evidence supports no single cliff. Measured over the served 670, the median 95% AUROC width is 0.241 below 30 positives, 0.150 from 30 to 49, 0.109 from 50 to 99 and 0.054 at 100+; the 92 intervals exceeding the possible ceiling of 1.0 are almost all below 30. The break is at 30, not at 50, so 50 is a conservative presentation choice and is documented as such rather than as a statistical threshold. Both alternatives were measured: unifying up to 50 changes no shipped or documented number (the 101 diseases that would lose the flag are displayed nowhere, since every panel term already exceeds 50), while unifying down to 30 admits two breast terms and takes the overlap grid from 148 pairs to 179, invalidating the per-family means, the near-duplicate counts, the committed `built/` dumps and the nb7 assertions that guard them.
+- **Evidence:** [`docs/demo/panel_selection/README.md`](../demo/panel_selection/README.md) for the two-threshold statement and the measured widths, [`VALIDATION.md` §3.1](../prioritizer/VALIDATION.md), `dss_recipes/visual/compute_validation_auc_ci.txt` for the live trust test.
+- **Consequences:** Four independent hardcoded copies of 30 were consolidated onto `trust_n_pos` (`compute_validation_auc_ci`, `compute_breast_panel`, `compute_persona_candidates`, and the criterion label that described it). `tools/check_governed_values.py` fails if either value is pinned again as a literal or if the two variables are set equal, so collapsing them becomes a deliberate act rather than a tidy-up.
+- **Supersedes:** the single "n_pos >= 50 usability floor" wording, which described the sub-30 regime while naming the 50 bar
+- **Superseded by:** —
+- **Historical sources:** —
+
 ## DEC-OPS-001 — Identifier remapping audits ordering semantics
 
 - **Date:** 2026-08-17
