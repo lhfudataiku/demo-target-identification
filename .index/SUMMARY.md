@@ -22,16 +22,16 @@ whose wording already flags them as historical are dropped.
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 19 | 3 | 23 |
 | `docs/demo/WEBAPP_DESIGN.md` | 0 | 52 | 76 | 128 |
-| `docs/demo/panel_selection/README.md` | 0 | 3 | 11 | 14 |
+| `docs/demo/panel_selection/README.md` | 0 | 3 | 17 | 20 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 13 | 18 |
 | `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 19 | 103 | 122 |
 | `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 16 | 49 | 65 |
-| **total** | **1** | **125** | **409** | **535** |
+| **total** | **1** | **125** | **415** | **541** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**96 rows.** Of 409 total orphans, these are the model-dependent ones: the numbers that move
+**96 rows.** Of 415 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -55,7 +55,7 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/WEBAPP_DESIGN.md:378` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
 | `docs/demo/WEBAPP_DESIGN.md:378` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
 | `docs/demo/WEBAPP_DESIGN.md:380` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
-| `docs/demo/panel_selection/README.md:65` | - | 0.350 | way: Spearman −0.350 over the 148 shipped pairs. |
+| `docs/demo/panel_selection/README.md:75` | - | 0.350 | distance either way: Spearman −0.350 over the 148 shipped pairs. |
 | `docs/overview/PROJECT_CONTEXT.md:114` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
 | `docs/overview/PROJECT_CONTEXT.md:239` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
 | `docs/overview/PROJECT_CONTEXT.md:239` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |

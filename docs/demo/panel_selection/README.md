@@ -34,7 +34,7 @@ erase why the panel looks the way it does.
 | `area_coverage.csv` | 3 | **The finding that decides Act 3.** Subtype structure exists only in oncology |
 | `family_catalogue.csv` | 25 | Every family with ≥3 validation terms |
 | `family_subtypes.csv` | 82 | Per-subtype AUC with 95% intervals for the six candidate families |
-| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated leaf sets** — breast 0.40 / uterine 0.49 / stomach 0.35 |
+| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated candidate subtypes** — breast 0.402 / uterine 0.494 / stomach 0.475 |
 | `common_programme.csv` | 105 | The common-vs-specific split as first computed |
 | `eyeball_test.csv` + summary | 113 + 13 | **The Act 4 ranking.** Where the field's validated targets rank, and why each was expected |
 | `panel_before.csv` | 13 | The panel this replaced, on both bars |
@@ -51,18 +51,40 @@ erase why the panel looks the way it does.
 
 ### Why the two overlap numbers differ, and why both are right
 
-| family | analysis (curated leaves) | built (all usable terms + leaves) |
-|---|--:|--:|
-| breast | 0.402 | 0.430 |
-| uterine | 0.494 | 0.478 |
-| stomach | 0.350 | 0.451 |
+Same method both times — top-50 Jaccard on the same rankings. The only difference is
+**which pairs get averaged**, and the pairs present in both files agree to four decimal
+places:
 
-The analysis compared only the terminal subtypes, to judge whether a family could
-support a subtype-specific card. The built table includes the **parent terms**, because
-showing that a parent is largely a blend of its children is the point of the card —
-`gastric adenocarcinoma` shares 0.961 of its top 50 with its parent `gastric carcinoma`.
-Different question, different set, both correct. Overlap tracks ontology distance either
-way: Spearman −0.350 over the 148 shipped pairs.
+| family | pairs in **both** files | pairs involving a term only in `built/` | `built/` overall |
+|---|--:|--:|--:|
+| breast | **0.4021** (15) | 0.4346 (90) | 0.4299 (105) |
+| uterine | **0.4935** (10) | 0.4689 (18) | 0.4777 (28) |
+| stomach | **0.4746** (6) | 0.4353 (9) | 0.4510 (15) |
+
+The identical shared-pair means are the reassurance: there is no method drift, no data
+drift and no bug between the interactive analysis and the DSS recipe. `analysis/` averages
+the curated candidate subtypes, because the question it answered was *"do the terminal
+subtypes differ enough to justify a subtype-specific card?"* — for which the umbrella terms
+are noise. `built/` averages every usable term in the family, because the card's question is
+*"how do all of this family's terms relate?"* — for which the umbrella terms are the point.
+
+**The direction of the change is family-specific, and not a parent-inflation effect.**
+Breast's extra terms are mostly umbrella terms that blend their children, so its mean rises
+(0.4346 > 0.4021). Uterine's and stomach's extras include genuinely distinct subtypes such as
+`endometrial undifferentiated carcinoma`, so their means fall. Overlap still tracks ontology
+distance either way: Spearman −0.350 over the 148 shipped pairs.
+
+Two caveats on the `analysis/` figures, so they are not misread:
+
+- `analysis/subtype_overlap.csv` holds **stomach on four terms** (mean 0.4746), measured
+  before `gastric intestinal type adenocarcinoma` was dropped from the candidate set. A
+  later three-term recomputation gave ≈0.35 but was never written to a file; an earlier
+  version of this table quoted that unbacked number and has been corrected.
+- The counts above are pair counts, not term counts. `built/` covers 9 more breast terms,
+  3 more uterine and 2 more stomach than `analysis/` — a mixture of true ontological
+  ancestors (`breast cancer` at depth 0, `gastric carcinoma` at depth 1) and sibling
+  subtypes that simply were not curated as leaves (`metaplastic breast carcinoma` at
+  depth 3, `endometrial mixed adenocarcinoma` at depth 4).
 
 ## Two conventions worth knowing
 

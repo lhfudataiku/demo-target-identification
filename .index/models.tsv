@@ -1,4 +1,5 @@
 model	id	in_flow	role	n_feat	assoc_auroc	assoc_auprc	hub_spread	drug_all	drug_supported	tract_dm200	disc_lift50	disc_lift200	delta	verdict	consumers	decision_refs
+graph_explorer	SybkzSdu	yes	-	?	?	?	?	?	?	?	?	?	?	NOT A PRIORITIZER MODEL -- saved model of type LLM_GENERIC_RAW, backing the graph-search agent webapp. Recorded so the index accounts for every saved model in the project; it has no prioritizer metrics and never enters the ablation ladder or the champion comparison.	-	-
 m1-f7	Lx5Mz2hY	no (lab s1)	ablation	7	0.7593	?	?	0.6787	?	?	?	?	baseline rung	ablation rung	-	-
 m2-f10	6hEivCx0	no (lab s2)	ablation	10	0.7882	?	?	0.688	?	?	?	?	+3 (metapath rung)	ablation rung	-	-
 m3-f12	cGPhBOGC	no (lab s3)	ablation	12	0.8197	0.1737	0.1954	0.6911	0.7337	2.376	7.46	4.53	+2	former champion, superseded by m7-f14 on 2026-08-21	-	docs/decisions/DECISION_REGISTER.md:361,archive/decisions/DECISIONS_2026-08-31.md:97,archive/decisions/DECISIONS_2026-08-31.md:143,archive/decisions/DECISIONS_2026-08-31.md:160,archive/decisions/DECISIONS_2026-08-31.md:173

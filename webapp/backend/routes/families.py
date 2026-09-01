@@ -23,11 +23,16 @@ notebook assertions, and in docs/demo/panel_selection/built/.
 
 THREE THINGS THE CARDS DEPEND ON, in the data rather than in this file:
 
-  * Parents stay in the score and overlap cards. A parent term is largely a blend
-    of its children -- `gastric adenocarcinoma` shares 0.961 of its top 50 with its
-    parent `gastric carcinoma` -- and showing that is the point.
-  * Parents are excluded from the programme card only, where a superset's
-    "specific" genes would be an artefact of aggregation.
+  * NON-LEAF terms stay in the score and overlap cards. An umbrella term is largely
+    a blend of the terms beneath it -- `gastric adenocarcinoma` shares 0.961 of its
+    top 50 with `gastric carcinoma` one level up -- and showing that is the point.
+  * They are excluded from the programme card only, where a superset's "specific"
+    genes would be an artefact of aggregation.
+  * `act3_role` is `leaf` / `not_leaf` and records only membership of the curated
+    leaf set. It is NOT an ontology claim: `metaplastic breast carcinoma` (depth 3)
+    is `not_leaf` yet is nobody's ancestor. Likewise `pair_kind` is
+    `same_depth` / `different_depth`, not sibling/ancestor -- two terms at different
+    depths may sit on different branches.
   * Order by `hop_depth`, never by AUC or name. The parent->child AUC gradient
     (breast 0.707 -> 0.861 -> 0.936 -> 0.951) is only legible in ontology order.
 """
@@ -187,9 +192,9 @@ def family(family_id: int) -> dict[str, Any]:
         "common": common,
         "n_common": len(common),
         "specific": specific,
-        # Parents are deliberately absent here. Stated so the omission reads as a
-        # decision rather than missing data.
-        "excludes_parents": True,
+        # The non-leaf terms are deliberately absent here. Stated so the omission
+        # reads as a decision rather than missing data.
+        "excludes_non_leaves": True,
     }
 
     # ── the gene x term rank matrix ────────────────────────────────────────

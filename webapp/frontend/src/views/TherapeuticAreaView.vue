@@ -30,7 +30,7 @@
   interface Programme {
     leaves: string[]; common: string[]; n_common: number
     specific: Record<string, string[]>
-    excludes_parents: boolean
+    excludes_non_leaves: boolean
   }
   interface GapRow { depth_gap: number; pairs: number; mean: number }
   interface Term {
@@ -62,8 +62,6 @@
 
   // AUC axis runs 0.4–1.0: below chance is not a meaningful distinction here,
   // and a 0–1 axis wastes half the width on range nothing occupies.
-  const LO = 0.4
-  const pos = (v: number) => Math.max(0, Math.min(100, ((v - LO) / (1 - LO)) * 100))
 
   const untrustworthy = computed(() => detail.value?.terms.filter((t) => !t.trustworthy).length ?? 0)
   // v3 plots ENRICHMENT for the thin terms, labelled with n, coloured by whether
@@ -93,9 +91,6 @@
   const overlapLabels = computed(() => detail.value?.grid_columns ?? [])
 
   // v3's common-programme grid is the four biomarker subtypes, not every term.
-  const BIOMARKER = /HER2|luminal a|luminal b|triple.?neg/i
-  const gridColumns = computed(() =>
-    (detail.value?.grid_columns ?? []).filter((c) => BIOMARKER.test(c)))
   const commonShare = computed(() => {
     const o = detail.value?.overlap ?? []
     if (!o.length) return null
@@ -295,10 +290,11 @@
           </div>
 
           <ActSay class="mt-3">
-            <b>Leaf subtypes only.</b> The parent terms appear in the two cards above, where the
-            point is that a parent is largely a blend of its children — but a superset has no
-            meaningful "specific" set of its own, so including one here would collapse the shared
-            core to almost nothing.
+            <b>The curated leaf set only.</b> The other terms appear in the two cards above,
+            where a broad term's top 50 being largely a blend of the narrower ones is the point.
+            They are held out here because that set contains umbrella terms, whose "specific"
+            genes would be an artefact of aggregation. Leaf is a curation call, not a depth
+            rule — a term left out is not necessarily anyone's parent.
           </ActSay>
         </template>
         <p v-else class="py-4 text-center text-[13px] text-muted-foreground">

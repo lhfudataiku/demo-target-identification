@@ -21,7 +21,8 @@ compute_DEMO_KG_raw_disease_disease_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_disea
 compute_DEMO_KG_raw_go_hierarchy_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_go_hierarchy	raw_go_hierarchy
 compute_DEMO_KG_raw_ot_druggability_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_ot_druggability	raw_ot_druggability
 compute_DEMO_KG_raw_ot_safety_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_ot_safety	raw_ot_safety
-compute_breast_panel	python	-	-		dss_recipes/compute_breast_panel.py	drug_disease_edges,drug_protein_edges,graph_nodes,scored_champion	breast_panel_metrics,breast_panel_overlap
+compute_breast_panel	python	-	-		dss_recipes/compute_breast_panel.py	drug_disease_edges,drug_protein_edges,graph_nodes,scored_champion	breast_panel_metrics
+compute_demo_panel_config	python	-	-		dss_recipes/compute_demo_panel_config.py	family_panel,persona_enrichment	demo_panel_config
 compute_disease_eligibility	python	-	-		dss_recipes/compute_disease_eligibility.py	enriched_module_size_1,graph_node_type_counts	disease_eligibility
 compute_disease_family_id	python	-	-		dss_recipes/compute_disease_family_id.py	enriched_graph_features_1,graph_nodes,hetionet_disease_slim,mondo_references,raw_disease_disease	disease_family_id
 compute_drug_classified	shaker	-	-		DSS-only	drug_joined	drug_classified
@@ -37,6 +38,10 @@ compute_enriched_node_centrality_1	CustomCode_visual-graph-graph-features	-	-		D
 compute_enriched_pair_features_index_1	vstack	-	-		DSS-only	enriched_disease_context_1,enriched_dwpc_GBGD,enriched_dwpc_GCD,enriched_dwpc_GFGD,enriched_dwpc_GGD,enriched_dwpc_GPGD,enriched_guilt_by_association_1,enriched_ppi_cn_zscore,enriched_prox_closest,enriched_rwr_score_1,enriched_shared_pathway_count_1	enriched_pair_features_index_1
 compute_family_auc	shaker	-	-		DSS-only	family_auc_grouped	family_auc_by_family
 compute_family_panel	join	-	-		DSS-only	disease_family_id,validation_auc_ci	family_panel
+compute_family_panel_metrics	join	-	-		DSS-only	demo_panel_config,family_panel	family_panel_metrics
+compute_family_panel_overlap	python	-	-		dss_recipes/compute_family_panel_overlap.py	demo_panel_config,family_panel_top50	family_panel_overlap
+compute_family_panel_programme	python	-	-		dss_recipes/compute_family_panel_programme.py	demo_panel_config,family_panel_top50	family_panel_programme
+compute_family_panel_top50	python	-	-		dss_recipes/compute_family_panel_top50.py	demo_panel_config,gene_crosswalk,scored_champion	family_panel_top50
 compute_family_validation_scored	sync	-	-		DSS-only	scored_champion	family_validation_scored
 compute_filter_three_axes	python	-	-		dss_recipes/compute_filter_three_axes.py	drug_disease_edges,drug_protein_edges,graph_nodes,known_drug_truth,target_candidates_2	filter_three_axes
 compute_gene_crosswalk	join	-	-		DSS-only	gene_names,graph_nodes	gene_crosswalk
@@ -78,7 +83,7 @@ count_candidates_per_disease	grouping	-	-		DSS-only	target_candidates_2	disease_
 decorate_target_candidates	join	-	-		DSS-only	enriched_gene_druggability_v2,enriched_gene_safety_v2,graph_nodes,top_candidates	top_annotated
 extract_hetionet_disease_slim	python	-	-		dss_recipes/extract_hetionet_disease_slim.py	-	hetionet_disease_slim
 filter_has_path_evidence	sampling	-	-		DSS-only	enriched_graph_features_1_family	enriched_graph_features_candidate_psplit
-filter_persona_diseases	sampling	-	-		DSS-only	psplit_validation_set	validation_set_personas_2
+filter_persona_diseases	join	-	-		DSS-only	demo_panel_config,psplit_validation_set	validation_set_personas_2
 finalize_dashboard_candidates	shaker	-	-		DSS-only	candidates_annotated	dashboard_candidates
 group_family_auc	grouping	-	-		DSS-only	family_validation_ranked	family_auc_grouped
 join_dashboard_annotations	join	-	-		DSS-only	disease_pool_sizes,drug_evidence_pairs,target_candidates_2	candidates_annotated

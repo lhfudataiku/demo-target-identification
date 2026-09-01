@@ -107,11 +107,14 @@ check("7.3 served rows", 105702, len(dash))
 # Reads the BUILT dataset now, not a recomputation. The card is `family_panel_overlap`
 # and if that table drifts the card drifts with it, so this is the thing to assert.
 #
-# These figures cover every usable term PLUS the leaves, parents included -- which is
-# the card's actual basis. They differ from the pre-build analysis in
-# docs/demo/panel_selection/, which used the curated leaf sets only (breast 0.40 /
-# uterine 0.49 / stomach 0.35). Both are correct about different sets; this one is
-# what ships.
+# These figures cover every usable term PLUS the leaves -- the card's actual basis.
+# They differ from the pre-build analysis in docs/demo/panel_selection/analysis/, which
+# averaged only the curated candidate subtypes (breast 0.4021 / uterine 0.4935 /
+# stomach 0.4746). Same method; different set of pairs averaged. The pairs common to
+# both agree to four decimal places, so a difference here is a set difference and never
+# drift. Direction is family-specific: breast's extra terms are umbrella terms that
+# blend their children and raise the mean, uterine's and stomach's extras are more
+# distinct and lower it.
 ov = dataiku.Dataset("family_panel_overlap").get_dataframe()
 check("7.4 overlap pairs", 148, len(ov))
 check("7.4 spearman depth_gap vs jaccard", -0.350,

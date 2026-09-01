@@ -20,13 +20,11 @@
   import { computed, onMounted, ref, watch } from 'vue'
   import { apiUrl } from '@/utils/api'
   import ActCard from '@/components/act/ActCard.vue'
-  import ActSay from '@/components/act/ActSay.vue'
   import { EaSelect, EaEmpty } from '@/components/ui'
-  import ActStat from '@/components/act/ActStat.vue'
   import ActTabs from '@/components/act/ActTabs.vue'
   import ActInfo from '@/components/act/ActInfo.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-  import { ListFilter, ShieldAlert, FileCheck2 } from 'lucide-vue-next'
+  import { ListFilter } from 'lucide-vue-next'
 
   defineOptions({ name: 'ShortlistView' })
 
@@ -34,6 +32,7 @@
   interface Row {
     gene_name: string; rank_in_disease: number; score: number; is_target: number
     top_shap_drivers: string | null; druggability_class: string | null; ot_class_l1: string | null
+    ot_sm_tractable: number; ot_ab_tractable: number
     has_safety_liability: number; approved_for_disease: number; investigational_for_disease: number
   }
   interface Payload { disease_name: string; funnel: { step: string; n: number }[]; rows: Row[]; returned: number }
@@ -89,18 +88,7 @@
   const tractLabel = (r: Row) =>
     [r.ot_sm_tractable ? 'SM' : '', r.ot_ab_tractable ? 'Ab' : ''].filter(Boolean).join(' + ') || '—'
 
-  // What the liability control would cost, on this disease's own list.
-  const struckOnScreen = computed(() => shown.value.filter((r) => r.has_safety_liability).length)
-  const top15 = computed(() => (data.value?.rows ?? []).filter((r) => r.rank_in_disease <= 15))
-  const struckTop15 = computed(() => top15.value.filter((r) => r.has_safety_liability).length)
-  const struckNamed = computed(() =>
-    top15.value.filter((r) => r.has_safety_liability)
-      .sort((a, b) => a.rank_in_disease - b.rank_in_disease)[0])
-
   const current = computed(() => diseases.value.find((d) => d.disease_index === selected.value))
-  const liabilityInTop15 = computed(
-    () => data.value?.rows.filter((r) => r.rank_in_disease <= 15 && r.has_safety_liability).length ?? 0,
-  )
 
   async function loadDiseases() {
     try {

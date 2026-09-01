@@ -206,5 +206,10 @@ print("  list still tracks the umbrella terms closely. Triple-negative is the on
 print("  its own list. Say that to the surgeon before they say it to us.")
 
 dataiku.Dataset("breast_panel_metrics").write_with_schema(metrics)
-dataiku.Dataset("breast_panel_overlap").write_with_schema(overlap)
+# breast_panel_overlap RETIRED 2026-08-28. family_panel_overlap covers all three
+# Act 3 families from one table and reproduces this novel_overlap exactly
+# (13/13 shared pairs); nb4 and nb6 read that instead. The overlap is still
+# computed and printed above, because the printout is part of this recipe's
+# diagnostic value -- it is simply no longer written to a dataset of its own.
+
 

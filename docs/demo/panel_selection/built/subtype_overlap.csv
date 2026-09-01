@@ -1,149 +1,149 @@
 act3_family,disease_a,disease_b,depth_a,depth_b,depth_gap,role_a,role_b,shared_genes,all_overlap,novel_overlap,jaccard_top50,near_duplicate,pair_kind
-breast,breast cancer,breast carcinoma,0.0,1.0,1.0,parent,parent,17,17,4,0.2048,False,ancestor_descendant
-breast,breast cancer,breast carcinoma by gene expression profile,0.0,2.0,2.0,parent,parent,15,15,2,0.1765,False,ancestor_descendant
-breast,breast cancer,female breast carcinoma,0.0,2.0,2.0,parent,parent,15,15,2,0.1765,False,ancestor_descendant
-breast,breast cancer,invasive breast carcinoma,0.0,2.0,2.0,parent,parent,15,15,7,0.1765,False,ancestor_descendant
-breast,breast cancer,breast ductal adenocarcinoma,0.0,3.0,3.0,parent,parent,13,13,3,0.1494,False,ancestor_descendant
-breast,breast cancer,breast lobular carcinoma,0.0,3.0,3.0,parent,parent,14,14,1,0.1628,False,ancestor_descendant
-breast,breast cancer,metaplastic breast carcinoma,0.0,3.0,3.0,parent,parent,14,14,4,0.1628,False,ancestor_descendant
-breast,breast cancer,mixed lobular and ductal breast carcinoma,0.0,3.0,3.0,parent,parent,14,14,4,0.1628,False,ancestor_descendant
-breast,breast cancer,luminal A breast carcinoma,0.0,4.0,4.0,parent,leaf,21,21,11,0.2658,False,ancestor_descendant
-breast,breast cancer,luminal B breast carcinoma,0.0,4.0,4.0,parent,leaf,20,20,5,0.25,False,ancestor_descendant
-breast,breast cancer,triple-negative breast carcinoma,0.0,4.0,4.0,parent,leaf,17,17,10,0.2048,False,ancestor_descendant
-breast,breast carcinoma,breast carcinoma by gene expression profile,1.0,2.0,1.0,parent,parent,37,37,26,0.5873,False,ancestor_descendant
-breast,breast carcinoma,female breast carcinoma,1.0,2.0,1.0,parent,parent,38,38,31,0.6129,True,ancestor_descendant
-breast,breast carcinoma,invasive breast carcinoma,1.0,2.0,1.0,parent,parent,36,36,9,0.5625,False,ancestor_descendant
-breast,breast carcinoma,breast ductal adenocarcinoma,1.0,3.0,2.0,parent,parent,41,41,38,0.6949,True,ancestor_descendant
-breast,breast carcinoma,breast lobular carcinoma,1.0,3.0,2.0,parent,parent,38,38,29,0.6129,True,ancestor_descendant
-breast,breast carcinoma,metaplastic breast carcinoma,1.0,3.0,2.0,parent,parent,37,37,13,0.5873,False,ancestor_descendant
-breast,breast carcinoma,mixed lobular and ductal breast carcinoma,1.0,3.0,2.0,parent,parent,35,35,13,0.5385,False,ancestor_descendant
-breast,breast carcinoma,luminal A breast carcinoma,1.0,4.0,3.0,parent,leaf,26,26,9,0.3514,False,ancestor_descendant
-breast,breast carcinoma,luminal B breast carcinoma,1.0,4.0,3.0,parent,leaf,31,31,6,0.4493,False,ancestor_descendant
-breast,breast carcinoma,triple-negative breast carcinoma,1.0,4.0,3.0,parent,leaf,15,15,2,0.1765,False,ancestor_descendant
-breast,breast adenocarcinoma,breast cancer,2.0,0.0,2.0,parent,parent,13,13,5,0.1494,False,ancestor_descendant
-breast,breast adenocarcinoma,breast carcinoma,2.0,1.0,1.0,parent,parent,31,31,6,0.4493,False,ancestor_descendant
-breast,breast adenocarcinoma,breast carcinoma by gene expression profile,2.0,2.0,0.0,parent,parent,26,26,9,0.3514,False,sibling
-breast,breast adenocarcinoma,female breast carcinoma,2.0,2.0,0.0,parent,parent,26,26,8,0.3514,False,sibling
-breast,breast adenocarcinoma,invasive breast carcinoma,2.0,2.0,0.0,parent,parent,29,29,20,0.4085,False,sibling
-breast,breast carcinoma by gene expression profile,female breast carcinoma,2.0,2.0,0.0,parent,parent,43,43,30,0.7544,True,sibling
-breast,breast carcinoma by gene expression profile,invasive breast carcinoma,2.0,2.0,0.0,parent,parent,36,36,14,0.5625,False,sibling
-breast,female breast carcinoma,invasive breast carcinoma,2.0,2.0,0.0,parent,parent,36,36,10,0.5625,False,sibling
-breast,breast adenocarcinoma,breast ductal adenocarcinoma,2.0,3.0,1.0,parent,parent,29,29,6,0.4085,False,ancestor_descendant
-breast,breast adenocarcinoma,breast lobular carcinoma,2.0,3.0,1.0,parent,parent,27,27,9,0.3699,False,ancestor_descendant
-breast,breast adenocarcinoma,metaplastic breast carcinoma,2.0,3.0,1.0,parent,parent,31,31,12,0.4493,False,ancestor_descendant
-breast,breast adenocarcinoma,mixed lobular and ductal breast carcinoma,2.0,3.0,1.0,parent,parent,31,31,21,0.4493,False,ancestor_descendant
-breast,breast carcinoma by gene expression profile,breast ductal adenocarcinoma,2.0,3.0,1.0,parent,parent,41,41,28,0.6949,True,ancestor_descendant
-breast,breast carcinoma by gene expression profile,breast lobular carcinoma,2.0,3.0,1.0,parent,parent,43,43,32,0.7544,True,ancestor_descendant
-breast,breast carcinoma by gene expression profile,metaplastic breast carcinoma,2.0,3.0,1.0,parent,parent,41,41,23,0.6949,True,ancestor_descendant
-breast,breast carcinoma by gene expression profile,mixed lobular and ductal breast carcinoma,2.0,3.0,1.0,parent,parent,39,39,23,0.6393,True,ancestor_descendant
-breast,female breast carcinoma,metaplastic breast carcinoma,2.0,3.0,1.0,parent,parent,41,41,17,0.6949,True,ancestor_descendant
-breast,female breast carcinoma,mixed lobular and ductal breast carcinoma,2.0,3.0,1.0,parent,parent,36,36,16,0.5625,False,ancestor_descendant
-breast,invasive breast carcinoma,metaplastic breast carcinoma,2.0,3.0,1.0,parent,parent,35,35,19,0.5385,False,ancestor_descendant
-breast,invasive breast carcinoma,mixed lobular and ductal breast carcinoma,2.0,3.0,1.0,parent,parent,34,34,24,0.5152,False,ancestor_descendant
-breast,breast adenocarcinoma,luminal A breast carcinoma,2.0,4.0,2.0,parent,leaf,21,21,15,0.2658,False,ancestor_descendant
-breast,breast adenocarcinoma,luminal B breast carcinoma,2.0,4.0,2.0,parent,leaf,26,26,24,0.3514,False,ancestor_descendant
-breast,breast adenocarcinoma,triple-negative breast carcinoma,2.0,4.0,2.0,parent,leaf,13,13,9,0.1494,False,ancestor_descendant
-breast,breast carcinoma by gene expression profile,luminal A breast carcinoma,2.0,4.0,2.0,parent,leaf,25,25,6,0.3333,False,ancestor_descendant
-breast,breast carcinoma by gene expression profile,luminal B breast carcinoma,2.0,4.0,2.0,parent,leaf,35,35,9,0.5385,False,ancestor_descendant
-breast,breast carcinoma by gene expression profile,triple-negative breast carcinoma,2.0,4.0,2.0,parent,leaf,10,10,4,0.1111,False,ancestor_descendant
-breast,female breast carcinoma,luminal A breast carcinoma,2.0,4.0,2.0,parent,leaf,26,26,7,0.3514,False,ancestor_descendant
-breast,female breast carcinoma,luminal B breast carcinoma,2.0,4.0,2.0,parent,leaf,34,34,8,0.5152,False,ancestor_descendant
-breast,female breast carcinoma,triple-negative breast carcinoma,2.0,4.0,2.0,parent,leaf,12,12,3,0.1364,False,ancestor_descendant
-breast,invasive breast carcinoma,luminal A breast carcinoma,2.0,4.0,2.0,parent,leaf,26,26,16,0.3514,False,ancestor_descendant
-breast,invasive breast carcinoma,luminal B breast carcinoma,2.0,4.0,2.0,parent,leaf,34,34,23,0.5152,False,ancestor_descendant
-breast,invasive breast carcinoma,triple-negative breast carcinoma,2.0,4.0,2.0,parent,leaf,11,11,13,0.1236,False,ancestor_descendant
-breast,HER2 positive breast carcinoma,breast cancer,3.0,0.0,3.0,leaf,parent,14,14,1,0.1628,False,ancestor_descendant
-breast,adenoid cystic breast carcinoma,breast cancer,3.0,0.0,3.0,parent,parent,11,11,6,0.1236,False,ancestor_descendant
-breast,HER2 positive breast carcinoma,breast carcinoma,3.0,1.0,2.0,leaf,parent,40,40,33,0.6667,True,ancestor_descendant
-breast,adenoid cystic breast carcinoma,breast carcinoma,3.0,1.0,2.0,parent,parent,28,28,3,0.3889,False,ancestor_descendant
-breast,HER2 positive breast carcinoma,breast adenocarcinoma,3.0,2.0,1.0,leaf,parent,28,28,8,0.3889,False,ancestor_descendant
-breast,HER2 positive breast carcinoma,breast carcinoma by gene expression profile,3.0,2.0,1.0,leaf,parent,42,42,28,0.7241,True,ancestor_descendant
-breast,HER2 positive breast carcinoma,female breast carcinoma,3.0,2.0,1.0,leaf,parent,46,46,35,0.8519,True,ancestor_descendant
-breast,HER2 positive breast carcinoma,invasive breast carcinoma,3.0,2.0,1.0,leaf,parent,37,37,11,0.5873,False,ancestor_descendant
-breast,adenoid cystic breast carcinoma,breast adenocarcinoma,3.0,2.0,1.0,parent,parent,28,28,19,0.3889,False,ancestor_descendant
-breast,adenoid cystic breast carcinoma,breast carcinoma by gene expression profile,3.0,2.0,1.0,parent,parent,32,32,8,0.4706,False,ancestor_descendant
-breast,adenoid cystic breast carcinoma,female breast carcinoma,3.0,2.0,1.0,parent,parent,31,31,4,0.4493,False,ancestor_descendant
-breast,adenoid cystic breast carcinoma,invasive breast carcinoma,3.0,2.0,1.0,parent,parent,27,27,18,0.3699,False,ancestor_descendant
-breast,breast ductal adenocarcinoma,female breast carcinoma,3.0,2.0,1.0,parent,parent,46,46,36,0.8519,True,ancestor_descendant
-breast,breast ductal adenocarcinoma,invasive breast carcinoma,3.0,2.0,1.0,parent,parent,36,36,9,0.5625,False,ancestor_descendant
-breast,breast lobular carcinoma,female breast carcinoma,3.0,2.0,1.0,parent,parent,47,47,36,0.8868,True,ancestor_descendant
-breast,breast lobular carcinoma,invasive breast carcinoma,3.0,2.0,1.0,parent,parent,35,35,10,0.5385,False,ancestor_descendant
-breast,HER2 positive breast carcinoma,adenoid cystic breast carcinoma,3.0,3.0,0.0,leaf,parent,29,29,7,0.4085,False,sibling
-breast,HER2 positive breast carcinoma,breast ductal adenocarcinoma,3.0,3.0,0.0,leaf,parent,46,46,40,0.8519,True,sibling
-breast,HER2 positive breast carcinoma,breast lobular carcinoma,3.0,3.0,0.0,leaf,parent,45,45,31,0.8182,True,sibling
-breast,HER2 positive breast carcinoma,metaplastic breast carcinoma,3.0,3.0,0.0,leaf,parent,40,40,18,0.6667,True,sibling
-breast,HER2 positive breast carcinoma,mixed lobular and ductal breast carcinoma,3.0,3.0,0.0,leaf,parent,33,33,18,0.4925,False,sibling
-breast,adenoid cystic breast carcinoma,breast ductal adenocarcinoma,3.0,3.0,0.0,parent,parent,33,33,3,0.4925,False,sibling
-breast,adenoid cystic breast carcinoma,breast lobular carcinoma,3.0,3.0,0.0,parent,parent,32,32,5,0.4706,False,sibling
-breast,adenoid cystic breast carcinoma,metaplastic breast carcinoma,3.0,3.0,0.0,parent,parent,33,33,15,0.4925,False,sibling
-breast,adenoid cystic breast carcinoma,mixed lobular and ductal breast carcinoma,3.0,3.0,0.0,parent,parent,35,35,18,0.5385,False,sibling
-breast,breast ductal adenocarcinoma,breast lobular carcinoma,3.0,3.0,0.0,parent,parent,46,46,30,0.8519,True,sibling
-breast,breast ductal adenocarcinoma,metaplastic breast carcinoma,3.0,3.0,0.0,parent,parent,39,39,15,0.6393,True,sibling
-breast,breast ductal adenocarcinoma,mixed lobular and ductal breast carcinoma,3.0,3.0,0.0,parent,parent,37,37,15,0.5873,False,sibling
-breast,breast lobular carcinoma,metaplastic breast carcinoma,3.0,3.0,0.0,parent,parent,42,42,18,0.7241,True,sibling
-breast,breast lobular carcinoma,mixed lobular and ductal breast carcinoma,3.0,3.0,0.0,parent,parent,38,38,18,0.6129,True,sibling
-breast,metaplastic breast carcinoma,mixed lobular and ductal breast carcinoma,3.0,3.0,0.0,parent,parent,39,39,22,0.6393,True,sibling
-breast,HER2 positive breast carcinoma,luminal A breast carcinoma,3.0,4.0,1.0,leaf,leaf,25,25,8,0.3333,False,ancestor_descendant
-breast,HER2 positive breast carcinoma,luminal B breast carcinoma,3.0,4.0,1.0,leaf,leaf,32,32,8,0.4706,False,ancestor_descendant
-breast,HER2 positive breast carcinoma,triple-negative breast carcinoma,3.0,4.0,1.0,leaf,leaf,14,14,2,0.1628,False,ancestor_descendant
-breast,adenoid cystic breast carcinoma,luminal A breast carcinoma,3.0,4.0,1.0,parent,leaf,20,20,6,0.25,False,ancestor_descendant
-breast,adenoid cystic breast carcinoma,luminal B breast carcinoma,3.0,4.0,1.0,parent,leaf,31,31,20,0.4493,False,ancestor_descendant
-breast,adenoid cystic breast carcinoma,triple-negative breast carcinoma,3.0,4.0,1.0,parent,leaf,8,8,9,0.087,False,ancestor_descendant
-breast,breast ductal adenocarcinoma,luminal A breast carcinoma,3.0,4.0,1.0,parent,leaf,25,25,6,0.3333,False,ancestor_descendant
-breast,breast ductal adenocarcinoma,luminal B breast carcinoma,3.0,4.0,1.0,parent,leaf,32,32,6,0.4706,False,ancestor_descendant
-breast,breast ductal adenocarcinoma,triple-negative breast carcinoma,3.0,4.0,1.0,parent,leaf,13,13,3,0.1494,False,ancestor_descendant
-breast,breast lobular carcinoma,luminal A breast carcinoma,3.0,4.0,1.0,parent,leaf,26,26,6,0.3514,False,ancestor_descendant
-breast,breast lobular carcinoma,luminal B breast carcinoma,3.0,4.0,1.0,parent,leaf,33,33,8,0.4925,False,ancestor_descendant
-breast,breast lobular carcinoma,triple-negative breast carcinoma,3.0,4.0,1.0,parent,leaf,12,12,1,0.1364,False,ancestor_descendant
-breast,metaplastic breast carcinoma,triple-negative breast carcinoma,3.0,4.0,1.0,parent,leaf,11,11,5,0.1236,False,ancestor_descendant
-breast,mixed lobular and ductal breast carcinoma,triple-negative breast carcinoma,3.0,4.0,1.0,parent,leaf,8,8,5,0.087,False,ancestor_descendant
-breast,luminal A breast carcinoma,metaplastic breast carcinoma,4.0,3.0,1.0,leaf,parent,23,23,10,0.2987,False,ancestor_descendant
-breast,luminal A breast carcinoma,mixed lobular and ductal breast carcinoma,4.0,3.0,1.0,leaf,parent,22,22,13,0.2821,False,ancestor_descendant
-breast,luminal B breast carcinoma,metaplastic breast carcinoma,4.0,3.0,1.0,leaf,parent,32,32,12,0.4706,False,ancestor_descendant
-breast,luminal B breast carcinoma,mixed lobular and ductal breast carcinoma,4.0,3.0,1.0,leaf,parent,34,34,22,0.5152,False,ancestor_descendant
-breast,luminal A breast carcinoma,luminal B breast carcinoma,4.0,4.0,0.0,leaf,leaf,22,22,12,0.2821,False,sibling
-breast,luminal A breast carcinoma,triple-negative breast carcinoma,4.0,4.0,0.0,leaf,leaf,16,16,11,0.1905,False,sibling
-breast,luminal B breast carcinoma,triple-negative breast carcinoma,4.0,4.0,0.0,leaf,leaf,12,12,10,0.1364,False,sibling
-stomach,gastric cancer,gastric carcinoma,0.0,1.0,1.0,parent,parent,18,18,2,0.2195,False,ancestor_descendant
-stomach,gastric cancer,gastric small cell neuroendocrine carcinoma,0.0,2.0,2.0,parent,leaf,29,29,16,0.4085,False,ancestor_descendant
-stomach,gastric cancer,gastric intestinal type adenocarcinoma,0.0,3.0,3.0,parent,parent,17,17,3,0.2048,False,ancestor_descendant
-stomach,gastric cancer,signet ring cell gastric adenocarcinoma,0.0,3.0,3.0,parent,leaf,12,12,12,0.1364,False,ancestor_descendant
-stomach,gastric carcinoma,gastric small cell neuroendocrine carcinoma,1.0,2.0,1.0,parent,leaf,26,26,3,0.3514,False,ancestor_descendant
-stomach,gastric carcinoma,gastric intestinal type adenocarcinoma,1.0,3.0,2.0,parent,parent,47,47,30,0.8868,True,ancestor_descendant
-stomach,gastric carcinoma,signet ring cell gastric adenocarcinoma,1.0,3.0,2.0,parent,leaf,34,34,3,0.5152,False,ancestor_descendant
-stomach,gastric adenocarcinoma,gastric cancer,2.0,0.0,2.0,leaf,parent,19,19,4,0.2346,False,ancestor_descendant
-stomach,gastric adenocarcinoma,gastric carcinoma,2.0,1.0,1.0,leaf,parent,49,49,43,0.9608,True,ancestor_descendant
-stomach,gastric adenocarcinoma,gastric small cell neuroendocrine carcinoma,2.0,2.0,0.0,leaf,leaf,26,26,4,0.3514,False,sibling
-stomach,gastric adenocarcinoma,gastric intestinal type adenocarcinoma,2.0,3.0,1.0,leaf,parent,46,46,27,0.8519,True,ancestor_descendant
-stomach,gastric adenocarcinoma,signet ring cell gastric adenocarcinoma,2.0,3.0,1.0,leaf,leaf,33,33,3,0.4925,False,ancestor_descendant
-stomach,gastric small cell neuroendocrine carcinoma,signet ring cell gastric adenocarcinoma,2.0,3.0,1.0,leaf,leaf,18,18,17,0.2195,False,ancestor_descendant
-stomach,gastric intestinal type adenocarcinoma,gastric small cell neuroendocrine carcinoma,3.0,2.0,1.0,parent,leaf,27,27,7,0.3699,False,ancestor_descendant
-stomach,gastric intestinal type adenocarcinoma,signet ring cell gastric adenocarcinoma,3.0,3.0,0.0,parent,leaf,36,36,4,0.5625,False,sibling
-uterine,endometrial cancer,uterine carcinosarcoma,1.0,1.0,0.0,parent,leaf,25,25,14,0.3333,False,sibling
-uterine,endometrial cancer,endometrial carcinoma,1.0,2.0,1.0,parent,parent,29,29,18,0.4085,False,ancestor_descendant
-uterine,endometrial cancer,endometrial serous adenocarcinoma,1.0,2.0,1.0,parent,leaf,29,29,21,0.4085,False,ancestor_descendant
-uterine,endometrial cancer,endometrial undifferentiated carcinoma,1.0,3.0,2.0,parent,parent,31,31,20,0.4493,False,ancestor_descendant
-uterine,endometrial cancer,endometrium adenocarcinoma,1.0,3.0,2.0,parent,leaf,34,34,20,0.5152,False,ancestor_descendant
-uterine,endometrial cancer,endometrial clear cell adenocarcinoma,1.0,4.0,3.0,parent,leaf,29,29,17,0.4085,False,ancestor_descendant
-uterine,endometrial cancer,endometrial mixed adenocarcinoma,1.0,4.0,3.0,parent,parent,30,30,21,0.4286,False,ancestor_descendant
-uterine,endometrial carcinoma,uterine carcinosarcoma,2.0,1.0,1.0,parent,leaf,35,35,15,0.5385,False,ancestor_descendant
-uterine,endometrial serous adenocarcinoma,uterine carcinosarcoma,2.0,1.0,1.0,leaf,leaf,33,33,9,0.4925,False,ancestor_descendant
-uterine,endometrial carcinoma,endometrial serous adenocarcinoma,2.0,2.0,0.0,parent,leaf,31,31,18,0.4493,False,sibling
-uterine,endometrial carcinoma,endometrial undifferentiated carcinoma,2.0,3.0,1.0,parent,parent,32,32,17,0.4706,False,ancestor_descendant
-uterine,endometrial carcinoma,endometrium adenocarcinoma,2.0,3.0,1.0,parent,leaf,31,31,20,0.4493,False,ancestor_descendant
-uterine,endometrial serous adenocarcinoma,endometrial undifferentiated carcinoma,2.0,3.0,1.0,leaf,parent,28,28,19,0.3889,False,ancestor_descendant
-uterine,endometrial serous adenocarcinoma,endometrium adenocarcinoma,2.0,3.0,1.0,leaf,leaf,33,33,21,0.4925,False,ancestor_descendant
-uterine,endometrial carcinoma,endometrial clear cell adenocarcinoma,2.0,4.0,2.0,parent,leaf,36,36,19,0.5625,False,ancestor_descendant
-uterine,endometrial carcinoma,endometrial mixed adenocarcinoma,2.0,4.0,2.0,parent,parent,33,33,17,0.4925,False,ancestor_descendant
-uterine,endometrial undifferentiated carcinoma,uterine carcinosarcoma,3.0,1.0,2.0,parent,leaf,29,29,12,0.4085,False,ancestor_descendant
-uterine,endometrium adenocarcinoma,uterine carcinosarcoma,3.0,1.0,2.0,leaf,leaf,31,31,13,0.4493,False,ancestor_descendant
-uterine,endometrial undifferentiated carcinoma,endometrium adenocarcinoma,3.0,3.0,0.0,parent,leaf,38,38,23,0.6129,True,sibling
-uterine,endometrial clear cell adenocarcinoma,uterine carcinosarcoma,4.0,1.0,3.0,leaf,leaf,34,34,14,0.5152,False,ancestor_descendant
-uterine,endometrial mixed adenocarcinoma,uterine carcinosarcoma,4.0,1.0,3.0,parent,leaf,34,34,11,0.5152,False,ancestor_descendant
-uterine,endometrial clear cell adenocarcinoma,endometrial serous adenocarcinoma,4.0,2.0,2.0,leaf,leaf,32,32,20,0.4706,False,ancestor_descendant
-uterine,endometrial mixed adenocarcinoma,endometrial serous adenocarcinoma,4.0,2.0,2.0,parent,leaf,33,33,21,0.4925,False,ancestor_descendant
-uterine,endometrial clear cell adenocarcinoma,endometrial undifferentiated carcinoma,4.0,3.0,1.0,leaf,parent,34,34,23,0.5152,False,ancestor_descendant
-uterine,endometrial clear cell adenocarcinoma,endometrium adenocarcinoma,4.0,3.0,1.0,leaf,leaf,34,34,26,0.5152,False,ancestor_descendant
-uterine,endometrial mixed adenocarcinoma,endometrial undifferentiated carcinoma,4.0,3.0,1.0,parent,parent,34,34,22,0.5152,False,ancestor_descendant
-uterine,endometrial mixed adenocarcinoma,endometrium adenocarcinoma,4.0,3.0,1.0,parent,leaf,36,36,21,0.5625,False,ancestor_descendant
-uterine,endometrial clear cell adenocarcinoma,endometrial mixed adenocarcinoma,4.0,4.0,0.0,leaf,parent,34,34,25,0.5152,False,sibling
+breast,breast cancer,breast carcinoma,0.0,1.0,1.0,not_leaf,not_leaf,17,17,4,0.2048,False,different_depth
+breast,breast cancer,breast carcinoma by gene expression profile,0.0,2.0,2.0,not_leaf,not_leaf,15,15,2,0.1765,False,different_depth
+breast,breast cancer,female breast carcinoma,0.0,2.0,2.0,not_leaf,not_leaf,15,15,2,0.1765,False,different_depth
+breast,breast cancer,invasive breast carcinoma,0.0,2.0,2.0,not_leaf,not_leaf,15,15,7,0.1765,False,different_depth
+breast,breast cancer,breast ductal adenocarcinoma,0.0,3.0,3.0,not_leaf,not_leaf,13,13,3,0.1494,False,different_depth
+breast,breast cancer,breast lobular carcinoma,0.0,3.0,3.0,not_leaf,not_leaf,14,14,1,0.1628,False,different_depth
+breast,breast cancer,metaplastic breast carcinoma,0.0,3.0,3.0,not_leaf,not_leaf,14,14,4,0.1628,False,different_depth
+breast,breast cancer,mixed lobular and ductal breast carcinoma,0.0,3.0,3.0,not_leaf,not_leaf,14,14,4,0.1628,False,different_depth
+breast,breast cancer,luminal A breast carcinoma,0.0,4.0,4.0,not_leaf,leaf,21,21,11,0.2658,False,different_depth
+breast,breast cancer,luminal B breast carcinoma,0.0,4.0,4.0,not_leaf,leaf,20,20,5,0.25,False,different_depth
+breast,breast cancer,triple-negative breast carcinoma,0.0,4.0,4.0,not_leaf,leaf,17,17,10,0.2048,False,different_depth
+breast,breast carcinoma,breast carcinoma by gene expression profile,1.0,2.0,1.0,not_leaf,not_leaf,37,37,26,0.5873,False,different_depth
+breast,breast carcinoma,female breast carcinoma,1.0,2.0,1.0,not_leaf,not_leaf,38,38,31,0.6129,True,different_depth
+breast,breast carcinoma,invasive breast carcinoma,1.0,2.0,1.0,not_leaf,not_leaf,36,36,9,0.5625,False,different_depth
+breast,breast carcinoma,breast ductal adenocarcinoma,1.0,3.0,2.0,not_leaf,not_leaf,41,41,38,0.6949,True,different_depth
+breast,breast carcinoma,breast lobular carcinoma,1.0,3.0,2.0,not_leaf,not_leaf,38,38,29,0.6129,True,different_depth
+breast,breast carcinoma,metaplastic breast carcinoma,1.0,3.0,2.0,not_leaf,not_leaf,37,37,13,0.5873,False,different_depth
+breast,breast carcinoma,mixed lobular and ductal breast carcinoma,1.0,3.0,2.0,not_leaf,not_leaf,35,35,13,0.5385,False,different_depth
+breast,breast carcinoma,luminal A breast carcinoma,1.0,4.0,3.0,not_leaf,leaf,26,26,9,0.3514,False,different_depth
+breast,breast carcinoma,luminal B breast carcinoma,1.0,4.0,3.0,not_leaf,leaf,31,31,6,0.4493,False,different_depth
+breast,breast carcinoma,triple-negative breast carcinoma,1.0,4.0,3.0,not_leaf,leaf,15,15,2,0.1765,False,different_depth
+breast,breast adenocarcinoma,breast cancer,2.0,0.0,2.0,not_leaf,not_leaf,13,13,5,0.1494,False,different_depth
+breast,breast adenocarcinoma,breast carcinoma,2.0,1.0,1.0,not_leaf,not_leaf,31,31,6,0.4493,False,different_depth
+breast,breast adenocarcinoma,breast carcinoma by gene expression profile,2.0,2.0,0.0,not_leaf,not_leaf,26,26,9,0.3514,False,same_depth
+breast,breast adenocarcinoma,female breast carcinoma,2.0,2.0,0.0,not_leaf,not_leaf,26,26,8,0.3514,False,same_depth
+breast,breast adenocarcinoma,invasive breast carcinoma,2.0,2.0,0.0,not_leaf,not_leaf,29,29,20,0.4085,False,same_depth
+breast,breast carcinoma by gene expression profile,female breast carcinoma,2.0,2.0,0.0,not_leaf,not_leaf,43,43,30,0.7544,True,same_depth
+breast,breast carcinoma by gene expression profile,invasive breast carcinoma,2.0,2.0,0.0,not_leaf,not_leaf,36,36,14,0.5625,False,same_depth
+breast,female breast carcinoma,invasive breast carcinoma,2.0,2.0,0.0,not_leaf,not_leaf,36,36,10,0.5625,False,same_depth
+breast,breast adenocarcinoma,breast ductal adenocarcinoma,2.0,3.0,1.0,not_leaf,not_leaf,29,29,6,0.4085,False,different_depth
+breast,breast adenocarcinoma,breast lobular carcinoma,2.0,3.0,1.0,not_leaf,not_leaf,27,27,9,0.3699,False,different_depth
+breast,breast adenocarcinoma,metaplastic breast carcinoma,2.0,3.0,1.0,not_leaf,not_leaf,31,31,12,0.4493,False,different_depth
+breast,breast adenocarcinoma,mixed lobular and ductal breast carcinoma,2.0,3.0,1.0,not_leaf,not_leaf,31,31,21,0.4493,False,different_depth
+breast,breast carcinoma by gene expression profile,breast ductal adenocarcinoma,2.0,3.0,1.0,not_leaf,not_leaf,41,41,28,0.6949,True,different_depth
+breast,breast carcinoma by gene expression profile,breast lobular carcinoma,2.0,3.0,1.0,not_leaf,not_leaf,43,43,32,0.7544,True,different_depth
+breast,breast carcinoma by gene expression profile,metaplastic breast carcinoma,2.0,3.0,1.0,not_leaf,not_leaf,41,41,23,0.6949,True,different_depth
+breast,breast carcinoma by gene expression profile,mixed lobular and ductal breast carcinoma,2.0,3.0,1.0,not_leaf,not_leaf,39,39,23,0.6393,True,different_depth
+breast,female breast carcinoma,metaplastic breast carcinoma,2.0,3.0,1.0,not_leaf,not_leaf,41,41,17,0.6949,True,different_depth
+breast,female breast carcinoma,mixed lobular and ductal breast carcinoma,2.0,3.0,1.0,not_leaf,not_leaf,36,36,16,0.5625,False,different_depth
+breast,invasive breast carcinoma,metaplastic breast carcinoma,2.0,3.0,1.0,not_leaf,not_leaf,35,35,19,0.5385,False,different_depth
+breast,invasive breast carcinoma,mixed lobular and ductal breast carcinoma,2.0,3.0,1.0,not_leaf,not_leaf,34,34,24,0.5152,False,different_depth
+breast,breast adenocarcinoma,luminal A breast carcinoma,2.0,4.0,2.0,not_leaf,leaf,21,21,15,0.2658,False,different_depth
+breast,breast adenocarcinoma,luminal B breast carcinoma,2.0,4.0,2.0,not_leaf,leaf,26,26,24,0.3514,False,different_depth
+breast,breast adenocarcinoma,triple-negative breast carcinoma,2.0,4.0,2.0,not_leaf,leaf,13,13,9,0.1494,False,different_depth
+breast,breast carcinoma by gene expression profile,luminal A breast carcinoma,2.0,4.0,2.0,not_leaf,leaf,25,25,6,0.3333,False,different_depth
+breast,breast carcinoma by gene expression profile,luminal B breast carcinoma,2.0,4.0,2.0,not_leaf,leaf,35,35,9,0.5385,False,different_depth
+breast,breast carcinoma by gene expression profile,triple-negative breast carcinoma,2.0,4.0,2.0,not_leaf,leaf,10,10,4,0.1111,False,different_depth
+breast,female breast carcinoma,luminal A breast carcinoma,2.0,4.0,2.0,not_leaf,leaf,26,26,7,0.3514,False,different_depth
+breast,female breast carcinoma,luminal B breast carcinoma,2.0,4.0,2.0,not_leaf,leaf,34,34,8,0.5152,False,different_depth
+breast,female breast carcinoma,triple-negative breast carcinoma,2.0,4.0,2.0,not_leaf,leaf,12,12,3,0.1364,False,different_depth
+breast,invasive breast carcinoma,luminal A breast carcinoma,2.0,4.0,2.0,not_leaf,leaf,26,26,16,0.3514,False,different_depth
+breast,invasive breast carcinoma,luminal B breast carcinoma,2.0,4.0,2.0,not_leaf,leaf,34,34,23,0.5152,False,different_depth
+breast,invasive breast carcinoma,triple-negative breast carcinoma,2.0,4.0,2.0,not_leaf,leaf,11,11,13,0.1236,False,different_depth
+breast,HER2 positive breast carcinoma,breast cancer,3.0,0.0,3.0,leaf,not_leaf,14,14,1,0.1628,False,different_depth
+breast,adenoid cystic breast carcinoma,breast cancer,3.0,0.0,3.0,not_leaf,not_leaf,11,11,6,0.1236,False,different_depth
+breast,HER2 positive breast carcinoma,breast carcinoma,3.0,1.0,2.0,leaf,not_leaf,40,40,33,0.6667,True,different_depth
+breast,adenoid cystic breast carcinoma,breast carcinoma,3.0,1.0,2.0,not_leaf,not_leaf,28,28,3,0.3889,False,different_depth
+breast,HER2 positive breast carcinoma,breast adenocarcinoma,3.0,2.0,1.0,leaf,not_leaf,28,28,8,0.3889,False,different_depth
+breast,HER2 positive breast carcinoma,breast carcinoma by gene expression profile,3.0,2.0,1.0,leaf,not_leaf,42,42,28,0.7241,True,different_depth
+breast,HER2 positive breast carcinoma,female breast carcinoma,3.0,2.0,1.0,leaf,not_leaf,46,46,35,0.8519,True,different_depth
+breast,HER2 positive breast carcinoma,invasive breast carcinoma,3.0,2.0,1.0,leaf,not_leaf,37,37,11,0.5873,False,different_depth
+breast,adenoid cystic breast carcinoma,breast adenocarcinoma,3.0,2.0,1.0,not_leaf,not_leaf,28,28,19,0.3889,False,different_depth
+breast,adenoid cystic breast carcinoma,breast carcinoma by gene expression profile,3.0,2.0,1.0,not_leaf,not_leaf,32,32,8,0.4706,False,different_depth
+breast,adenoid cystic breast carcinoma,female breast carcinoma,3.0,2.0,1.0,not_leaf,not_leaf,31,31,4,0.4493,False,different_depth
+breast,adenoid cystic breast carcinoma,invasive breast carcinoma,3.0,2.0,1.0,not_leaf,not_leaf,27,27,18,0.3699,False,different_depth
+breast,breast ductal adenocarcinoma,female breast carcinoma,3.0,2.0,1.0,not_leaf,not_leaf,46,46,36,0.8519,True,different_depth
+breast,breast ductal adenocarcinoma,invasive breast carcinoma,3.0,2.0,1.0,not_leaf,not_leaf,36,36,9,0.5625,False,different_depth
+breast,breast lobular carcinoma,female breast carcinoma,3.0,2.0,1.0,not_leaf,not_leaf,47,47,36,0.8868,True,different_depth
+breast,breast lobular carcinoma,invasive breast carcinoma,3.0,2.0,1.0,not_leaf,not_leaf,35,35,10,0.5385,False,different_depth
+breast,HER2 positive breast carcinoma,adenoid cystic breast carcinoma,3.0,3.0,0.0,leaf,not_leaf,29,29,7,0.4085,False,same_depth
+breast,HER2 positive breast carcinoma,breast ductal adenocarcinoma,3.0,3.0,0.0,leaf,not_leaf,46,46,40,0.8519,True,same_depth
+breast,HER2 positive breast carcinoma,breast lobular carcinoma,3.0,3.0,0.0,leaf,not_leaf,45,45,31,0.8182,True,same_depth
+breast,HER2 positive breast carcinoma,metaplastic breast carcinoma,3.0,3.0,0.0,leaf,not_leaf,40,40,18,0.6667,True,same_depth
+breast,HER2 positive breast carcinoma,mixed lobular and ductal breast carcinoma,3.0,3.0,0.0,leaf,not_leaf,33,33,18,0.4925,False,same_depth
+breast,adenoid cystic breast carcinoma,breast ductal adenocarcinoma,3.0,3.0,0.0,not_leaf,not_leaf,33,33,3,0.4925,False,same_depth
+breast,adenoid cystic breast carcinoma,breast lobular carcinoma,3.0,3.0,0.0,not_leaf,not_leaf,32,32,5,0.4706,False,same_depth
+breast,adenoid cystic breast carcinoma,metaplastic breast carcinoma,3.0,3.0,0.0,not_leaf,not_leaf,33,33,15,0.4925,False,same_depth
+breast,adenoid cystic breast carcinoma,mixed lobular and ductal breast carcinoma,3.0,3.0,0.0,not_leaf,not_leaf,35,35,18,0.5385,False,same_depth
+breast,breast ductal adenocarcinoma,breast lobular carcinoma,3.0,3.0,0.0,not_leaf,not_leaf,46,46,30,0.8519,True,same_depth
+breast,breast ductal adenocarcinoma,metaplastic breast carcinoma,3.0,3.0,0.0,not_leaf,not_leaf,39,39,15,0.6393,True,same_depth
+breast,breast ductal adenocarcinoma,mixed lobular and ductal breast carcinoma,3.0,3.0,0.0,not_leaf,not_leaf,37,37,15,0.5873,False,same_depth
+breast,breast lobular carcinoma,metaplastic breast carcinoma,3.0,3.0,0.0,not_leaf,not_leaf,42,42,18,0.7241,True,same_depth
+breast,breast lobular carcinoma,mixed lobular and ductal breast carcinoma,3.0,3.0,0.0,not_leaf,not_leaf,38,38,18,0.6129,True,same_depth
+breast,metaplastic breast carcinoma,mixed lobular and ductal breast carcinoma,3.0,3.0,0.0,not_leaf,not_leaf,39,39,22,0.6393,True,same_depth
+breast,HER2 positive breast carcinoma,luminal A breast carcinoma,3.0,4.0,1.0,leaf,leaf,25,25,8,0.3333,False,different_depth
+breast,HER2 positive breast carcinoma,luminal B breast carcinoma,3.0,4.0,1.0,leaf,leaf,32,32,8,0.4706,False,different_depth
+breast,HER2 positive breast carcinoma,triple-negative breast carcinoma,3.0,4.0,1.0,leaf,leaf,14,14,2,0.1628,False,different_depth
+breast,adenoid cystic breast carcinoma,luminal A breast carcinoma,3.0,4.0,1.0,not_leaf,leaf,20,20,6,0.25,False,different_depth
+breast,adenoid cystic breast carcinoma,luminal B breast carcinoma,3.0,4.0,1.0,not_leaf,leaf,31,31,20,0.4493,False,different_depth
+breast,adenoid cystic breast carcinoma,triple-negative breast carcinoma,3.0,4.0,1.0,not_leaf,leaf,8,8,9,0.087,False,different_depth
+breast,breast ductal adenocarcinoma,luminal A breast carcinoma,3.0,4.0,1.0,not_leaf,leaf,25,25,6,0.3333,False,different_depth
+breast,breast ductal adenocarcinoma,luminal B breast carcinoma,3.0,4.0,1.0,not_leaf,leaf,32,32,6,0.4706,False,different_depth
+breast,breast ductal adenocarcinoma,triple-negative breast carcinoma,3.0,4.0,1.0,not_leaf,leaf,13,13,3,0.1494,False,different_depth
+breast,breast lobular carcinoma,luminal A breast carcinoma,3.0,4.0,1.0,not_leaf,leaf,26,26,6,0.3514,False,different_depth
+breast,breast lobular carcinoma,luminal B breast carcinoma,3.0,4.0,1.0,not_leaf,leaf,33,33,8,0.4925,False,different_depth
+breast,breast lobular carcinoma,triple-negative breast carcinoma,3.0,4.0,1.0,not_leaf,leaf,12,12,1,0.1364,False,different_depth
+breast,metaplastic breast carcinoma,triple-negative breast carcinoma,3.0,4.0,1.0,not_leaf,leaf,11,11,5,0.1236,False,different_depth
+breast,mixed lobular and ductal breast carcinoma,triple-negative breast carcinoma,3.0,4.0,1.0,not_leaf,leaf,8,8,5,0.087,False,different_depth
+breast,luminal A breast carcinoma,metaplastic breast carcinoma,4.0,3.0,1.0,leaf,not_leaf,23,23,10,0.2987,False,different_depth
+breast,luminal A breast carcinoma,mixed lobular and ductal breast carcinoma,4.0,3.0,1.0,leaf,not_leaf,22,22,13,0.2821,False,different_depth
+breast,luminal B breast carcinoma,metaplastic breast carcinoma,4.0,3.0,1.0,leaf,not_leaf,32,32,12,0.4706,False,different_depth
+breast,luminal B breast carcinoma,mixed lobular and ductal breast carcinoma,4.0,3.0,1.0,leaf,not_leaf,34,34,22,0.5152,False,different_depth
+breast,luminal A breast carcinoma,luminal B breast carcinoma,4.0,4.0,0.0,leaf,leaf,22,22,12,0.2821,False,same_depth
+breast,luminal A breast carcinoma,triple-negative breast carcinoma,4.0,4.0,0.0,leaf,leaf,16,16,11,0.1905,False,same_depth
+breast,luminal B breast carcinoma,triple-negative breast carcinoma,4.0,4.0,0.0,leaf,leaf,12,12,10,0.1364,False,same_depth
+stomach,gastric cancer,gastric carcinoma,0.0,1.0,1.0,not_leaf,not_leaf,18,18,2,0.2195,False,different_depth
+stomach,gastric cancer,gastric small cell neuroendocrine carcinoma,0.0,2.0,2.0,not_leaf,leaf,29,29,16,0.4085,False,different_depth
+stomach,gastric cancer,gastric intestinal type adenocarcinoma,0.0,3.0,3.0,not_leaf,not_leaf,17,17,3,0.2048,False,different_depth
+stomach,gastric cancer,signet ring cell gastric adenocarcinoma,0.0,3.0,3.0,not_leaf,leaf,12,12,12,0.1364,False,different_depth
+stomach,gastric carcinoma,gastric small cell neuroendocrine carcinoma,1.0,2.0,1.0,not_leaf,leaf,26,26,3,0.3514,False,different_depth
+stomach,gastric carcinoma,gastric intestinal type adenocarcinoma,1.0,3.0,2.0,not_leaf,not_leaf,47,47,30,0.8868,True,different_depth
+stomach,gastric carcinoma,signet ring cell gastric adenocarcinoma,1.0,3.0,2.0,not_leaf,leaf,34,34,3,0.5152,False,different_depth
+stomach,gastric adenocarcinoma,gastric cancer,2.0,0.0,2.0,leaf,not_leaf,19,19,4,0.2346,False,different_depth
+stomach,gastric adenocarcinoma,gastric carcinoma,2.0,1.0,1.0,leaf,not_leaf,49,49,43,0.9608,True,different_depth
+stomach,gastric adenocarcinoma,gastric small cell neuroendocrine carcinoma,2.0,2.0,0.0,leaf,leaf,26,26,4,0.3514,False,same_depth
+stomach,gastric adenocarcinoma,gastric intestinal type adenocarcinoma,2.0,3.0,1.0,leaf,not_leaf,46,46,27,0.8519,True,different_depth
+stomach,gastric adenocarcinoma,signet ring cell gastric adenocarcinoma,2.0,3.0,1.0,leaf,leaf,33,33,3,0.4925,False,different_depth
+stomach,gastric small cell neuroendocrine carcinoma,signet ring cell gastric adenocarcinoma,2.0,3.0,1.0,leaf,leaf,18,18,17,0.2195,False,different_depth
+stomach,gastric intestinal type adenocarcinoma,gastric small cell neuroendocrine carcinoma,3.0,2.0,1.0,not_leaf,leaf,27,27,7,0.3699,False,different_depth
+stomach,gastric intestinal type adenocarcinoma,signet ring cell gastric adenocarcinoma,3.0,3.0,0.0,not_leaf,leaf,36,36,4,0.5625,False,same_depth
+uterine,endometrial cancer,uterine carcinosarcoma,1.0,1.0,0.0,not_leaf,leaf,25,25,14,0.3333,False,same_depth
+uterine,endometrial cancer,endometrial carcinoma,1.0,2.0,1.0,not_leaf,not_leaf,29,29,18,0.4085,False,different_depth
+uterine,endometrial cancer,endometrial serous adenocarcinoma,1.0,2.0,1.0,not_leaf,leaf,29,29,21,0.4085,False,different_depth
+uterine,endometrial cancer,endometrial undifferentiated carcinoma,1.0,3.0,2.0,not_leaf,not_leaf,31,31,20,0.4493,False,different_depth
+uterine,endometrial cancer,endometrium adenocarcinoma,1.0,3.0,2.0,not_leaf,leaf,34,34,20,0.5152,False,different_depth
+uterine,endometrial cancer,endometrial clear cell adenocarcinoma,1.0,4.0,3.0,not_leaf,leaf,29,29,17,0.4085,False,different_depth
+uterine,endometrial cancer,endometrial mixed adenocarcinoma,1.0,4.0,3.0,not_leaf,not_leaf,30,30,21,0.4286,False,different_depth
+uterine,endometrial carcinoma,uterine carcinosarcoma,2.0,1.0,1.0,not_leaf,leaf,35,35,15,0.5385,False,different_depth
+uterine,endometrial serous adenocarcinoma,uterine carcinosarcoma,2.0,1.0,1.0,leaf,leaf,33,33,9,0.4925,False,different_depth
+uterine,endometrial carcinoma,endometrial serous adenocarcinoma,2.0,2.0,0.0,not_leaf,leaf,31,31,18,0.4493,False,same_depth
+uterine,endometrial carcinoma,endometrial undifferentiated carcinoma,2.0,3.0,1.0,not_leaf,not_leaf,32,32,17,0.4706,False,different_depth
+uterine,endometrial carcinoma,endometrium adenocarcinoma,2.0,3.0,1.0,not_leaf,leaf,31,31,20,0.4493,False,different_depth
+uterine,endometrial serous adenocarcinoma,endometrial undifferentiated carcinoma,2.0,3.0,1.0,leaf,not_leaf,28,28,19,0.3889,False,different_depth
+uterine,endometrial serous adenocarcinoma,endometrium adenocarcinoma,2.0,3.0,1.0,leaf,leaf,33,33,21,0.4925,False,different_depth
+uterine,endometrial carcinoma,endometrial clear cell adenocarcinoma,2.0,4.0,2.0,not_leaf,leaf,36,36,19,0.5625,False,different_depth
+uterine,endometrial carcinoma,endometrial mixed adenocarcinoma,2.0,4.0,2.0,not_leaf,not_leaf,33,33,17,0.4925,False,different_depth
+uterine,endometrial undifferentiated carcinoma,uterine carcinosarcoma,3.0,1.0,2.0,not_leaf,leaf,29,29,12,0.4085,False,different_depth
+uterine,endometrium adenocarcinoma,uterine carcinosarcoma,3.0,1.0,2.0,leaf,leaf,31,31,13,0.4493,False,different_depth
+uterine,endometrial undifferentiated carcinoma,endometrium adenocarcinoma,3.0,3.0,0.0,not_leaf,leaf,38,38,23,0.6129,True,same_depth
+uterine,endometrial clear cell adenocarcinoma,uterine carcinosarcoma,4.0,1.0,3.0,leaf,leaf,34,34,14,0.5152,False,different_depth
+uterine,endometrial mixed adenocarcinoma,uterine carcinosarcoma,4.0,1.0,3.0,not_leaf,leaf,34,34,11,0.5152,False,different_depth
+uterine,endometrial clear cell adenocarcinoma,endometrial serous adenocarcinoma,4.0,2.0,2.0,leaf,leaf,32,32,20,0.4706,False,different_depth
+uterine,endometrial mixed adenocarcinoma,endometrial serous adenocarcinoma,4.0,2.0,2.0,not_leaf,leaf,33,33,21,0.4925,False,different_depth
+uterine,endometrial clear cell adenocarcinoma,endometrial undifferentiated carcinoma,4.0,3.0,1.0,leaf,not_leaf,34,34,23,0.5152,False,different_depth
+uterine,endometrial clear cell adenocarcinoma,endometrium adenocarcinoma,4.0,3.0,1.0,leaf,leaf,34,34,26,0.5152,False,different_depth
+uterine,endometrial mixed adenocarcinoma,endometrial undifferentiated carcinoma,4.0,3.0,1.0,not_leaf,not_leaf,34,34,22,0.5152,False,different_depth
+uterine,endometrial mixed adenocarcinoma,endometrium adenocarcinoma,4.0,3.0,1.0,not_leaf,leaf,36,36,21,0.5625,False,different_depth
+uterine,endometrial clear cell adenocarcinoma,endometrial mixed adenocarcinoma,4.0,4.0,0.0,leaf,not_leaf,34,34,25,0.5152,False,same_depth

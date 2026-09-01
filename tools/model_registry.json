@@ -145,6 +145,10 @@
    "name": "m8-f14-pm",
    "lab_session": "s12",
    "lab_id": "A-DEMO_TARGET_IDENTIFICATION-I2csfIX2-krJwswcb-s12-pp2-m1"
+  },
+  "SybkzSdu": {
+   "name": "graph_explorer",
+   "verdict": "NOT A PRIORITIZER MODEL -- saved model of type LLM_GENERIC_RAW, backing the graph-search agent webapp. Recorded so the index accounts for every saved model in the project; it has no prioritizer metrics and never enters the ablation ladder or the champion comparison."
   }
  }
 }
