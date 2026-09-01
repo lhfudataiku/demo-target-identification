@@ -18,9 +18,10 @@ docs/operations/build-governance/pilot/phase5-breast-panel-accepted-baseline.jso
 docs/operations/build-governance/pilot/phase5-breast-panel-leaf-build-event.json	docs	LIVE (referenced)	1	docs/operations/BUILD_GOVERNANCE.md
 docs/operations/build-governance/review-packet.schema.json	docs	LIVE (referenced)	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
 docs/prioritizer/CLAIM_REGISTRY.json	docs	LIVE (referenced)	8	docs/README.md,docs/decisions/DECISION_REGISTER.md,docs/demo/WEBAPP_DESIGN.md,docs/prioritizer/TARGET_PRIORITIZER.md
+dss_lib/demo_identity.py	dss_lib	LIVE (referenced)	3	dss_recipes/compute_breast_panel.py,dss_recipes/compute_demo_panel_config.py,dss_recipes/compute_split_audit_2.py
 dss_recipes/attach_node_index.py	recipe-mirror	MIRROR (graph-build project)	0	-
-dss_recipes/compute_breast_panel.py	recipe-mirror	DRIFTED MIRROR (content differs from live DSS)	4	archive/DASHBOARD_BUILD_LOG.md,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V2.html,docs/demo/DASHBOARD_MOCKUP_V3.html,docs/operations/build-governance/POLICY.json
-dss_recipes/compute_demo_panel_config.py	recipe-mirror	DRIFTED MIRROR (content differs from live DSS)	0	-
+dss_recipes/compute_breast_panel.py	recipe-mirror	MIRROR	4	archive/DASHBOARD_BUILD_LOG.md,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V2.html,docs/demo/DASHBOARD_MOCKUP_V3.html,docs/operations/build-governance/POLICY.json
+dss_recipes/compute_demo_panel_config.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_eligibility.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_family_id.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_group_map.py	recipe-mirror	MIRROR (graph-build project)	0	-
@@ -49,7 +50,7 @@ dss_recipes/compute_persona_candidates.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_pool_reachability.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_ppi_cn_zscore.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_ppi_evidence_depth.py	recipe-mirror	MIRROR	0	-
-dss_recipes/compute_split_audit_2.py	recipe-mirror	DRIFTED MIRROR (content differs from live DSS)	0	-
+dss_recipes/compute_split_audit_2.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_target_reachability.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_top_shap_drivers_1.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_tractability_axis.py	recipe-mirror	MIRROR	0	-
@@ -96,7 +97,7 @@ tools/check_links.py	tool	LIVE	6	archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,arch
 tools/index_manifest.json	tool	LIVE	3	docs/README.md,docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md,tools/build_index.py
 tools/model_registry.json	tool	LIVE	8	archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md
 tools/pull_notebooks.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
-tools/recipe_classes.json	tool	LIVE	5	archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/prioritizer/PHASE3_PREREGISTRATION.md,tools/build_recipe_index.py
+tools/recipe_classes.json	tool	LIVE	6	archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md,docs/prioritizer/PHASE3_PREREGISTRATION.md
 tools/sync_harness.py	tool	LIVE	7	AGENTS.md,CLAUDE.md,README.md,harness/README.md
 tools/tests/fixtures/build_governance/accepted-baseline.json	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
 tools/tests/fixtures/build_governance/no-change-event.json	tool	LIVE	1	tools/tests/test_build_governance.py
@@ -125,7 +126,7 @@ webapp/backend/services/settings.py	webapp	LIVE (referenced)	3	webapp/README.md,
 webapp/backend/tools/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
 webapp/backend/tools/registry.py	webapp	LIVE (referenced)	5	docs/prioritizer/VALIDATION.md,tools/check_claim_registry.py,tools/check_indexes.sh,tools/index_manifest.json
 webapp/dss_webapp/backend.py	webapp	LIVE (referenced)	8	archive/flow-map-iterations/flow_map.html,docs/demo/FLOW_MAP.md,tools/recipe_classes.json,webapp/README.md
-webapp/dss_webapp/deploy.sh	webapp	LIVE (referenced)	6	docs/demo/WEBAPP_DESIGN.md,webapp/DEPLOYMENT.md,webapp/Makefile,webapp/README.md
+webapp/dss_webapp/deploy.sh	webapp	LIVE (referenced)	7	docs/demo/WEBAPP_DESIGN.md,dss_lib/demo_identity.py,webapp/DEPLOYMENT.md,webapp/Makefile
 webapp/frontend/package-lock.json	webapp	LIVE (referenced)	1	webapp/Makefile
 webapp/frontend/package.json	webapp	LIVE (referenced)	2	webapp/Makefile,webapp/README.md
 webapp/frontend/tsconfig.app.json	webapp	LIVE (referenced)	1	webapp/frontend/tsconfig.json

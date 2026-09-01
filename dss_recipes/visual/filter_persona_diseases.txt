@@ -1,0 +1,7 @@
+# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
+# this file is a copy for review and grep. The live payload is in the DSS recipe.
+# recipe: filter_persona_diseases (join)
+# inputs: demo_panel_config, psplit_validation_set
+# outputs: validation_set_personas_2
+
+expression: in_act4

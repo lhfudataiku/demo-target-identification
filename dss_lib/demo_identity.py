@@ -63,11 +63,25 @@ def panel() -> dict:
     return v
 
 
+#: Threshold variables are FLAT scalars, not one nested object, because a DSS visual
+#: formula cannot read into a nested variable. Verified 2026-09-01 on
+#: `compute_validation_auc_ci`: both `variables["thresholds"].trust_n_pos` and
+#: `variables["thresholds"]["trust_n_pos"]` evaluate to nothing -- the lint passes, the
+#: build succeeds, and every row silently comes out false. Flat keys are the only form
+#: both Python and visual recipes can read, so they are the single definition.
+THRESHOLD_KEYS = ("trust_n_pos", "panel_n_pos", "near_dup", "module_size_gate", "ks", "topn")
+
+
 def thresholds() -> dict:
-    v = variables().get("thresholds")
-    if not isinstance(v, dict):
-        raise ValueError("project variable `thresholds` is missing or not an object.")
-    return v
+    """The flat threshold variables, gathered into a dict for convenience."""
+    v = variables()
+    missing = [k for k in THRESHOLD_KEYS if k not in v]
+    if missing:
+        raise ValueError(
+            f"threshold project variables missing: {missing}. Set them with "
+            "`dku project set-variables`; do not fall back to a literal."
+        )
+    return {k: v[k] for k in THRESHOLD_KEYS}
 
 
 def name_to_index(names, node_type: str = "disease") -> dict:

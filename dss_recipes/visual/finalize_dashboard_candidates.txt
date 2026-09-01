@@ -1,0 +1,8 @@
+# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
+# this file is a copy for review and grep. The live payload is in the DSS recipe.
+# recipe: finalize_dashboard_candidates (shaker)
+# inputs: candidates_annotated
+# outputs: dashboard_candidates
+
+expression: round(1000.0 * rank_in_disease / disease_pool_size) / 10.0
+value: 0

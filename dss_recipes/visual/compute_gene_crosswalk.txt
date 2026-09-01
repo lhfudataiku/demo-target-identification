@@ -1,0 +1,7 @@
+# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
+# this file is a copy for review and grep. The live payload is in the DSS recipe.
+# recipe: compute_gene_crosswalk (join)
+# inputs: gene_names, graph_nodes
+# outputs: gene_crosswalk
+
+expression: node_type == "gene/protein"

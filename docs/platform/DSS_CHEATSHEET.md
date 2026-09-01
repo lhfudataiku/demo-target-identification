@@ -29,6 +29,27 @@ and report nothing.
 **Always:** read with pandas inference disabled *and* cast every join key to string explicitly.
 Then assert on unresolved rows rather than trusting the join.
 
+### A GREL formula cannot read a NESTED project variable — and fails silently
+
+Project variables reach visual recipes as `variables["key"]`, which works for a flat scalar.
+It does **not** reach into an object. Both of these evaluate to nothing:
+
+    variables["thresholds"].trust_n_pos
+    variables["thresholds"]["trust_n_pos"]
+
+Nothing reports it. `dku recipe lint-formula` returns *"No errors or warnings found"*, the build
+completes successfully, and the column is computed against a missing value. On 2026-09-01
+`compute_validation_auc_ci` went from **378 trustworthy diseases to 0** this way — a silent,
+total inversion of a shipped number that only a canary count caught.
+
+**Store any threshold a visual recipe reads as a FLAT scalar variable.** Objects are fine for
+Python recipes, which do `dataiku.get_custom_variables()` and index normally. When a value has
+both kinds of consumer, flat is the only shape that serves both — so flat is the single
+definition, not a second copy of a nested one.
+
+**Always verify a variable substitution with a canary**: a count that would change if the value
+resolved to nothing. Neither the lint nor the job state can tell you it worked.
+
 ### Visual recipes accept a payload and silently ignore parts of it
 
 A Group recipe accepted a definition containing a pre-filter and a computed column, wrote and

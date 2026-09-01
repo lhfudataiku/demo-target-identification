@@ -101,7 +101,7 @@ when the champion changes and that no notebook would catch.
 
 ## Decision indexes
 
-**28 current durable decisions.** Query `.index/decisions.tsv` by stable ID, domain or
+**29 current durable decisions.** Query `.index/decisions.tsv` by stable ID, domain or
 topic; open `docs/decisions/DECISION_REGISTER.md` only for the rationale and consequences.
 
 The retired log remains recoverable as **158 classified historical entries** in

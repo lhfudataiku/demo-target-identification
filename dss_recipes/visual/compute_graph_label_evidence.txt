@@ -1,0 +1,7 @@
+# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
+# this file is a copy for review and grep. The live payload is in the DSS recipe.
+# recipe: compute_graph_label_evidence (grouping)
+# inputs: edge_metadata
+# outputs: graph_label_evidence
+
+expression: relation == "disease_protein"

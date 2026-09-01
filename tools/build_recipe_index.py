@@ -41,6 +41,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, ".index")
 SNAP = os.path.join(INDEX, "dss_snapshot.json")
 CYPHER_DIR = os.path.join(ROOT, "dss_recipes", "cypher")
+VISUAL_DIR = os.path.join(ROOT, "dss_recipes", "visual")
+
+# Visual-recipe payload keys worth mirroring. A shaker/grouping/filter carries its
+# governed values in formulas and comparison literals, and until 2026-09-01 nothing
+# in the repo held them -- which is how `n_pos >= 30` in compute_validation_auc_ci sat
+# in the flow for weeks while every doc, notebook and python recipe said 50.
+VISUAL_TYPES = ("shaker", "grouping", "join", "sampling", "split", "window",
+                "topn", "sort", "distinct", "pivot", "vstack")
 CLASSES = os.path.join(ROOT, "tools", "recipe_classes.json")
 REGISTRY = os.path.join(ROOT, "tools", "model_registry.json")
 PROJECT = os.environ.get("DKU_PROJECT", "DEMO_TARGET_IDENTIFICATION")
@@ -111,6 +119,7 @@ def refresh():
             "outputs": sorted({x.get("ref") for v in (d.get("outputs") or {}).values()
                                for x in (v.get("items") or []) if x.get("ref")}),
             "cypher": cy,
+            "visual": _visual_values(d.get("type", ""), d),
         }
         if i % 15 == 0:
             print("  ... %d/%d" % (i, len(names)))
@@ -191,8 +200,65 @@ def refresh():
                % (name, ", ".join(r["inputs"]) or "-", ", ".join(r["outputs"]) or "-"))
         open(os.path.join(CYPHER_DIR, name + ".cypher"), "w").write(hdr + body + "\n")
         n_cy += 1
-    print("snapshot: %d recipes, %d cypher mirrored to dss_recipes/cypher/" % (len(snap), n_cy))
+    # mirror visual-recipe formulas for the same reason as the Cypher: a threshold that
+    # lives only inside a shaker step is invisible to review. Written as .txt rather than
+    # .json so a diff reads as lines of formula, not as re-indented JSON.
+    os.makedirs(VISUAL_DIR, exist_ok=True)
+    seen_visual = set()
+    for name, r in sorted(snap.items()):
+        # the guard comes FIRST: `_models` / `_schemas` / `_sibling_recipes` are lists,
+        # not recipe dicts, and .get() on them raises
+        if name.startswith("_") or not isinstance(r, dict):
+            continue
+        v = r.get("visual")
+        if not v:
+            continue
+        lines = ["# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:",
+                 "# this file is a copy for review and grep. The live payload is in the DSS recipe.",
+                 "# recipe: %s (%s)" % (name, r.get("type", "?")),
+                 "# inputs: %s" % (", ".join(r["inputs"]) or "-"),
+                 "# outputs: %s" % (", ".join(r["outputs"]) or "-"), ""]
+        for e in v.get("expressions", []):
+            lines.append("expression: %s" % e)
+        for x in v.get("values", []):
+            lines.append("value: %s" % x)
+        open(os.path.join(VISUAL_DIR, name + ".txt"), "w").write("\n".join(lines) + "\n")
+        seen_visual.add(name + ".txt")
+    # drop mirrors for recipes that no longer exist, or the deleted legacy branch would
+    # linger here exactly as it lingered in FLOW_MAP
+    for stale in sorted(set(os.listdir(VISUAL_DIR)) - seen_visual):
+        if stale.endswith(".txt"):
+            os.remove(os.path.join(VISUAL_DIR, stale))
+    print("snapshot: %d recipes, %d cypher mirrored to dss_recipes/cypher/, "
+          "%d visual mirrored to dss_recipes/visual/" % (len(snap), n_cy, len(seen_visual)))
     return snap
+
+
+def _visual_values(rtype, payload):
+    """The governed-looking literals inside a visual recipe's payload.
+
+    Formulas and comparison values only -- not the whole payload, which is mostly
+    column plumbing that would bury the two lines a reviewer needs to see. Returns
+    None for a code recipe, so the snapshot stays unchanged for those.
+    """
+    if rtype not in VISUAL_TYPES:
+        return None
+    # A visual recipe's steps live in the TOP-LEVEL `payload` key, not in `params` --
+    # `params` holds only engine config. `payload` is itself a JSON *string*, so the
+    # literals are double-escaped inside the settings blob; scan the parsed form.
+    body = payload.get("payload") if isinstance(payload, dict) else None
+    if isinstance(body, str):
+        try:
+            body = json.loads(body)
+        except (ValueError, TypeError):
+            pass
+    blob = json.dumps({"payload": body, "params": (payload or {}).get("params")})
+    exprs = sorted(set(re.findall(r'"expression"\s*:\s*"((?:[^"\\]|\\.){1,400})"', blob)))
+    values = sorted({v for v in re.findall(r'"value"\s*:\s*"([^"]{1,60})"', blob) if v})
+    if not exprs and not values:
+        return None
+    return {"expressions": [e.encode().decode("unicode_escape") for e in exprs],
+            "values": values}
 
 
 def source_for(name, rec):

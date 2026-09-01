@@ -374,3 +374,16 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Supersedes:** widening all ten gated recipes uniformly
 - **Superseded by:** —
 - **Historical sources:** lines 150, 151, 171, 172
+
+## DEC-OPS-006 — Panel identity is governed by variable; seed gates stay hardcoded
+
+- **Date:** 2026-09-01
+- **Domain:** operations
+- **Status:** accepted
+- **Decision:** Demo-panel identity and the reporting thresholds move to project variables — `demo_panel` (names only, with `node_index` resolved from `graph_nodes` at run time) and the flat scalars `trust_n_pos`, `panel_n_pos`, `near_dup`, `ks`, `topn`. The ten seed-gated recipes keep their gate as a literal and are deliberately excluded, even though `module_size_gate` exists as a variable.
+- **Rationale:** Pinned `node_index` values fail silently — a graph rebuild renumbers them and the recipe selects a different disease with no error — so identity belongs in a variable resolved by name and asserted unique. The seed gates are the opposite case: `DEC-PH3-001` commits to changing them only inside a duplicated project with predictions declared in advance, and making the gate a one-command edit would erode that pre-registration. Convenience is the wrong property for a value whose change requires a controlled experiment.
+- **Evidence:** [`PHASE3_PREREGISTRATION.md` §2](../prioritizer/PHASE3_PREREGISTRATION.md) for the Class 1 / Class 2 split, `tools/recipe_classes.json` for the hand-recorded classification, `.index/recipes.tsv` (`gate` and `class` columns) for the live inventory, and `dss_recipes/visual/` for the mirrored visual formulas.
+- **Consequences:** A future seed change touches **ten** recipes and no variable. Nine are Class 1 (pure NULL-fill): `compute_enriched_disease_context_1`, `compute_enriched_dwpc_GCD`, `compute_enriched_dwpc_GGD`, `compute_enriched_dwpc_GPGD`, `compute_enriched_guilt_by_association_1`, `compute_enriched_module_size_1`, `compute_enriched_shared_pathway_count_1` (all `module_size >= 20`, Cypher via the visual-graph plugin), plus `compute_enriched_prox_closest` (`MIN_SEEDS 5; POOL_MIN 20`) and `compute_enriched_rwr_score_1` (`MIN_SEEDS 20`), both Python. The tenth, `compute_dwpc_go_metapaths` (`MIN_MODULE 20`), is Class 2 and **holds at 20**. Query the live list with `awk -F'\t' '$3!="-"' .index/recipes.tsv` rather than trusting this paragraph, which is a snapshot.
+- **Supersedes:** —
+- **Superseded by:** —
+- **Historical sources:** —

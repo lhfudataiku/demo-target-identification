@@ -1,0 +1,9 @@
+# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
+# this file is a copy for review and grep. The live payload is in the DSS recipe.
+# recipe: compute_shap_drivers_long (shaker)
+# inputs: dashboard_candidates
+# outputs: shap_drivers_long
+
+expression: isNonBlank(feature)
+expression: split(split(top_shap_drivers, ", ")[1], " (")[0]
+expression: split(top_shap_drivers, " (")[0]

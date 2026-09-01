@@ -24,10 +24,13 @@ appr_kept	compute_filter_three_axes	-	-
 appr_lift	compute_filter_three_axes	-	-		
 appr_recall	compute_filter_three_axes	-	-		
 approved_for_disease	compute_drug_evidence_pairs	-	-		
+approved_found50	compute_persona_candidates	-	-		
+approved_lift50	compute_persona_candidates	-	-		
 approved_novel_exp50	compute_breast_panel	-	-		
 approved_novel_hits50	compute_breast_panel	-	-		
 approved_novel_lift50	compute_breast_panel	-	-		
 approved_novel_total	compute_breast_panel	-	-		
+approved_to_find	compute_persona_candidates	-	-		
 assessed_dm10	compute_tractability_axis	-	-		
 assessed_dm100	compute_tractability_axis	-	-		
 assessed_dm20	compute_tractability_axis	-	-		
@@ -61,6 +64,8 @@ auc_se	compute_validation_auc_ci	-	-
 auc_trustworthy	compute_breast_panel	-	-		
 auc_trustworthy	compute_validation_auc_ci	-	-		
 base_rate_pct	compute_breast_panel	-	-		
+best_found50	compute_persona_candidates	-	-		
+best_lift50	compute_persona_candidates	-	-		
 best_rank	compute_drug_target_benchmark	-	-		
 clustering_coefficient	compute_enriched_node_centrality_1	-	-		
 count	compute_graph_label_evidence	-	-		
@@ -68,7 +73,6 @@ count	compute_graph_node_source_counts	-	-
 count	compute_graph_node_type_counts	-	-		
 count	compute_graph_ppi_provenance	-	-		
 count	compute_graph_relation_counts	-	-		
-count	compute_pairwise_overlap	-	-		
 count	compute_shap_driver_frequency	-	-		
 count	compute_validation_set_scored_grouped	-	-		
 count	group_family_auc	-	-		
@@ -105,7 +109,6 @@ disease	compute_pool_reachability	-	-
 disease	compute_tractability_axis	-	-		
 disease_a	compute_family_panel_overlap	-	-		
 disease_b	compute_family_panel_overlap	-	-		
-disease_b	compute_top50_slim_b	-	-		
 disease_context	compute_enriched_disease_context_1	module_size >= 20	1		Settled 2026-08-21 from the newly mirrored Cypher. The gate filters the ANCHOR D only; D2 is matched fresh via (D)-[:disease_disease]-(D2) with NO module_size filter, so an existing (g,D) pair's disease_context cannot change. Was flagged unresolved before the mirror existed.
 disease_family_id	compute_disease_family_id	-	-		
 disease_index	compute_drug_evidence_pairs	-	-		
@@ -177,7 +180,6 @@ hits_top100	compute_novel_discovery_eval	-	-
 hits_top20	compute_novel_discovery_eval	-	-		
 hits_top200	compute_novel_discovery_eval	-	-		
 hits_top50	compute_novel_discovery_eval	-	-		
-hits_top50	compute_persona_candidates	-	-		
 hop_depth	compute_disease_family_id	-	-		
 in_act3	compute_demo_panel_config	-	-		
 in_act4	compute_demo_panel_config	-	-		
@@ -187,10 +189,14 @@ inv_kept	compute_filter_three_axes	-	-
 inv_lift	compute_filter_three_axes	-	-		
 inv_recall	compute_filter_three_axes	-	-		
 investigational_for_disease	compute_drug_evidence_pairs	-	-		
+investigational_found50	compute_persona_candidates	-	-		
+investigational_lift50	compute_persona_candidates	-	-		
 investigational_novel_exp50	compute_breast_panel	-	-		
 investigational_novel_hits50	compute_breast_panel	-	-		
 investigational_novel_lift50	compute_breast_panel	-	-		
 investigational_novel_total	compute_breast_panel	-	-		
+investigational_to_find	compute_persona_candidates	-	-		
+is_current	compute_persona_candidates	-	-		
 is_eligible	compute_disease_eligibility	-	-		
 is_membrane_only	compute_gene_localization	-	-		
 is_plasma_membrane	compute_gene_localization	-	-		
@@ -200,6 +206,7 @@ jaccard_top50	compute_family_panel_overlap	-	-
 kd08_kept	compute_filter_three_axes	-	-		
 kd08_lift	compute_filter_three_axes	-	-		
 kd08_recall	compute_filter_three_axes	-	-		
+known_pct50	compute_persona_candidates	-	-		
 lift_top10	compute_novel_discovery_eval	-	-		
 lift_top100	compute_novel_discovery_eval	-	-		
 lift_top20	compute_novel_discovery_eval	-	-		
@@ -211,10 +218,12 @@ mean_proba	compute_hub_bias_meter	-	-
 median_degree	compute_hub_bias_meter	-	-		
 median_pct	compute_drug_target_benchmark	-	-		
 module_size	compute_enriched_module_size_1	module_size >= 20	1		Trivially per-disease. WARNING: this dataset is itself gated, so its minimum IS 20 -- it cannot be used to size the sub-20 population. Use graph_edges disease_protein directly (FEATURE_AUDIT section 5).
+module_size	compute_persona_candidates	-	-		
 n	compute_filter_three_axes	-	-		
 n_anchor_families	compute_split_audit_2	-	-		
 n_assoc_positives	compute_drug_target_benchmark	-	-		
 n_cand	compute_tractability_axis	-	-		
+n_criteria	compute_persona_candidates	-	-		
 n_curated	compute_pool_reachability	-	-		
 n_diseases	compute_split_audit_2	-	-		
 n_diseases_in_family	group_family_auc	-	-		
@@ -245,6 +254,14 @@ novel_base_rate_pct	compute_novel_discovery_eval	-	-
 novel_linked_total	compute_novel_discovery_eval	-	-		
 novel_overlap	compute_family_panel_overlap	-	-		
 novel_rank	compute_family_panel_top50	-	-		
+ok_auc	compute_persona_candidates	-	-		
+ok_discovery	compute_persona_candidates	-	-		
+ok_found	compute_persona_candidates	-	-		
+ok_ranking	compute_persona_candidates	-	-		
+ok_size	compute_persona_candidates	-	-		
+overlap_test_val_keys	compute_split_audit_2	-	-		
+overlap_train_test_keys	compute_split_audit_2	-	-		
+overlap_train_val_keys	compute_split_audit_2	-	-		
 pagerank	compute_enriched_node_centrality_1	-	-		
 pair_kind	compute_family_panel_overlap	-	-		
 pct_membrane_all	compute_tractability_axis	-	-		
@@ -271,6 +288,7 @@ prox_n_reach	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1		Per-disea
 quintile	compute_hub_bias_meter	-	-		
 rank	compute_validation_set_scored_windows	-	-		
 rank	window_family_rank	-	-		
+rank_enrichment	compute_persona_candidates	-	-		
 rank_in_disease	compute_family_panel_top50	-	-		
 rank_in_disease	join_disease_name	-	-		
 rank_in_subtype	compute_family_panel_programme	-	-		
@@ -280,6 +298,7 @@ recall_ceiling	compute_pool_reachability	-	-
 rho_degree_proba	compute_hub_bias_meter	-	-		
 role_a	compute_family_panel_overlap	-	-		
 role_b	compute_family_panel_overlap	-	-		
+rows	compute_split_audit_2	-	-		
 rwr_norm	compute_enriched_graph_features_1	-	-		
 rwr_score	compute_enriched_rwr_score_1	MIN_SEEDS 20	1		MIN_SEEDS gate inside a per-disease loop; adjacency and degrees are global. Was UNVERSIONED until 2026-08-21 -- a gated recipe with no diff history.
 safety_flag	compute_enriched_gene_safety_v2	-	-		
@@ -288,13 +307,14 @@ scope	compute_tractability_axis	-	-
 score	join_disease_name	-	-		
 shared_genes	compute_family_panel_overlap	-	-		
 shared_pathway_count	compute_enriched_shared_pathway_count_1	module_size >= 20	1		n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
+split	compute_split_audit_2	-	-		
 split_key_name	compute_disease_family_id	-	-		
 split_key_rule	compute_disease_family_id	-	-		
 stage	compute_filter_three_axes	-	-		
+straddling_split_keys	compute_split_audit_2	-	-		
 subtype	compute_family_panel_programme	-	-		
 target_rank_sum	compute_validation_set_scored_grouped	-	-		
 target_rank_sum	group_family_auc	-	-		
-test	compute_split_audit_2	-	-		
 threshold	compute_hub_bias_meter	-	-		
 top10_novel_genes	compute_breast_panel	-	-		
 top_shap_drivers	compute_top_shap_drivers_1	-	-		
@@ -303,4 +323,3 @@ tract_lift	compute_filter_three_axes	-	-
 tract_recall	compute_filter_three_axes	-	-		
 triangles	compute_enriched_node_centrality_1	-	-		
 validated_also_assoc	compute_drug_target_benchmark	-	-		
-validation	compute_split_audit_2	-	-		

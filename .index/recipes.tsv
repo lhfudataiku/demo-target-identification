@@ -22,7 +22,7 @@ compute_DEMO_KG_raw_go_hierarchy_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_go_hiera
 compute_DEMO_KG_raw_ot_druggability_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_ot_druggability	raw_ot_druggability
 compute_DEMO_KG_raw_ot_safety_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_ot_safety	raw_ot_safety
 compute_breast_panel	python	-	-		dss_recipes/compute_breast_panel.py	drug_disease_edges,drug_protein_edges,graph_nodes,scored_champion	breast_panel_metrics
-compute_demo_panel_config	python	-	-		dss_recipes/compute_demo_panel_config.py	family_panel,persona_enrichment	demo_panel_config
+compute_demo_panel_config	python	-	-		dss_recipes/compute_demo_panel_config.py	family_panel,graph_nodes,persona_enrichment	demo_panel_config
 compute_disease_eligibility	python	-	-		dss_recipes/compute_disease_eligibility.py	enriched_module_size_1,graph_node_type_counts	disease_eligibility
 compute_disease_family_id	python	-	-		dss_recipes/compute_disease_family_id.py	enriched_graph_features_1,graph_nodes,hetionet_disease_slim,mondo_references,raw_disease_disease	disease_family_id
 compute_drug_classified	shaker	-	-		DSS-only	drug_joined	drug_classified
@@ -56,8 +56,6 @@ compute_hub_bias_meter	python	-	-		dss_recipes/compute_hub_bias_meter.py	scored_
 compute_known_drug_truth	python	-	-		dss_recipes/compute_known_drug_truth.py	drug_disease_edges,drug_protein_edges,gene_names,graph_nodes,raw_ot_known_drug	known_drug_truth
 compute_novel_discovery_eval	python	-	-		dss_recipes/compute_novel_discovery_eval.py	drug_disease_edges,drug_protein_edges,graph_nodes,scored_champion	novel_discovery_eval
 compute_ot_drug_mapped	join	-	-		DSS-only	gene_crosswalk,raw_ot_druggability	ot_drug_mapped
-compute_pairwise_overlap	grouping	-	-		DSS-only	pairwise_pairs	pairwise_overlap
-compute_pairwise_pairs	join	-	-		DSS-only	top50_slim_a,top50_slim_b	pairwise_pairs
 compute_persona_candidates	python	-	-		dss_recipes/compute_persona_candidates.py	drug_target_benchmark,graph_nodes,novel_discovery_eval,validation_auc_by_disease	persona_candidates
 compute_persona_enrichment	shaker	-	-		DSS-only	persona_candidates	persona_enrichment
 compute_pool_reachability	python	-	-		dss_recipes/compute_pool_reachability.py	drug_disease_edges,drug_protein_edges,enriched_dwpc_GCD,enriched_dwpc_GGD,enriched_gene_druggability_v2,enriched_graph_features_candidate_psplit,graph_edges,graph_nodes,known_drug_truth	pool_reachability
@@ -66,11 +64,7 @@ compute_ppi_evidence_depth	python	-	-		dss_recipes/compute_ppi_evidence_depth.py
 compute_raw_ot_known_drug	sync	-	-		DSS-only	DEMO_KG_LS.raw_ot_known_drug	raw_ot_known_drug
 compute_shap_driver_frequency	grouping	-	-		DSS-only	shap_drivers_long	shap_driver_frequency
 compute_shap_drivers_long	shaker	-	-		DSS-only	dashboard_candidates	shap_drivers_long
-compute_split_audit_2	python	-	-		dss_recipes/compute_split_audit_2.py	psplit_test_set,psplit_train_set,psplit_validation_set	split_audit_2
-compute_top50_membership	shaker	-	-		DSS-only	dashboard_candidates	top50_membership
-compute_top50_pairs	join	-	-		DSS-only	top50_membership,top50_membership_b	top50_pairs
-compute_top50_slim_a	shaker	-	-		DSS-only	top50_membership	top50_slim_a
-compute_top50_slim_b	shaker	-	-		DSS-only	top50_membership	top50_slim_b
+compute_split_audit_2	python	-	-		dss_recipes/compute_split_audit_2.py	graph_nodes,psplit_test_set,psplit_train_set,psplit_validation_set	split_audit_2
 compute_top_shap_drivers_1	python	-	-		dss_recipes/compute_top_shap_drivers_1.py	persona2_scored	persona2_scored_shap
 compute_tractability_axis	python	-	-		dss_recipes/compute_tractability_axis.py	drug_protein_edges,enriched_gene_druggability_v2,graph_nodes,scored_champion	tractability_axis
 compute_validation_auc_by_disease	shaker	-	-		DSS-only	validation_set_scored_grouped	validation_auc_by_disease
@@ -78,7 +72,6 @@ compute_validation_auc_ci	shaker	-	-		DSS-only	validation_auc_by_disease	validat
 compute_validation_set_scored_grouped	grouping	-	-		DSS-only	validation_set_scored_windows	validation_set_scored_grouped
 compute_validation_set_scored_windows	window	-	-		DSS-only	scored_champion	validation_set_scored_windows
 compute_ytvuniN8	merge_folder	-	-		DSS-only	DEMO_KG_LS.Lg8lbpl5	ytvuniN8
-copy_top50_b	sync	-	-		DSS-only	top50_membership	top50_membership_b
 count_candidates_per_disease	grouping	-	-		DSS-only	target_candidates_2	disease_pool_sizes
 decorate_target_candidates	join	-	-		DSS-only	enriched_gene_druggability_v2,enriched_gene_safety_v2,graph_nodes,top_candidates	top_annotated
 extract_hetionet_disease_slim	python	-	-		dss_recipes/extract_hetionet_disease_slim.py	-	hetionet_disease_slim
