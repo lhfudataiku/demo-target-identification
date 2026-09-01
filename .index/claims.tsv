@@ -193,9 +193,13 @@ docs/demo/panel_selection/README.md	73	-	0.4021	ORPHAN				(0.4346 > 0.4021). Ute
 docs/demo/panel_selection/README.md	75	-	0.350	ORPHAN		y		distance either way: Spearman −0.350 over the 148 shipped pairs.
 docs/demo/panel_selection/README.md	79	-	0.4746	ORPHAN				- `analysis/subtype_overlap.csv` holds **stomach on four terms** (mean 0.4746), measured
 docs/demo/panel_selection/README.md	81	-	0.35	ORPHAN				later three-term recomputation gave ≈0.35 but was never written to a file; an earlier
-docs/demo/panel_selection/README.md	92	-	0.749	ORPHAN				triple-negative breast has 8 positives and an interval of 0.749–1.041. A subtype under the
-docs/demo/panel_selection/README.md	92	-	1.041	ORPHAN				triple-negative breast has 8 positives and an interval of 0.749–1.041. A subtype under the
-docs/demo/panel_selection/README.md	97	-	0.887	ORPHAN				members are clinically. Lung is the case in point: adenocarcinoma vs squamous is 0.887.
+docs/demo/panel_selection/README.md	99	-	0.241	ORPHAN				**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
+docs/demo/panel_selection/README.md	99	-	0.150	ORPHAN				**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
+docs/demo/panel_selection/README.md	99	-	0.109	ORPHAN				**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
+docs/demo/panel_selection/README.md	99	-	0.054	ORPHAN				**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
+docs/demo/panel_selection/README.md	101	-	0.749	ORPHAN				30 — triple-negative breast, with 8 positives and an interval of 0.749–1.041, is the
+docs/demo/panel_selection/README.md	101	-	1.041	ORPHAN				30 — triple-negative breast, with 8 positives and an interval of 0.749–1.041, is the
+docs/demo/panel_selection/README.md	108	-	0.887	ORPHAN				members are clinically. Lung is the case in point: adenocarcinoma vs squamous is 0.887.
 docs/graph/GRAPH_BUILDING.md	15	-	113,391	ORPHAN				> **Status: complete.** 113,391 nodes / 2,851,510 edges / 18 relations, rebuilt from source and
 docs/graph/GRAPH_BUILDING.md	15	-	2,851,510	ORPHAN				> **Status: complete.** 113,391 nodes / 2,851,510 edges / 18 relations, rebuilt from source and
 docs/graph/GRAPH_BUILDING.md	48	2	25,906	ORPHAN			hist	| **MONDO** (`MONDO.obo`) | disease backbone + cross-reference hub | `disease` (25,906 MONDO + 1,247 grouped)

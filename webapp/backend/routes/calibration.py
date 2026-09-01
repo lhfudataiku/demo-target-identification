@@ -26,6 +26,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 
 from ..dss_client import get_dataiku, get_project
+from ..services import dataset_cache
 
 logger = logging.getLogger(__name__)
 
@@ -80,9 +81,11 @@ def _champion() -> dict[str, Any]:
         return {**CHAMPION_FALLBACK, "source": f"recorded 2026-08-27 ({type(e).__name__})"}
 
 
-@functools.lru_cache(maxsize=1)
 def _ds(name: str):
-    return get_dataiku().Dataset(name).get_dataframe()
+    # Was @lru_cache(maxsize=1) on a KEYED function: caching one dataset at a time,
+    # so alternating between them re-read on every call. The shared cache holds 32
+    # and keys on each dataset's build stamp.
+    return dataset_cache.frame(name)
 
 
 # The three graph routes that admit a gene-disease pair into the candidate pool.

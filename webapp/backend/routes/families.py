@@ -45,6 +45,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 
 from ..dss_client import get_dataiku
+from ..services import dataset_cache
 
 router = APIRouter(prefix="/api/families")
 
@@ -55,26 +56,36 @@ PROGRAMME = "family_panel_programme"
 TOP50 = "family_panel_top50"
 ENRICH = "persona_enrichment"
 
-# Above this two subtypes tell the same story. Matches the flow's own threshold.
-NEAR_DUP = 0.6
+# The near-duplicate threshold is NOT duplicated here. `compute_family_panel_overlap`
+# applies it (Jaccard > 0.6 on the top 50) and writes `near_duplicate` per pair; this
+# route passes that flag through. A constant here would be a second definition that
+# nothing enforces -- the previous one claimed to "match the flow's own threshold" and
+# was never read.
 
 
-@functools.lru_cache(maxsize=8)
 def _ds(name: str):
-    return get_dataiku().Dataset(name).get_dataframe()
+    # Keyed on the dataset's build stamp, so an A3 rebuild lands without a restart.
+    return dataset_cache.frame(name)
 
 
-@functools.lru_cache(maxsize=1)
-def _enrich() -> dict[int, float]:
+@functools.lru_cache(maxsize=4)
+def _enrich_at(stamp: str) -> dict[int, float]:
     """disease_index -> rank enrichment. The thin-disease card plots this rather
-    than the known-target count, because a count is the label and not a score."""
+    than the known-target count, because a count is the label and not a score.
+
+    `stamp` is unused inside -- it is the build key, so a persona_enrichment
+    rebuild refreshes this map without a backend restart.
+    """
     try:
-        df = get_dataiku().Dataset(ENRICH).get_dataframe(
-            columns=["disease_index", "rank_enrichment"])
+        df = dataset_cache.frame(ENRICH, ["disease_index", "rank_enrichment"])
         return {int(r.disease_index): float(r.rank_enrichment)
                 for r in df.itertuples() if r.rank_enrichment == r.rank_enrichment}
     except Exception:
         return {}
+
+
+def _enrich() -> dict[int, float]:
+    return _enrich_at(dataset_cache.build_stamp(ENRICH))
 
 
 def _in_a3(df):

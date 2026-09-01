@@ -22,16 +22,16 @@ whose wording already flags them as historical are dropped.
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 19 | 3 | 23 |
 | `docs/demo/WEBAPP_DESIGN.md` | 0 | 52 | 76 | 128 |
-| `docs/demo/panel_selection/README.md` | 0 | 3 | 17 | 20 |
+| `docs/demo/panel_selection/README.md` | 0 | 3 | 21 | 24 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 139 | 139 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 13 | 18 |
 | `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 19 | 103 | 122 |
 | `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 16 | 49 | 65 |
-| **total** | **1** | **125** | **415** | **541** |
+| **total** | **1** | **125** | **419** | **545** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**96 rows.** Of 415 total orphans, these are the model-dependent ones: the numbers that move
+**96 rows.** Of 419 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |

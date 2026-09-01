@@ -241,7 +241,7 @@
       <ActCard span="col-span-12 lg:col-span-7" :icon="GitCompare" accent="var(--chart-3)" title="How much do the subtypes overlap?"
                :chips="[['live', 'live']]"
                desc="Shared genes in each pair's top 50."
-               :src="['pairwise_overlap']">
+               :src="['family_panel_overlap']">
         <ActTabs v-model="ovMode" class="mb-3"
                  :options="[{ value: 'all', label: 'All top-50 genes' },
                             { value: 'novel', label: 'Novel only' }]" />

@@ -16,6 +16,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException, Query
 
 from ..dss_client import get_dataiku
+from ..services import dataset_cache
 
 router = APIRouter(prefix="/api/candidates")
 
@@ -34,13 +35,20 @@ COLS = [
 ]
 
 
-@functools.lru_cache(maxsize=1)
-def _frame():
-    """Load once per process. 129k rows x 17 columns is small enough to hold, and
-    the alternative -- a DSS read per request -- makes the demo feel slow."""
-    df = get_dataiku().Dataset(DATASET).get_dataframe(columns=COLS)
+@functools.lru_cache(maxsize=4)
+def _typed(name: str, stamp: str):
+    """The frame with rank coerced to int, cached against the same build stamp as
+    the underlying frame so a rebuild refreshes both."""
+    df = dataset_cache.frame(name, COLS).copy()
     df["rank_in_disease"] = df["rank_in_disease"].astype(int)
     return df
+
+
+def _frame():
+    """105k rows x 17 columns, held in memory because a DSS read per request makes
+    the demo feel slow -- but keyed on the dataset's build, so a rebuild is picked
+    up without restarting the backend. See services/dataset_cache.py."""
+    return _typed(DATASET, dataset_cache.build_stamp(DATASET))
 
 
 @router.get("/diseases")

@@ -200,6 +200,28 @@ the foundational data.
 **Build one named target at a time**, or separate volatile and stable work into different projects.
 This behaviour was the primary motivation for splitting one flow into two projects.
 
+### `NON_RECURSIVE_FORCED_BUILD` does not order its own targets
+
+The safe alternative to a recursive build has its own trap. Passing several `--target`s in one job
+builds each target's recipe **independently** — DSS does not topologically sort them. If two targets
+are in the same chain, the downstream one can run against an input that the same job has already
+cleared but not yet rewritten.
+
+On 2026-09-01 a zone-at-a-time rebuild of `30 Split & modelling table` passed all five of its
+datasets as targets. `filter_has_path_evidence` ran before `join_disease_family_id` had rewritten
+`enriched_graph_features_1_family` and died with
+
+    SourceDatasetNotReadyException ... Root path of the dataset does not exist
+
+Worse than the failure: the three `psplit_*` sets then built **successfully** from the stale input
+that had failed two minutes earlier, so the job's partial success left the flow silently inconsistent.
+
+**Batch by dependency level, never by zone.** A zone is a presentation grouping and says nothing
+about build order. Compute the levels from the flow graph — `dku flow graph --format json` gives
+`predecessors`/`successors` per node — and submit one job per level; members of a level are
+independent by construction. Check each level's JSON `state` before starting the next, because
+`--wait` still exits 0 on a FAILED job.
+
 ## 2. Cross-project sharing
 
 - **A recipe cannot read a dataset from another project unless it has been explicitly shared**, even

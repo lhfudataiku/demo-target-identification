@@ -81,16 +81,36 @@ dev: $(UV_STAMP) $(NPM_STAMP) $(LOG_DIR)
 	@echo "  Stop      : make stop"
 	@echo ""
 
+# Two sweeps, because a port sweep alone leaves orphans. Observed 2026-09-01:
+# four backend processes from three different days were alive at once, two of them
+# holding :5000 via SO_REUSEPORT so requests round-robined between generations of
+# the code -- a route answered from a build six days old. `lsof -ti` only finds the
+# ones currently holding the socket, and plain `kill` left two of them running.
+#   1. by port   -- whatever is serving now
+#   2. by command-- this project's own uvicorn/vite orphans that hold no socket,
+#                   matched on $(CURDIR) so another checkout's servers are untouched
+#   3. escalate  -- SIGTERM, then SIGKILL only what survived
 stop:
-	@for port in $(BACKEND_PORT) $(FRONTEND_PORT); do \
+	@all=""; \
+	for port in $(BACKEND_PORT) $(FRONTEND_PORT); do \
 	  pids=$$(lsof -ti:$$port 2>/dev/null || true); \
-	  if [ -n "$$pids" ]; then \
-	    echo "Stopping port $$port (pids: $$pids)"; \
-	    kill $$pids 2>/dev/null || true; \
-	  else \
-	    echo "Port $$port: nothing to stop"; \
-	  fi; \
-	done
+	  if [ -n "$$pids" ]; then echo "  port $$port: $$(echo $$pids | tr '\n' ' ')"; all="$$all $$pids"; \
+	  else echo "  port $$port: nothing listening"; fi; \
+	done; \
+	orph=$$(ps -eo pid=,command= \
+	        | grep -E "uvicorn backend.app:app|$(CURDIR)/frontend.*vite" \
+	        | grep -F "$(CURDIR)" | grep -v grep | awk '{print $$1}'); \
+	[ -n "$$orph" ] && echo "  orphans:  $$(echo $$orph | tr '\n' ' ')"; \
+	all=$$(echo "$$all $$orph" | tr ' ' '\n' | sed '/^$$/d' | sort -u); \
+	if [ -z "$$all" ]; then echo "  nothing to stop"; else \
+	  kill $$all 2>/dev/null || true; \
+	  for i in 1 2 3 4 5 6 7 8 9 10; do \
+	    left=$$(for p in $$all; do kill -0 $$p 2>/dev/null && echo $$p; done); \
+	    [ -z "$$left" ] && break; sleep 0.3; \
+	  done; \
+	  if [ -n "$$left" ]; then echo "  SIGKILL: $$(echo $$left | tr '\n' ' ')"; kill -9 $$left 2>/dev/null || true; fi; \
+	  echo "  stopped"; \
+	fi
 	@rm -f $(RUN_DIR)/*.pid
 
 status:

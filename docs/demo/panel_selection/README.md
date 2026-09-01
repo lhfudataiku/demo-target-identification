@@ -88,9 +88,20 @@ Two caveats on the `analysis/` figures, so they are not misread:
 
 ## Two conventions worth knowing
 
-**`n_pos >= 50` is the usability floor.** Below it an AUC interval spans half the range —
-triple-negative breast has 8 positives and an interval of 0.749–1.041. A subtype under the
-floor can still carry a *list*, but never a quotable AUC.
+**There are two thresholds, and they answer different questions.** The flow's
+`auc_trustworthy` flag, over all 670 diseases, is `auc_hi95 <= 1.0 AND n_pos >= 30`
+(`compute_validation_auc_ci`). Act 3 panel **membership** is stricter — `n_pos >= 50`
+(`USABLE_FLOOR` in `compute_demo_panel_config`) — because a term going on stage should
+have more margin than a term merely counted in an aggregate. A term under either bar can
+still carry a *list*, but never a quotable AUC.
+
+Measured on the served 670, the interval widens sharply only below 30: median 95% width is
+**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
+at 100+. The 92 intervals that exceed the possible AUC ceiling of 1.0 are almost all under
+30 — triple-negative breast, with 8 positives and an interval of 0.749–1.041, is the
+load-bearing example. An earlier version of this file gave 50 as a single "usability floor"
+and justified it as *"below it an AUC interval spans half the range"*; that description fits
+the sub-30 regime, not the 30–49 one, and it obscured the two-threshold design.
 
 **Near-duplicate is Jaccard > 0.6 on the top 50.** Two subtypes above that tell the same
 story, so a family full of them cannot support a subtype-specific card however distinct its

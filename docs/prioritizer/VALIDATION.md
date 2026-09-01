@@ -67,10 +67,12 @@ AUROC is used for cross-disease reporting because its chance baseline stays 0.5 
 AUPRC is retained for model selection and head-of-list questions, but raw per-disease AUPRC is strongly
 tied to each disease's positive rate. Neither metric measures probability calibration.
 
-Thin diseases need uncertainty, not a confident point estimate. A term below the 50-positive
-usability floor can carry a ranked list and enrichment-at-K, but not a quotable AUROC. TNBC is the
-load-bearing example: only eight positives make its normal-approximation interval exceed the possible
-AUROC ceiling (`TI-VAL-009`).
+Thin diseases need uncertainty, not a confident point estimate. A term that fails the trust test
+can carry a ranked list and enrichment-at-K, but not a quotable AUROC. The test the flow applies is
+`auc_hi95 <= 1.0 AND n_pos >= 30`; the Act 3 panel additionally requires `n_pos >= 50` for
+membership, a deliberately stricter bar for terms shown on stage. TNBC is the load-bearing example:
+only eight positives make its normal-approximation interval exceed the possible AUROC ceiling
+(`TI-VAL-009`).
 
 ### 3.2 Four axes, two ground truths
 
