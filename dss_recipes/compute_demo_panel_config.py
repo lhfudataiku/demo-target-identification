@@ -28,44 +28,42 @@ The curated overlay below is the DECISION; everything else is derived from
 import dataiku
 import pandas as pd
 
-USABLE_FLOOR = 50          # below this an AUC interval spans half the range
+USABLE_FLOOR = None        # set from the `thresholds` project variable below
 
-# ── the decision ─────────────────────────────────────────────────────────────
-A3_FAMILIES = {49721: "breast", 44244: "uterine", 36637: "stomach"}
+# ── the decision, now GOVERNED ───────────────────────────────────────────────
+# Membership and thresholds come from project variables, not from literals here.
+# The panel is identified BY NAME; node indices are resolved from graph_nodes at
+# run time by python/demo_identity.py, which raises if a name is missing or
+# ambiguous. Before 2026-09-01 this recipe pinned indices --
+#   A3_FAMILIES = {49721: "breast", 44244: "uterine", 36637: "stomach"}
+# -- and a graph rebuild renumbers node_index, so the panel would have silently
+# become a different panel with no error anywhere.
+#
+# The curated judgement that USED to live in these literals is preserved, because
+# it is not derivable: ONE classification axis per family, or the programme card
+# collapses. Breast is scored on BOTH the molecular axis (HER2+/luminal/TNBC) and
+# the histology axis (ductal/lobular), and the two classify the same tumours --
+# ductal overlaps HER2+ by 85%, so including it absorbed HER2+'s specific genes
+# and left it with ONE (ARID1B). Molecular only: HER2+ goes 1 -> 9 own genes and
+# every subtype gets a real set. Ductal and lobular stay in the score and overlap
+# cards; they are simply not leaves. That reasoning now sits beside the names in
+# the `demo_panel` variable -- keep the two together if either moves.
+import demo_identity
 
-# Terminal subtypes that carry the common-vs-specific card. Curated, not derived.
-A3_LEAVES = {
-    # ONE classification axis per family, or the programme card collapses. Breast is
-    # scored on BOTH the molecular axis (HER2+/luminal/TNBC) and the histology axis
-    # (ductal/lobular), and the two classify the same tumours -- ductal overlaps HER2+
-    # by 85%, so including it absorbed HER2+'s specific genes and left it with ONE
-    # (ARID1B). Molecular only: HER2+ goes 1 -> 9 own genes and every subtype gets a
-    # real set. Ductal and lobular stay in the score and overlap cards; they are simply
-    # not leaves.
-    "breast": ["HER2 positive breast carcinoma", "luminal A breast carcinoma",
-               "luminal B breast carcinoma", "triple-negative breast carcinoma"],
-    "uterine": ["endometrium adenocarcinoma", "endometrial serous adenocarcinoma",
-                "endometrial clear cell adenocarcinoma", "uterine carcinosarcoma"],
-    "stomach": ["gastric adenocarcinoma", "signet ring cell gastric adenocarcinoma",
-                "gastric small cell neuroendocrine carcinoma"],
-}
+_panel = demo_identity.panel()
+_thr = demo_identity.thresholds()
 
-# The Act 4 shortlist, in display order, with the therapeutic area each represents.
-# Every one earned its place on the eyeball test -- see docs/demo/panel_selection/.
-A4 = [
-    ("HER2 positive breast carcinoma",           "oncology"),
-    ("triple-negative breast carcinoma",         "oncology"),
-    ("luminal B breast carcinoma",               "oncology"),
-    ("endometrium adenocarcinoma",               "oncology"),
-    ("endometrial serous adenocarcinoma",        "oncology"),
-    ("gastric adenocarcinoma",                   "oncology"),
-    ("lung adenocarcinoma",                      "oncology"),
-    ("rheumatoid arthritis",                     "autoimmune"),
-    ("psoriatic arthritis",                      "autoimmune"),
-    ("dilated cardiomyopathy",                   "cardio_renal_metabolic"),
-    ("familial hypercholesterolemia",            "cardio_renal_metabolic"),
-    ("diabetes mellitus",                        "cardio_renal_metabolic"),
-]
+USABLE_FLOOR = int(_thr["panel_n_pos"])
+
+# name -> node_index, asserted unique against graph_nodes
+_fam_names = list(_panel["act3_families"].values())
+_idx = demo_identity.name_to_index(_fam_names)
+
+# {node_index: short label}, the shape the rest of this recipe already expects
+A3_FAMILIES = {_idx[name]: label for label, name in _panel["act3_families"].items()}
+A3_LEAVES = {k: list(v) for k, v in _panel["act3_leaves"].items()}
+A4 = [tuple(x) for x in _panel["act4"]]
+
 
 # ── derive ───────────────────────────────────────────────────────────────────
 fp = dataiku.Dataset("family_panel").get_dataframe()
@@ -134,6 +132,7 @@ for fam, leaves in A3_LEAVES.items():
 print(f"config: {len(out)} rows | act3={int(out.in_act3.sum())} act4={int(out.in_act4.sum())}")
 print(out.groupby(["act3_family", "act3_role"], dropna=False).size().to_string())
 dataiku.Dataset("demo_panel_config").write_with_schema(out)
+
 
 
 

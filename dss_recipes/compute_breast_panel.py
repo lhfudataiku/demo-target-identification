@@ -54,18 +54,19 @@ def auc_se(auc, npos, nneg):
     v = (auc * (1 - auc) + (npos - 1) * (q1 - auc ** 2) + (nneg - 1) * (q2 - auc ** 2)) / (npos * nneg)
     return math.sqrt(v) if v > 0 else float("nan")
 
-PANEL = {47415: "breast carcinoma",
-         48537: "HER2 positive breast carcinoma",
-         47807: "triple-negative breast carcinoma",
-         42563: "luminal A breast carcinoma",
-         42562: "luminal B breast carcinoma",
-         49721: "breast cancer (parent term)",
-         48747: "estrogen-receptor positive breast cancer",
-         48748: "estrogen-receptor negative breast cancer",
-         47832: "breast lobular carcinoma",
-         46673: "female breast carcinoma",
-         48546: "invasive breast carcinoma",
-         47414: "breast adenocarcinoma"}
+# GOVERNED BY NAME. Membership comes from the `demo_panel` project variable and the
+# node_index is resolved from graph_nodes at run time -- see python/demo_identity.py,
+# which raises if a name is missing or ambiguous. Until 2026-09-01 this pinned indices
+# (47415, 48537, ...) and a graph rebuild renumbers them, so the panel would silently
+# have become a different panel. `breast_panel_labels` carries the display-only
+# overrides, e.g. "breast cancer" is printed as "breast cancer (parent term)".
+import demo_identity
+
+_panel = demo_identity.panel()
+_names = list(_panel["breast_panel_terms"])
+_labels = dict(_panel.get("breast_panel_labels", {}))
+_idx = demo_identity.name_to_index(_names)
+PANEL = {_idx[n]: _labels.get(n, n) for n in _names}
 K = 50
 
 nid = dataiku.Dataset("graph_nodes").get_dataframe(
@@ -192,7 +193,8 @@ print("  Contrast lung (§3.4), where histological subtypes were NOT separable."
 # specificity. If a subtype's list is nearly identical to the generic umbrella term, then it is a
 # breast-cancer list wearing a subtype label, and a clinician will say so.
 print("\n=== specificity check: how subtype-specific is each list, really? ===")
-UMBRELLA = [47415, 46673, 48546]  # breast carcinoma / female breast carcinoma / invasive breast ca
+UMBRELLA = [_idx[n] for n in _panel["breast_panel_umbrella"]]   # resolved by name, not pinned:
+# breast carcinoma / female breast carcinoma / invasive breast carcinoma
 for di in sorted(top_nov):
     if di in UMBRELLA:
         continue
@@ -211,5 +213,6 @@ dataiku.Dataset("breast_panel_metrics").write_with_schema(metrics)
 # (13/13 shared pairs); nb4 and nb6 read that instead. The overlap is still
 # computed and printed above, because the printout is part of this recipe's
 # diagnostic value -- it is simply no longer written to a dataset of its own.
+
 
 

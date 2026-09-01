@@ -19,8 +19,8 @@ docs/operations/build-governance/pilot/phase5-breast-panel-leaf-build-event.json
 docs/operations/build-governance/review-packet.schema.json	docs	LIVE (referenced)	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
 docs/prioritizer/CLAIM_REGISTRY.json	docs	LIVE (referenced)	8	docs/README.md,docs/decisions/DECISION_REGISTER.md,docs/demo/WEBAPP_DESIGN.md,docs/prioritizer/TARGET_PRIORITIZER.md
 dss_recipes/attach_node_index.py	recipe-mirror	MIRROR (graph-build project)	0	-
-dss_recipes/compute_breast_panel.py	recipe-mirror	MIRROR	4	archive/DASHBOARD_BUILD_LOG.md,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V2.html,docs/demo/DASHBOARD_MOCKUP_V3.html,docs/operations/build-governance/POLICY.json
-dss_recipes/compute_demo_panel_config.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_breast_panel.py	recipe-mirror	DRIFTED MIRROR (content differs from live DSS)	4	archive/DASHBOARD_BUILD_LOG.md,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V2.html,docs/demo/DASHBOARD_MOCKUP_V3.html,docs/operations/build-governance/POLICY.json
+dss_recipes/compute_demo_panel_config.py	recipe-mirror	DRIFTED MIRROR (content differs from live DSS)	0	-
 dss_recipes/compute_disease_eligibility.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_family_id.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_group_map.py	recipe-mirror	MIRROR (graph-build project)	0	-
@@ -49,7 +49,7 @@ dss_recipes/compute_persona_candidates.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_pool_reachability.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_ppi_cn_zscore.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_ppi_evidence_depth.py	recipe-mirror	MIRROR	0	-
-dss_recipes/compute_split_audit_2.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_split_audit_2.py	recipe-mirror	DRIFTED MIRROR (content differs from live DSS)	0	-
 dss_recipes/compute_target_reachability.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_top_shap_drivers_1.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_tractability_axis.py	recipe-mirror	MIRROR	0	-
@@ -118,6 +118,7 @@ webapp/backend/routes/flow.py	webapp	LIVE (referenced)	1	webapp/frontend/src/typ
 webapp/backend/routes/system.py	webapp	LIVE (referenced)	1	webapp/README.md
 webapp/backend/routes/wizard.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/frontend/src/types/wizard.ts,webapp/frontend/src/views/wizard/WizardFlowView.vue
 webapp/backend/services/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
+webapp/backend/services/dataset_cache.py	webapp	LIVE (referenced)	1	webapp/backend/routes/candidates.py
 webapp/backend/services/documents_service.py	webapp	LIVE (referenced)	1	webapp/README.md
 webapp/backend/services/memory_state.py	webapp	LIVE (referenced)	1	webapp/README.md
 webapp/backend/services/settings.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/backend/tools/registry.py,webapp/frontend/src/views/SettingsView.vue
