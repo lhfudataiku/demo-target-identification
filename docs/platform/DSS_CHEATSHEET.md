@@ -1,5 +1,10 @@
 # Dataiku DSS — platform behaviours & CLI patterns
 
+> **Lifecycle:** Canonical · **Audience:** DSS builders and reviewers · **Authority:** reusable
+> platform behaviours and command patterns verified during this work · **Update when:** a behaviour is
+> refuted, corrected or materially changes by DSS version · **Generated dependencies:** none ·
+> **Excludes:** project-specific flow status and domain methodology.
+
 > Findings from building a large multi-project flow (≈160 recipes, 2.9M-edge graph, Visual ML,
 > plugin recipes, cross-project sharing). **Written generically** — nothing here depends on this
 > POC's domain, so it should transfer to any DSS project.
@@ -23,6 +28,27 @@ and report nothing.
 
 **Always:** read with pandas inference disabled *and* cast every join key to string explicitly.
 Then assert on unresolved rows rather than trusting the join.
+
+### A GREL formula cannot read a NESTED project variable — and fails silently
+
+Project variables reach visual recipes as `variables["key"]`, which works for a flat scalar.
+It does **not** reach into an object. Both of these evaluate to nothing:
+
+    variables["thresholds"].trust_n_pos
+    variables["thresholds"]["trust_n_pos"]
+
+Nothing reports it. `dku recipe lint-formula` returns *"No errors or warnings found"*, the build
+completes successfully, and the column is computed against a missing value. On 2026-09-01
+`compute_validation_auc_ci` went from **378 trustworthy diseases to 0** this way — a silent,
+total inversion of a shipped number that only a canary count caught.
+
+**Store any threshold a visual recipe reads as a FLAT scalar variable.** Objects are fine for
+Python recipes, which do `dataiku.get_custom_variables()` and index normally. When a value has
+both kinds of consumer, flat is the only shape that serves both — so flat is the single
+definition, not a second copy of a nested one.
+
+**Always verify a variable substitution with a canary**: a count that would change if the value
+resolved to nothing. Neither the lint nor the job state can tell you it worked.
 
 ### Visual recipes accept a payload and silently ignore parts of it
 
@@ -194,6 +220,28 @@ the foundational data.
 
 **Build one named target at a time**, or separate volatile and stable work into different projects.
 This behaviour was the primary motivation for splitting one flow into two projects.
+
+### `NON_RECURSIVE_FORCED_BUILD` does not order its own targets
+
+The safe alternative to a recursive build has its own trap. Passing several `--target`s in one job
+builds each target's recipe **independently** — DSS does not topologically sort them. If two targets
+are in the same chain, the downstream one can run against an input that the same job has already
+cleared but not yet rewritten.
+
+On 2026-09-01 a zone-at-a-time rebuild of `30 Split & modelling table` passed all five of its
+datasets as targets. `filter_has_path_evidence` ran before `join_disease_family_id` had rewritten
+`enriched_graph_features_1_family` and died with
+
+    SourceDatasetNotReadyException ... Root path of the dataset does not exist
+
+Worse than the failure: the three `psplit_*` sets then built **successfully** from the stale input
+that had failed two minutes earlier, so the job's partial success left the flow silently inconsistent.
+
+**Batch by dependency level, never by zone.** A zone is a presentation grouping and says nothing
+about build order. Compute the levels from the flow graph — `dku flow graph --format json` gives
+`predecessors`/`successors` per node — and submit one job per level; members of a level are
+independent by construction. Check each level's JSON `state` before starting the next, because
+`--wait` still exits 0 on a FAILED job.
 
 ## 2. Cross-project sharing
 

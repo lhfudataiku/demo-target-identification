@@ -1,0 +1,10 @@
+# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
+# this file is a copy for review and grep. The live payload is in the DSS recipe.
+# recipe: compute_validation_auc_ci (shaker)
+# inputs: validation_auc_by_disease
+# outputs: validation_auc_ci
+
+expression: auc_disease + 1.96*auc_se
+expression: auc_disease - 1.96*auc_se
+expression: if(auc_hi95 <= 1.0 && n_pos >= variables["trust_n_pos"], 1, 0)
+expression: sqrt((auc_disease*(1-auc_disease) + (n_pos-1)*((auc_disease/(2-auc_disease))-auc_disease*auc_disease) + (n_neg-1)*(((2*auc_disease*auc_disease)/(1+auc_disease))-auc_disease*auc_disease)) / (n_pos*n_neg))

@@ -1,0 +1,14 @@
+disease,expected,in_top20,in_top50,best_rank,pool
+endometrium adenocarcinoma,8,4,5,1.0,7519
+rheumatoid arthritis,11,4,5,1.0,8850
+atopic eczema,8,3,5,12.0,9040
+dilated cardiomyopathy,9,3,4,1.0,8652
+gastric adenocarcinoma,8,3,4,1.0,12499
+plasma cell myeloma,8,3,4,1.0,12558
+endometrial serous adenocarcinoma,6,3,3,1.0,7752
+familial hypercholesterolemia,7,3,3,3.0,5226
+psoriatic arthritis,7,2,4,1.0,6837
+acute lymphoblastic leukemia,8,1,2,6.0,9896
+systemic lupus erythematosus,9,1,2,14.0,10274
+obesity disorder,16,0,1,38.0,13126
+multiple sclerosis,8,0,0,101.0,9070

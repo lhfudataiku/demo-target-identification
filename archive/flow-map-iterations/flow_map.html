@@ -1,0 +1,277 @@
+<title>Flow Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+ --ground:#f4f6f6; --panel:#ffffff; --ink:#14181c; --ink-2:#4a5560; --ink-3:#79858f;
+ --rule:#dde3e3; --rule-2:#eaeeee; --accent:#0f6d6a; --accent-soft:#e2efee;
+ --keep:#2c6b45; --keep-bg:#e4f0e8; --del:#8a5620; --del-bg:#f6ebdd;
+ --serv:#2a5c8a; --serv-bg:#e3ecf5; --orph:#9b3030; --orph-bg:#f7e5e5;
+ --scaf:#5d5470; --scaf-bg:#ebe8f1; --live:#5c6771; --live-bg:#e9eded;
+ --shadow:0 1px 2px rgba(20,24,28,.05),0 8px 24px -12px rgba(20,24,28,.12);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --ground:#101417; --panel:#171c20; --ink:#e8edee; --ink-2:#a3b0b6; --ink-3:#77848b;
+ --rule:#283136; --rule-2:#202830; --accent:#4fb3ac; --accent-soft:#12312f;
+ --keep:#78c295; --keep-bg:#16301f; --del:#d9a366; --del-bg:#33240f;
+ --serv:#7fb0dd; --serv-bg:#132738; --orph:#e08585; --orph-bg:#361818;
+ --scaf:#b0a5c6; --scaf-bg:#231e2e; --live:#93a0a8; --live-bg:#1d2429;
+ --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+ --ground:#101417; --panel:#171c20; --ink:#e8edee; --ink-2:#a3b0b6; --ink-3:#77848b;
+ --rule:#283136; --rule-2:#202830; --accent:#4fb3ac; --accent-soft:#12312f;
+ --keep:#78c295; --keep-bg:#16301f; --del:#d9a366; --del-bg:#33240f;
+ --serv:#7fb0dd; --serv-bg:#132738; --orph:#e08585; --orph-bg:#361818;
+ --scaf:#b0a5c6; --scaf-bg:#231e2e; --live:#93a0a8; --live-bg:#1d2429;
+ --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+ font-family:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+ font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding:56px 28px 96px;display:flex;flex-direction:column;gap:40px}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,monospace}
+h1{font-size:clamp(30px,4.2vw,44px);line-height:1.08;letter-spacing:-.028em;font-weight:700;margin:0;text-wrap:balance}
+h2{font-size:20px;letter-spacing:-.012em;font-weight:700;margin:0;text-wrap:balance}
+h3{font-size:15px;font-weight:600;margin:0;letter-spacing:-.004em}
+p{margin:0;max-width:70ch}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;
+ text-transform:uppercase;color:var(--accent);font-weight:500}
+header{display:flex;flex-direction:column;gap:12px;border-bottom:1px solid var(--rule);padding-bottom:32px}
+.sub{color:var(--ink-2);font-size:16px;max-width:74ch}
+.meta{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);margin-top:4px}
+section{display:flex;flex-direction:column;gap:16px}
+.alert{background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--orph);
+ border-radius:3px;padding:22px 24px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.alert h2{color:var(--orph);font-size:17px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:1px;
+ background:var(--rule);border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.stat{background:var(--panel);padding:18px 20px;display:flex;flex-direction:column;gap:3px}
+.stat .n{font-family:"IBM Plex Mono",monospace;font-size:27px;font-weight:600;
+ letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat .l{font-size:12px;color:var(--ink-3);letter-spacing:.01em}
+.stat.hi .n{color:var(--orph)} .stat.ok .n{color:var(--keep)} .stat.sv .n{color:var(--serv)}
+.tw{overflow-x:auto;border:1px solid var(--rule);border-radius:3px;background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{text-align:left;font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;
+ text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:11px 16px;
+ border-bottom:1px solid var(--rule);white-space:nowrap;background:var(--panel)}
+td{padding:10px 16px;border-bottom:1px solid var(--rule-2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.ds{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:500;white-space:nowrap}
+td.rc{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-2);white-space:nowrap}
+td.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+td.why{color:var(--ink-2);min-width:300px}
+td.why code{font-size:12px;background:var(--rule-2);padding:1px 4px;border-radius:2px}
+.chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;
+ letter-spacing:.05em;text-transform:uppercase;padding:2.5px 7px;border-radius:2px;white-space:nowrap}
+.chip.keep{color:var(--keep);background:var(--keep-bg)} .chip.delete{color:var(--del);background:var(--del-bg)}
+.chip.serving{color:var(--serv);background:var(--serv-bg)} .chip.orphan{color:var(--orph);background:var(--orph-bg)}
+.chip.scaffold{color:var(--scaf);background:var(--scaf-bg)} .chip.live{color:var(--live);background:var(--live-bg)}
+.zone{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.zh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;padding-bottom:2px}
+.zh .zn{font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;letter-spacing:-.01em}
+.zh .zc{font-size:12px;color:var(--ink-3);font-family:"IBM Plex Mono",monospace}
+.note{font-size:13.5px;color:var(--ink-2);max-width:74ch}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12.5px;color:var(--ink-2);
+ padding:16px 20px;background:var(--panel);border:1px solid var(--rule);border-radius:3px}
+.legend div{display:flex;align-items:center;gap:8px}
+hr{border:none;border-top:1px solid var(--rule);margin:8px 0}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+<div class="wrap">
+<header>
+<div class="eyebrow">DEMO_TARGET_IDENTIFICATION · flow audit</div>
+<h1>Flow Map</h1>
+<p class="sub">Every dataset in the project, mapped to the notebook or webapp act that consumes it,
+with the in-zone recipe chain behind it — so the pruning pass removes what is genuinely dead and
+nothing else.</p>
+<div class="meta">96 datasets · 14 zones · live DSS state cross-referenced against
+the recipe graph, notebooks/*.py and webapp/backend.py</div>
+</header>
+<section><div class="alert">
+<h2>“Nothing reads it” is still the wrong test here</h2>
+<p><code>family_auc_by_family</code>, <code>tractability_axis</code> and
+<code>breast_panel_overlap</code> have <strong>zero recipe consumers</strong>. Their real consumers
+are notebooks, which do not appear in the recipe graph. A mechanical reference check would flag
+exactly the datasets the audit decided must survive.</p>
+<p>The webapp now reads <strong>19</strong> datasets across acts 1–4, so much of the serving layer is
+genuinely referenced — but the remainder of the <strong>31</strong> in A1–A4 is waiting on cards
+that are not built yet, not dead. Zone membership, not reference counting, is what separates a serving
+dataset from an orphan.</p>
+</div></section>
+<section><div class="stats">
+<div class="stat"><div class="n">100</div><div class="l">datasets</div></div>
+<div class="stat ok"><div class="n">38</div><div class="l">read by a notebook / webapp</div></div>
+<div class="stat sv"><div class="n">31</div><div class="l">serving layer (A1–A4)</div></div>
+<div class="stat hi"><div class="n">0</div><div class="l">genuine orphans</div></div>
+<div class="stat ok"><div class="n">0</div><div class="l">circular zone dependencies</div></div>
+</div>
+<div class="legend">
+<div><span class="chip delete">Delete</span> recomputed in a notebook and verified — safe to remove</div>
+<div><span class="chip keep">Keep</span> read by a notebook, or provenance is gone</div>
+<div><span class="chip serving">Serving</span> zone A1–A4, consumer not built yet</div>
+<div><span class="chip scaffold">Scaffold</span> verification harness</div>
+<div><span class="chip orphan">Orphan</span> nothing reads it, nothing consumes it</div>
+</div></section>
+<section><div class="eyebrow">Actionable</div><h2>Orphans — nothing reads these, nothing consumes them</h2>
+<p class="note">These are the pruning candidates. Four carry a <span class="chip delete">Delete</span> chip because a notebook now recomputes them and the assertions still pass — that is proof of redundancy, not an absence of references.</p>
+<p class="note"><code>pool_unreachable_targets</code> joined this list on 2026-08-25: <code>compute_pool_reachability</code> was edited to stop producing it, so it no longer shares a recipe with a dataset nb2 reads and can be deleted on its own.</p>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Zone</th><th>Producing recipe</th><th>Type</th><th>Status</th></tr></thead><tbody>
+</tbody></table></div></section>
+<section><div class="eyebrow">Do not delete</div><h2>Must survive, with the reason</h2>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Why it must survive</th></tr></thead><tbody>
+<tr><td class="ds">llm_hx</td><td class="rc">—</td><td class="why">Retained for the Part 1 visual-graph webapp (DEMO_KG_LS). Never built and unreferenced here, so a reference check reads it as dead — it is held for a consumer outside this project.</td></tr>
+<tr><td class="ds">family_auc_by_family</td><td class="rc">webapp, nb3</td><td class="why">Only surviving copy of 0.8009 over 505 families. Its whole upstream chain — <code>family_validation_ranked</code>, <code>family_auc_grouped</code> — was never built, so it cannot be re-derived.</td></tr>
+<tr><td class="ds">tractability_axis</td><td class="rc">nb4, nb6</td><td class="why">nb4 §8.4 and nb6 §5.1 run the same block over it. Codifying duplicates a full 3.96M-row scan in two notebooks.</td></tr>
+<tr><td class="ds">breast_panel_metrics</td><td class="rc">nb4</td><td class="why">Read by nb4.</td></tr>
+<tr><td class="ds">breast_panel_overlap</td><td class="rc">nb4, nb6</td><td class="why">Read by nb4 and nb6 §6.3.</td></tr>
+<tr><td class="ds">pool_reachability</td><td class="rc">nb2</td><td class="why">145-line graph computation over <code>graph_edges</code> (2.85M) plus the 6.75M-row pool.</td></tr>
+</tbody></table></div>
+<p class="note"><strong>Scaffold.</strong> <code>nb1_verify</code>, <code>nb3_verify</code> and <code>nb6_assertion_results</code> plus their three verify recipes exist so codifications can be verified from the CLI. Convert them to <code>custom_python</code> scenario steps — as <code>assert nb2</code> already is — and all six leave the flow together.</p></section>
+<section><div class="eyebrow">Structure</div><h2>Zone order — now acyclic</h2>
+<p class="note">Two cycles existed until 2026-08-25. <code>disease_hierarchy_annotation</code> sat in A3 but is an annotation built from zones 00/10/20 and consumed by A2 — it moved to zone 20. And the ten-dataset chain ending at <code>dashboard_candidates</code> sat in A4 while A2 and A3 both read from it, making A4 and A2 mutually dependent; it moved to <strong>zone 40</strong>, which depends only on 00/20/30 and so sits upstream of every act.</p>
+<div class="tw"><table><thead><tr><th>Stage</th><th>Zones</th></tr></thead><tbody><tr><td class="rc">source</td><td class="rc">00 Imported</td></tr><tr><td class="rc">features</td><td class="rc">10 Cypher · 11 Matrix &rarr; 12 Assembly</td></tr><tr><td class="rc">modelling</td><td class="rc">20 Annotations &rarr; 30 Split &rarr; 31 Train &amp; score</td></tr><tr><td class="rc">shared base</td><td class="rc">40 Candidate ranking</td></tr><tr><td class="rc">acts</td><td class="rc">A1 · A2 &rarr; A3 · A4</td></tr><tr><td class="rc">evidence</td><td class="rc">90 Notebook</td></tr></tbody></table></div></section>
+<section><div class="eyebrow">Full map</div><h2>Every dataset, by zone</h2>
+<p class="note"><strong>Downstream</strong> counts recipes whose <em>code</em> reads the dataset, not recipes that merely declare it. Those differ: <code>dku recipe replace-input</code> rewires the declaration and leaves the code alone.</p>
+<div class="zone"><div class="zh"><span class="zn">00 Imported from DEMO_KG_LS (synced)</span><span class="zc">10 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">drug_disease_edges</td><td class="rc">nb6</td><td class="rc">compute_DEMO_KG_drug_disease_edges_copy</td><td class="rc">sync</td><td class="num">8</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">drug_protein_edges</td><td class="rc">nb6</td><td class="rc">compute_DEMO_KG_drug_protein_edges_copy</td><td class="rc">sync</td><td class="num">9</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">edge_metadata</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_edge_metadata_copy</td><td class="rc">sync</td><td class="num">4</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">gene_names</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_gene_names_copy</td><td class="rc">sync</td><td class="num">3</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">graph_edges</td><td class="rc">nb5</td><td class="rc">compute_DEMO_KG_graph_edges_copy</td><td class="rc">sync</td><td class="num">9</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">graph_nodes</td><td class="rc">webapp, nb5, nb6</td><td class="rc">compute_DEMO_KG_graph_nodes_copy</td><td class="rc">sync</td><td class="num">21</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">mondo_references</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_mondo_references_copy</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">raw_disease_disease</td><td class="rc">nb5</td><td class="rc">compute_DEMO_KG_raw_disease_disease_copy</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">raw_go_hierarchy</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_raw_go_hierarchy_copy</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">raw_ot_known_drug</td><td class="rc">nb4</td><td class="rc">compute_raw_ot_known_drug</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">10 Features - graph traversal (Cypher)</span><span class="zc">10 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">enriched_degree_controls_1</td><td class="rc">—</td><td class="rc">compute_enriched_degree_controls_1</td><td class="rc">CustomCode_visual-graph-execute-cypher</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_disease_context_1</td><td class="rc">—</td><td class="rc">compute_enriched_disease_context_1</td><td class="rc">CustomCode_visual-graph-execute-cypher</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_dwpc_GCD</td><td class="rc">—</td><td class="rc">compute_enriched_dwpc_GCD</td><td class="rc">CustomCode_visual-graph-execute-cypher</td><td class="num">3</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_dwpc_GGD</td><td class="rc">—</td><td class="rc">compute_enriched_dwpc_GGD</td><td class="rc">CustomCode_visual-graph-execute-cypher</td><td class="num">3</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_dwpc_GPGD</td><td class="rc">—</td><td class="rc">compute_enriched_dwpc_GPGD</td><td class="rc">CustomCode_visual-graph-execute-cypher</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_guilt_by_association_1</td><td class="rc">—</td><td class="rc">compute_enriched_guilt_by_association_1</td><td class="rc">CustomCode_visual-graph-execute-cypher</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_has_inflammatory_go_annotation_1</td><td class="rc">—</td><td class="rc">compute_enriched_inflammatory_go</td><td class="rc">CustomCode_visual-graph-execute-cypher</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_module_size_1</td><td class="rc">—</td><td class="rc">compute_enriched_module_size_1</td><td class="rc">CustomCode_visual-graph-execute-cypher</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_node_centrality_1</td><td class="rc">—</td><td class="rc">compute_enriched_node_centrality_1</td><td class="rc">CustomCode_visual-graph-graph-features</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_shared_pathway_count_1</td><td class="rc">—</td><td class="rc">compute_enriched_shared_pathway_count_1</td><td class="rc">CustomCode_visual-graph-execute-cypher</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">11 Features - matrix (Python)</span><span class="zc">6 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">enriched_dwpc_GBGD</td><td class="rc">—</td><td class="rc">compute_dwpc_go_metapaths</td><td class="rc">python</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_dwpc_GFGD</td><td class="rc">—</td><td class="rc">compute_dwpc_go_metapaths</td><td class="rc">python</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_ppi_cn_zscore</td><td class="rc">—</td><td class="rc">compute_ppi_cn_zscore</td><td class="rc">python</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_ppi_evidence_depth</td><td class="rc">—</td><td class="rc">compute_ppi_evidence_depth</td><td class="rc">python</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_prox_closest</td><td class="rc">—</td><td class="rc">compute_enriched_prox_closest</td><td class="rc">python</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_rwr_score_1</td><td class="rc">—</td><td class="rc">compute_enriched_rwr_score_1</td><td class="rc">python</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">12 Features - assembly</span><span class="zc">2 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">enriched_graph_features_1</td><td class="rc">—</td><td class="rc">compute_enriched_graph_features_1</td><td class="rc">join</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_pair_features_index_1</td><td class="rc">—</td><td class="rc">compute_enriched_pair_features_index_1</td><td class="rc">vstack</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">20 Annotations &amp; split key</span><span class="zc">12 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">disease_family_id</td><td class="rc">webapp</td><td class="rc">compute_disease_family_id</td><td class="rc">python</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">drug_classified</td><td class="rc">—</td><td class="rc">compute_drug_classified</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">drug_joined</td><td class="rc">—</td><td class="rc">compute_drug_joined</td><td class="rc">join</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_gene_druggability_v2</td><td class="rc">nb6</td><td class="rc">compute_enriched_gene_druggability_v2</td><td class="rc">shaker</td><td class="num">3</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_gene_localization</td><td class="rc">—</td><td class="rc">compute_gene_localization</td><td class="rc">python</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_gene_safety_v2</td><td class="rc">nb6</td><td class="rc">compute_enriched_gene_safety_v2</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">gene_crosswalk</td><td class="rc">—</td><td class="rc">compute_gene_crosswalk</td><td class="rc">join</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">gene_safety_joined</td><td class="rc">—</td><td class="rc">compute_gene_safety_join</td><td class="rc">join</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">hetionet_disease_slim</td><td class="rc">—</td><td class="rc">extract_hetionet_disease_slim</td><td class="rc">python</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">ot_drug_mapped</td><td class="rc">—</td><td class="rc">compute_ot_drug_mapped</td><td class="rc">join</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">raw_ot_druggability</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_raw_ot_druggability_copy</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">raw_ot_safety</td><td class="rc">—</td><td class="rc">compute_DEMO_KG_raw_ot_safety_copy</td><td class="rc">sync</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">30 Split &amp; modelling table</span><span class="zc">5 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">enriched_graph_features_1_family</td><td class="rc">—</td><td class="rc">join_disease_family_id</td><td class="rc">join</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">enriched_graph_features_candidate_psplit</td><td class="rc">nb2, nb5</td><td class="rc">filter_has_path_evidence</td><td class="rc">sampling</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">psplit_test_set</td><td class="rc">—</td><td class="rc">split_by_disease_key</td><td class="rc">split</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">psplit_train_set</td><td class="rc">nb1</td><td class="rc">split_by_disease_key</td><td class="rc">split</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">psplit_validation_set</td><td class="rc">—</td><td class="rc">split_by_disease_key</td><td class="rc">split</td><td class="num">3</td><td><span class="chip live">In chain</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">31 Train &amp; score</span><span class="zc">4 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">persona2_scored</td><td class="rc">—</td><td class="rc">score_persona_candidates</td><td class="rc">prediction_scoring</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">scored_champion</td><td class="rc">nb1, nb2, nb3, nb3b, nb4, nb6</td><td class="rc">sync_scored_champion</td><td class="rc">sync</td><td class="num">7</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">scored_m7</td><td class="rc">—</td><td class="rc">score_psplit_validation_m7</td><td class="rc">prediction_scoring</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">validation_set_personas_2</td><td class="rc">—</td><td class="rc">filter_persona_diseases</td><td class="rc">sampling</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">40 Candidate ranking (shared by acts)</span><span class="zc">8 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">candidates_annotated</td><td class="rc">—</td><td class="rc">join_dashboard_annotations</td><td class="rc">join</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">dashboard_candidates</td><td class="rc">webapp, nb6</td><td class="rc">finalize_dashboard_candidates</td><td class="rc">shaker</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">disease_pool_sizes</td><td class="rc">—</td><td class="rc">count_candidates_per_disease</td><td class="rc">grouping</td><td class="num">2</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">drug_evidence_pairs</td><td class="rc">—</td><td class="rc">compute_drug_evidence_pairs</td><td class="rc">python</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">persona2_scored_shap</td><td class="rc">—</td><td class="rc">compute_top_shap_drivers_1</td><td class="rc">python</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">target_candidates_2</td><td class="rc">—</td><td class="rc">join_disease_name</td><td class="rc">join</td><td class="num">3</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">top_annotated</td><td class="rc">—</td><td class="rc">decorate_target_candidates</td><td class="rc">join</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">top_candidates</td><td class="rc">—</td><td class="rc">rank_per_disease</td><td class="rc">window</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">90 Notebook — validation evidence</span><span class="zc">8 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">breast_panel_metrics</td><td class="rc">nb4</td><td class="rc">compute_breast_panel</td><td class="rc">python</td><td class="num">0</td><td><span class="chip keep">Keep</span></td></tr>
+<tr><td class="ds">breast_panel_overlap</td><td class="rc">nb4, nb6</td><td class="rc">compute_breast_panel</td><td class="rc">python</td><td class="num">0</td><td><span class="chip keep">Keep</span></td></tr>
+<tr><td class="ds">family_auc_by_family</td><td class="rc">webapp, nb3</td><td class="rc">compute_family_auc</td><td class="rc">shaker</td><td class="num">0</td><td><span class="chip keep">Keep</span></td></tr>
+<tr><td class="ds">family_auc_grouped</td><td class="rc">—</td><td class="rc">group_family_auc</td><td class="rc">grouping</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">family_validation_ranked</td><td class="rc">—</td><td class="rc">window_family_rank</td><td class="rc">window</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">family_validation_scored</td><td class="rc">—</td><td class="rc">compute_family_validation_scored</td><td class="rc">sync</td><td class="num">1</td><td><span class="chip live">In chain</span></td></tr>
+<tr><td class="ds">pool_reachability</td><td class="rc">nb2</td><td class="rc">compute_pool_reachability</td><td class="rc">python</td><td class="num">0</td><td><span class="chip keep">Keep</span></td></tr>
+<tr><td class="ds">tractability_axis</td><td class="rc">nb4, nb6</td><td class="rc">compute_tractability_axis</td><td class="rc">python</td><td class="num">0</td><td><span class="chip keep">Keep</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">A1 Evidence base (serving)</span><span class="zc">5 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">graph_label_evidence</td><td class="rc">webapp</td><td class="rc">compute_graph_label_evidence</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">graph_node_source_counts</td><td class="rc">webapp</td><td class="rc">compute_graph_node_source_counts</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">graph_node_type_counts</td><td class="rc">webapp</td><td class="rc">compute_graph_node_type_counts</td><td class="rc">grouping</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">graph_ppi_provenance</td><td class="rc">webapp</td><td class="rc">compute_graph_ppi_provenance</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">graph_relation_counts</td><td class="rc">webapp</td><td class="rc">compute_graph_relation_counts</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">A2 Calibration (serving)</span><span class="zc">14 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">disease_eligibility</td><td class="rc">webapp</td><td class="rc">compute_disease_eligibility</td><td class="rc">python</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">drug_target_benchmark</td><td class="rc">nb3, nb6</td><td class="rc">compute_drug_target_benchmark</td><td class="rc">python</td><td class="num">2</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">hub_bias_meter</td><td class="rc">webapp</td><td class="rc">compute_hub_bias_meter</td><td class="rc">python</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">novel_discovery_eval</td><td class="rc">nb4, nb6</td><td class="rc">compute_novel_discovery_eval</td><td class="rc">python</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">orthogonality_scatter</td><td class="rc">webapp</td><td class="rc">join_orthogonality</td><td class="rc">join</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">persona_candidates</td><td class="rc">nb4</td><td class="rc">compute_persona_candidates</td><td class="rc">python</td><td class="num">2</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">persona_enrichment</td><td class="rc">webapp</td><td class="rc">compute_persona_enrichment</td><td class="rc">shaker</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">shap_driver_frequency</td><td class="rc">webapp</td><td class="rc">compute_shap_driver_frequency</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">shap_drivers_long</td><td class="rc">—</td><td class="rc">compute_shap_drivers_long</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">split_audit_2</td><td class="rc">webapp, nb2</td><td class="rc">compute_split_audit_2</td><td class="rc">python</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">validation_auc_by_disease</td><td class="rc">webapp, nb3, nb5, nb6</td><td class="rc">compute_validation_auc_by_disease</td><td class="rc">shaker</td><td class="num">3</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">validation_auc_ci</td><td class="rc">—</td><td class="rc">compute_validation_auc_ci</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">validation_set_scored_grouped</td><td class="rc">—</td><td class="rc">compute_validation_set_scored_grouped</td><td class="rc">grouping</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">validation_set_scored_windows</td><td class="rc">—</td><td class="rc">compute_validation_set_scored_windows</td><td class="rc">window</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">A3 Therapeutic area (serving)</span><span class="zc">8 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">family_panel</td><td class="rc">webapp</td><td class="rc">compute_family_panel</td><td class="rc">join</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">pairwise_overlap</td><td class="rc">webapp</td><td class="rc">compute_pairwise_overlap</td><td class="rc">grouping</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">pairwise_pairs</td><td class="rc">—</td><td class="rc">compute_pairwise_pairs</td><td class="rc">join</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">top50_membership</td><td class="rc">webapp</td><td class="rc">compute_top50_membership</td><td class="rc">shaker</td><td class="num">4</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">top50_membership_b</td><td class="rc">—</td><td class="rc">copy_top50_b</td><td class="rc">sync</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">top50_pairs</td><td class="rc">—</td><td class="rc">compute_top50_pairs</td><td class="rc">join</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">top50_slim_a</td><td class="rc">—</td><td class="rc">compute_top50_slim_a</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">top50_slim_b</td><td class="rc">—</td><td class="rc">compute_top50_slim_b</td><td class="rc">shaker</td><td class="num">1</td><td><span class="chip serving">Serving</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">A4 Shortlist (serving)</span><span class="zc">3 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">dashboard_persona_trust</td><td class="rc">—</td><td class="rc">join_trust_for_personas</td><td class="rc">join</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">filter_three_axes</td><td class="rc">nb4</td><td class="rc">compute_filter_three_axes</td><td class="rc">python</td><td class="num">0</td><td><span class="chip serving">Serving</span></td></tr>
+<tr><td class="ds">known_drug_truth</td><td class="rc">nb2, nb4</td><td class="rc">compute_known_drug_truth</td><td class="rc">python</td><td class="num">2</td><td><span class="chip serving">Serving</span></td></tr>
+</tbody></table></div></div>
+<div class="zone"><div class="zh"><span class="zn">Default</span><span class="zc">1 datasets</span></div>
+<div class="tw"><table><thead><tr><th>Dataset</th><th>Read by</th><th>Producing recipe</th><th>Type</th><th>Downstream</th><th>Status</th></tr></thead><tbody>
+<tr><td class="ds">llm_hx</td><td class="rc">—</td><td class="rc">—</td><td class="rc">—</td><td class="num">0</td><td><span class="chip keep">Keep</span></td></tr>
+</tbody></table></div></div>
+</section></div>

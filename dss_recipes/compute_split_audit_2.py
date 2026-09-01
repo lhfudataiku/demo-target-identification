@@ -25,12 +25,17 @@ SETS = {"train": "psplit_train_set",
 # (node_id, node_type, node_source) -- see index_remap.json. node_index is DETERMINISTIC in that
 # graph, so these are stable from here on; they were not stable in the old single-project build.
 # They are still project-specific: the same diseases carry different integers per graph build.
-WATCH = {37143: "obesity disorder", 47437: "diabetes mellitus", 47537: "type 2 diabetes mellitus",
-         54058: "type 1 diabetes mellitus", 52236: "lung cancer", 47604: "non-small cell lung ca",
-         47469: "lung adenocarcinoma", 47654: "chronic kidney disease",
-         49721: "breast cancer", 47415: "breast carcinoma",
-         48537: "HER2 positive breast ca", 47807: "triple-negative breast ca",
-         42563: "luminal A breast ca", 42562: "luminal B breast ca"}
+# GOVERNED BY NAME. The watch list is the `demo_panel.split_audit_watch` project
+# variable; node_index is resolved from graph_nodes at run time by
+# python/demo_identity.py, which raises on a missing or ambiguous name. Until
+# 2026-09-01 this pinned indices, which a graph rebuild renumbers -- the audit would
+# then have reported straddling for whichever diseases now held those slots.
+# The old labels here were abbreviations ("non-small cell lung ca"); the canonical
+# node_name is used now, so the printed audit matches the graph.
+import demo_identity
+
+_watch_names = list(demo_identity.panel()["split_audit_watch"])
+WATCH = {i: n for n, i in demo_identity.name_to_index(_watch_names).items()}
 
 frames = {k: dataiku.Dataset(v).get_dataframe(columns=COLS) for k, v in SETS.items()}
 
@@ -87,6 +92,8 @@ out["overlap_train_val_keys"] = len(keys["train"] & keys["validation"])
 out["overlap_test_val_keys"] = len(keys["test"] & keys["validation"])
 out["straddling_split_keys"] = int((straddle > 1).sum())
 dataiku.Dataset("split_audit_2").write_with_schema(out)
+
+
 
 
 

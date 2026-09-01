@@ -8,3 +8,8 @@ data/
 # "references" that made dead prototype scripts look live to the code index.
 __pycache__/
 *.pyc
+
+# Per-developer Claude Code overrides. The shared, reviewed allowlist is .claude/settings.json and is
+# tracked. This file held the only project permissions until 2026-08-31 while being invisible to the
+# repository, because it was excluded by a personal global gitignore rather than by this file.
+.claude/settings.local.json

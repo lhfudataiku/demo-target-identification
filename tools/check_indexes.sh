@@ -7,5 +7,8 @@
 set -e
 cd "$(dirname "$0")/.."
 python3 tools/build_index.py --check
+python3 tools/check_claim_registry.py --check
 python3 tools/build_recipe_index.py --check
+python3 tools/check_governed_values.py
+python3 tools/check_harness.py
 python3 tools/check_links.py

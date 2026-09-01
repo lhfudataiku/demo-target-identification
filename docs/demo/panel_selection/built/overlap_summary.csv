@@ -1,0 +1,4 @@
+act3_family,pairs,mean_overlap,max_overlap,near_duplicates,analysis_mean_curated_subtypes,note
+breast,105,0.4299,0.8868,22,0.4021,"built averages every usable term in the family; analysis averaged the curated candidate subtypes only. Same method, different set of pairs; the pairs present in both agree to four decimal places."
+stomach,15,0.451,0.9608,3,0.4746,"built averages every usable term in the family; analysis averaged the curated candidate subtypes only. Same method, different set of pairs; the pairs present in both agree to four decimal places."
+uterine,28,0.4777,0.6129,1,0.4935,"built averages every usable term in the family; analysis averaged the curated candidate subtypes only. Same method, different set of pairs; the pairs present in both agree to four decimal places."

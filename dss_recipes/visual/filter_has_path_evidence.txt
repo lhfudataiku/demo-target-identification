@@ -1,0 +1,7 @@
+# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
+# this file is a copy for review and grep. The live payload is in the DSS recipe.
+# recipe: filter_has_path_evidence (sampling)
+# inputs: enriched_graph_features_1_family
+# outputs: enriched_graph_features_candidate_psplit
+
+expression: isNonBlank(dwpc_GGD) || isNonBlank(dwpc_GPGD) || isNonBlank(dwpc_GCD)

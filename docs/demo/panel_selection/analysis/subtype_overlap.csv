@@ -1,0 +1,48 @@
+family,subtype_a,subtype_b,jaccard_top50,shared_genes
+lung,lung adenocarcinoma,squamous cell lung carcinoma,0.8868,47
+lung,lung adenocarcinoma,small cell lung carcinoma,0.7857,44
+lung,lung adenocarcinoma,pulmonary large cell neuroendocrine carcinoma,0.5873,37
+lung,squamous cell lung carcinoma,small cell lung carcinoma,0.7857,44
+lung,squamous cell lung carcinoma,pulmonary large cell neuroendocrine carcinoma,0.5873,37
+lung,small cell lung carcinoma,pulmonary large cell neuroendocrine carcinoma,0.6129,38
+uterine,endometrium adenocarcinoma,endometrial serous adenocarcinoma,0.4925,33
+uterine,endometrium adenocarcinoma,endometrial clear cell adenocarcinoma,0.5152,34
+uterine,endometrium adenocarcinoma,uterine carcinosarcoma,0.4493,31
+uterine,endometrium adenocarcinoma,endometrial carcinoma,0.4493,31
+uterine,endometrial serous adenocarcinoma,endometrial clear cell adenocarcinoma,0.4706,32
+uterine,endometrial serous adenocarcinoma,uterine carcinosarcoma,0.4925,33
+uterine,endometrial serous adenocarcinoma,endometrial carcinoma,0.4493,31
+uterine,endometrial clear cell adenocarcinoma,uterine carcinosarcoma,0.5152,34
+uterine,endometrial clear cell adenocarcinoma,endometrial carcinoma,0.5625,36
+uterine,uterine carcinosarcoma,endometrial carcinoma,0.5385,35
+stomach,gastric adenocarcinoma,gastric intestinal type adenocarcinoma,0.8519,46
+stomach,gastric adenocarcinoma,signet ring cell gastric adenocarcinoma,0.4925,33
+stomach,gastric adenocarcinoma,gastric small cell neuroendocrine carcinoma,0.3514,26
+stomach,gastric intestinal type adenocarcinoma,signet ring cell gastric adenocarcinoma,0.5625,36
+stomach,gastric intestinal type adenocarcinoma,gastric small cell neuroendocrine carcinoma,0.3699,27
+stomach,signet ring cell gastric adenocarcinoma,gastric small cell neuroendocrine carcinoma,0.2195,18
+breast,HER2 positive breast carcinoma,luminal A breast carcinoma,0.3333,25
+breast,HER2 positive breast carcinoma,luminal B breast carcinoma,0.4706,32
+breast,HER2 positive breast carcinoma,triple-negative breast carcinoma,0.1628,14
+breast,HER2 positive breast carcinoma,breast ductal adenocarcinoma,0.8519,46
+breast,HER2 positive breast carcinoma,breast lobular carcinoma,0.8182,45
+breast,luminal A breast carcinoma,luminal B breast carcinoma,0.2821,22
+breast,luminal A breast carcinoma,triple-negative breast carcinoma,0.1905,16
+breast,luminal A breast carcinoma,breast ductal adenocarcinoma,0.3333,25
+breast,luminal A breast carcinoma,breast lobular carcinoma,0.3514,26
+breast,luminal B breast carcinoma,triple-negative breast carcinoma,0.1364,12
+breast,luminal B breast carcinoma,breast ductal adenocarcinoma,0.4706,32
+breast,luminal B breast carcinoma,breast lobular carcinoma,0.4925,33
+breast,triple-negative breast carcinoma,breast ductal adenocarcinoma,0.1494,13
+breast,triple-negative breast carcinoma,breast lobular carcinoma,0.1364,12
+breast,breast ductal adenocarcinoma,breast lobular carcinoma,0.8519,46
+heme,plasma cell myeloma,acute lymphoblastic leukemia,0.6393,39
+heme,plasma cell myeloma,Burkitt lymphoma,0.6129,38
+heme,plasma cell myeloma,"peripheral T-cell lymphoma, not otherwise specified",0.4925,33
+heme,plasma cell myeloma,lymphoid neoplasm,0.8519,46
+heme,acute lymphoblastic leukemia,Burkitt lymphoma,0.6393,39
+heme,acute lymphoblastic leukemia,"peripheral T-cell lymphoma, not otherwise specified",0.4925,33
+heme,acute lymphoblastic leukemia,lymphoid neoplasm,0.6129,38
+heme,Burkitt lymphoma,"peripheral T-cell lymphoma, not otherwise specified",0.5385,35
+heme,Burkitt lymphoma,lymphoid neoplasm,0.5385,35
+heme,"peripheral T-cell lymphoma, not otherwise specified",lymphoid neoplasm,0.4925,33

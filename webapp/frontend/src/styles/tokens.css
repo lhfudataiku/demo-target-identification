@@ -1,0 +1,147 @@
+/* ============================================================================
+   Design tokens — the app's visual identity (Dataiku brand)
+   ============================================================================
+   This file is the single source of truth for colors, radius, and dark-mode
+   overrides. It was vendored from the `truenorth` design system so the app
+   owns its identity with no external UI dependency.
+
+   How it works:
+   - These CSS variables hold the raw values (HSL, radius).
+   - `src/style.css` bridges them into Tailwind utilities via `@theme inline`
+     (e.g. `--color-primary: var(--primary)` → `bg-primary`, `text-primary`).
+   - Always style via the Tailwind utilities (`bg-background`,
+     `text-muted-foreground`, `border-border`, …). Never hardcode hex values.
+
+   Brand reference: Dataiku Brand Guidelines (primary indigo ≈ #3445CB). To
+   re-theme the whole app, change the values here only.
+
+   | Token                | Used for                                      |
+   |----------------------|-----------------------------------------------|
+   | --background         | Page background                               |
+   | --foreground         | Default text                                  |
+   | --card / -foreground | Card surfaces + their text                    |
+   | --popover            | Floating surfaces (menus, dialogs)            |
+   | --primary            | Brand accent (buttons, active nav, links)     |
+   | --secondary          | Subtle filled surfaces                        |
+   | --muted / -foreground| Muted strips + secondary/caption text         |
+   | --accent             | Hover/selected backgrounds                    |
+   | --destructive        | Errors, destructive actions                   |
+   | --border / --input   | Borders and input outlines                    |
+   | --ring               | Focus rings                                   |
+   | --chart-1..5         | Chart series colors                           |
+   | --sidebar*           | Sidebar surface, text, active item, border    |
+   | --radius             | Corner radius scale base (0.625rem)           |
+   ============================================================================ */
+
+/* ── Dataiku brand tokens ─────────────────────────────────────────────────
+   Applied 2026-08-26. The template shipped generic shadcn defaults here
+   (pure-white background, indigo primary, no brand fonts); the brand
+   guidelines call for a warm off-white ground, dkGreen as the interactive
+   accent and dkDarkGreen as the brand anchor.
+
+     dkBlack #1A1A1A   dkWhite #FEFEF9   dkDarkGreen #06312E
+     dkBeige #F8F4E4   dkGreen #3EDAB2   dkLightGreen #C7FFF1
+     dkBlue  #7092F2   dkOrange #EDAB4F  (data viz only)
+
+   dkGreen is a LIGHT mint, so anything sitting on it takes dark text --
+   --primary-foreground is dkDarkGreen, never white. The approved pairing
+   used here is dkBlack + dkWhite + dkGreen, with dkDarkGreen anchoring the
+   sidebar. Orange+Green and Blue+Green are never co-dominant.           */
+:root {
+  --background: #FEFEF9;              /* dkWhite -- never pure white */
+  --foreground: #1A1A1A;              /* dkBlack */
+  --card: #FFFFFE;
+  --card-foreground: #1A1A1A;
+  --popover: #FEFEF9;
+  --popover-foreground: #1A1A1A;
+  --primary: #3EDAB2;                 /* dkGreen -- CTAs, interactive */
+  --primary-foreground: #06312E;      /* dark ON the mint, for contrast */
+  --secondary: #F8F4E4;               /* dkBeige */
+  --secondary-foreground: #1A1A1A;
+  --muted: #EEEDEA;                   /* light grey */
+  --muted-foreground: #5C5A54;
+  --accent: #C7FFF1;                  /* dkLightGreen -- hover tints */
+  --accent-foreground: #06312E;
+  --destructive: #B3261E;
+  --destructive-foreground: #FEFEF9;
+  --border: #E4E1D6;
+  --input: #E4E1D6;
+  --ring: #3EDAB2;
+  --chart-1: #06312E;                 /* dkDarkGreen */
+  --chart-2: #3EDAB2;                 /* dkGreen */
+  --chart-3: #7092F2;                 /* dkBlue */
+  --chart-4: #EDAB4F;                 /* dkOrange */
+  --chart-5: #A8BCDD;                 /* light blue grey */
+
+  /* Graph node types — one token per node type in the knowledge graph.
+     A closed set of 8, so an explicit map beats a colour cycle: the three GO
+     namespaces share the beige "annotation" family, and the two entities the
+     demo is actually about (protein, disease) get the brand's strongest accents.
+     Read by ActGraph via token() — vis-network paints to canvas and cannot use
+     Tailwind classes. */
+  --graph-protein: #3EDAB2;           /* dkGreen — the subject */
+  --graph-disease: #EDAB4F;           /* dkOrange */
+  --graph-drug: #7092F2;              /* dkBlue */
+  --graph-pathway: #06312E;           /* dkDarkGreen */
+  --graph-phenotype: #A8BCDD;         /* light blue grey */
+  --graph-bioprocess: #F8F4E4;        /* dkBeige — annotation family */
+  --graph-molfunc: #E5DFC5;
+  --graph-cellcomp: #CFC8A8;
+  --graph-other: #C4C4BD;
+  --radius: 0.5rem;
+  --sidebar: #06312E;                 /* dkDarkGreen anchor */
+  --sidebar-foreground: #FEFEF9;
+  --sidebar-primary: #3EDAB2;
+  --sidebar-primary-foreground: #06312E;
+  --sidebar-accent: rgba(199, 255, 241, 0.12);
+  --sidebar-accent-foreground: #C7FFF1;
+  --sidebar-border: rgba(254, 254, 249, 0.14);
+  --sidebar-ring: #3EDAB2;
+}
+
+.dark {
+  --background: #14211F;
+  --foreground: #FEFEF9;
+  --card: #06312E;                    /* dkDarkGreen surfaces */
+  --card-foreground: #FEFEF9;
+  --popover: #06312E;
+  --popover-foreground: #FEFEF9;
+  --primary: #3EDAB2;
+  --primary-foreground: #06312E;
+  --secondary: #1E3D39;
+  --secondary-foreground: #FEFEF9;
+  --muted: #1E3D39;
+  --muted-foreground: #A6BDB8;
+  --accent: rgba(199, 255, 241, 0.14);
+  --accent-foreground: #C7FFF1;
+  --destructive: #E4756D;
+  --destructive-foreground: #14211F;
+  --border: rgba(254, 254, 249, 0.14);
+  --input: rgba(254, 254, 249, 0.14);
+  --ring: #3EDAB2;
+  --chart-1: #3EDAB2;
+  --chart-2: #C7FFF1;
+  --chart-3: #7092F2;
+  --chart-4: #EDAB4F;
+  --chart-5: #A8BCDD;
+
+  /* Graph node types, dark. protein/disease/drug hold their hue; the annotation
+     family darkens so beige fills do not glare on a dark canvas. */
+  --graph-protein: #3EDAB2;
+  --graph-disease: #EDAB4F;
+  --graph-drug: #7092F2;
+  --graph-pathway: #C7FFF1;
+  --graph-phenotype: #A8BCDD;
+  --graph-bioprocess: #6B665A;
+  --graph-molfunc: #57544A;
+  --graph-cellcomp: #454339;
+  --graph-other: #5A5A54;
+  --sidebar: #06312E;
+  --sidebar-foreground: #FEFEF9;
+  --sidebar-primary: #3EDAB2;
+  --sidebar-primary-foreground: #06312E;
+  --sidebar-accent: rgba(199, 255, 241, 0.12);
+  --sidebar-accent-foreground: #C7FFF1;
+  --sidebar-border: rgba(254, 254, 249, 0.14);
+  --sidebar-ring: #3EDAB2;
+}

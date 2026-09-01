@@ -24,6 +24,10 @@ nb2_splitting_and_pool.py	5.2.1	5.2.1  [loop-table]	0.6833
 nb2_splitting_and_pool.py	5.2.1	5.2.1  [loop-table]	0.7335
 nb2_splitting_and_pool.py	5.2.1	5.2.1 GCD-only pairs	10337.0
 nb2_splitting_and_pool.py	5.2.1	5.2.1 GCD-only pct of pool	0.153
+nb2_splitting_and_pool.py	5.2.1	5.2.1 approved join auc_all	0.6886
+nb2_splitting_and_pool.py	5.2.1	5.2.1 approved join auc_supported	0.7471
+nb2_splitting_and_pool.py	5.2.1	5.2.1 curated known_drug >=0.8 auc_all	0.6833
+nb2_splitting_and_pool.py	5.2.1	5.2.1 curated known_drug >=0.8 auc_supported	0.7335
 nb2_splitting_and_pool.py	5.4	5.4 	0.0
 nb3_validation_and_plots.py	10.1	10.1 macro per-disease AUC	0.823
 nb3_validation_and_plots.py	10.1	10.1 validation diseases	670.0
@@ -85,6 +89,7 @@ nb6_interrogation_and_close.py	5.3	5.3 investigational lift@10	8.85
 nb6_interrogation_and_close.py	5.5	5.5 drug-target macro AUC	0.6886
 nb6_interrogation_and_close.py	5.5	5.5 orthogonality R2	0.0
 nb6_interrogation_and_close.py	5.5	5.5 orthogonality pearson r	0.002
+nb6_interrogation_and_close.py	6.0	6.0 lift base rows	907246.0
 nb6_interrogation_and_close.py	6.1	6.1 ion channel drug_lift	11.89
 nb6_interrogation_and_close.py	6.1	6.1 liability drug_lift	4.62
 nb6_interrogation_and_close.py	6.1	6.1 lof_intolerant assoc_lift	2.07
@@ -96,3 +101,144 @@ nb6_interrogation_and_close.py	6.2	6.2 HER2+ top-15 liability-flagged	9.0
 nb6_interrogation_and_close.py	6.2	6.2 HER2+ top-50 liability-flagged	23.0
 nb6_interrogation_and_close.py	6.3	6.3 HER2+ vs TNBC all-gene overlap	14.0
 nb6_interrogation_and_close.py	6.3	6.3 HER2+ vs TNBC novel overlap	2.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	246.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	144.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	23.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	12.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	32.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	17.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	246.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	144.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	23.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	12.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	32.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	17.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	1.0
+nb7_panel_selection.py	7.1	7.1  [loop-table]	0.0
+nb7_panel_selection.py	7.1	7.1 autoimmune diseases	23.0
+nb7_panel_selection.py	7.1	7.1 autoimmune families 2+ terms	1.0
+nb7_panel_selection.py	7.1	7.1 autoimmune usable	12.0
+nb7_panel_selection.py	7.1	7.1 cvrm diseases	32.0
+nb7_panel_selection.py	7.1	7.1 cvrm families 2+ usable	0.0
+nb7_panel_selection.py	7.1	7.1 cvrm usable	17.0
+nb7_panel_selection.py	7.1	7.1 oncology diseases	246.0
+nb7_panel_selection.py	7.1	7.1 oncology usable	144.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	49721.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	19.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	14.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	52236.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	17.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	14.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	44244.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	8.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	8.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	43521.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	29.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	20.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	37143.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	2.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	1.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	49721.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	19.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	14.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	52236.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	17.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	14.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	44244.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	8.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	8.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	43521.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	29.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	20.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	37143.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	2.0
+nb7_panel_selection.py	7.2	7.2  [loop-table]	1.0
+nb7_panel_selection.py	7.2	7.2 breast terms	19.0
+nb7_panel_selection.py	7.2	7.2 breast usable	14.0
+nb7_panel_selection.py	7.2	7.2 families with 3+ terms	25.0
+nb7_panel_selection.py	7.2	7.2 heme terms	29.0
+nb7_panel_selection.py	7.2	7.2 heme usable	20.0
+nb7_panel_selection.py	7.2	7.2 lung terms	17.0
+nb7_panel_selection.py	7.2	7.2 lung usable	14.0
+nb7_panel_selection.py	7.2	7.2 obesity terms	2.0
+nb7_panel_selection.py	7.2	7.2 obesity usable	1.0
+nb7_panel_selection.py	7.2	7.2 uterine terms	8.0
+nb7_panel_selection.py	7.2	7.2 uterine usable	8.0
+nb7_panel_selection.py	7.3	7.3 served diseases	12.0
+nb7_panel_selection.py	7.3	7.3 served rows	105702.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	105.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.4299
+nb7_panel_selection.py	7.4	7.4  [loop-table]	22.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	28.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.4777
+nb7_panel_selection.py	7.4	7.4  [loop-table]	1.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	15.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.451
+nb7_panel_selection.py	7.4	7.4  [loop-table]	3.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	105.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.4299
+nb7_panel_selection.py	7.4	7.4  [loop-table]	22.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	28.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.4777
+nb7_panel_selection.py	7.4	7.4  [loop-table]	1.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	15.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.451
+nb7_panel_selection.py	7.4	7.4  [loop-table]	3.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	105.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.4299
+nb7_panel_selection.py	7.4	7.4  [loop-table]	22.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	28.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.4777
+nb7_panel_selection.py	7.4	7.4  [loop-table]	1.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	15.0
+nb7_panel_selection.py	7.4	7.4  [loop-table]	0.451
+nb7_panel_selection.py	7.4	7.4  [loop-table]	3.0
+nb7_panel_selection.py	7.4	7.4 HER2+ vs TNBC all overlap	14.0
+nb7_panel_selection.py	7.4	7.4 HER2+ vs TNBC novel overlap	2.0
+nb7_panel_selection.py	7.4	7.4 breast mean overlap	0.4299
+nb7_panel_selection.py	7.4	7.4 breast near-duplicate pairs	22.0
+nb7_panel_selection.py	7.4	7.4 breast overlap pairs	105.0
+nb7_panel_selection.py	7.4	7.4 overlap pairs	148.0
+nb7_panel_selection.py	7.4	7.4 spearman depth_gap vs jaccard	-0.35
+nb7_panel_selection.py	7.4	7.4 stomach mean overlap	0.451
+nb7_panel_selection.py	7.4	7.4 stomach near-duplicate pairs	3.0
+nb7_panel_selection.py	7.4	7.4 stomach overlap pairs	15.0
+nb7_panel_selection.py	7.4	7.4 uterine mean overlap	0.4777
+nb7_panel_selection.py	7.4	7.4 uterine near-duplicate pairs	1.0
+nb7_panel_selection.py	7.4	7.4 uterine overlap pairs	28.0
+nb7_panel_selection.py	7.4	7.4b  [loop-table]	4.0
+nb7_panel_selection.py	7.4	7.4b  [loop-table]	8.0
+nb7_panel_selection.py	7.4	7.4b  [loop-table]	4.0
+nb7_panel_selection.py	7.4	7.4b  [loop-table]	24.0
+nb7_panel_selection.py	7.4	7.4b  [loop-table]	3.0
+nb7_panel_selection.py	7.4	7.4b  [loop-table]	17.0
+nb7_panel_selection.py	7.4	7.4b  [loop-table]	4.0
+nb7_panel_selection.py	7.4	7.4b  [loop-table]	8.0
+nb7_panel_selection.py	7.4	7.4b  [loop-table]	4.0
+nb7_panel_selection.py	7.4	7.4b  [loop-table]	24.0
+nb7_panel_selection.py	7.4	7.4b  [loop-table]	3.0
+nb7_panel_selection.py	7.4	7.4b  [loop-table]	17.0
+nb7_panel_selection.py	7.4	7.4b breast common genes	8.0
+nb7_panel_selection.py	7.4	7.4b breast leaves	4.0
+nb7_panel_selection.py	7.4	7.4b stomach common genes	17.0
+nb7_panel_selection.py	7.4	7.4b stomach leaves	3.0
+nb7_panel_selection.py	7.4	7.4b uterine common genes	24.0
+nb7_panel_selection.py	7.4	7.4b uterine leaves	4.0
+nb7_panel_selection.py	7.4	7.4c act3 terms	28.0
+nb7_panel_selection.py	7.4	7.4c act4 diseases	12.0
+nb7_panel_selection.py	7.4	7.4c config rows	35.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	4.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	4.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	3.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	3.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	3.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	3.0
+nb7_panel_selection.py	7.5	7.5  [loop-table]	2.0
+nb7_panel_selection.py	7.5	7.5 DCM targets in top20	3.0
+nb7_panel_selection.py	7.5	7.5 FH targets in top20	3.0
+nb7_panel_selection.py	7.5	7.5 PsA targets in top20	2.0
+nb7_panel_selection.py	7.5	7.5 RA targets in top20	4.0
+nb7_panel_selection.py	7.5	7.5 endometrioid targets in top20	4.0
+nb7_panel_selection.py	7.5	7.5 gastric targets in top20	3.0
+nb7_panel_selection.py	7.5	7.5 serous targets in top20	3.0
+nb7_panel_selection.py	7.6	7.6 diabetes BBS genes in top50	0.0

@@ -24,6 +24,11 @@ check("10.1 validation diseases",670,len(va))
 
 # ==== 7.3  per-family validation, and the plot that replaces a 45-number table ====
 
+# NOT codified, and this is deliberate — see archive/DASHBOARD_BUILD_LOG.md section 31.5.
+# The shaker's input `family_auc_grouped` has NEVER BEEN BUILT, and neither has its own input
+# `family_validation_ranked`. `family_auc_by_family` (505 rows, 2026-08-21) is a terminal artifact
+# whose entire upstream chain is unmaterialised, so the 0.8009 it carries cannot currently be
+# re-derived from anything. Reading it is the only option; DO NOT delete it in the pruning pass.
 fa = dataiku.Dataset("family_auc_by_family").get_dataframe()
 col = next(c for c in fa.columns if "auc" in c.lower())
 

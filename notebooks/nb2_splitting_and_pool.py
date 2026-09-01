@@ -28,8 +28,41 @@ gcd_only=np.setdiff1d(GCD,np.union1d(GGD,GPGD))
 check("5.2.1 GCD-only pairs",10337,len(gcd_only))
 check("5.2.1 GCD-only pct of pool",0.153,round(100*len(gcd_only)/len(pk),3),tol=0.002,fmt="{:.3f}")
 
-# ==== 5.2.1  the selection bias, from its own recipe output ====
-sb=dataiku.Dataset("pool_selection_bias").get_dataframe()
+# ==== 5.2.1  the selection bias — COMPUTED here (step 4; was compute_pool_selection_bias, 55 loc) ====
+# gcd_only, M and the key trick are already built above, so only the AUC loop had to move.
+# The recipe also produced an "all known_drug" label. Nothing asserts or reads it, so it is dropped
+# rather than reproduced — the two labels below are the ones this notebook checks.
+_scc=[]
+for _c in dataiku.Dataset("scored_champion").iter_dataframes(
+        chunksize=250_000, columns=["disease_index","gene_index","proba_1"]):
+    _scc.append(_c)
+sc=pd.concat(_scc,ignore_index=True)
+sc["k"]=(sc.disease_index.to_numpy(np.int64)*M)+sc.gene_index.to_numpy(np.int64)
+kd=dataiku.Dataset("known_drug_truth").get_dataframe()
+def _auc(y,s):
+    """Rank-based Mann-Whitney AUC — same estimator the recipe used."""
+    n1=int(y.sum()); n0=len(y)-n1
+    if n1==0 or n0==0: return np.nan
+    r=pd.Series(s).rank().to_numpy()
+    return (r[y==1].sum()-n1*(n1+1)/2)/(n1*n0)
+_sbrows=[]
+for _lname,_sub in [("approved join",kd[kd.in_approved_join==1]),
+                    ("curated known_drug >=0.8",kd[kd.score>=0.8])]:
+    _tk=np.unique((_sub.disease_index.to_numpy(np.int64)*M)+_sub.gene_index.to_numpy(np.int64))
+    sc["pos"]=np.isin(sc.k.to_numpy(),_tk).astype(int)
+    sc["is_gcd_only"]=np.isin(sc.k.to_numpy(),gcd_only)
+    for _di,_g in sc.groupby("disease_index"):
+        if _g.pos.sum()==0: continue
+        _aall=_auc(_g.pos.to_numpy(),_g.proba_1.to_numpy())
+        _keep=~(_g.is_gcd_only.to_numpy()&(_g.pos.to_numpy()==1))
+        _gg=_g[_keep]
+        _asup=_auc(_gg.pos.to_numpy(),_gg.proba_1.to_numpy()) if _gg.pos.sum()>0 else np.nan
+        _sbrows.append({"disease_index":_di,"label":_lname,"n_pos":int(_g.pos.sum()),
+                        "n_gcd_only_pos":int((_g.is_gcd_only.to_numpy()&(_g.pos.to_numpy()==1)).sum()),
+                        "auc_all":_aall,"auc_supported_only":_asup})
+sb=pd.DataFrame(_sbrows)
+sb["auc_delta"]=sb.auc_supported_only-sb.auc_all
+print(f"SELBIAS|computed rows={len(sb)}|labels={sb.label.nunique()}")
 for lab,docA,docS in [("approved join",0.6886,0.7471),("curated known_drug >=0.8",0.6833,0.7335)]:
     r=sb[sb.label==lab]
     if not len(r): print(f"MISS|{lab}"); continue

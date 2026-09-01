@@ -1,7 +1,8 @@
 <title>Prioritizer Demo Deck</title>
+<!-- Governed claims consumed here: TI-DATA-001 TI-MOD-001 TI-VAL-001 TI-VAL-002 TI-VAL-003 TI-VAL-004 TI-VAL-008 TI-VAL-009 -->
 <!--
-  Mockup iteration 3. Specified in DASHBOARD_DESIGN.md sections 12 and 13.
-  Iterations 1 and 2 are kept alongside — do not overwrite them.
+  Mockup iteration 3. Specified in WEBAPP_DESIGN.md.
+  Iterations 1 and 2 are archived under ../../archive/dashboard-mockup-iterations/ — do not overwrite them.
 
   WHAT CHANGED FROM ITERATION 2
     Act 2
@@ -657,9 +658,32 @@ const never = h => `<div class="no"><div class="no-t">Must not appear</div>${h}<
 const ACTS = [];
 
 ACTS.push({ id: 'evidence-base', n: 1, title: 'The evidence base',
-  q: 'What can the model actually see?',
-  lede: 'A biomedical knowledge graph built from six external sources and accepted against a frozen reference — −0.03% on edges, 14 of 18 relations reproducing exactly. No model yet. This act is about the evidence, and about the fact that every node and every edge carries its provenance.',
+  q: 'What went in?',
+  lede: 'Public biomedical knowledge, assembled: six external sources, accepted against a frozen reference at −0.03% on edges with 14 of 18 relations reproducing exactly. No model yet. This act is about what the machine can see and where every node and edge came from — not about whether the ranking is any good, which is act 2.',
   render: () => `
+  ${card({ span: 'card', title: 'What this demo claims — and what it does not',
+    desc: 'Say this before anything else. Every row is a place a competitor would overclaim.',
+    body: `<div class="say" style="margin-bottom:12px"><b>The claim.</b> From public knowledge alone,
+        this reconstructs the targets a disease&rsquo;s field has already validated. The test is your
+        own eyeball test on a disease you know &mdash; not a benchmark we chose.
+        <b>If it reconstructs what is established, the machinery is sound</b>, and the interesting
+        conversation is pointing it at data where the answer is not already known. That is your data,
+        not ours.</div>
+      <div class="tw"><table><thead><tr><th>We are not claiming</th><th>What is true instead</th></tr></thead><tbody>
+      ${[['That we discover novel targets',
+          'The model ranks not-yet-annotated genes above chance. It is not what we are asking you to believe today'],
+         ['That this beats your in-house method',
+          'We have not seen your method. This is a reconstruction test on public data'],
+         ['Any safety or toxicity assessment',
+          'We have none. The flags we carry are public annotations &mdash; act 4 shows why they are not a filter'],
+         ['That the ranking is a research plan',
+          'It is a starting list you filter on your own thresholds'],
+         ['Domain expertise in your therapeutic area',
+          'You have that. We built the machine that makes your expertise testable']]
+        .map(r => `<tr><td style="white-space:nowrap"><b>${esc(r[0])}</b></td>
+                       <td style="color:var(--muted-foreground)">${r[1]}</td></tr>`).join('')}
+      </tbody></table></div>` })}
+
   ${card({ span: 'card', title: 'The graph, in four numbers', chips: [['live','live']],
     body: `<div class="stats">
       ${stat('Nodes','113,391','8 types')}
@@ -722,9 +746,9 @@ ACTS.push({ id: 'evidence-base', n: 1, title: 'The evidence base',
   `,
 });
 
-ACTS.push({ id: 'calibration', n: 2, title: 'Scope and calibration',
-  q: 'How far can this be trusted, and for which disease?',
-  lede: 'Where the candidates come from, how they were split, and how well the ranking holds. The distribution leads and the summary follows — a single accuracy number answers a question nobody asked.',
+ACTS.push({ id: 'calibration', n: 2, title: 'Calibration',
+  q: 'How faithfully does it reconstruct?',
+  lede: 'Where the candidates come from, how they were split, and how reliably the already-validated targets land near the top. Read this as reconstruction fidelity, not predictive power. The distribution leads and the summary follows — usefulness is not uniform, and which diseases reconstruct well is more useful than the average.',
   render: () => `
   ${card({ span: 'c8', title: 'Where the candidates come from',
     desc: 'From the whole ontology down to three train/test folds. <b>GGD</b> gene–gene–disease, <b>GPGD</b> gene–pathway–gene–disease, <b>GCD</b> gene–drug–disease. <b>Click a fold</b> to see its disease families in act 3.',
@@ -828,8 +852,8 @@ ACTS.push({ id: 'calibration', n: 2, title: 'Scope and calibration',
 });
 
 ACTS.push({ id: 'therapeutic-area', n: 3, title: 'The therapeutic area',
-  q: 'Does it work across my area, or just on one cherry-picked term?',
-  lede: 'Pick a disease family. The same model, every term in that family, and the ontology that decides which terms are allowed to train against each other.',
+  q: 'Does it hold across my area, or just on one term?',
+  lede: 'Pick a disease family. The same model, every term in it, and the curated ontology that decides which terms may train against each other — a biologist\'s judgment compiled into the pipeline, which lowered the number we report rather than raising it.',
   render: () => `
   ${card({ span: 'card', title: 'Choose a family',
     desc: 'Seventeen families have four or more scored diseases, and two are not cancer — which is how this deck answers <i>“does it only work on oncology?”</i> The table doubles as the ontology: <b>indentation is hop depth</b> from the family anchor, and siblings share a split key, so this is act 2’s leakage control drawn.',
@@ -907,9 +931,9 @@ ACTS.push({ id: 'therapeutic-area', n: 3, title: 'The therapeutic area',
   `,
 });
 
-ACTS.push({ id: 'shortlist', n: 4, title: 'The shortlist',
-  q: 'Show me the list.',
-  lede: 'One disease, all the way down. The point is not that the model is right — it is that you can argue with it on your own thresholds, then see the mechanism on the graph.',
+ACTS.push({ id: 'shortlist', n: 4, title: 'The list',
+  q: 'Does this look right to you?',
+  lede: 'One disease, all the way down — and the act this demo exists for. Open a disease you know and judge the top of the list yourself; the scientist is the instrument. Then take the controls: nothing is pre-filtered, and you narrow it on your own thresholds before seeing the mechanism on the graph.',
   render: () => `
   ${card({ span: 'card', title: 'The contract',
     desc: 'A ranked shortlist of candidate targets, each carrying two independent explanations — a SHAP attribution and a graph path to the disease module.',
@@ -995,15 +1019,15 @@ ACTS.push({ id: 'shortlist', n: 4, title: 'The shortlist',
 
 /* ---------- not in the app ---------- */
 const TALK = { id: 'talk-track', title: 'Acts 5 & 6 — talk track',
-  q: 'The interrogation and the close — deliberately not in the app.',
-  lede: 'These two acts are argument, not exploration: no interaction, no per-disease state, and they owned five of the nine flow gaps. They become a talk track and a figure set generated from the notebooks. Each card below defends an act that IS in the app.',
+  q: 'What the platform did — deliberately not in the app.',
+  lede: 'These two acts are about the machinery, not the biology: no interaction, no per-disease state. They become a spoken track with a figure set from the notebooks. The point of the three-hypotheses card is turnaround, not insight — each was settled by one recipe in an afternoon. Which hypotheses are worth testing is the customer\'s call, not ours.',
   render: () => `
   ${card({ span: 'c8', title: 'How each card links back',
     desc: 'This mapping is the reason they can leave the app without losing the argument.',
     body: `<div class="tw"><table><thead><tr><th>Card</th><th>Defends</th><th>The line to say</th></tr></thead><tbody>
       ${[['Degree-matched enrichment','Act 4 — the shortlist','“the list you just filtered isn’t merely well-connected genes”'],
          ['Hub-bias meter','Act 2 — calibration','“and here is the population where we still under-score”'],
-         ['Delete the answer key','Act 4 — the top 15','“HRAS at #9 was novel; here is what that is worth at scale”'],
+         ['Delete the answer key','Act 4 — below the fold','“measured, and offered as an observation — today\'s claim is the reconstruction you just looked at”'],
          ['Lift vs K','Act 3 — the panel','“per-disease lift is what act 3’s enrichment column measured”'],
          ['Ground-truth provenance','Act 1 — the label evidence chart','“act 1 said 53% genetic association; here is why the rest is weaker”'],
          ['Orthogonality, r = +0.002','Act 2 — the AUC spread','“a high AUC in act 2 does not buy therapeutic relevance”'],

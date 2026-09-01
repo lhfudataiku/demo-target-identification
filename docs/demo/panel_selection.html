@@ -1,0 +1,633 @@
+<title>Demo Panel Selection</title>
+<!-- Governed claims consumed here: TI-MOD-001 TI-VAL-001 TI-VAL-009 -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600&family=Roboto:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+  :root {
+    --ground:      #FEFEF9;
+    --surface:     #FFFFFF;
+    --surface-alt: #F8F4E4;
+    --ink:         #1A1A1A;
+    --ink-soft:    #55605C;
+    --ink-faint:   #8A9490;
+    --rule:        #E4E1D6;
+    --rule-soft:   #EFEDE4;
+    --deep:        #06312E;
+    --pass:        #1E9E7C;
+    --pass-bg:     #E4F8F1;
+    --warn:        #B07A1F;
+    --warn-bg:     #FBF1DC;
+    --fail:        #A8342B;
+    --fail-bg:     #F9E8E6;
+    --accent:      #3EDAB2;
+    --blue:        #4A6BC9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #0B1F1D;
+      --surface:     #102A27;
+      --surface-alt: #16332F;
+      --ink:         #F2F0E6;
+      --ink-soft:    #A9B5B0;
+      --ink-faint:   #71807B;
+      --rule:        #24413C;
+      --rule-soft:   #1B3733;
+      --deep:        #C7FFF1;
+      --pass:        #4ADFB4;
+      --pass-bg:     #123A31;
+      --warn:        #E2B25E;
+      --warn-bg:     #352913;
+      --fail:        #E58A80;
+      --fail-bg:     #3A1F1C;
+      --accent:      #3EDAB2;
+      --blue:        #8AA4E8;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:      #0B1F1D;
+    --surface:     #102A27;
+    --surface-alt: #16332F;
+    --ink:         #F2F0E6;
+    --ink-soft:    #A9B5B0;
+    --ink-faint:   #71807B;
+    --rule:        #24413C;
+    --rule-soft:   #1B3733;
+    --deep:        #C7FFF1;
+    --pass:        #4ADFB4;
+    --pass-bg:     #123A31;
+    --warn:        #E2B25E;
+    --warn-bg:     #352913;
+    --fail:        #E58A80;
+    --fail-bg:     #3A1F1C;
+    --accent:      #3EDAB2;
+    --blue:        #8AA4E8;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 400 16px/1.65 Roboto, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 60rem; margin: 0 auto; padding: 4rem 1.75rem 6rem; }
+
+  h1, h2, h3 { font-family: Spectral, Georgia, serif; font-weight: 600; text-wrap: balance; margin: 0; }
+  h1 { font-size: 2.5rem; line-height: 1.15; letter-spacing: -0.01em; }
+  h2 { font-size: 1.6rem; line-height: 1.25; }
+  h3 { font-size: 1.1rem; line-height: 1.3; font-weight: 500; }
+  p { margin: 0; max-width: 66ch; }
+  a { color: var(--blue); }
+
+  .eyebrow {
+    font: 500 11px/1 "DM Mono", ui-monospace, monospace;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .lede { font-size: 1.075rem; color: var(--ink-soft); max-width: 62ch; }
+  .mono { font-family: "DM Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  header.top { display: flex; flex-direction: column; gap: 1rem; padding-bottom: 2rem;
+               border-bottom: 2px solid var(--deep); }
+  .meta { display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; }
+  .meta span { font: 400 12px/1.5 "DM Mono", monospace; color: var(--ink-faint); }
+
+  section { padding-top: 3.25rem; display: flex; flex-direction: column; gap: 1.5rem; }
+  .sec-head { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  /* verdict rows — the spine of the document */
+  .verdicts { display: flex; flex-direction: column; gap: 0.5rem; }
+  .verdict {
+    display: grid; grid-template-columns: 6.5rem 1fr; gap: 1.25rem;
+    align-items: start; padding: 1.1rem 1.25rem;
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
+  }
+  .verdict.on   { border-left: 4px solid var(--pass); }
+  .verdict.maybe{ border-left: 4px solid var(--warn); }
+  .verdict.off  { border-left: 4px solid var(--fail); }
+  .chip {
+    font: 500 10px/1 "DM Mono", monospace; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.4rem 0.5rem; border-radius: 3px; text-align: center; white-space: nowrap;
+  }
+  .chip.on    { background: var(--pass-bg); color: var(--pass); }
+  .chip.maybe { background: var(--warn-bg); color: var(--warn); }
+  .chip.off   { background: var(--fail-bg); color: var(--fail); }
+  .vbody { display: flex; flex-direction: column; gap: 0.45rem; }
+  .vbody p { font-size: 0.925rem; color: var(--ink-soft); }
+  .vname { font-family: Spectral, serif; font-size: 1.15rem; font-weight: 600; }
+  .vstat { font: 400 12px/1.5 "DM Mono", monospace; color: var(--ink-faint);
+           font-variant-numeric: tabular-nums; }
+
+  .scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.875rem; }
+  th, td { padding: 0.6rem 0.85rem; text-align: left; border-bottom: 1px solid var(--rule-soft); white-space: nowrap; }
+  th { font: 500 10.5px/1.4 "DM Mono", monospace; letter-spacing: 0.08em; text-transform: uppercase;
+       color: var(--ink-faint); background: var(--surface-alt); border-bottom: 1px solid var(--rule); }
+  td.num { text-align: right; font-family: "DM Mono", monospace; font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: 0; }
+  tr.dim td { color: var(--ink-faint); }
+  .best { color: var(--pass); font-weight: 500; }
+  .bad  { color: var(--fail); font-weight: 500; }
+
+  /* gene evidence */
+  .genes { display: flex; flex-direction: column; gap: 1rem; }
+  .gene-row { display: flex; flex-direction: column; gap: 0.4rem;
+              padding: 0.9rem 1.1rem; background: var(--surface-alt); border-radius: 6px; }
+  .gene-row .who { font-family: Spectral, serif; font-size: 1.02rem; font-weight: 600; }
+  .hits { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .hit { font: 400 12.5px/1 "DM Mono", monospace; padding: 0.35rem 0.45rem; border-radius: 3px;
+         background: var(--surface); border: 1px solid var(--rule); font-variant-numeric: tabular-nums; }
+  .hit.novel { border-color: var(--pass); color: var(--pass); font-weight: 500; }
+  .hit sup { font-size: 9px; opacity: 0.75; }
+  .why { font-size: 0.875rem; color: var(--ink-soft); }
+
+  .note { border-left: 3px solid var(--warn); background: var(--warn-bg);
+          padding: 1rem 1.25rem; border-radius: 0 6px 6px 0; display: flex;
+          flex-direction: column; gap: 0.5rem; }
+  .note .eyebrow { color: var(--warn); }
+  .note p { font-size: 0.925rem; }
+
+  ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.4rem; }
+  li { font-size: 0.925rem; color: var(--ink-soft); max-width: 64ch; }
+  li strong { color: var(--ink); font-weight: 500; }
+
+  footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--rule); }
+  footer p { font: 400 12.5px/1.7 "DM Mono", monospace; color: var(--ink-faint); max-width: 70ch; }
+
+  @media (max-width: 40rem) {
+    .wrap { padding: 2.5rem 1.1rem 4rem; }
+    h1 { font-size: 1.9rem; }
+    .verdict { grid-template-columns: 1fr; gap: 0.7rem; }
+    .chip { justify-self: start; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header class="top">
+    <span class="eyebrow">Act 3 &amp; Act 4 &middot; panel selection</span>
+    <h1>Which families and diseases the demo should carry</h1>
+    <p class="lede">
+      Two decisions, taken against measured evidence rather than clinical intuition: which
+      disease <em>families</em> Act 3 can support, and which individual <em>diseases</em> Act 4
+      should shortlist. Both were tested on the bar that matters for a scientific review — do the
+      top-ranked genes match what the field already knows.
+    </p>
+    <div class="meta">
+      <span>measured 2026-08-27, live DSS</span>
+      <span>670 validation diseases · 505 families</span>
+      <span>champion m7-f14 · macro AUC 0.8230</span>
+    </div>
+  </header>
+
+  <!-- ───────────────── the constraint ───────────────── -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">The constraint that decides Act 3</span>
+      <h2>Subtype structure exists only in oncology</h2>
+      <p class="lede">
+        Act 3 needs families whose subtypes can each be scored, overlapped, and split into a
+        common programme versus something specific. Across all 670 validation diseases, only
+        oncology has families shaped that way.
+      </p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>therapeutic area</th>
+            <th class="num">diseases</th>
+            <th class="num">≥50 positives</th>
+            <th>families with ≥2 terms</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Oncology</td><td class="num">246</td><td class="num best">144</td><td>10+ well-formed</td></tr>
+          <tr><td>Autoimmune / inflammatory</td><td class="num">23</td><td class="num">12</td><td><span class="bad">1</span> — asthma, 3 terms</td></tr>
+          <tr><td>Cardio / renal / metabolic</td><td class="num">32</td><td class="num">17</td><td><span class="bad">2</span>, both unusable</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Autoimmune and CVRM diseases <em>are</em> present with usable labels — but as singletons,
+      each its own family. They have no subtypes to score. Atherosclerosis, the only CVRM family
+      with three terms, carries 40 positives in total.
+    </p>
+    <p>
+      <strong>This splits the two decisions.</strong> Act 3 must be oncology. Therapeutic-area
+      breadth has to come from Act 4, where individual diseases stand on their own.
+    </p>
+  </section>
+
+  <!-- ───────────────── Act 3 ───────────────── -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Decision one</span>
+      <h2>Act 3 — the families</h2>
+      <p class="lede">
+        Ranked by what the overlap card actually measures: whether the subtypes produce
+        <em>different</em> lists. A family whose subtypes agree has nothing to say about what is
+        subtype-specific, however distinct they are in the clinic.
+      </p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>family</th>
+            <th class="num">terms</th>
+            <th class="num">usable</th>
+            <th class="num">mean overlap</th>
+            <th class="num">max</th>
+            <th class="num">near-dups</th>
+            <th class="num">common core</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>breast cancer</td><td class="num">19</td><td class="num">14</td><td class="num best">40%</td><td class="num">85%</td><td class="num">3</td><td class="num">7 / 50</td></tr>
+          <tr><td>stomach cancer</td><td class="num">7</td><td class="num">6</td><td class="num">47%</td><td class="num">85%</td><td class="num">1</td><td class="num">17 / 50</td></tr>
+          <tr><td>uterine cancer</td><td class="num">8</td><td class="num best">8</td><td class="num">49%</td><td class="num best">56%</td><td class="num best">0</td><td class="num">22 / 50</td></tr>
+          <tr class="dim"><td>hematologic cancer</td><td class="num">29</td><td class="num">20</td><td class="num">59%</td><td class="num">85%</td><td class="num">5</td><td class="num">25 / 50</td></tr>
+          <tr class="dim"><td>lung cancer</td><td class="num">17</td><td class="num">14</td><td class="num bad">71%</td><td class="num bad">89%</td><td class="num bad">4</td><td class="num">34 / 50</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="verdicts">
+      <div class="verdict on">
+        <span class="chip on">Include</span>
+        <div class="vbody">
+          <span class="vname">Breast cancer — the molecular axis</span>
+          <span class="vstat">HER2+ · luminal A · luminal B · triple-negative &nbsp;|&nbsp; mean overlap 40% · common core 7 genes</span>
+          <p>
+            The sharpest contrast available. Triple-negative shares only 14–19% of its top 50 with
+            any other subtype, and the core common to all of them is just seven genes — so
+            "what is subtype-specific" has real content. Use the molecular subtypes only: the
+            histology terms (ductal, lobular) are 82–85% duplicates of HER2+ and add nothing.
+          </p>
+        </div>
+      </div>
+
+      <div class="verdict on">
+        <span class="chip on">Include</span>
+        <div class="vbody">
+          <span class="vname">Uterine cancer — the histology axis</span>
+          <span class="vstat">8 of 8 terms usable · AUC 0.866–0.971 · mean overlap 49% · zero near-duplicates</span>
+          <p>
+            The best-formed family in the set and never evaluated before now. Every pair differs
+            by 45–56% — uniformly separable, with no redundant term to explain away. Its subtypes
+            are the histologies that actually drive endometrial management: serous and clear cell
+            are the high-risk arms, low-grade endometrioid is hormone-responsive.
+          </p>
+        </div>
+      </div>
+
+      <div class="verdict maybe">
+        <span class="chip maybe">Optional</span>
+        <div class="vbody">
+          <span class="vname">Stomach cancer — a third family if wanted</span>
+          <span class="vstat">6 of 7 usable · mean overlap 47% · ERBB2 #13 · FGFR2 #32</span>
+          <p>
+            Clinically live: HER2 testing is standard in gastric adenocarcinoma and FGFR2b is in
+            late-stage trials — both surface in the top 50. Held back only because two families
+            already carry Act 3, and the Lauren split (intestinal vs signet-ring) is one
+            near-duplicate pair.
+          </p>
+        </div>
+      </div>
+
+      <div class="verdict off">
+        <span class="chip off">Reject</span>
+        <div class="vbody">
+          <span class="vname">Lung cancer — as a family</span>
+          <span class="vstat">adenocarcinoma vs squamous 89% · vs small cell 79% · 4 near-duplicate pairs of 6</span>
+          <p>
+            The counter-intuitive result. Lung's histologies are the most treatment-decisive
+            distinction in the panel — and the model gives them nearly the same list. There is no
+            subtype-specific programme to show. Keep one lung term for Act 4; drop the family view.
+          </p>
+        </div>
+      </div>
+
+      <div class="verdict off">
+        <span class="chip off">Reject</span>
+        <div class="vbody">
+          <span class="vname">Obesity — fails on both counts</span>
+          <span class="vstat">2 terms · 1 usable · morbid obesity 41 positives, 0 hits in its top 50</span>
+          <p>
+            Structurally it cannot support Act 3: two terms, one of them below the 50-positive
+            floor and ranking nothing, so there is no overlap matrix and no common-versus-specific
+            split. It fails Act 4 separately and more interestingly — see below.
+          </p>
+        </div>
+      </div>
+
+      <div class="verdict off">
+        <span class="chip off">Reject</span>
+        <div class="vbody">
+          <span class="vname">Hematologic cancer</span>
+          <span class="vstat">mean overlap 59% · 5 near-duplicate pairs · surface-antigen blind spot</span>
+          <p>
+            20 usable terms, but they are different diseases rather than subtypes of one, they
+            overlap heavily, and modern haematology therapy targets cell-surface antigens — the
+            one thing this model systematically misses (below).
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── Act 4 ───────────────── -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Decision two</span>
+      <h2>Act 4 — the diseases</h2>
+      <p class="lede">
+        Each candidate was tested by writing down the field's validated targets first, then
+        looking up where the model ranked them. Green marks a gene the model surfaced
+        <em>without</em> it being in the training label — the harder result.
+      </p>
+    </div>
+
+    <h3>Oncology — from the Act 3 families</h3>
+    <div class="genes">
+      <div class="gene-row">
+        <span class="who">HER2-positive breast carcinoma</span>
+        <div class="hits">
+          <span class="hit">TP53 <sup>1</sup></span><span class="hit">EP300 <sup>2</sup></span>
+          <span class="hit">PIK3CA <sup>5</sup></span><span class="hit novel">HRAS <sup>9</sup></span>
+          <span class="hit">EGFR <sup>11</sup></span><span class="hit novel">SMARCA2 <sup>51</sup></span>
+        </div>
+        <p class="why">AUC 0.936 · 599 known · 19.7× enrichment · 48 of the top 50 are real associations.
+          PIK3CA is the HER2+ co-driver; IRS2 and STAT5A appear as novel, both on known resistance routes.</p>
+      </div>
+
+      <div class="gene-row">
+        <span class="who">Triple-negative breast carcinoma <span class="mono" style="font-size:12px;color:var(--ink-faint)">— the strongest single result</span></span>
+        <div class="hits">
+          <span class="hit novel">RAD50 <sup>1</sup></span><span class="hit novel">ATM <sup>2</sup></span>
+          <span class="hit novel">BRCA2 <sup>4</sup></span><span class="hit novel">NBN <sup>5</sup></span>
+          <span class="hit novel">BRIP1 <sup>6</sup></span><span class="hit novel">BARD1 <sup>9</sup></span>
+        </div>
+        <p class="why">From <strong>eight</strong> labelled associations, the top of the list is the
+          homologous-recombination axis — the MRN complex, the apical DDR kinase, and the BRCA
+          partners. Textbook TNBC. <strong>Never quote its AUC</strong> (0.895 on 8 positives, interval 0.749–1.041);
+          quote the list.</p>
+      </div>
+
+      <div class="gene-row">
+        <span class="who">Endometrium adenocarcinoma (endometrioid)</span>
+        <div class="hits">
+          <span class="hit">KRAS <sup>1</sup></span><span class="hit">PIK3CA <sup>2</sup></span>
+          <span class="hit">CTNNB1 <sup>10</sup></span><span class="hit">FGFR2 <sup>13</sup></span>
+          <span class="hit">ARID1A <sup>23</sup></span>
+        </div>
+        <p class="why">AUC 0.954 · the endometrioid driver set, in order, in the top 23.</p>
+      </div>
+
+      <div class="gene-row">
+        <span class="who">Endometrial serous adenocarcinoma</span>
+        <div class="hits">
+          <span class="hit">PIK3CA <sup>1</sup></span><span class="hit">TP53 <sup>8</sup></span>
+          <span class="hit">ERBB2 <sup>18</sup></span>
+        </div>
+        <p class="why">AUC 0.924 · TP53 and HER2 are the serous signature, and HER2-directed therapy
+          in serous disease is standard practice. The contrast with endometrioid above is the
+          subtype-specific story.</p>
+      </div>
+
+      <div class="gene-row">
+        <span class="who">Lung adenocarcinoma <span class="mono" style="font-size:12px;color:var(--ink-faint)">— keep one lung term</span></span>
+        <div class="hits">
+          <span class="hit novel">SMARCA2 <sup>59</sup></span><span class="hit novel">MAPK3 <sup>69</sup></span>
+        </div>
+        <p class="why">AUC 0.937 · 50 of 50 · SMARCA2 is the <em>first</em> novel candidate — the
+          SMARCA4-loss synthetic-lethal target with clinical-stage degraders. MAPK3 is novel #2 and
+          already documented here as trial-stage, so dropping NSCLC keeps that worked example.</p>
+      </div>
+
+      <div class="gene-row">
+        <span class="who">Luminal B breast carcinoma</span>
+        <div class="hits">
+          <span class="hit novel">FGFR1 <sup>15</sup></span><span class="hit novel">NRG1</span>
+          <span class="hit">ERBB3</span>
+        </div>
+        <p class="why">AUC 0.911 · <strong>33.8× enrichment, the highest in the panel</strong>.
+          FGFR1 amplification is a defining luminal-B lesion and arrives as novel.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1rem">Autoimmune — the singletons that earn their place</h3>
+    <div class="genes">
+      <div class="gene-row">
+        <span class="who">Rheumatoid arthritis</span>
+        <div class="hits">
+          <span class="hit novel">JAK2 <sup>1</sup></span><span class="hit">JAK1 <sup>2</sup></span>
+          <span class="hit novel">JAK3 <sup>7</sup></span><span class="hit novel">IL6 <sup>9</sup></span>
+          <span class="hit">TYK2 <sup>44</sup></span><span class="hit">IL6R <sup>81</sup></span>
+        </div>
+        <p class="why">AUC 0.731 — modest, and the list is what matters. Four of the top nine are the
+          JAK family and IL-6: the mechanisms of tofacitinib, baricitinib, upadacitinib and
+          tocilizumab. <strong>JAK2 at #1 and JAK3 at #7 are novel.</strong> A rheumatologist
+          recognises this list immediately.</p>
+      </div>
+
+      <div class="gene-row">
+        <span class="who">Psoriatic arthritis</span>
+        <div class="hits">
+          <span class="hit novel">IL23A <sup>1</sup></span><span class="hit">IL23R <sup>5</sup></span>
+          <span class="hit">IL12B <sup>21</sup></span><span class="hit novel">TNF <sup>35</sup></span>
+        </div>
+        <p class="why">AUC 0.689 · the IL-23 axis at the very top, IL23A novel at #1 — guselkumab,
+          risankizumab, ustekinumab. Report honestly that IL17A sits at #2838, a real miss.</p>
+      </div>
+    </div>
+
+    <h3 style="margin-top:1rem">Cardiovascular, renal and metabolic</h3>
+    <div class="genes">
+      <div class="gene-row">
+        <span class="who">Dilated cardiomyopathy</span>
+        <div class="hits">
+          <span class="hit">TTN <sup>1</sup></span><span class="hit">TNNT2 <sup>2</sup></span>
+          <span class="hit">MYBPC3 <sup>7</sup></span><span class="hit">MYH7 <sup>37</sup></span>
+        </div>
+        <p class="why">AUC 0.839, the best in CVRM · the sarcomere, in rank order. Every hit is
+          already annotated, so this demonstrates faithful reconstruction rather than discovery —
+          which is exactly the claim Act 1 makes.</p>
+      </div>
+
+      <div class="gene-row">
+        <span class="who">Familial hypercholesterolemia</span>
+        <div class="hits">
+          <span class="hit">APOE <sup>3</sup></span><span class="hit">APOB <sup>7</sup></span>
+          <span class="hit">LDLR <sup>11</sup></span><span class="hit novel">ANGPTL3 <sup>68</sup></span>
+        </div>
+        <p class="why">AUC 0.820 · the three defining FH genes inside the top 11, and ANGPTL3
+          (evinacumab) as novel. PCSK9 at #144 is the notable soft spot.</p>
+      </div>
+
+      <div class="gene-row">
+        <span class="who">Diabetes mellitus <span class="mono" style="font-size:12px;color:var(--ink-faint)">— carries the drug bar alone</span></span>
+        <div class="hits">
+          <span class="hit novel">8 approved targets in the top 20</span>
+          <span class="hit">104× lift</span><span class="hit">12 in top 50 · 62×</span>
+        </div>
+        <p class="why">AUC 0.678 — near the bottom on reconstruction, and <strong>the best drug bar
+          in the entire panel</strong>. It is the only served disease that demonstrates therapeutic
+          relevance rather than label recovery, which is why it survives a weak AUC.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────── what to drop ───────────────── -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Removals</span>
+      <h2>What comes out, and why</h2>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr><th>disease</th><th class="num">AUC</th><th>reason</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>non-small cell lung carcinoma</td><td class="num">0.934</td><td>89% duplicate of lung adenocarcinoma</td></tr>
+          <tr><td>lung cancer</td><td class="num">0.780</td><td>53 known, zero approved hits — weak <em>and</em> redundant</td></tr>
+          <tr><td>breast cancer (generic)</td><td class="num">0.707</td><td>worst in the breast family; decision #82 already corrected against it</td></tr>
+          <tr><td>breast carcinoma</td><td class="num">0.861</td><td>67% duplicate of HER2+; keep only if the parent-vs-subtype point is wanted</td></tr>
+          <tr><td>type 2 diabetes mellitus</td><td class="num bad">0.624</td><td>lowest AUC, 4.3× enrichment, no approved hits at any depth</td></tr>
+          <tr><td>chronic kidney disease</td><td class="num">0.738</td><td><span class="bad">2.9× enrichment</span>, 1 hit in the top 50 — barely above chance</td></tr>
+          <tr><td>obesity disorder</td><td class="num">0.707</td><td><span class="bad">0 of 16</span> validated targets in the top 20; GLP1R #526, GIPR #830 — see below</td></tr>
+          <tr><td>multiple sclerosis</td><td class="num">0.709</td><td><span class="bad">0 of 8</span> validated targets in the top 50; S1PR1 at #2383</td></tr>
+          <tr><td>systemic lupus erythematosus</td><td class="num">0.726</td><td>only 1 of 9 in the top 20</td></tr>
+          <tr><td>plasma cell myeloma · ALL</td><td class="num">0.928 · 0.915</td><td>surface-antigen blind spot (below)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      Two of these were already decided and never applied. The historical decision log, line 68
+      (2026-08-17) called for retiring type 2 diabetes and dropping CKD; both are still served.
+      Relatedly, <span class="mono">persona_enrichment.is_current</span> flags six diseases and they
+      are the pre-#68 panel — that column is stale and nothing should read it.
+    </p>
+  </section>
+
+  <!-- ───────────────── obesity ───────────────── -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">Asked and answered</span>
+      <h2>Obesity — why it comes out, in detail</h2>
+      <p class="lede">
+        Worth setting out properly, because obesity is the most topical metabolic area there is and
+        dropping it needs a better reason than a middling AUC.
+      </p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>validated target</th><th class="num">rank</th><th></th><th>what it is</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">MC4R</td><td class="num">38</td><td>known</td><td>setmelanotide — approved</td></tr>
+          <tr><td class="mono">LEP</td><td class="num">135</td><td>known</td><td>metreleptin</td></tr>
+          <tr><td class="mono">POMC</td><td class="num">148</td><td>known</td><td>monogenic obesity</td></tr>
+          <tr><td class="mono">GCGR</td><td class="num">463</td><td>novel</td><td>retatrutide, triple agonist</td></tr>
+          <tr><td class="mono bad">GLP1R</td><td class="num bad">526</td><td>known</td><td><strong>semaglutide, liraglutide</strong></td></tr>
+          <tr><td class="mono bad">GIPR</td><td class="num bad">830</td><td>known</td><td><strong>tirzepatide</strong></td></tr>
+          <tr><td class="mono">MRAP2</td><td class="num">1,592</td><td>known</td><td>monogenic obesity</td></tr>
+          <tr><td class="mono bad">FTO</td><td class="num bad">9,011</td><td>known</td><td>strongest common obesity locus</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      <strong>0 of 16 in the top 20; 1 in the top 50</strong>, out of a 13,126-gene pool. The two
+      molecules that define modern obesity medicine sit past #500.
+    </p>
+
+    <div class="note">
+      <span class="eyebrow">And the reason is visible in the list itself</span>
+      <p class="mono" style="color:var(--ink);font-size:0.95rem">
+        top 12 &nbsp;— BBS4, CTNNB1, BBS7, BBS5, BBS9, INS, BRAF, BBS2, BBIP1, BBS1, FGFR1, GRM1
+      </p>
+      <p>
+        Seven of the top twelve, and nine of the top fifty, are Bardet-Biedl / BBSome genes — a
+        rare ciliopathy in which obesity is one feature alongside retinal dystrophy, polydactyly
+        and renal anomalies. Neither diabetes term has a single BBS gene in its top 50, so this is
+        specific to obesity, not a general artefact.
+      </p>
+      <p>
+        The BBSome is a tightly interconnected protein complex, which is exactly what
+        PPI-topology features reward. It is not <em>wrong</em> — setmelanotide is in fact approved
+        for BBS-related obesity — but a scientist assessing an obesity programme would see a rare
+        ciliopathy complex where they expect incretin biology. This is the module bias the project
+        already documents, in its most legible form, and it is the honest reason obesity comes out.
+      </p>
+    </div>
+  </section>
+
+  <!-- ───────────────── limitation ───────────────── -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">A limitation worth volunteering</span>
+      <h2>The model finds intracellular drivers, not surface antigens</h2>
+    </div>
+
+    <div class="note">
+      <span class="eyebrow">Measured, median rank within the disease's own pool</span>
+      <p class="mono" style="color:var(--ink);font-size:0.95rem">
+        plasma cell myeloma &nbsp;— surface antigens <strong>5,105</strong> &nbsp;·&nbsp; intracellular drivers <strong>24</strong><br>
+        acute lymphoblastic leukemia &nbsp;— surface antigens <strong>3,624</strong> &nbsp;·&nbsp; intracellular drivers <strong>13</strong>
+      </p>
+      <p>
+        Myeloma's three transformative immunotherapy targets are all buried: CD38 at #5105,
+        BCMA at #5656, SLAMF7 at #6672. In ALL, CD19 sits at #823. Meanwhile TP53, KRAS and NRAS
+        land in the top 20.
+      </p>
+      <p>
+        This is coherent rather than random: cell-surface antigens are not enriched in the
+        protein-interaction and pathway topology the features are built from, whereas signalling
+        hubs are. It is a genuine boundary of the method, it explains why haematology is excluded,
+        and it is better said first than discovered by the audience.
+      </p>
+    </div>
+  </section>
+
+  <!-- ───────────────── the ask ───────────────── -->
+  <section>
+    <div class="sec-head">
+      <span class="eyebrow">To confirm</span>
+      <h2>What we need decided</h2>
+    </div>
+    <ul>
+      <li><strong>Act 3 — two families or three?</strong> Breast and uterine are recommended.
+        Stomach is ready if a third adds value.</li>
+      <li><strong>Act 4 — 11 diseases across three areas</strong>, replacing the current 13.
+        Six oncology, two autoimmune, three CVRM.</li>
+      <li><strong>Keep <span class="mono">breast carcinoma</span>?</strong> It is a 67% duplicate
+        of HER2+, but the parent-versus-subtype gap is the evidence behind decision #82. A
+        narrative call, not a numbers one.</li>
+      <li><strong>Uterine and the two autoimmune terms are not built.</strong> They need the
+        persona filter repointed and the ranking zone rebuilt before they can appear in the app.</li>
+      <li><strong>Extend the drug benchmark to the subtypes.</strong> Five breast subtypes and
+        lung adenocarcinoma have no approved-target data at all, so six of seven oncology picks
+        rest on reconstruction alone.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p>
+      Sources: family_panel · persona_enrichment · novel_discovery_eval · dashboard_candidates ·
+      scored_champion (3,958,921 rows scanned twice for the non-panel candidates).
+      Usability floor n_pos ≥ 50 — below it an AUC interval spans half the range.
+      Overlap is Jaccard on each subtype's top 50. Ranks are within each disease's own candidate
+      pool. Nothing in the flow, the app or the docs was changed to produce this.
+    </p>
+  </footer>
+
+</div>

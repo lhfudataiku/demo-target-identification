@@ -1,0 +1,11 @@
+# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
+# this file is a copy for review and grep. The live payload is in the DSS recipe.
+# recipe: compute_drug_classified (shaker)
+# inputs: drug_joined
+# outputs: drug_classified
+
+expression: if(!isBlank(ot_class_l1), "OT target class", if(!isBlank(ot_subcell_membrane), "OT subcellular", if(localization_class != "intracellular_or_unannotated", "GO cellular component", "none")))
+expression: if(druggability_evidence == "OT target class", 0, if(druggability_evidence == "OT subcellular", 1, if(druggability_evidence == "GO cellular component", 2, 3)))
+expression: if(isBlank(ot_ab_tractable), 0, ot_ab_tractable)
+expression: if(isBlank(ot_sm_buckets), 0, if(contains(ot_sm_buckets, "Approved Drug"), 1, 0))
+expression: if(isBlank(ot_sm_tractable), 0, ot_sm_tractable)

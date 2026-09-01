@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:target-id:build-governance:accepted-baseline:v1",
+  "title": "Accepted semantic build baseline",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "baseline_id", "accepted_at", "accepted_by", "acceptance_reason", "project_key", "targets", "source_event_id", "fingerprints", "metrics", "claim_values", "required_assertions"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "baseline_id": {"type": "string", "minLength": 1},
+    "accepted_at": {"type": "string", "format": "date-time"},
+    "accepted_by": {"type": "string", "minLength": 1},
+    "acceptance_reason": {"type": "string", "minLength": 1},
+    "project_key": {"type": "string", "minLength": 1},
+    "targets": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "source_event_id": {"type": "string", "minLength": 1},
+    "fingerprints": {"$ref": "machine-event.schema.json#/$defs/fingerprintGroups"},
+    "metrics": {"type": "object", "minProperties": 1, "additionalProperties": {"type": ["string", "number", "integer", "boolean", "null"]}},
+    "claim_values": {"$ref": "machine-event.schema.json#/$defs/claimValues"},
+    "required_assertions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}

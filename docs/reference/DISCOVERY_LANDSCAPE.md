@@ -1,5 +1,10 @@
 # Discovery Landscape — from target identification to candidate nomination
 
+> **Lifecycle:** Canonical · **Audience:** platform-side teams scoping the wider discovery landscape ·
+> **Authority:** the explanatory framework and its cited sources · **Update when:** the framework or a
+> load-bearing source is revised · **Generated dependencies:** none · **Excludes:** project build plans,
+> implementation contracts and unverified client-facing claims.
+
 > **What this is.** A scoping companion for the *molecular screening* AI solution framework
 > (the Story 1 / Story 2 personas), written to place our existing POC
 > (`PROJECT_CONTEXT.md`, `TARGET_PRIORITIZER.md`) on the wider drug-discovery value chain.
@@ -364,7 +369,8 @@ broad expression scores **+1**. Confirm against the live UI colouring before rep
 
 > **Note for our roadmap:** the four bolded rows above — DepMap essentiality, gnomAD LOEUF,
 > GTEx/Tabula Sapiens specificity, COSMIC driver status — are **exactly** the deferred
-> value-prop (b) in `TARGET_PRIORITIZER.md` §11 (efficacy × safety traffic light). Resuming it
+> value-prop (b) in [PROJECT_CONTEXT.md](../overview/PROJECT_CONTEXT.md) §4.6 (efficacy × safety
+> traffic light). Resuming it
 > puts us *on* the industry reference rather than near it. All four sources are free.
 
 ### The honest limits — and a trap worth naming
@@ -376,8 +382,9 @@ discovery-first prioritiser they must be excluded from the feature set, or used 
 evaluation labels.
 
 Our POC already solves the structurally identical problem with edge masking
-(`TARGET_PRIORITIZER.md` §6: when scoring a known gene–disease pair, that edge is removed from
-the graph and the gene dropped from the disease's seed set). **Make this a talking point** — it
+([TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md) §3.1: when scoring a known
+gene–disease pair, that edge is removed from the graph and the gene dropped from the disease's seed
+set). **Make this a talking point** — it
 is the thing that separates an honest demo from a circular one, and most demos in this space
 are circular.
 

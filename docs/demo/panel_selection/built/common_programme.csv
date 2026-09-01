@@ -1,0 +1,551 @@
+act3_family,subtype,gene,rank_in_subtype,n_leaves_in_family,n_leaves_sharing,scope
+breast,HER2 positive breast carcinoma,TP53,1,4,4,common
+breast,HER2 positive breast carcinoma,EP300,2,4,4,common
+breast,HER2 positive breast carcinoma,PIK3R1,3,4,3,partial
+breast,HER2 positive breast carcinoma,CREBBP,4,4,2,partial
+breast,HER2 positive breast carcinoma,PIK3CA,5,4,3,partial
+breast,HER2 positive breast carcinoma,CTNNB1,6,4,4,common
+breast,HER2 positive breast carcinoma,JAK2,7,4,3,partial
+breast,HER2 positive breast carcinoma,PTPN11,8,4,3,partial
+breast,HER2 positive breast carcinoma,HRAS,9,4,3,partial
+breast,HER2 positive breast carcinoma,KRAS,10,4,3,partial
+breast,HER2 positive breast carcinoma,EGFR,11,4,2,partial
+breast,HER2 positive breast carcinoma,BRCA1,12,4,2,partial
+breast,HER2 positive breast carcinoma,SMAD3,13,4,3,partial
+breast,HER2 positive breast carcinoma,ERBB2,14,4,2,partial
+breast,HER2 positive breast carcinoma,MAPK1,15,4,2,partial
+breast,HER2 positive breast carcinoma,STAT3,16,4,3,partial
+breast,HER2 positive breast carcinoma,ERBB3,17,4,3,partial
+breast,HER2 positive breast carcinoma,ATM,18,4,4,common
+breast,HER2 positive breast carcinoma,RUNX1,19,4,3,partial
+breast,HER2 positive breast carcinoma,SRC,20,4,1,specific
+breast,HER2 positive breast carcinoma,NRAS,21,4,2,partial
+breast,HER2 positive breast carcinoma,ERBB4,22,4,3,partial
+breast,HER2 positive breast carcinoma,SMARCA4,23,4,2,partial
+breast,HER2 positive breast carcinoma,SMAD4,24,4,3,partial
+breast,HER2 positive breast carcinoma,FGFR1,25,4,4,common
+breast,HER2 positive breast carcinoma,SMAD2,26,4,1,specific
+breast,HER2 positive breast carcinoma,NTRK1,27,4,2,partial
+breast,HER2 positive breast carcinoma,JAK1,28,4,1,specific
+breast,HER2 positive breast carcinoma,AKT1,29,4,2,partial
+breast,HER2 positive breast carcinoma,BRAF,30,4,2,partial
+breast,HER2 positive breast carcinoma,ESR1,31,4,3,partial
+breast,HER2 positive breast carcinoma,SOS1,32,4,2,partial
+breast,HER2 positive breast carcinoma,KDR,33,4,2,partial
+breast,HER2 positive breast carcinoma,KIT,34,4,2,partial
+breast,HER2 positive breast carcinoma,CDK4,35,4,2,partial
+breast,HER2 positive breast carcinoma,CBL,36,4,1,specific
+breast,HER2 positive breast carcinoma,MSH2,37,4,4,common
+breast,HER2 positive breast carcinoma,BLM,38,4,3,partial
+breast,HER2 positive breast carcinoma,BRCA2,39,4,4,common
+breast,HER2 positive breast carcinoma,STAT5B,40,4,2,partial
+breast,HER2 positive breast carcinoma,YAP1,41,4,2,partial
+breast,HER2 positive breast carcinoma,GATA2,42,4,1,specific
+breast,HER2 positive breast carcinoma,ARID1B,43,4,1,specific
+breast,HER2 positive breast carcinoma,CCND1,44,4,1,specific
+breast,HER2 positive breast carcinoma,ARID1A,45,4,2,partial
+breast,HER2 positive breast carcinoma,FGFR2,46,4,4,common
+breast,HER2 positive breast carcinoma,ABL1,47,4,1,specific
+breast,HER2 positive breast carcinoma,LEF1,48,4,1,specific
+breast,HER2 positive breast carcinoma,RB1,49,4,2,partial
+breast,HER2 positive breast carcinoma,MYC,50,4,2,partial
+breast,luminal A breast carcinoma,EP300,1,4,4,common
+breast,luminal A breast carcinoma,ATM,2,4,4,common
+breast,luminal A breast carcinoma,MSH2,3,4,4,common
+breast,luminal A breast carcinoma,PIK3R1,4,4,3,partial
+breast,luminal A breast carcinoma,WRN,5,4,1,specific
+breast,luminal A breast carcinoma,ESR1,6,4,3,partial
+breast,luminal A breast carcinoma,TP53,7,4,4,common
+breast,luminal A breast carcinoma,FGFR1,8,4,4,common
+breast,luminal A breast carcinoma,STAT3,9,4,3,partial
+breast,luminal A breast carcinoma,PIK3CA,10,4,3,partial
+breast,luminal A breast carcinoma,FGFR2,11,4,4,common
+breast,luminal A breast carcinoma,BLM,12,4,3,partial
+breast,luminal A breast carcinoma,ERBB4,13,4,3,partial
+breast,luminal A breast carcinoma,SMAD3,14,4,3,partial
+breast,luminal A breast carcinoma,CTNNB1,15,4,4,common
+breast,luminal A breast carcinoma,MET,16,4,2,partial
+breast,luminal A breast carcinoma,RAD51,17,4,3,partial
+breast,luminal A breast carcinoma,RAD50,18,4,2,partial
+breast,luminal A breast carcinoma,AKT1,19,4,2,partial
+breast,luminal A breast carcinoma,GAB2,20,4,1,specific
+breast,luminal A breast carcinoma,PTPN11,21,4,3,partial
+breast,luminal A breast carcinoma,NBN,22,4,2,partial
+breast,luminal A breast carcinoma,KMT2D,23,4,1,specific
+breast,luminal A breast carcinoma,THRA,24,4,1,specific
+breast,luminal A breast carcinoma,PIP4K2B,25,4,1,specific
+breast,luminal A breast carcinoma,BARD1,26,4,3,partial
+breast,luminal A breast carcinoma,SMAD4,27,4,3,partial
+breast,luminal A breast carcinoma,HRAS,28,4,3,partial
+breast,luminal A breast carcinoma,ERBB3,29,4,3,partial
+breast,luminal A breast carcinoma,NCOR2,30,4,1,specific
+breast,luminal A breast carcinoma,JAK2,31,4,3,partial
+breast,luminal A breast carcinoma,NANOG,32,4,1,specific
+breast,luminal A breast carcinoma,BRCA2,33,4,4,common
+breast,luminal A breast carcinoma,MRE11,34,4,1,specific
+breast,luminal A breast carcinoma,IRS2,35,4,1,specific
+breast,luminal A breast carcinoma,HCN2,36,4,1,specific
+breast,luminal A breast carcinoma,KRAS,37,4,3,partial
+breast,luminal A breast carcinoma,PPARG,38,4,1,specific
+breast,luminal A breast carcinoma,THRB,39,4,1,specific
+breast,luminal A breast carcinoma,NOTCH1,40,4,1,specific
+breast,luminal A breast carcinoma,HNF4A,41,4,1,specific
+breast,luminal A breast carcinoma,STAT5A,42,4,1,specific
+breast,luminal A breast carcinoma,YAP1,43,4,2,partial
+breast,luminal A breast carcinoma,CREBBP,44,4,2,partial
+breast,luminal A breast carcinoma,BRIP1,45,4,2,partial
+breast,luminal A breast carcinoma,HCN4,46,4,1,specific
+breast,luminal A breast carcinoma,CFLAR,47,4,1,specific
+breast,luminal A breast carcinoma,FOXO1,48,4,1,specific
+breast,luminal A breast carcinoma,RUNX1,49,4,3,partial
+breast,luminal A breast carcinoma,POLD1,50,4,1,specific
+breast,luminal B breast carcinoma,EP300,1,4,4,common
+breast,luminal B breast carcinoma,MSH6,2,4,1,specific
+breast,luminal B breast carcinoma,PIK3R1,3,4,3,partial
+breast,luminal B breast carcinoma,PIK3CA,4,4,3,partial
+breast,luminal B breast carcinoma,BRCA1,5,4,2,partial
+breast,luminal B breast carcinoma,TP53,6,4,4,common
+breast,luminal B breast carcinoma,ERBB3,7,4,3,partial
+breast,luminal B breast carcinoma,KRAS,8,4,3,partial
+breast,luminal B breast carcinoma,EGFR,9,4,2,partial
+breast,luminal B breast carcinoma,CTNNB1,10,4,4,common
+breast,luminal B breast carcinoma,PTPN11,11,4,3,partial
+breast,luminal B breast carcinoma,ERBB4,12,4,3,partial
+breast,luminal B breast carcinoma,JAK2,13,4,3,partial
+breast,luminal B breast carcinoma,ERBB2,14,4,2,partial
+breast,luminal B breast carcinoma,FGFR1,15,4,4,common
+breast,luminal B breast carcinoma,NRG1,16,4,1,specific
+breast,luminal B breast carcinoma,ATM,17,4,4,common
+breast,luminal B breast carcinoma,BRCA2,18,4,4,common
+breast,luminal B breast carcinoma,HRAS,19,4,3,partial
+breast,luminal B breast carcinoma,NTRK1,20,4,2,partial
+breast,luminal B breast carcinoma,RAD51,21,4,3,partial
+breast,luminal B breast carcinoma,RUNX1,22,4,3,partial
+breast,luminal B breast carcinoma,SMARCA2,23,4,1,specific
+breast,luminal B breast carcinoma,PMS2,24,4,1,specific
+breast,luminal B breast carcinoma,BLM,25,4,3,partial
+breast,luminal B breast carcinoma,STAT3,26,4,3,partial
+breast,luminal B breast carcinoma,SOS1,27,4,2,partial
+breast,luminal B breast carcinoma,SMARCB1,28,4,1,specific
+breast,luminal B breast carcinoma,NRAS,29,4,2,partial
+breast,luminal B breast carcinoma,ARID1A,30,4,2,partial
+breast,luminal B breast carcinoma,SMARCD2,31,4,1,specific
+breast,luminal B breast carcinoma,BRAF,32,4,2,partial
+breast,luminal B breast carcinoma,BARD1,33,4,3,partial
+breast,luminal B breast carcinoma,FGFR2,34,4,4,common
+breast,luminal B breast carcinoma,KIT,35,4,2,partial
+breast,luminal B breast carcinoma,SMARCD3,36,4,1,specific
+breast,luminal B breast carcinoma,MAPK1,37,4,2,partial
+breast,luminal B breast carcinoma,ATR,38,4,2,partial
+breast,luminal B breast carcinoma,CHEK2,39,4,2,partial
+breast,luminal B breast carcinoma,KDR,40,4,2,partial
+breast,luminal B breast carcinoma,PBRM1,41,4,1,specific
+breast,luminal B breast carcinoma,RAF1,42,4,1,specific
+breast,luminal B breast carcinoma,MET,43,4,2,partial
+breast,luminal B breast carcinoma,SMARCC2,44,4,1,specific
+breast,luminal B breast carcinoma,FGFR3,45,4,1,specific
+breast,luminal B breast carcinoma,SMARCA4,46,4,2,partial
+breast,luminal B breast carcinoma,MSH2,47,4,4,common
+breast,luminal B breast carcinoma,STAT5B,48,4,2,partial
+breast,luminal B breast carcinoma,PDGFRB,49,4,1,specific
+breast,luminal B breast carcinoma,H3-3A,50,4,1,specific
+breast,triple-negative breast carcinoma,RAD50,1,4,2,partial
+breast,triple-negative breast carcinoma,ATM,2,4,4,common
+breast,triple-negative breast carcinoma,TP53,3,4,4,common
+breast,triple-negative breast carcinoma,BRCA2,4,4,4,common
+breast,triple-negative breast carcinoma,NBN,5,4,2,partial
+breast,triple-negative breast carcinoma,BRIP1,6,4,2,partial
+breast,triple-negative breast carcinoma,SMAD4,7,4,3,partial
+breast,triple-negative breast carcinoma,SMAD3,8,4,3,partial
+breast,triple-negative breast carcinoma,BARD1,9,4,3,partial
+breast,triple-negative breast carcinoma,INHA,10,4,1,specific
+breast,triple-negative breast carcinoma,ATR,11,4,2,partial
+breast,triple-negative breast carcinoma,MYC,12,4,2,partial
+breast,triple-negative breast carcinoma,EP300,13,4,4,common
+breast,triple-negative breast carcinoma,CHEK2,14,4,2,partial
+breast,triple-negative breast carcinoma,RPA1,15,4,1,specific
+breast,triple-negative breast carcinoma,MDC1,16,4,1,specific
+breast,triple-negative breast carcinoma,ESR1,17,4,3,partial
+breast,triple-negative breast carcinoma,MDM2,18,4,1,specific
+breast,triple-negative breast carcinoma,CDK6,19,4,1,specific
+breast,triple-negative breast carcinoma,CTNNB1,20,4,4,common
+breast,triple-negative breast carcinoma,MSH2,21,4,4,common
+breast,triple-negative breast carcinoma,XRCC5,22,4,1,specific
+breast,triple-negative breast carcinoma,RBBP8,23,4,1,specific
+breast,triple-negative breast carcinoma,CDKN2B,24,4,1,specific
+breast,triple-negative breast carcinoma,ADHFE1,25,4,1,specific
+breast,triple-negative breast carcinoma,ERCC6,26,4,1,specific
+breast,triple-negative breast carcinoma,FGFR2,27,4,4,common
+breast,triple-negative breast carcinoma,SLITRK4,28,4,1,specific
+breast,triple-negative breast carcinoma,MED10,29,4,1,specific
+breast,triple-negative breast carcinoma,FGFR1,30,4,4,common
+breast,triple-negative breast carcinoma,FGF8,31,4,1,specific
+breast,triple-negative breast carcinoma,CHEK1,32,4,1,specific
+breast,triple-negative breast carcinoma,AURKA,33,4,1,specific
+breast,triple-negative breast carcinoma,GART,34,4,1,specific
+breast,triple-negative breast carcinoma,APC,35,4,1,specific
+breast,triple-negative breast carcinoma,SPO11,36,4,1,specific
+breast,triple-negative breast carcinoma,RAD51C,37,4,1,specific
+breast,triple-negative breast carcinoma,CTBP1,38,4,1,specific
+breast,triple-negative breast carcinoma,PALB2,39,4,1,specific
+breast,triple-negative breast carcinoma,NR2E1,40,4,1,specific
+breast,triple-negative breast carcinoma,ESRRB,41,4,1,specific
+breast,triple-negative breast carcinoma,TOPBP1,42,4,1,specific
+breast,triple-negative breast carcinoma,CDK4,43,4,2,partial
+breast,triple-negative breast carcinoma,GRHL3,44,4,1,specific
+breast,triple-negative breast carcinoma,NR2F1,45,4,1,specific
+breast,triple-negative breast carcinoma,RAD9A,46,4,1,specific
+breast,triple-negative breast carcinoma,RMI2,47,4,1,specific
+breast,triple-negative breast carcinoma,MRTFB,48,4,1,specific
+breast,triple-negative breast carcinoma,RAD51,49,4,3,partial
+breast,triple-negative breast carcinoma,RB1,50,4,2,partial
+stomach,gastric adenocarcinoma,TP53,1,3,3,common
+stomach,gastric adenocarcinoma,EP300,2,3,3,common
+stomach,gastric adenocarcinoma,PIK3R1,3,3,2,partial
+stomach,gastric adenocarcinoma,PIK3CA,4,3,2,partial
+stomach,gastric adenocarcinoma,CREBBP,5,3,2,partial
+stomach,gastric adenocarcinoma,PTPN11,6,3,2,partial
+stomach,gastric adenocarcinoma,KRAS,7,3,3,common
+stomach,gastric adenocarcinoma,CTNNB1,8,3,2,partial
+stomach,gastric adenocarcinoma,JAK2,9,3,3,common
+stomach,gastric adenocarcinoma,SMAD3,10,3,3,common
+stomach,gastric adenocarcinoma,BRCA1,11,3,2,partial
+stomach,gastric adenocarcinoma,EGFR,12,3,2,partial
+stomach,gastric adenocarcinoma,ERBB2,13,3,2,partial
+stomach,gastric adenocarcinoma,HRAS,14,3,3,common
+stomach,gastric adenocarcinoma,STAT3,15,3,2,partial
+stomach,gastric adenocarcinoma,MAPK1,16,3,2,partial
+stomach,gastric adenocarcinoma,ERBB3,17,3,3,common
+stomach,gastric adenocarcinoma,BLM,18,3,2,partial
+stomach,gastric adenocarcinoma,NRAS,19,3,3,common
+stomach,gastric adenocarcinoma,MYC,20,3,3,common
+stomach,gastric adenocarcinoma,SMARCA4,21,3,3,common
+stomach,gastric adenocarcinoma,ERBB4,22,3,2,partial
+stomach,gastric adenocarcinoma,ESR1,23,3,3,common
+stomach,gastric adenocarcinoma,ATM,24,3,2,partial
+stomach,gastric adenocarcinoma,SMAD4,25,3,3,common
+stomach,gastric adenocarcinoma,BRAF,26,3,2,partial
+stomach,gastric adenocarcinoma,SMAD2,27,3,2,partial
+stomach,gastric adenocarcinoma,AKT1,28,3,1,specific
+stomach,gastric adenocarcinoma,KIT,29,3,2,partial
+stomach,gastric adenocarcinoma,SOS1,30,3,1,specific
+stomach,gastric adenocarcinoma,JAK1,31,3,2,partial
+stomach,gastric adenocarcinoma,FGFR2,32,3,3,common
+stomach,gastric adenocarcinoma,STAT5B,33,3,3,common
+stomach,gastric adenocarcinoma,FGFR1,34,3,3,common
+stomach,gastric adenocarcinoma,ABL1,35,3,3,common
+stomach,gastric adenocarcinoma,SRC,36,3,2,partial
+stomach,gastric adenocarcinoma,PDGFRB,37,3,2,partial
+stomach,gastric adenocarcinoma,CDK4,38,3,1,specific
+stomach,gastric adenocarcinoma,GATA2,39,3,1,specific
+stomach,gastric adenocarcinoma,YAP1,40,3,1,specific
+stomach,gastric adenocarcinoma,KDR,41,3,2,partial
+stomach,gastric adenocarcinoma,NTRK1,42,3,2,partial
+stomach,gastric adenocarcinoma,MSH2,43,3,2,partial
+stomach,gastric adenocarcinoma,RUNX1,44,3,3,common
+stomach,gastric adenocarcinoma,PDGFRA,45,3,1,specific
+stomach,gastric adenocarcinoma,RB1,46,3,1,specific
+stomach,gastric adenocarcinoma,CBL,47,3,2,partial
+stomach,gastric adenocarcinoma,PIK3CB,48,3,2,partial
+stomach,gastric adenocarcinoma,BRCA2,49,3,2,partial
+stomach,gastric adenocarcinoma,CCND1,50,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,BRCA1,1,3,2,partial
+stomach,gastric small cell neuroendocrine carcinoma,HRAS,2,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,BLM,3,3,2,partial
+stomach,gastric small cell neuroendocrine carcinoma,ATM,4,3,2,partial
+stomach,gastric small cell neuroendocrine carcinoma,EP300,5,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,TP53,6,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,KRAS,7,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,BARD1,8,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,RAD51,9,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,BRCA2,10,3,2,partial
+stomach,gastric small cell neuroendocrine carcinoma,RAD50,11,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,ERBB3,12,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,MRE11,13,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,TOPBP1,14,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,NRAS,15,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,WRN,16,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,BRAF,17,3,2,partial
+stomach,gastric small cell neuroendocrine carcinoma,CHEK2,18,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,BRIP1,19,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,RPA1,20,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,ATR,21,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,ESR1,22,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,NBN,23,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,FGFR1,24,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,SMAD3,25,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,STAT5B,26,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,MAPK1,27,3,2,partial
+stomach,gastric small cell neuroendocrine carcinoma,JAK2,28,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,PIK3CA,29,3,2,partial
+stomach,gastric small cell neuroendocrine carcinoma,MAPK3,30,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,MYC,31,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,ARID1A,32,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,SMAD4,33,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,STAT3,34,3,2,partial
+stomach,gastric small cell neuroendocrine carcinoma,SMARCA4,35,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,FGFR2,36,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,RUNX1,37,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,BUB1,38,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,RMI2,39,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,BRCC3,40,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,BABAM2,41,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,NCOA2,42,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,PDGFRB,43,3,2,partial
+stomach,gastric small cell neuroendocrine carcinoma,ABL1,44,3,3,common
+stomach,gastric small cell neuroendocrine carcinoma,APOBEC3A,45,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,MET,46,3,2,partial
+stomach,gastric small cell neuroendocrine carcinoma,RAD51C,47,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,PALB2,48,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,LRIG1,49,3,1,specific
+stomach,gastric small cell neuroendocrine carcinoma,TERF1,50,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,TP53,1,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,SMAD3,2,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,CTNNB1,3,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,ERBB2,4,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,PIK3R1,5,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,EGFR,6,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,ERBB4,7,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,FGFR1,8,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,EZH2,9,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,EP300,10,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,PTPN11,11,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,TP63,12,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,KMT2D,13,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,HRAS,14,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,NTRK1,15,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,JAK1,16,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,CREBBP,17,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,KRAS,18,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,MET,19,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,NRAS,20,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,MSH2,21,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,JAK2,22,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,POLD1,23,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,ERBB3,24,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,KIT,25,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,HIF1A,26,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,TGFBR2,27,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,SMAD4,28,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,STAT5B,29,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,CBL,30,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,FGFR2,31,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,SMARCA4,32,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,FGFR3,33,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,IL6R,34,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,ESR1,35,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,MYC,36,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,CEBPB,37,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,KDR,38,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,PIK3CB,39,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,LEF1,40,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,SMAD2,41,3,2,partial
+stomach,signet ring cell gastric adenocarcinoma,FLT3,42,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,TGFBR1,43,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,APC,44,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,HIPK2,45,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,ABL1,46,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,SYK,47,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,RUNX1,48,3,3,common
+stomach,signet ring cell gastric adenocarcinoma,MTOR,49,3,1,specific
+stomach,signet ring cell gastric adenocarcinoma,SRC,50,3,2,partial
+uterine,endometrial clear cell adenocarcinoma,PIK3CA,1,4,4,common
+uterine,endometrial clear cell adenocarcinoma,KRAS,2,4,4,common
+uterine,endometrial clear cell adenocarcinoma,TP53,3,4,4,common
+uterine,endometrial clear cell adenocarcinoma,HRAS,4,4,4,common
+uterine,endometrial clear cell adenocarcinoma,EP300,5,4,4,common
+uterine,endometrial clear cell adenocarcinoma,ATM,6,4,4,common
+uterine,endometrial clear cell adenocarcinoma,MSH6,7,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,CREBBP,8,4,4,common
+uterine,endometrial clear cell adenocarcinoma,CTNNB1,9,4,4,common
+uterine,endometrial clear cell adenocarcinoma,MSH2,10,4,3,partial
+uterine,endometrial clear cell adenocarcinoma,ERBB4,11,4,4,common
+uterine,endometrial clear cell adenocarcinoma,PIK3R1,12,4,4,common
+uterine,endometrial clear cell adenocarcinoma,ERBB3,13,4,4,common
+uterine,endometrial clear cell adenocarcinoma,SMAD3,14,4,4,common
+uterine,endometrial clear cell adenocarcinoma,EGFR,15,4,4,common
+uterine,endometrial clear cell adenocarcinoma,STAT3,16,4,3,partial
+uterine,endometrial clear cell adenocarcinoma,FGFR2,17,4,4,common
+uterine,endometrial clear cell adenocarcinoma,FGFR1,18,4,4,common
+uterine,endometrial clear cell adenocarcinoma,KDR,19,4,4,common
+uterine,endometrial clear cell adenocarcinoma,JAK2,20,4,4,common
+uterine,endometrial clear cell adenocarcinoma,SMAD4,21,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,ERBB2,22,4,4,common
+uterine,endometrial clear cell adenocarcinoma,PDGFRA,23,4,3,partial
+uterine,endometrial clear cell adenocarcinoma,CHEK2,24,4,3,partial
+uterine,endometrial clear cell adenocarcinoma,BRAF,25,4,4,common
+uterine,endometrial clear cell adenocarcinoma,LEF1,26,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,RUNX1,27,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,KIT,28,4,4,common
+uterine,endometrial clear cell adenocarcinoma,SMAD2,29,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,SMARCA4,30,4,3,partial
+uterine,endometrial clear cell adenocarcinoma,WRN,31,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,SOS1,32,4,4,common
+uterine,endometrial clear cell adenocarcinoma,MTOR,33,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,PIK3CG,34,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,ARID1A,35,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,BRCA2,36,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,PMS2,37,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,AKT2,38,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,BRCA1,39,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,MAPK1,40,4,4,common
+uterine,endometrial clear cell adenocarcinoma,AKT1,41,4,4,common
+uterine,endometrial clear cell adenocarcinoma,POLD1,42,4,1,specific
+uterine,endometrial clear cell adenocarcinoma,SMARCD3,43,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,PTPN11,44,4,4,common
+uterine,endometrial clear cell adenocarcinoma,FOXO1,45,4,1,specific
+uterine,endometrial clear cell adenocarcinoma,SMARCB1,46,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,MYC,47,4,1,specific
+uterine,endometrial clear cell adenocarcinoma,CCND1,48,4,2,partial
+uterine,endometrial clear cell adenocarcinoma,NTRK1,49,4,3,partial
+uterine,endometrial clear cell adenocarcinoma,TGFBR1,50,4,1,specific
+uterine,endometrial serous adenocarcinoma,PIK3CA,1,4,4,common
+uterine,endometrial serous adenocarcinoma,KRAS,2,4,4,common
+uterine,endometrial serous adenocarcinoma,HRAS,3,4,4,common
+uterine,endometrial serous adenocarcinoma,NRAS,4,4,3,partial
+uterine,endometrial serous adenocarcinoma,PIK3R1,5,4,4,common
+uterine,endometrial serous adenocarcinoma,ERBB3,6,4,4,common
+uterine,endometrial serous adenocarcinoma,ATM,7,4,4,common
+uterine,endometrial serous adenocarcinoma,TP53,8,4,4,common
+uterine,endometrial serous adenocarcinoma,ERBB4,9,4,4,common
+uterine,endometrial serous adenocarcinoma,CREBBP,10,4,4,common
+uterine,endometrial serous adenocarcinoma,FGFR1,11,4,4,common
+uterine,endometrial serous adenocarcinoma,EP300,12,4,4,common
+uterine,endometrial serous adenocarcinoma,CTNNB1,13,4,4,common
+uterine,endometrial serous adenocarcinoma,EGFR,14,4,4,common
+uterine,endometrial serous adenocarcinoma,PTPN11,15,4,4,common
+uterine,endometrial serous adenocarcinoma,SOS1,16,4,4,common
+uterine,endometrial serous adenocarcinoma,MET,17,4,3,partial
+uterine,endometrial serous adenocarcinoma,ERBB2,18,4,4,common
+uterine,endometrial serous adenocarcinoma,PDGFRB,19,4,3,partial
+uterine,endometrial serous adenocarcinoma,KDR,20,4,4,common
+uterine,endometrial serous adenocarcinoma,BLM,21,4,2,partial
+uterine,endometrial serous adenocarcinoma,IGF1R,22,4,1,specific
+uterine,endometrial serous adenocarcinoma,JAK2,23,4,4,common
+uterine,endometrial serous adenocarcinoma,PIK3CG,24,4,2,partial
+uterine,endometrial serous adenocarcinoma,IRS1,25,4,1,specific
+uterine,endometrial serous adenocarcinoma,FGFR2,26,4,4,common
+uterine,endometrial serous adenocarcinoma,CHEK2,27,4,3,partial
+uterine,endometrial serous adenocarcinoma,BRAF,28,4,4,common
+uterine,endometrial serous adenocarcinoma,CDKN2A,29,4,2,partial
+uterine,endometrial serous adenocarcinoma,TERT,30,4,1,specific
+uterine,endometrial serous adenocarcinoma,PIK3CB,31,4,2,partial
+uterine,endometrial serous adenocarcinoma,AKT2,32,4,2,partial
+uterine,endometrial serous adenocarcinoma,CBL,33,4,2,partial
+uterine,endometrial serous adenocarcinoma,MAPK1,34,4,4,common
+uterine,endometrial serous adenocarcinoma,PDGFRA,35,4,3,partial
+uterine,endometrial serous adenocarcinoma,IRS2,36,4,2,partial
+uterine,endometrial serous adenocarcinoma,RAF1,37,4,2,partial
+uterine,endometrial serous adenocarcinoma,AKT1,38,4,4,common
+uterine,endometrial serous adenocarcinoma,BRCA2,39,4,2,partial
+uterine,endometrial serous adenocarcinoma,MTOR,40,4,2,partial
+uterine,endometrial serous adenocarcinoma,FGFR3,41,4,2,partial
+uterine,endometrial serous adenocarcinoma,NTRK1,42,4,3,partial
+uterine,endometrial serous adenocarcinoma,YAP1,43,4,2,partial
+uterine,endometrial serous adenocarcinoma,KIT,44,4,4,common
+uterine,endometrial serous adenocarcinoma,PPARG,45,4,1,specific
+uterine,endometrial serous adenocarcinoma,SMAD3,46,4,4,common
+uterine,endometrial serous adenocarcinoma,WRN,47,4,2,partial
+uterine,endometrial serous adenocarcinoma,ATR,48,4,1,specific
+uterine,endometrial serous adenocarcinoma,MAP2K1,49,4,2,partial
+uterine,endometrial serous adenocarcinoma,BCL2,50,4,1,specific
+uterine,endometrium adenocarcinoma,KRAS,1,4,4,common
+uterine,endometrium adenocarcinoma,PIK3CA,2,4,4,common
+uterine,endometrium adenocarcinoma,HRAS,3,4,4,common
+uterine,endometrium adenocarcinoma,TP53,4,4,4,common
+uterine,endometrium adenocarcinoma,CREBBP,5,4,4,common
+uterine,endometrium adenocarcinoma,NRAS,6,4,3,partial
+uterine,endometrium adenocarcinoma,MSH6,7,4,2,partial
+uterine,endometrium adenocarcinoma,ERBB3,8,4,4,common
+uterine,endometrium adenocarcinoma,ERBB4,9,4,4,common
+uterine,endometrium adenocarcinoma,CTNNB1,10,4,4,common
+uterine,endometrium adenocarcinoma,EGFR,11,4,4,common
+uterine,endometrium adenocarcinoma,MSH2,12,4,3,partial
+uterine,endometrium adenocarcinoma,FGFR2,13,4,4,common
+uterine,endometrium adenocarcinoma,ATM,14,4,4,common
+uterine,endometrium adenocarcinoma,SMARCA4,15,4,3,partial
+uterine,endometrium adenocarcinoma,FGFR1,16,4,4,common
+uterine,endometrium adenocarcinoma,MAP2K1,17,4,2,partial
+uterine,endometrium adenocarcinoma,EP300,18,4,4,common
+uterine,endometrium adenocarcinoma,SOS1,19,4,4,common
+uterine,endometrium adenocarcinoma,JAK2,20,4,4,common
+uterine,endometrium adenocarcinoma,SMAD3,21,4,4,common
+uterine,endometrium adenocarcinoma,PDGFRB,22,4,3,partial
+uterine,endometrium adenocarcinoma,ARID1A,23,4,2,partial
+uterine,endometrium adenocarcinoma,KDR,24,4,4,common
+uterine,endometrium adenocarcinoma,PIK3R1,25,4,4,common
+uterine,endometrium adenocarcinoma,MAPK1,26,4,4,common
+uterine,endometrium adenocarcinoma,PMS2,27,4,2,partial
+uterine,endometrium adenocarcinoma,ERBB2,28,4,4,common
+uterine,endometrium adenocarcinoma,PIK3CB,29,4,2,partial
+uterine,endometrium adenocarcinoma,NRG1,30,4,1,specific
+uterine,endometrium adenocarcinoma,MET,31,4,3,partial
+uterine,endometrium adenocarcinoma,SMARCA2,32,4,1,specific
+uterine,endometrium adenocarcinoma,SMARCD2,33,4,1,specific
+uterine,endometrium adenocarcinoma,PDGFRA,34,4,3,partial
+uterine,endometrium adenocarcinoma,KMT2D,35,4,1,specific
+uterine,endometrium adenocarcinoma,BRAF,36,4,4,common
+uterine,endometrium adenocarcinoma,KIT,37,4,4,common
+uterine,endometrium adenocarcinoma,STAT3,38,4,3,partial
+uterine,endometrium adenocarcinoma,PTPN11,39,4,4,common
+uterine,endometrium adenocarcinoma,CDKN2A,40,4,2,partial
+uterine,endometrium adenocarcinoma,FGFR3,41,4,2,partial
+uterine,endometrium adenocarcinoma,AXIN1,42,4,1,specific
+uterine,endometrium adenocarcinoma,MAPK3,43,4,2,partial
+uterine,endometrium adenocarcinoma,ARID1B,44,4,1,specific
+uterine,endometrium adenocarcinoma,SMARCB1,45,4,2,partial
+uterine,endometrium adenocarcinoma,CHEK2,46,4,3,partial
+uterine,endometrium adenocarcinoma,ARID2,47,4,1,specific
+uterine,endometrium adenocarcinoma,AKT1,48,4,4,common
+uterine,endometrium adenocarcinoma,TCF7L2,49,4,1,specific
+uterine,endometrium adenocarcinoma,SMARCD3,50,4,2,partial
+uterine,uterine carcinosarcoma,TP53,1,4,4,common
+uterine,uterine carcinosarcoma,EP300,2,4,4,common
+uterine,uterine carcinosarcoma,PIK3CA,3,4,4,common
+uterine,uterine carcinosarcoma,CTNNB1,4,4,4,common
+uterine,uterine carcinosarcoma,CREBBP,5,4,4,common
+uterine,uterine carcinosarcoma,PIK3R1,6,4,4,common
+uterine,uterine carcinosarcoma,KRAS,7,4,4,common
+uterine,uterine carcinosarcoma,HRAS,8,4,4,common
+uterine,uterine carcinosarcoma,JAK2,9,4,4,common
+uterine,uterine carcinosarcoma,PTPN11,10,4,4,common
+uterine,uterine carcinosarcoma,BRCA1,11,4,2,partial
+uterine,uterine carcinosarcoma,EGFR,12,4,4,common
+uterine,uterine carcinosarcoma,SMAD3,13,4,4,common
+uterine,uterine carcinosarcoma,ERBB2,14,4,4,common
+uterine,uterine carcinosarcoma,STAT3,15,4,3,partial
+uterine,uterine carcinosarcoma,SRC,16,4,1,specific
+uterine,uterine carcinosarcoma,MAPK1,17,4,4,common
+uterine,uterine carcinosarcoma,ERBB3,18,4,4,common
+uterine,uterine carcinosarcoma,NRAS,19,4,3,partial
+uterine,uterine carcinosarcoma,RUNX1,20,4,2,partial
+uterine,uterine carcinosarcoma,ERBB4,21,4,4,common
+uterine,uterine carcinosarcoma,FGFR1,22,4,4,common
+uterine,uterine carcinosarcoma,AKT1,23,4,4,common
+uterine,uterine carcinosarcoma,JAK1,24,4,1,specific
+uterine,uterine carcinosarcoma,BRAF,25,4,4,common
+uterine,uterine carcinosarcoma,ATM,26,4,4,common
+uterine,uterine carcinosarcoma,NTRK1,27,4,3,partial
+uterine,uterine carcinosarcoma,MAPK3,28,4,2,partial
+uterine,uterine carcinosarcoma,ESR1,29,4,1,specific
+uterine,uterine carcinosarcoma,PDGFRB,30,4,3,partial
+uterine,uterine carcinosarcoma,CBL,31,4,2,partial
+uterine,uterine carcinosarcoma,MET,32,4,3,partial
+uterine,uterine carcinosarcoma,SOS1,33,4,4,common
+uterine,uterine carcinosarcoma,ABL1,34,4,1,specific
+uterine,uterine carcinosarcoma,KDR,35,4,4,common
+uterine,uterine carcinosarcoma,YAP1,36,4,2,partial
+uterine,uterine carcinosarcoma,CCND1,37,4,2,partial
+uterine,uterine carcinosarcoma,SMAD4,38,4,2,partial
+uterine,uterine carcinosarcoma,KIT,39,4,4,common
+uterine,uterine carcinosarcoma,CDK4,40,4,1,specific
+uterine,uterine carcinosarcoma,MSH2,41,4,3,partial
+uterine,uterine carcinosarcoma,LEF1,42,4,2,partial
+uterine,uterine carcinosarcoma,SYK,43,4,1,specific
+uterine,uterine carcinosarcoma,RAF1,44,4,2,partial
+uterine,uterine carcinosarcoma,FGFR2,45,4,4,common
+uterine,uterine carcinosarcoma,SMARCA4,46,4,3,partial
+uterine,uterine carcinosarcoma,BLM,47,4,2,partial
+uterine,uterine carcinosarcoma,IRS2,48,4,2,partial
+uterine,uterine carcinosarcoma,APC,49,4,1,specific
+uterine,uterine carcinosarcoma,SMAD2,50,4,2,partial

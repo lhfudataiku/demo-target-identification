@@ -1,0 +1,36 @@
+disease_index,disease,disease_family_id,hop_depth,n_pos,auc_disease,auc_trustworthy,act3_family,act3_role,in_act3,act4_area,act4_order,in_act4
+48537,HER2 positive breast carcinoma,49721,3.0,599,0.9364771263451022,True,breast,leaf,True,oncology,1.0,True
+47807,triple-negative breast carcinoma,49721,4.0,8,0.8948630136986302,False,breast,leaf,False,oncology,2.0,True
+42562,luminal B breast carcinoma,49721,4.0,88,0.9106012169030806,True,breast,leaf,True,oncology,3.0,True
+47766,endometrium adenocarcinoma,44244,3.0,98,0.9537921892918332,True,uterine,leaf,True,oncology,4.0,True
+48493,endometrial serous adenocarcinoma,44244,2.0,90,0.92424374256794,True,uterine,leaf,True,oncology,5.0,True
+47451,gastric adenocarcinoma,36637,2.0,677,0.9469489200591642,True,stomach,leaf,True,oncology,6.0,True
+47469,lung adenocarcinoma,52236,3.0,705,0.937064888005259,True,,,False,oncology,7.0,True
+51394,rheumatoid arthritis,51394,0.0,176,0.7311649757897164,True,,,False,autoimmune,8.0,True
+37525,psoriatic arthritis,37525,0.0,53,0.6891909932360271,True,,,False,autoimmune,9.0,True
+54093,dilated cardiomyopathy,54093,,180,0.8394443132934635,True,,,False,cardio_renal_metabolic,10.0,True
+54081,familial hypercholesterolemia,54081,,56,0.8200538822879249,True,,,False,cardio_renal_metabolic,11.0,True
+47437,diabetes mellitus,47437,,968,0.6780693004053078,True,,,False,cardio_renal_metabolic,12.0,True
+49721,breast cancer,49721,0.0,138,0.7071868086563728,True,breast,not_leaf,True,,,False
+47415,breast carcinoma,49721,1.0,864,0.8608353117120018,True,breast,not_leaf,True,,,False
+46673,female breast carcinoma,49721,2.0,544,0.935854423114624,True,breast,not_leaf,True,,,False
+48428,breast carcinoma by gene expression profile,49721,2.0,394,0.940317096035096,True,breast,not_leaf,True,,,False
+48546,invasive breast carcinoma,49721,2.0,123,0.935055330421578,True,breast,not_leaf,True,,,False
+47414,breast adenocarcinoma,49721,2.0,53,0.9043310142391442,True,breast,not_leaf,True,,,False
+47888,breast ductal adenocarcinoma,49721,3.0,691,0.9510841405571026,True,breast,not_leaf,True,,,False
+47832,breast lobular carcinoma,49721,3.0,513,0.933734673684906,True,breast,not_leaf,True,,,False
+48312,metaplastic breast carcinoma,49721,3.0,345,0.9257634861769038,True,breast,not_leaf,True,,,False
+48588,mixed lobular and ductal breast carcinoma,49721,3.0,181,0.9478921167290134,True,breast,not_leaf,True,,,False
+44995,adenoid cystic breast carcinoma,49721,3.0,70,0.8989962897033907,True,breast,not_leaf,True,,,False
+42563,luminal A breast carcinoma,49721,4.0,101,0.8466747618158043,True,breast,leaf,True,,,False
+36637,gastric cancer,36637,0.0,61,0.760184156735175,True,stomach,not_leaf,True,,,False
+47385,gastric carcinoma,36637,1.0,701,0.9422338594326636,True,stomach,not_leaf,True,,,False
+48524,gastric small cell neuroendocrine carcinoma,36637,2.0,54,0.8917952339562509,True,stomach,leaf,True,,,False
+47452,gastric intestinal type adenocarcinoma,36637,3.0,545,0.9407120332723428,True,stomach,not_leaf,True,,,False
+48676,signet ring cell gastric adenocarcinoma,36637,3.0,64,0.8827754958555358,True,stomach,leaf,True,,,False
+48727,uterine carcinosarcoma,44244,1.0,525,0.9262840052961756,True,uterine,leaf,True,,,False
+37570,endometrial cancer,44244,1.0,66,0.866357461138285,True,uterine,not_leaf,True,,,False
+43790,endometrial carcinoma,44244,2.0,264,0.8944970214712938,True,uterine,not_leaf,True,,,False
+48496,endometrial undifferentiated carcinoma,44244,3.0,55,0.9709811837646888,False,uterine,not_leaf,True,,,False
+48490,endometrial clear cell adenocarcinoma,44244,4.0,108,0.939501597284616,True,uterine,leaf,True,,,False
+46540,endometrial mixed adenocarcinoma,44244,4.0,80,0.9325824873096448,True,uterine,not_leaf,True,,,False

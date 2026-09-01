@@ -1,0 +1,122 @@
+# Panel selection — the supporting analysis
+
+<!-- Governed claims consumed here: TI-MOD-001 TI-VAL-001 -->
+
+> **Lifecycle:** Evidence · **Audience:** demo owners and reviewers selecting therapeutic areas and
+> diseases · **Authority:** asserted panel-selection measurements and their interpretation · **Update
+> when:** the champion, graph, seed gate, persona configuration or served panel changes · **Generated
+> dependencies:** `nb7_panel_selection.py` and `built/` · **Excludes:** webapp implementation policy.
+
+The evidence behind [`../panel_selection.html`](../panel_selection.html): which disease
+families Act 3 can support, and which diseases Act 4 should shortlist. Measured 2026-08-27
+over all 670 validation diseases against champion `m7-f14`.
+
+**Every number in `built/` is regenerated and asserted by
+[`notebooks/nb7_panel_selection.py`](../../../notebooks/nb7_panel_selection.py)** — 51 checks,
+green as of 2026-08-28. Run it after any graph rebuild, seed-gate move, champion change, or
+config edit; a `STALE` line means the flow and the document have diverged and one of them has
+to move.
+
+Six diseases in `analysis/eyeball_test.csv` are no longer served (obesity, multiple
+sclerosis, SLE, atopic eczema, myeloma, ALL). Their ranks are the *evidence for rejecting
+them* — obesity's GLP1R at #526, MS's 0-of-8 — so nb7 asserts only the served diseases;
+there is nothing live left to guard for the rest.
+
+## Two folders, and the difference matters
+
+**`analysis/` — the decision record.** What was measured *before* the build, on the
+curated candidate sets, to decide which families and diseases to carry. These files do
+not change when the flow is rebuilt; they are the argument, and rewriting them would
+erase why the panel looks the way it does.
+
+| file | rows | what it settles |
+|---|--:|---|
+| `area_coverage.csv` | 3 | **The finding that decides Act 3.** Subtype structure exists only in oncology |
+| `family_catalogue.csv` | 25 | Every family with ≥3 validation terms |
+| `family_subtypes.csv` | 82 | Per-subtype AUC with 95% intervals for the six candidate families |
+| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated candidate subtypes** — breast 0.402 / uterine 0.494 / stomach 0.475 |
+| `common_programme.csv` | 105 | The common-vs-specific split as first computed |
+| `eyeball_test.csv` + summary | 113 + 13 | **The Act 4 ranking.** Where the field's validated targets rank, and why each was expected |
+| `panel_before.csv` | 13 | The panel this replaced, on both bars |
+
+**`built/` — what actually ships.** Dumped from the DSS datasets the app reads.
+
+| file | rows | DSS dataset |
+|---|--:|---|
+| `demo_panel_config.csv` | 35 | `demo_panel_config` — membership as data |
+| `family_metrics.csv` | 35 | `family_panel_metrics` — Act 3 cards 1–3 |
+| `subtype_overlap.csv` | 148 | `family_panel_overlap` — the overlap card |
+| `common_programme.csv` | 550 | `family_panel_programme` — common vs specific |
+| `overlap_summary.csv` | 3 | reconciles the built figures against the analysis ones |
+
+### Why the two overlap numbers differ, and why both are right
+
+Same method both times — top-50 Jaccard on the same rankings. The only difference is
+**which pairs get averaged**, and the pairs present in both files agree to four decimal
+places:
+
+| family | pairs in **both** files | pairs involving a term only in `built/` | `built/` overall |
+|---|--:|--:|--:|
+| breast | **0.4021** (15) | 0.4346 (90) | 0.4299 (105) |
+| uterine | **0.4935** (10) | 0.4689 (18) | 0.4777 (28) |
+| stomach | **0.4746** (6) | 0.4353 (9) | 0.4510 (15) |
+
+The identical shared-pair means are the reassurance: there is no method drift, no data
+drift and no bug between the interactive analysis and the DSS recipe. `analysis/` averages
+the curated candidate subtypes, because the question it answered was *"do the terminal
+subtypes differ enough to justify a subtype-specific card?"* — for which the umbrella terms
+are noise. `built/` averages every usable term in the family, because the card's question is
+*"how do all of this family's terms relate?"* — for which the umbrella terms are the point.
+
+**The direction of the change is family-specific, and not a parent-inflation effect.**
+Breast's extra terms are mostly umbrella terms that blend their children, so its mean rises
+(0.4346 > 0.4021). Uterine's and stomach's extras include genuinely distinct subtypes such as
+`endometrial undifferentiated carcinoma`, so their means fall. Overlap still tracks ontology
+distance either way: Spearman −0.350 over the 148 shipped pairs.
+
+Two caveats on the `analysis/` figures, so they are not misread:
+
+- `analysis/subtype_overlap.csv` holds **stomach on four terms** (mean 0.4746), measured
+  before `gastric intestinal type adenocarcinoma` was dropped from the candidate set. A
+  later three-term recomputation gave ≈0.35 but was never written to a file; an earlier
+  version of this table quoted that unbacked number and has been corrected.
+- The counts above are pair counts, not term counts. `built/` covers 9 more breast terms,
+  3 more uterine and 2 more stomach than `analysis/` — a mixture of true ontological
+  ancestors (`breast cancer` at depth 0, `gastric carcinoma` at depth 1) and sibling
+  subtypes that simply were not curated as leaves (`metaplastic breast carcinoma` at
+  depth 3, `endometrial mixed adenocarcinoma` at depth 4).
+
+## Two conventions worth knowing
+
+**There are two thresholds, and they answer different questions.** The flow's
+`auc_trustworthy` flag, over all 670 diseases, is `auc_hi95 <= 1.0 AND n_pos >= 30`
+(`compute_validation_auc_ci`). Act 3 panel **membership** is stricter — `n_pos >= 50`
+(`USABLE_FLOOR` in `compute_demo_panel_config`) — because a term going on stage should
+have more margin than a term merely counted in an aggregate. A term under either bar can
+still carry a *list*, but never a quotable AUC.
+
+Measured on the served 670, the interval widens sharply only below 30: median 95% width is
+**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
+at 100+. The 92 intervals that exceed the possible AUC ceiling of 1.0 are almost all under
+30 — triple-negative breast, with 8 positives and an interval of 0.749–1.041, is the
+load-bearing example. An earlier version of this file gave 50 as a single "usability floor"
+and justified it as *"below it an AUC interval spans half the range"*; that description fits
+the sub-30 regime, not the 30–49 one, and it obscured the two-threshold design.
+
+**Near-duplicate is Jaccard > 0.6 on the top 50.** Two subtypes above that tell the same
+story, so a family full of them cannot support a subtype-specific card however distinct its
+members are clinically. Lung is the case in point: adenocarcinoma vs squamous is 0.887.
+
+## What is deliberately not committed
+
+The per-row score dumps these tables derive from — `scored_champion` is 3.96M rows / 478 MB,
+and the served rankings are 70 MB. `nb7` regenerates them from DSS on demand. Committing
+them would put a stale copy of the flow in git, which is the failure this whole folder
+exists to prevent.
+
+## The expectations were written before the ranks
+
+`eyeball_test.csv` carries a `why_expected` column naming the drug or the biology for every
+gene — anti-TNF, dupilumab, setmelanotide, trastuzumab, and so on. That list was written
+down *first*, then the ranks were looked up. `nb7` re-derives the ranks and leaves the
+expectations alone, so the test cannot be quietly reshaped to fit the result.

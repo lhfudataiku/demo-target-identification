@@ -54,18 +54,20 @@ def auc_se(auc, npos, nneg):
     v = (auc * (1 - auc) + (npos - 1) * (q1 - auc ** 2) + (nneg - 1) * (q2 - auc ** 2)) / (npos * nneg)
     return math.sqrt(v) if v > 0 else float("nan")
 
-PANEL = {47415: "breast carcinoma",
-         48537: "HER2 positive breast carcinoma",
-         47807: "triple-negative breast carcinoma",
-         42563: "luminal A breast carcinoma",
-         42562: "luminal B breast carcinoma",
-         49721: "breast cancer (parent term)",
-         48747: "estrogen-receptor positive breast cancer",
-         48748: "estrogen-receptor negative breast cancer",
-         47832: "breast lobular carcinoma",
-         46673: "female breast carcinoma",
-         48546: "invasive breast carcinoma",
-         47414: "breast adenocarcinoma"}
+# GOVERNED BY NAME. Membership comes from the `demo_panel` project variable and the
+# node_index is resolved from graph_nodes at run time -- see python/demo_identity.py,
+# which raises if a name is missing or ambiguous. Until 2026-09-01 this pinned indices
+# (47415, 48537, ...) and a graph rebuild renumbers them, so the panel would silently
+# have become a different panel. `breast_panel_labels` carries the display-only
+# overrides, e.g. "breast cancer" is printed as "breast cancer (parent term)".
+import demo_identity
+
+_panel = demo_identity.panel()
+_names = list(_panel["breast_panel_terms"])
+_labels = dict(_panel.get("breast_panel_labels", {}))
+_idx = demo_identity.name_to_index(_names)
+_TRUST_N_POS = int(demo_identity.thresholds()["trust_n_pos"])
+PANEL = {_idx[n]: _labels.get(n, n) for n in _names}
 K = 50
 
 nid = dataiku.Dataset("graph_nodes").get_dataframe(
@@ -102,7 +104,7 @@ def pairs_for(rel):
 TRUTH = {"approved": pairs_for("indication"),
          "investigational": pairs_for("drug_investigated_for")}
 
-sc = dataiku.Dataset("scored_m3").get_dataframe(
+sc = dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", "proba_1"])
 sc = sc[sc.disease_index.isin(PANEL)].copy()
 print(f"{len(sc):,} scored rows over {sc.disease_index.nunique()} breast terms\n")
@@ -141,7 +143,9 @@ for di, g in sc.groupby("disease_index"):
            "enrichment_at_50": (hits / exp) if exp > 0 else np.nan,
            "hits50_poisson_p": p_hits, "hits50_verdict": verdict,
            "n_novel": len(nov),
-           "auc_trustworthy": bool(npos >= 30)}
+           # the flow-wide trust test, from the `trust_n_pos` project variable.
+           # Was a hardcoded 30 here while docs and other recipes said 50.
+           "auc_trustworthy": bool(npos >= _TRUST_N_POS)}
     # tractability of the novel head -- can a chemist act on it? (§8.4)
     nv50 = top_nov[di]
     rec["novel50_tractable"] = sum(1 for x in nv50 if x in tractable)
@@ -180,7 +184,8 @@ key = overlap[overlap.disease_a.str.contains("HER2|triple", case=False)
 print(key.to_string(index=False, float_format=lambda x: f"{x:.1f}"))
 
 print("\n=== the clinically decisive pair ===")
-h, t = 48537, 47807
+# resolved by name, not pinned -- see DEC-OPS-006
+h, t = (_idx["HER2 positive breast carcinoma"], _idx["triple-negative breast carcinoma"])
 inter = set(top_nov[h]) & set(top_nov[t])
 print(f"  HER2+ vs triple-negative, top-50 novel: {len(inter)}/{K} shared "
       f"({100*len(inter)/K:.0f}%)")
@@ -192,7 +197,8 @@ print("  Contrast lung (§3.4), where histological subtypes were NOT separable."
 # specificity. If a subtype's list is nearly identical to the generic umbrella term, then it is a
 # breast-cancer list wearing a subtype label, and a clinician will say so.
 print("\n=== specificity check: how subtype-specific is each list, really? ===")
-UMBRELLA = [47415, 46673, 48546]  # breast carcinoma / female breast carcinoma / invasive breast ca
+UMBRELLA = [_idx[n] for n in _panel["breast_panel_umbrella"]]   # resolved by name, not pinned:
+# breast carcinoma / female breast carcinoma / invasive breast carcinoma
 for di in sorted(top_nov):
     if di in UMBRELLA:
         continue
@@ -206,4 +212,12 @@ print("  list still tracks the umbrella terms closely. Triple-negative is the on
 print("  its own list. Say that to the surgeon before they say it to us.")
 
 dataiku.Dataset("breast_panel_metrics").write_with_schema(metrics)
-dataiku.Dataset("breast_panel_overlap").write_with_schema(overlap)
+# breast_panel_overlap RETIRED 2026-08-28. family_panel_overlap covers all three
+# Act 3 families from one table and reproduces this novel_overlap exactly
+# (13/13 shared pairs); nb4 and nb6 read that instead. The overlap is still
+# computed and printed above, because the printout is part of this recipe's
+# diagnostic value -- it is simply no longer written to a dataset of its own.
+
+
+
+

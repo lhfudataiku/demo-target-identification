@@ -1,0 +1,8 @@
+# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
+# this file is a copy for review and grep. The live payload is in the DSS recipe.
+# recipe: split_by_disease_key (split)
+# inputs: enriched_graph_features_candidate_psplit
+# outputs: psplit_test_set, psplit_train_set, psplit_validation_set
+
+value: train
+value: validation

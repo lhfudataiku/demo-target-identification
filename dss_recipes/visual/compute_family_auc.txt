@@ -1,0 +1,9 @@
+# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
+# this file is a copy for review and grep. The live payload is in the DSS recipe.
+# recipe: compute_family_auc (shaker)
+# inputs: family_auc_grouped
+# outputs: family_auc_by_family
+
+expression: 1 - (target_rank_sum - n_pos*(n_pos+1)/2) / (n_pos * n_neg)
+expression: hits_at_20 / n_pos
+expression: hits_at_50 / n_pos

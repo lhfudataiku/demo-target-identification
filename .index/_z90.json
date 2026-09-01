@@ -1,0 +1,16 @@
+{
+ "ds": [
+  "family_gene_agg",
+  "family_top_genes",
+  "scored_m1",
+  "scored_m2",
+  "scored_m3"
+ ],
+ "rc": [
+  "group_family_gene",
+  "score_psplit_validation_set",
+  "score_psplit_validation_set_1",
+  "score_psplit_validation_set_2",
+  "topn_family_genes"
+ ]
+}

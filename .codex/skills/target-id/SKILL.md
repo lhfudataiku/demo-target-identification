@@ -1,11 +1,11 @@
 ---
 name: target-id
-description: Navigate the demo-target-identification repo without reading its large docs. Use when asked about this project's models (m1-m8), metrics, features, recipes, seed gates, past decisions, or when updating documented numbers after a model change. Answers most questions with a grep over .index/ instead of loading 135k tokens of markdown.
+description: Navigate the demo-target-identification repo without reading its large docs. Use when asked about this project's models (m1-m8), metrics, features, recipes, seed gates, past decisions, or when updating documented numbers after a model change. Answers most questions with a grep over .index/ instead of loading about 130k tokens of markdown.
 ---
 
 # Navigating this repo cheaply
 
-The docs are well over 140k tokens and the recipes ~93k. **Do not read them to answer a factual question.** Four generated indexes answer most of it; `docs/prioritizer/TARGET_PRIORITIZER.md` is a last resort, and even then read one section, not the file. `docs/README.md` maps the whole doc set.
+The docs are about 130k tokens and the recipes about 70k. **Do not read them to answer a factual question.** Generated indexes answer most of it; `docs/prioritizer/TARGET_PRIORITIZER.md` is a last resort, and even then read one section, not the file. `docs/README.md` maps the whole doc set. Query `.index/index_metadata.tsv` for an index's owner, scope and freshness command.
 
 Regenerate after editing any doc or recipe: `./tools/check_indexes.sh` verifies, the two `tools/build_*.py` scripts rebuild. `build_recipe_index.py --refresh` also re-snapshots DSS (slow, ~3 min) — only needed when a recipe changed in the UI.
 
@@ -13,15 +13,17 @@ Regenerate after editing any doc or recipe: `./tools/check_indexes.sh` verifies,
 
 | question | query |
 |---|---|
-| "what was m5 / why was m8 rejected / what is the champion" | `cut -f1,3,4,14 .index/models.tsv \| column -t -s$'\t'` |
-| "what did we decide about X" | `grep -i 'X' .index/decisions.tsv` → gives `DECISIONS.md` line numbers to jump to |
-| "which recipe makes feature F, is it gated" | `grep -P '^dwpc_GBGD\t' .index/features.tsv` |
-| "which recipes carry a seed gate, and are they safe to widen" | `awk -F'\t' '$3!="-"' .index/recipes.tsv` |
-| "is this documented number guarded by a notebook" | `grep -P '\t0\.8230\t' .index/claims.tsv \| grep -v DECISIONS` — `status` + `guarded_by` are fields 5-6 |
+| "what was m5 / why was m8 rejected / what is the champion" | `cut -f1,3,4,15 .index/models.tsv \| head -n 20 \| column -t -s$'\t'` |
+| "what is the current decision about X" | `grep -i 'X' .index/decisions.tsv \| head -n 20` → stable ID and register line |
+| "what happened historically around X" | `grep -i 'X' .index/decisions_history.tsv \| head -n 20` → classified archived-log line |
+| "which recipe makes feature F, is it gated" | `awk -F'\t' '$1=="dwpc_GBGD"' .index/features.tsv` |
+| "which recipes carry a seed gate, and are they safe to widen" | `awk -F'\t' '$3!="-"' .index/recipes.tsv \| head -n 30` |
+| "is this documented number guarded by a notebook" | `awk -F'\t' '$4=="0.8230"' .index/claims.tsv \| head -n 20` — `status` + `guarded_by` are fields 5-6 |
 | "what is unguarded and could drift" | `.index/SUMMARY.md`, "Risk surface" section |
-| "which entry points consume the champion" | `awk -F'\t' '$3=="CHAMPION"{print $15}' .index/models.tsv` |
+| "which entry points consume the champion" | `awk -F'\t' '$3=="yes"{print $16}' .index/models.tsv` |
 
-`grep -i prox_kernel .index/decisions.tsv` costs ~100 tokens. Reading `DECISIONS.md` costs 22k for the same answer.
+`grep -i prox_kernel .index/decisions.tsv | head -n 20` costs ~100 tokens. The 30k-token retired chronology is
+loaded only for an explicit historical investigation.
 
 ## Hard-won traps
 
@@ -47,7 +49,9 @@ Regenerate after editing any doc or recipe: `./tools/check_indexes.sh` verifies,
 
 ## Standing rules
 
-`compute_kg` is never touched or recomputed. `DECISIONS.md` is append-only — corrections are new entries, never edits. New datasets use the S3 connection. Joins go in visual Join recipes, not pandas `.merge()`.
+`compute_kg` is never touched or recomputed. Add a current decision only when the admission rule in
+`docs/decisions/DECISION_REGISTER.md` is satisfied; never edit the retired log. New datasets use the
+S3 connection. Joins go in visual Join recipes, not pandas `.merge()`.
 
 ## Longer procedures
 

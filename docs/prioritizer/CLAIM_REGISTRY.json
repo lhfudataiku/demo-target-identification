@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "registry": "target-prioritizer-governed-claims",
+  "scope": "Current, review-worthy Part 2 claims only. Historical model rows, exploratory diagnostics and superseded results remain in prose but are not governed claims.",
+  "tolerance_semantics": "absolute_tolerance is used only to match the registry value to the authority's expected literal. The authoritative notebook's own check() tolerance governs live-data acceptance and may be wider.",
+  "id_pattern": "^TI-(?:DATA|MOD|VAL|LIM)-[0-9]{3}$",
+  "claims": [
+    {
+      "id": "TI-DATA-001",
+      "status": "current",
+      "statement": "The evaluated candidate population is the deduplicated union of the GGD, GPGD and GCD routes: 6,754,128 pairs at a 1.89% positive rate.",
+      "interpretation": "This is the population on which current validation claims are defined; it is not every disease crossed with every gene.",
+      "measurements": [
+        {"key": "pool_rows", "value": 6754128, "unit": "pairs", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb2_splitting_and_pool.py", "section": "5.2", "check": "5.2 pool rows"}},
+        {"key": "positive_rate", "value": 1.89, "unit": "percent", "display_precision": 2, "absolute_tolerance": 0.005, "authority": {"kind": "notebook_assertion", "notebook": "nb2_splitting_and_pool.py", "section": "5.2", "check": "5.2 pool positive rate %"}},
+        {"key": "ggd_rows", "value": 3380853, "unit": "route admissions", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb2_splitting_and_pool.py", "section": "5.2", "check": "5.2 GGD rows"}},
+        {"key": "gpgd_rows", "value": 5373706, "unit": "route admissions", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb2_splitting_and_pool.py", "section": "5.2", "check": "5.2 GPGD rows"}},
+        {"key": "gcd_rows", "value": 42227, "unit": "route admissions", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb2_splitting_and_pool.py", "section": "5.2", "check": "5.2 GCD rows"}}
+      ],
+      "documentation_consumers": ["docs/prioritizer/TARGET_PRIORITIZER.md", "docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/prioritizer/PHASE3_PREREGISTRATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/DASHBOARD_MOCKUP_V3.html", "docs/demo/mockup_parity.html"],
+      "webapp_api_consumers": ["webapp/backend/routes/calibration.py"],
+      "review_policy": "Re-run nb2, then review pool/split denominators and every listed consumer whenever a route, seed gate or graph input changes."
+    },
+    {
+      "id": "TI-MOD-001",
+      "status": "current",
+      "statement": "The adopted champion is m7-f14, saved model hJLGoYn4, with 14 features.",
+      "interpretation": "Model identity is governed by the repository model registry; model quality is governed separately and cannot be inferred from identity alone.",
+      "measurements": [
+        {"key": "saved_model_id", "value": "hJLGoYn4", "unit": "identifier", "display_precision": null, "absolute_tolerance": null, "authority": {"kind": "repository_json", "path": "tools/model_registry.json", "pointer": "/champion"}},
+        {"key": "feature_count", "value": 14, "unit": "features", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "repository_json", "path": "tools/model_registry.json", "pointer": "/models/hJLGoYn4/n_features"}},
+        {"key": "model_name", "value": "m7-f14", "unit": "name", "display_precision": null, "absolute_tolerance": null, "authority": {"kind": "repository_json", "path": "tools/model_registry.json", "pointer": "/models/hJLGoYn4/name"}}
+      ],
+      "documentation_consumers": ["docs/prioritizer/TARGET_PRIORITIZER.md", "docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/prioritizer/PHASE3_PREREGISTRATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/BREAST_SURGEON_BRIEFING.md", "docs/demo/DASHBOARD_MOCKUP_V3.html", "docs/demo/panel_selection.html", "docs/demo/panel_selection/README.md"],
+      "webapp_api_consumers": ["webapp/backend/routes/calibration.py", "webapp/frontend/src/views/CalibrationView.vue"],
+      "review_policy": "A champion change requires model-registry review plus all governed validation checks; never retarget consumers from a metric alone."
+    },
+    {
+      "id": "TI-VAL-001",
+      "status": "current",
+      "statement": "Champion reconstruction fidelity is macro per-disease AUROC 0.8230 across 670 held-out diseases.",
+      "interpretation": "This measures within-disease recovery of known associations; it is not therapeutic efficacy, causal validity or prospective success.",
+      "measurements": [
+        {"key": "macro_per_disease_auroc", "value": 0.8230, "unit": "AUROC", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "10.1", "check": "10.1 macro per-disease AUC"}},
+        {"key": "held_out_diseases", "value": 670, "unit": "diseases", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "10.1", "check": "10.1 validation diseases"}}
+      ],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/prioritizer/PHASE3_PREREGISTRATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/DASHBOARD_MOCKUP_V3.html", "docs/demo/panel_selection.html", "docs/demo/panel_selection/README.md"],
+      "webapp_api_consumers": ["webapp/backend/routes/calibration.py", "webapp/frontend/src/views/CalibrationView.vue"],
+      "review_policy": "Re-run nb3 and review the distribution and denominator before changing any headline; report the macro value with its 670-disease scope."
+    },
+    {
+      "id": "TI-VAL-002",
+      "status": "current",
+      "statement": "Pooled AUROC is 0.8932, about seven points above macro per-disease AUROC 0.8230, because pooling lets large diseases dominate.",
+      "interpretation": "The macro value is the governed headline. The pooled value exists only as a warning and must not be substituted for it.",
+      "measurements": [
+        {"key": "pooled_auroc", "value": 0.8932, "unit": "AUROC", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "-", "check": "header pooled AUC"}},
+        {"key": "macro_per_disease_auroc", "value": 0.8230, "unit": "AUROC", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "10.1", "check": "10.1 macro per-disease AUC"}}
+      ],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/DASHBOARD_MOCKUP_V3.html"],
+      "webapp_api_consumers": ["webapp/backend/routes/calibration.py", "webapp/frontend/src/views/CalibrationView.vue"],
+      "review_policy": "Fail review if pooled and macro semantics are collapsed, if the pooled value is promoted to the headline, or if either value changes without nb3 evidence."
+    },
+    {
+      "id": "TI-VAL-003",
+      "status": "current",
+      "statement": "Family-level validation covers 505 families with macro AUROC 0.8009.",
+      "interpretation": "Family grouping is a leakage-control view, not evidence that every family or disease performs uniformly.",
+      "measurements": [
+        {"key": "families", "value": 505, "unit": "families", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "7.3", "check": "7.3 families"}},
+        {"key": "macro_family_auroc", "value": 0.8009, "unit": "AUROC", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "7.3", "check": "7.3 per-family macro AUC"}}
+      ],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/DASHBOARD_MOCKUP_V3.html"],
+      "webapp_api_consumers": ["webapp/backend/routes/calibration.py", "webapp/frontend/src/views/CalibrationView.vue"],
+      "review_policy": "Re-run nb3 after split-family or champion changes and retain the warning that the aggregate hides family-level variation."
+    },
+    {
+      "id": "TI-VAL-004",
+      "status": "current",
+      "statement": "Association ranking and therapeutic agreement are orthogonal: drug-target macro AUROC is 0.6886, Pearson r is +0.002 and R-squared is 0.0000 across evaluable diseases.",
+      "interpretation": "Association AUROC cannot be used as a proxy for therapeutic relevance; every result must name its axis.",
+      "measurements": [
+        {"key": "drug_target_macro_auroc", "value": 0.6886, "unit": "AUROC", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "7.4", "check": "7.4 drug-target macro AUC"}},
+        {"key": "pearson_r", "value": 0.002, "unit": "correlation", "display_precision": 3, "absolute_tolerance": 0.0005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "7.4", "check": "7.4 orthogonality pearson r"}},
+        {"key": "r_squared", "value": 0.0000, "unit": "R2", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "7.4", "check": "7.4 orthogonality R2"}}
+      ],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/DASHBOARD_MOCKUP_V3.html"],
+      "webapp_api_consumers": ["webapp/backend/routes/calibration.py"],
+      "review_policy": "Review association and therapeutic axes together after model or drug-label changes; never describe association AUROC as therapeutic prediction."
+    },
+    {
+      "id": "TI-VAL-005",
+      "status": "current",
+      "statement": "Among known targets, champion mean probability rises from 0.5938 in the lowest degree quintile to 0.7873 in the highest; spread is 0.1935 and rho(degree, probability) is 0.3273.",
+      "interpretation": "Hub bias is a current measured weakness. The older claim that the champion improved under-studied targets was refuted.",
+      "measurements": [
+        {"key": "q1_probability", "value": 0.5938, "unit": "mean probability", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3b_hub_bias_meter.py", "section": "7.2", "check": "7.2 champion Q1 probability"}},
+        {"key": "q5_probability", "value": 0.7873, "unit": "mean probability", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3b_hub_bias_meter.py", "section": "7.2", "check": "7.2 champion Q5 probability"}},
+        {"key": "spread", "value": 0.1935, "unit": "probability", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3b_hub_bias_meter.py", "section": "7.2", "check": "7.2 champion spread"}},
+        {"key": "rho_degree_probability", "value": 0.3273, "unit": "Spearman rho", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3b_hub_bias_meter.py", "section": "7.2", "check": "7.2 champion rho(degree,proba)"}}
+      ],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/prioritizer/PHASE3_PREREGISTRATION.md", "docs/demo/WEBAPP_DESIGN.md"],
+      "webapp_api_consumers": ["webapp/backend/routes/calibration.py"],
+      "review_policy": "Re-run nb3b after champion, feature-population or split changes; preserve the negative finding and do not infer a cause without a controlled test."
+    },
+    {
+      "id": "TI-VAL-006",
+      "status": "current",
+      "statement": "Drug-target AUROC is 0.6886 over all positives and 0.7471 over route-supported positives.",
+      "interpretation": "The gap is evidence about scoreability and outcome-selected route support, not permission to discard hard positives or optimise the candidate gate on drug labels.",
+      "measurements": [
+        {"key": "all_positive_auroc", "value": 0.6886, "unit": "AUROC", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb2_splitting_and_pool.py", "section": "5.2.1", "check": "5.2.1 approved join auc_all"}},
+        {"key": "route_supported_auroc", "value": 0.7471, "unit": "AUROC", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb2_splitting_and_pool.py", "section": "5.2.1", "check": "5.2.1 approved join auc_supported"}}
+      ],
+      "documentation_consumers": ["docs/prioritizer/TARGET_PRIORITIZER.md", "docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/demo/BREAST_SURGEON_BRIEFING.md"],
+      "webapp_api_consumers": [],
+      "review_policy": "Re-run nb2 when route eligibility or the drug benchmark changes; report both estimands and the outcome-selection warning."
+    },
+    {
+      "id": "TI-VAL-007",
+      "status": "current",
+      "statement": "Among novel top-ranked candidates, approved drug targets are enriched 16.88-fold at K=10 and 5.04-fold at K=200.",
+      "interpretation": "This supports discovery enrichment inside the admitted pool, but a drug-target lookup can reward gene popularity and must remain a warning-bearing secondary benchmark.",
+      "measurements": [
+        {"key": "approved_lift_at_10", "value": 16.88, "unit": "fold", "display_precision": 2, "absolute_tolerance": 0.005, "authority": {"kind": "notebook_assertion", "notebook": "nb4_results_three_axes.py", "section": "8.3", "check": "8.3 approved lift@10"}},
+        {"key": "approved_lift_at_200", "value": 5.04, "unit": "fold", "display_precision": 2, "absolute_tolerance": 0.005, "authority": {"kind": "notebook_assertion", "notebook": "nb4_results_three_axes.py", "section": "8.3", "check": "8.3 approved lift@200"}}
+      ],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md"],
+      "webapp_api_consumers": [],
+      "review_policy": "Re-run nb4/nb6 after champion, ranking-population or drug-ground-truth changes; retain both the pool scope and gene-popularity warning."
+    },
+    {
+      "id": "TI-VAL-008",
+      "status": "current",
+      "statement": "Degree-matched tractability lift is 3.29-fold pooled and 3.11-fold macro at K=10, and 2.42-fold pooled at K=200.",
+      "interpretation": "Pooled and macro are different estimands and both are reported; the deeper-list pooled value is the more stable model-selection corroboration.",
+      "measurements": [
+        {"key": "pooled_dm_lift_at_10", "value": 3.29, "unit": "fold", "display_precision": 2, "absolute_tolerance": 0.005, "authority": {"kind": "notebook_assertion", "notebook": "nb4_results_three_axes.py", "section": "8.4", "check": "8.4 pooled dm lift @10"}},
+        {"key": "macro_dm_lift_at_10", "value": 3.11, "unit": "fold", "display_precision": 2, "absolute_tolerance": 0.005, "authority": {"kind": "notebook_assertion", "notebook": "nb4_results_three_axes.py", "section": "8.4", "check": "8.4 macro dm lift @10"}},
+        {"key": "pooled_dm_lift_at_200", "value": 2.42, "unit": "fold", "display_precision": 2, "absolute_tolerance": 0.005, "authority": {"kind": "notebook_assertion", "notebook": "nb4_results_three_axes.py", "section": "8.4", "check": "8.4 pooled dm lift @200"}}
+      ],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/DASHBOARD_MOCKUP_V3.html"],
+      "webapp_api_consumers": [],
+      "review_policy": "Re-run nb4/nb6 after model or candidate-population changes; never merge pooled and macro lifts or compare them without naming K."
+    },
+    {
+      "id": "TI-VAL-009",
+      "status": "current",
+      "statement": "HER2-positive breast carcinoma reconstructs at AUROC 0.9365, while HER2-positive and triple-negative disease share only 2 novel top-50 candidates; triple-negative has only 8 known targets.",
+      "interpretation": "The molecular-subtype separation is useful, but the thin triple-negative label makes its own AUROC unquotable and the panel remains a clinician falsification exercise.",
+      "measurements": [
+        {"key": "her2_positive_auroc", "value": 0.9365, "unit": "AUROC", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb4_results_three_axes.py", "section": "8.10", "check": "8.10 HER2+ AUC"}},
+        {"key": "her2_tnbc_novel_overlap", "value": 2, "unit": "top-50 genes", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb4_results_three_axes.py", "section": "8.10", "check": "8.10 HER2+ vs TNBC novel overlap"}},
+        {"key": "tnbc_known_targets", "value": 8, "unit": "targets", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb4_results_three_axes.py", "section": "8.10", "check": "8.10 TNBC known targets"}}
+      ],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/BREAST_SURGEON_BRIEFING.md", "docs/demo/DASHBOARD_MOCKUP_V3.html", "docs/demo/panel_selection.html"],
+      "webapp_api_consumers": ["webapp/backend/routes/families.py"],
+      "review_policy": "Re-run nb4 and nb7 after graph, champion or panel changes; do not quote thin-disease AUROC and keep clinician-review defects visible."
+    },
+    {
+      "id": "TI-LIM-001",
+      "status": "current",
+      "statement": "The candidate pool covers 98.5% of curated drug-target pairs across evaluable diseases; pool size has Spearman correlation +0.081 with coverage and only 2 diseases fall below 50% coverage.",
+      "interpretation": "Reachability is a real per-disease limitation but not a broad sparse-disease failure; pathless pairs still need a feature family that can score them.",
+      "measurements": [
+        {"key": "reachability_ceiling", "value": 98.5, "unit": "percent", "display_precision": 1, "absolute_tolerance": 0.05, "authority": {"kind": "notebook_assertion", "notebook": "nb2_splitting_and_pool.py", "section": "10.4", "check": "10.4 reachability ceiling %"}},
+        {"key": "pool_size_coverage_spearman", "value": 0.081, "unit": "Spearman rho", "display_precision": 3, "absolute_tolerance": 0.0005, "authority": {"kind": "notebook_assertion", "notebook": "nb2_splitting_and_pool.py", "section": "10.4", "check": "10.4 Spearman pool_size vs coverage"}},
+        {"key": "diseases_below_50_percent", "value": 2, "unit": "diseases", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb2_splitting_and_pool.py", "section": "10.4", "check": "10.4 diseases below 50%"}}
+      ],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/demo/BREAST_SURGEON_BRIEFING.md"],
+      "webapp_api_consumers": [],
+      "review_policy": "Re-run nb2 after graph-route or seed-gate changes; preserve both the high aggregate coverage and the pathless-pair limitation."
+    }
+  ]
+}

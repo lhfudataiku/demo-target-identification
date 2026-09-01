@@ -1,278 +1,265 @@
-# Demo narrative — what we show R&D scientists, and in what order
+# Demo narrative — reconstructing known biology from public knowledge
 
-**Audience:** research scientists and computational biologists in early drug discovery, plus the
-data-platform people who would own this internally.
+<!-- Governed claims consumed here: TI-DATA-001 TI-MOD-001 TI-VAL-001 TI-VAL-002 TI-VAL-003 TI-VAL-004 TI-VAL-007 TI-VAL-008 TI-VAL-009 -->
 
-**Read this before designing the dashboard or pruning the flow.** Both should be derived from the
-story, not the other way round. We tried it the other way round and it produced a plan to delete our
-best material.
+> **Lifecycle:** Canonical · **Audience:** research scientists, computational biologists and the
+> data-platform team supporting them · **Authority:** business story, act order, audience voice and stable
+> interpretation · **Update when:** the demo claim, audience or act order changes · **Generated
+> dependencies:** notebook assertions; [`FLOW_MAP.md`](FLOW_MAP.md) for live flow lineage · **Excludes:**
+> API design, DSS topology and build procedure.
+
+**Who we are in this room.** An AI platform company. We are not a drug-discovery vendor, we are not
+proposing to run anyone's target programme, and we are not going to tell a research team how to do
+science. We build the machinery that lets their people test their own ideas quickly and show their
+working.
+
+**What this demo claims — and only this.** From public biomedical knowledge alone, a model can be
+trained that, for a given disease, surfaces the targets the field has already validated. That is a
+**reconstruction** claim, not a discovery claim.
+
+**The bar, and it is deliberately low.** The test is the scientific team's own eyeball test: *open the
+list for a disease you know, and tell us whether the top of it looks right.* We are not asking them to
+accept a benchmark, and we are not claiming to have found anything they have not.
+
+**Why a low bar is the right bar.** If a pipeline built only from public knowledge reconstructs what
+your field already established, then the machinery is sound — the graph, the features, the split, the
+scoring, the lineage. That is what earns the next conversation, which is the interesting one: point
+the same pipeline at *your* data, where nobody knows the answer yet.
+
+**Audience:** research scientists and computational biologists in early discovery, plus the
+data-platform people who would own this internally. The second group is not an afterthought — they are
+the ones who have to believe it is reproducible.
+
+The technical companion — the implementation architecture, data contracts and guardrails that support
+each act — is [WEBAPP_DESIGN.md](WEBAPP_DESIGN.md). Every number below is asserted in a
+notebook and re-checked on every run.
 
 ---
 
-## What you are demoing — the one-page version
+## What we are explicitly not claiming
 
-**The deliverable.** For a given disease, a ranked shortlist of candidate targets, each with **two
-independent explanations**: a SHAP attribution (*which evidence drove this*) and a **graph path** to the
-disease module on the webapp (*show me the mechanism*).
+Say these out loud, early. They are what make the rest credible, and every one of them is a place a
+competitor would overclaim.
 
-**The artifact.** `target_candidates_2` — **129,253 scored candidates across 13 diseases**, each row
-carrying score, SHAP drivers, rank, known-target status, druggability class, tractability and safety
-annotation. Nothing is pre-cut: the scientist filters.
-
-| | |
+| We are not claiming | What is true instead |
 |---|---|
-| **Model** | gradient-boosted trees + SHAP, 12 network-topology features |
-| **Why not a GNN** | it is the Open Targets Locus-to-Gene pattern (*Nat Genet* 2021). The differentiator is reproducibility and lineage, not the algorithm |
-| **Ranking quality** | macro per-disease AUC **0.82** over 670 held-out diseases; **0.80** across 505 families |
-| **Discovery** | novel candidates enriched **16.9×** for approved drug targets at top-10 |
-| **Actionability** | **2.4–2.9×** enrichment for druggable targets vs equally-connected genes |
-| **What it does not do** | no safety axis, no *morphological* subtype resolution, and association ranking does **not** predict therapeutic relevance (r = +0.002) |
-
-**Progressive filtering is the demo moment** — obesity disorder, on the scientist's own thresholds:
-13,126 candidates → novel only 12,364 → tractable 8,615 → not secreted 7,877 → rank ≤ 200 **≈ 70**.
-Landing on GHSR (#8), ADRB2 (#17), MCHR1 (#23) — a coherent neuroendocrine cluster, two of them
-clinically pursued for obesity.
-
-**Method, and every number's source: [TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md)** — all 38 of its
-subsections name the dataset they come from and the notebook that re-derives them. 44 of 44 assertions
-passed on 2026-08-19, so anything quoted here is verified, not remembered.
-
-## 1. The one thing to understand about this audience
-
-They have seen a ranked gene list before. Several vendors have shown them one.
-
-So they do not evaluate our accuracy. They run an **interrogation**, and they already know the
-questions. Surviving that interrogation *is* the demo. The score is not the point — the score is
-what we have left after the interrogation.
-
-This is not a guess about buyer psychology. It is in the literature we already cite: the TxGNN study
-(*Nature Medicine*, 2024) found that showing experts *why* a prediction was made raised their
-accuracy by 46% and their confidence by 49%. **Explainability drove adoption. Accuracy did not.**
+| That we discover novel targets | The model ranks not-yet-annotated genes above chance, and we will show you the number. It is **not** what we are asking you to believe today |
+| That this beats your in-house method | We have not seen your method. This is a reconstruction test on public data |
+| Any safety or toxicity assessment | We have none. The annotations we carry are public flags, and we will show you why they are not a filter |
+| That the ranking is a research plan | It is a starting list that a scientist filters on their own thresholds |
+| Domain expertise in your therapeutic area | You have that. We built the machine that makes your expertise testable |
 
 ---
 
-## 2. The demo, in the order they will ask
+## The four acts
 
-Six questions. Each one has an artifact behind it. Run them in this order, because each answer only
-lands once the previous objection is dead.
+Each act answers one question. The order matters: a scientist will not engage with a ranking until
+they believe the substrate it came from.
 
-### Q1 — "Show me the list."
+| | Act | The question | What answers it |
+|---|---|---|---|
+| 1 | **The evidence base** | *What went in?* | six public sources, provenance on every node and edge |
+| 2 | **Calibration** | *How faithfully does it reconstruct?* | the distribution across 670 diseases, not one number |
+| 3 | **The therapeutic area** | *Does it hold across my area?* | every term in a family, with its uncertainty |
+| 4 | **The list** | *Does this look right to you?* | the eyeball test — and they filter it themselves |
 
-Open the ranked candidates for one disease. Every candidate carries a score, the features that drove
-it, and the actual paths through the graph that connect it to the disease.
+Acts 5 and 6 are a **spoken talk track**, not screens. They are about the platform, not the biology.
 
-Then show the filtering. A scientist sets their own thresholds — "must be a membrane protein",
-"must not already be a known target", "must have a druggable pocket" — and the list narrows to
-something a team could actually work through. For obesity that lands at **65 candidates**.
+---
 
-> **The point to make out loud:** the scientist is not asking the model to be right. They are asking
-> to be able to argue with it.
+## Act 1 — The evidence base
 
-### Q2 — "These are just the famous genes."
+> *What went in?*
 
-This is the first real objection and it is usually correct about other people's tools. Well-studied
-genes have more connections in any biology database, so any graph model drifts towards them.
+A biomedical knowledge graph assembled from six public sources — **113,391 nodes, 2,851,510 edges, 18
+relations** — and accepted against a frozen reference at **−0.03% on edges, with 14 of 18 relations
+reproducing exactly**.
 
-So we measured it. We compared each of our top candidates not against the average gene, but
-**against other genes with the same number of connections** — a fair fight instead of a rigged one.
+No model yet. This act is about what the machine can see, and about the fact that every node and every
+edge can name where it came from.
 
-| Where in the list | Enrichment for druggable targets, vs equally-connected genes |
+**Why it goes first.** Nothing later is worth discussing if the substrate is not credible. A scientist
+who does not believe the graph will not engage with the ranking — and rightly.
+
+**What this act must not do:** claim quality. Faithful assembly is a lineage property, not an accuracy
+one. Whether the ranking is any good is Act 2.
+
+---
+
+## Act 2 — Calibration
+
+> *How faithfully does it reconstruct?*
+
+The candidate pool is **6,754,128 disease–gene pairs at a 1.89% positive rate**. Ranking quality is
+**macro per-disease AUC 0.8230 across 670 held-out diseases**.
+
+**Read that as reconstruction fidelity, not predictive power.** It says: across 670 diseases, the model
+puts the already-validated targets near the top of the list. That is the claim, and it is the claim
+the eyeball test in Act 4 makes concrete.
+
+**Show the distribution before the summary.** A single number answers a question nobody asked, and it
+hides the thing that actually matters — that usefulness is not uniform. Some diseases reconstruct
+almost perfectly; some do not reconstruct at all. **Which is which is more useful to them than the
+average.**
+
+**Report macro, never pooled.** Pooled reads 0.8932 and overstates by roughly seven points, because it
+lets large diseases carry small ones. We show the macro figure.
+
+### The one thing to raise before they do
+
+Well-studied genes carry more edges in any public database, so any graph model drifts toward them. We
+measured it against genes of the **same network degree** rather than against the pool average:
+
+| | degree-matched enrichment |
 |---|--:|
-| Top 10 | **2.9×** |
-| Top 50 | **2.7×** |
-| Top 200 | **2.4×** |
+| Top 10 | **3.29×** |
+| Top 200 | **2.42×** |
 
-And the honest detail that makes it credible: **from rank 20 downwards, controlling for connectivity
-makes our result look better, not worse.** Deep in the list the model is finding something that
-popularity does not explain. But in the **top 10** it goes the other way — so the very head of the
-list does carry a popularity effect, and we say so.
+And the honest half: hold biology constant — known targets only — and the model still scores the
+least-connected fifth at **0.59** against **0.79** for the most-connected. **The model under-scores
+under-studied true targets.** We have not fixed that, and we are not going to imply we have.
 
-**Then there is the harder version of the same question, and it is the natural follow-up — so get
-there first.** Hold the biology constant: take only genes we *already know* are targets, and ask whether
-the model scores the poorly-connected ones as highly as the hubs.
-
-| known targets, by connectivity | mean model score | predicted positive |
-|---|--:|--:|
-| lowest fifth *(median 6 connections)* | **0.59** | **17.3%** |
-| highest fifth *(median 155)* | **0.79** | **57.0%** |
-
-**A 3.3× detection swing on network position alone, with biology held constant.** Both things are true
-and they answer different questions: the *ranking* is not explained by popularity (the table above), and
-the model still **under-scores under-studied true targets**.
-
-> **What to say:** *"We will find you targets adjacent to biology you already know. We will not fix your
-> neglected-gene problem — and we can hand you the number today instead of you discovering it in year
-> two."* Then the part that lands: **we went looking for the cause, tested the obvious candidate, and it
-> was not the cause** — so we are still carrying this as an open weakness rather than a fixed one
-> (TARGET_PRIORITIZER §7.2). Say that. A vendor who names an unsolved problem is worth more than one who
-> names only solved ones.
-
-> **The point to make out loud:** we can tell you exactly where the popularity effect explains our
-> ranking and where it does not, and what it costs. Nobody else in the room can do that for their own
-> tool.
-
-### Q3 — "You already knew all of these."
-
-The strongest question, and the one the whole deliverable stands on.
-
-So we delete the answer key. We remove every target already known for the disease, re-rank what is
-left, and ask whether the top of *that* list contains real targets — ones we never told the model
-about.
-
-Take non-small cell lung cancer. The model scores **12,310** candidate genes. **621** are already
-known targets. We throw all 621 away and look at the remaining **11,689**.
-
-**The third-highest is MAPK3.** Nothing in the training data pointed at it. It is a **live clinical
-programme** for that disease — MAPK3 is ERK1, the last step in the KRAS → MEK → ERK cascade that
-drives much of lung cancer. Three more of the top 15 are also in trials.
-
-Across all diseases, the novel candidates are enriched for real drug targets:
-
-| | Top 10 | Top 200 |
-|---|--:|--:|
-| Against approved drugs | **16.9×** | **5.0×** |
-| Against drugs in trials | **7.4×** | **4.0×** |
-
-> **The point to make out loud:** this is the deliverable. Not "the model reproduces what you know" —
-> it surfaces things you have not annotated, and a meaningful share of them turn out to be real.
-
-### Q4 — "Your ground truth is garbage."
-
-Also usually correct, and we agree. Here is the flaw, in one sentence: the public data says *this
-drug treats this disease* and *this drug hits these targets*, but never *this target treats this
-disease*. Joining the two invents pairs. A drug that hits 40 proteins and is approved for 13
-diseases manufactures 520 "validated" pairs.
-
-We measured how bad it is: **82% of our validated pairs come from drugs that hit more than one
-target.** Only **8%** survive if we demand single-target drugs.
-
-Then we found a curated source that asserts the target–disease link directly, and re-ran everything
-on it. **The discovery result got stronger** — 21.3× instead of 16.9×.
-
-> **The point to make out loud:** we found the flaw in our own evidence, quantified it, and re-tested
-> against a better source. The finding survived. That is what due diligence looks like.
-
-### Q5 — "Would this work on a disease you had not tuned?"
-
-We never let related diseases sit on both sides of the train/test divide. If "diabetes" trains the
-model and "type 2 diabetes" tests it, the score is meaningless — same programme, different label.
-
-Measured across **505 disease families**, average ranking quality holds at **0.80**. Headline number
-across 670 individual diseases: **0.82**.
-
-### Q6 — "What can't it do?"
-
-Show the limits. This is not modesty, it is what makes Q1–Q5 believable.
-
-- **It cannot tell lung cancer subtypes apart.** Lung adenocarcinoma and squamous carcinoma get
-  near-identical lists, because the underlying data barely distinguishes them. We show why.
-- **It leans towards secreted proteins in some diseases** — molecules floating between cells rather
-  than sitting on them. Harder to drug. We measured where this happens and where it does not.
-- **We have no real safety axis and we are not pretending otherwise.** See below — this is the
-  strongest part of the pitch.
+> **How to put it:** *"This reconstructs biology adjacent to what is already well described. Where your
+> field is under-studied, it will under-rank — here is the size of that effect, measured, today."*
 
 ---
 
-## 3. The punch line
+## Act 3 — The therapeutic area
 
-Everything above is about the model. This is about the platform, and it is what closes.
+> *Does it hold across my area, or just on one term?*
 
-> **Three times in this project, an idea every biologist in the room would have approved was killed by
-> a measurement that took one afternoon. Each would have made the product worse.**
+Most groups own one therapeutic area, so a single cherry-picked disease proves nothing. Pick a family
+and show the same model against **every term in it**.
 
-- **"Use druggability as a model input."** Measured: it points the *wrong way*. Membrane receptors are
-  3.2× more likely to be real drug targets but 1.3× *less* likely to be disease-linked in our data, so
-  the model would learn "membrane receptor → score lower". Rejected; grouped the *display* by class
-  instead, which recovered most of the benefit at no risk.
-- **"Filter out genes the body cannot live without."** We predicted drug targets would avoid them.
-  **The measurement went cleanly the other way.** Genes that matter enough to be lethal are genes worth
-  drugging — and a drug is not a genetic deletion. Rejected.
-- **"Exclude targets with known safety liabilities."** The most obviously-right of the three. Measured:
-  it destroys 15–70% of confirmed hits and makes obesity **worse than no filter**. The thirty-second
-  check: **ADRB2 sits at rank 17, is a confirmed obesity target, and carries a liability flag.**
-  Liabilities are discovered *by* drugging something, so the flag marks the best-studied targets.
+**Across 505 disease families, reconstruction holds at 0.8009.**
 
-**And the slide no vendor shows you:** on one benchmark a dumb lookup table — *"how many diseases is
-this gene already a drug target for"* — scores **0.935** and **beats our trained model**. So we refused
-to headline that benchmark. A benchmark a lookup table wins is measuring the lookup.
+**How the split was drawn, because it is the honest part.** Train and test are separated by disease
+family from a curated medical ontology, not at random. Random splitting puts "diabetes" and "type 2
+diabetes" on opposite sides — the same programme wearing two labels — and inflates the score. Using
+the ontology *lowered* the number we report.
 
-> **The platform claim:** you do not need a better algorithm. You need somewhere your biologists'
-> hypotheses get tested in an afternoon instead of argued about for a quarter. Three plausible ideas
-> died here at one recipe each — and the record of why is in the flow, not someone's inbox.
+**This is also where a customer's own judgment already enters.** The rule that these two terms are one
+programme is a biologist's call, compiled into the pipeline. It is the template for everything they
+would plug in later.
 
-## 4. Where the customer's own knowledge enters
+**Per-term AUC is shown with its uncertainty.** A term with eight known targets and a term with six
+hundred do not deserve the same visual weight.
 
-**We already demonstrate this once.** The train/test divide comes from a curated medical ontology, not
-an algorithm. A biologist's judgment — *"type 2 diabetes and diabetes mellitus are the same programme,
-do not let them straddle"* — became a rule in the pipeline and changed the honest score. **That is
-domain expertise compiled into a control**, and it is the template for everything below.
+**And the limit lives here.** HER2-positive and triple-negative breast share only **2** novel
+candidates and **14** genes overall — genuinely different lists. Lung subtypes are the opposite: near
+identical, because the public data barely distinguishes them. **We can tell you which of your subtypes
+this resolves before you build anything on it.**
 
-| What they plug in | Why it matters |
+---
+
+## Act 4 — The list, and the eyeball test
+
+> *Does this look right to you?*
+
+One disease, all the way down. **This is the act the demo exists for.**
+
+Open **HER2-positive breast carcinoma**. The model reconstructs its known targets at **AUC 0.9365**.
+Look at the top of the list: the genes a breast oncologist would name are there. That is the whole
+test, and the scientist is the instrument.
+
+**Then hand them the controls.** Nothing is pre-filtered. They set their own thresholds — must be a
+membrane protein, must have a druggable pocket, exclude what is already known — and a five-figure list
+narrows to something a team could work through in a quarter.
+
+**Two explanations per candidate**, because one is never enough: the SHAP attribution (*which evidence
+drove this*) and the path on the graph (*show me the mechanism*). A feature attribution without a
+mechanism is a scoreboard; a mechanism without an attribution is a story.
+
+### The secondary observation, offered as a footnote
+
+If you remove every known target for a disease and re-rank the remainder, the top of that list is
+enriched for genes that later turn out to be real drug targets — **16.88× at top-10 against approved
+drugs, 21.32× against a curated target–disease source**.
+
+> **Frame it exactly this way:** *"We report this because it is measured, not because we are asking you
+> to act on it. Today's claim is the reconstruction you just looked at. What this number suggests is
+> that the same machinery is worth pointing at data where the answer is not already known — which is
+> your data, not ours."*
+
+**Do not lead with this. Do not let it become the demo.** It is the one place where a reconstruction
+pitch can slide into a discovery pitch, and the slide is not recoverable in the room.
+
+---
+
+## Acts 5 & 6 — the talk track
+
+**Not screens.** These are about the platform, and they are the part a data-platform owner buys.
+
+### What the machinery did with three hypotheses
+
+Three times in this project, a plausible idea was tested and the measurement came back against it.
+**The point is not that the ideas were wrong — it is that each took an afternoon to settle instead of
+a quarter to argue about.**
+
+| The idea | What the measurement said |
 |---|---|
-| **Failed internal programmes** | Trial-stage evidence — which includes failures — is the *fairer* test for target discovery and is 13× larger than approved-drug evidence. Nobody publishes their failures; this is the highest-value private asset in the pipeline |
-| **Internal assay / screening data** | Replaces our public druggability proxy with a measured one |
+| *"Use druggability as a model input."* | Membrane receptors are **3.16×** more likely to be real drug targets but only **0.78×** as likely to be disease-linked in public data. A model trained on the association label would learn *score lower*. Ion channels, same shape, **11.89×** |
+| *"Filter out genes the body cannot live without."* | Loss-of-function-intolerant genes are enriched on **both** labels — **2.07×** association, **1.37×** therapeutic. A drug is not a genetic deletion |
+| *"Exclude targets with known safety liabilities."* | Liability-flagged genes are **4.62×** enriched among real drug targets. Liabilities are discovered *by* drugging something, so the flag marks the best-studied targets. **9 of the HER2+ top 15 carry one — including ERBB2** |
+
+> **The platform claim, and it is the only claim we make in our own voice:** these were settled by one
+> recipe each, and the record of why is in the flow where the next person can find it — not in
+> someone's inbox. **That is the capability we are selling.** Which hypotheses are worth testing is
+> their call, not ours.
+
+### One honest limitation, stated because it will be found
+
+Association ranking does **not** predict therapeutic relevance: across diseases the two are
+uncorrelated, r = **+0.002**. And on a drug-target benchmark, a lookup table — *"how many diseases is
+this gene already a target for"* — beats the trained model. **A benchmark a lookup table wins is
+measuring the lookup**, so we do not report it as a score.
+
+---
+
+## Where their own knowledge enters
+
+This is the bridge to the next conversation, and the reason a low bar today is worth setting.
+
+| What they plug in | What it changes |
+|---|---|
+| **Failed internal programmes** | Trial-stage evidence — including failures — is far larger than approved-drug evidence and nobody publishes it. The highest-value private asset here |
+| **Internal assay / screening data** | Replaces a public druggability proxy with a measured one |
 | **Their own disease definitions** | Their indication strategy replaces the public ontology as the grouping rule |
-| **Expert annotations and thresholds** | The biologist tunes the shortlist without touching the model — already built, it is the filter in Q1 |
+| **Expert annotations and thresholds** | Tunes the shortlist without retraining — already built; it is the filter in Act 4 |
 
-**The line to use:** the public data buys you the genetic-evidence effect — genetically supported
-targets are 2.6× more likely to survive the clinic *(Minikel et al., Nature 2024)*. **Your own graph is
-the only place the rest of your institutional knowledge can enter the ranking at all.**
+**The line to use:** public knowledge gets you the reconstruction you just saw. **Your own data is the
+only place the rest of your institutional knowledge can enter the ranking at all** — and that is a
+platform problem, which is ours, not a science problem, which is yours.
 
-## 5. What not to show
-
-| Do not show | Because |
-|---|---|
-| The ablation ladder (7 → 10 → 12 features) | A modelling decision. No scientist asks it, and it invites a conversation about hyperparameters |
-| Raw AUC as the opening number | It is the answer to a question they did not ask. Lead with Q3, land the AUC at Q5 |
-| The drug-target benchmark as a headline | We know a lookup table beats us on it. Use it as the honesty slide (§3), never as a score |
-| Feature engineering internals | 12 features, and the interesting ones are graph paths. Show the paths, not the column list |
-| A safety or toxicity claim of any kind | We do not have one. Saying so is worth more than faking one |
-
----
-
-## 6. Demo diseases
-
-Chosen by measurement, not familiarity — TARGET_PRIORITIZER §8.7 and §8.10.
+## Demo diseases
 
 | Disease | Why it earns its slot |
 |---|---|
-| **Non-small cell lung carcinoma** | the MAPK3 story; best ranking precision in the panel (19× enrichment) |
-| **HER2-positive breast carcinoma** | passes clinical sanity outright — ERBB2 at rank 14, PIK3CA at rank 5, AUC 0.94 on 599 known targets. **Lead with this one in front of a clinician** |
-| **Diabetes mellitus** | best discoverer of *approved* targets across all 670 validation diseases |
-| **Obesity disorder** | the filtering story and the ADRB2 counterexample |
+| **HER2-positive breast carcinoma** | **the spine.** Reconstructs at AUC **0.9365**; a clinician recognises the top of the list immediately. Lead with this |
+| **Non-small cell lung carcinoma** | strong reconstruction, and the subtype limitation is visible in the same family |
+| **Diabetes mellitus** | broad, well-annotated, reconstructs cleanly |
+| **Obesity disorder** | the filtering story — a coherent neuroendocrine cluster the scientist can sanity-check |
 
-**Triple-negative breast is the deliberate hard case, not a fifth showcase.** Its list is the only
-genuinely subtype-specific one in the breast panel and the only one we cannot score (8 known
-associations). Use it for Q6 — *"here are four things we already think are wrong with this list"* —
-never as a success story. See [BREAST_SURGEON_BRIEFING.md](BREAST_SURGEON_BRIEFING.md).
+**Triple-negative breast is the deliberate hard case.** Only 8 known associations, so it cannot be
+scored — use it in Act 3 to show where the method runs out, never as a success story. See
+[BREAST_SURGEON_BRIEFING.md](BREAST_SURGEON_BRIEFING.md).
 
-**Retire:** type 2 diabetes (weakest on every axis, and its parent term is the strongest), chronic
-kidney disease (below chance on discovery), and two of the three lung terms (~63% shared lists).
+## What not to show
 
-## 7. What each disease's list actually looks like
-
-The qualitative half of validation — and useful in the room, because a scientist checks coherence
-before they check any metric.
-
-| Disease | Signature of the top candidates |
+| Do not show | Because |
 |---|---|
-| **NSCLC / lung adenocarcinoma** | JAK-STAT and chromatin (STAT1, STAT5A/B, SMARCA2, HDAC3), the PI3K axis (IRS1/2, PIK3R2, PDPK1), DNA repair (MRE11, TOPBP1), and CRKL — an amplified 22q11 driver |
-| **HER2-positive breast** | ERBB2 itself at #13, TP53 #2, PIK3CA #7, AKT1 #10 — the PI3K/AKT axis that actually drives trastuzumab resistance |
-| **triple-negative breast** | the homologous-recombination panel: RAD50, NBN, ATM, BRCA2, BRIP1, BARD1, RAD51C. **Read the briefing before showing this one** |
-| **obesity disorder** | GHSR (#8, ghrelin receptor), ADRB2 (#17, approved-validated), MCHR1 (#23) — a coherent neuroendocrine receptor cluster |
+| Novel discovery as the headline | It is the claim we are explicitly not making today. Footnote only |
+| The ablation ladder (7 → 10 → 12 → 14 features) | A modelling decision nobody asked about |
+| Raw AUC as the opening number | It answers a question they did not ask. Lead with the evidence base |
+| The drug-target benchmark as a score | A lookup table beats us on it |
+| Any safety or toxicity claim | We do not have one |
+| Drug badges as a filter | They are the ground truth the enrichment is measured against |
+| Advice on how to run their discovery programme | Not our expertise, and claiming it costs us the room |
 
-**Ranking quality declines across the range**, pooled over the five personas: known-target density
-**66.0%** (ranks 1–10) → **48.0%** (41–50). **That is calibration evidence, not a novelty ceiling.**
+## The on-graph shot
 
-*Do not claim the decline is monotonic — it is not. Band by band it runs 66.0 → 54.0 → 62.0 → 48.0 →
-48.0, and with only 50 observations per band that wobble is what you would expect from noise. The
-supportable claim is the trend across the range, not the shape within it.*
-
-## 8. The on-graph shot
-
-**Anchor demo:** the breast-cancer top-10 contained **RAD50, NBN and MRE11** — all three members of the
-MRN double-strand-break repair complex, two of them novel. *The prediction explains itself on the
-canvas.*
+The mechanism view is what makes a ranked row into something a scientist can argue with: top-ranked
+genes, plus the interaction edges connecting them to genes already associated with the disease.
 
 ```cypher
 // Why these genes? Top-10 predictions + interaction evidence to a KNOWN module gene.
@@ -283,11 +270,15 @@ WHERE m.node_index <> g.node_index
 RETURN g, ppi, m, assoc, D LIMIT 300
 ```
 
+**Pick the anchor from the live ranking, not from memory.** The often-quoted version — *"the breast
+top-10 contained RAD50, NBN and MRE11, the whole MRN repair complex"* — does not survive checking:
+those rank **55, 99, 401** on HER2+ and **1, 5, 702** on TNBC. Re-derive the cluster on the disease you
+are demoing, the morning of the demo, and name the ranks you actually see.
+
 Three conventions that will bite you: traversal is **undirected**; relationship variables must be
 **bound and returned** or the canvas shows floating nodes; the engine's label for genes is `protein`.
-Node indices are snapshot-specific — **re-derive before running**. Use the interactive explorer, not the
-query recipe.
+Node indices are snapshot-specific — re-derive before running.
 
 ⚠ **If you also show the drug path** (`gene ← drug → disease`), be precise: no model consumes it as a
-feature, but it *is* one of three routes admitting pairs to the candidate pool, so it shapes the scored
-population (TARGET_PRIORITIZER §5.2.1). **Say "not a feature", not "not used".**
+feature, but it *is* one of three routes admitting pairs to the candidate pool. **Say "not a feature",
+not "not used".**

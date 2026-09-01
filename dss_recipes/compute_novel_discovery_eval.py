@@ -75,7 +75,7 @@ TRUTHS = {"approved": approved, "investigational": investig, "any": approved | i
 for k, v in TRUTHS.items():
     print(f"  {k:16s} {len(v):>7,} (disease, gene) pairs")
 
-sc = dataiku.Dataset("scored_m3").get_dataframe(
+sc = dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", "proba_1"])
 sc["disease"] = sc.disease_index.map(dname)
 keys = list(zip(sc.disease_index.astype(int), sc.gene_index.astype(int)))

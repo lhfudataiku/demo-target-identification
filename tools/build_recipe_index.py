@@ -41,6 +41,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, ".index")
 SNAP = os.path.join(INDEX, "dss_snapshot.json")
 CYPHER_DIR = os.path.join(ROOT, "dss_recipes", "cypher")
+VISUAL_DIR = os.path.join(ROOT, "dss_recipes", "visual")
+
+# Visual-recipe payload keys worth mirroring. A shaker/grouping/filter carries its
+# governed values in formulas and comparison literals, and until 2026-09-01 nothing
+# in the repo held them -- which is how `n_pos >= 30` in compute_validation_auc_ci sat
+# in the flow for weeks while every doc, notebook and python recipe said 50.
+VISUAL_TYPES = ("shaker", "grouping", "join", "sampling", "split", "window",
+                "topn", "sort", "distinct", "pivot", "vstack")
 CLASSES = os.path.join(ROOT, "tools", "recipe_classes.json")
 REGISTRY = os.path.join(ROOT, "tools", "model_registry.json")
 PROJECT = os.environ.get("DKU_PROJECT", "DEMO_TARGET_IDENTIFICATION")
@@ -111,6 +119,7 @@ def refresh():
             "outputs": sorted({x.get("ref") for v in (d.get("outputs") or {}).values()
                                for x in (v.get("items") or []) if x.get("ref")}),
             "cypher": cy,
+            "visual": _visual_values(d.get("type", ""), d),
         }
         if i % 15 == 0:
             print("  ... %d/%d" % (i, len(names)))
@@ -147,6 +156,16 @@ def refresh():
     snap["_sibling_recipes"] = sorted(sibling)
     snap["_models"] = models
     snap["_schemas"] = schemas
+    # Snapshot the project variables. They are a governed surface with no other repo
+    # copy: DEC-MEAS-004 pins trust_n_pos and panel_n_pos, and until this existed a
+    # change to either was invisible to review and to check_governed_values.py.
+    raw_vars = sh(["dku", "project", "get-variables", "-P", PROJECT, "--format", "json"])
+    try:
+        snap["_variables"] = json.loads(raw_vars).get("standard", {})
+    except (ValueError, AttributeError):
+        print("  WARN could not read project variables", file=sys.stderr)
+        snap["_variables"] = {}
+
     os.makedirs(INDEX, exist_ok=True)
     json.dump(snap, open(SNAP, "w"), indent=1, sort_keys=True)
 
@@ -156,14 +175,27 @@ def refresh():
     # `_sibling_recipes` is a LIST and `_models` / `_schemas` are dicts, so the meta keys must be
     # skipped before calling .get() -- otherwise --refresh dies with AttributeError AFTER the
     # snapshot has already been written, leaving the index half-refreshed and the exit code 0.
-    unmirrored = [n for n, r in sorted(snap.items())
-                  if not n.startswith("_") and r.get("code") and not os.path.exists(
-                      os.path.join(ROOT, "dss_recipes", n + ".py"))]
-    for n in unmirrored:
+    # `not os.path.exists` alone meant --refresh could only CREATE a missing mirror, never update a
+    # drifted one. On 2026-08-25 twelve mirrors still read `scored_m3` months after the live recipes
+    # moved to `scored_champion`, and --refresh reported success without touching any of them.
+    # A refresh that cannot refresh is worse than no refresh: it launders staleness as freshness.
+    unmirrored, drifted = [], []
+    for n, r in sorted(snap.items()):
+        if n.startswith("_") or not r.get("code"):
+            continue
+        mp = os.path.join(ROOT, "dss_recipes", n + ".py")
+        if not os.path.exists(mp):
+            unmirrored.append(n)
+        elif open(mp).read() != r["code"]:
+            drifted.append(n)
+    for n in unmirrored + drifted:
         open(os.path.join(ROOT, "dss_recipes", n + ".py"), "w").write(snap[n]["code"])
     if unmirrored:
         print("mirrored %d previously-unversioned python recipes: %s"
               % (len(unmirrored), ", ".join(unmirrored)))
+    if drifted:
+        print("REFRESHED %d drifted mirror(s) from live DSS: %s"
+              % (len(drifted), ", ".join(drifted)))
 
     # mirror the Cypher so a gate change becomes a reviewable diff
     os.makedirs(CYPHER_DIR, exist_ok=True)
@@ -178,8 +210,65 @@ def refresh():
                % (name, ", ".join(r["inputs"]) or "-", ", ".join(r["outputs"]) or "-"))
         open(os.path.join(CYPHER_DIR, name + ".cypher"), "w").write(hdr + body + "\n")
         n_cy += 1
-    print("snapshot: %d recipes, %d cypher mirrored to dss_recipes/cypher/" % (len(snap), n_cy))
+    # mirror visual-recipe formulas for the same reason as the Cypher: a threshold that
+    # lives only inside a shaker step is invisible to review. Written as .txt rather than
+    # .json so a diff reads as lines of formula, not as re-indented JSON.
+    os.makedirs(VISUAL_DIR, exist_ok=True)
+    seen_visual = set()
+    for name, r in sorted(snap.items()):
+        # the guard comes FIRST: `_models` / `_schemas` / `_sibling_recipes` are lists,
+        # not recipe dicts, and .get() on them raises
+        if name.startswith("_") or not isinstance(r, dict):
+            continue
+        v = r.get("visual")
+        if not v:
+            continue
+        lines = ["# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:",
+                 "# this file is a copy for review and grep. The live payload is in the DSS recipe.",
+                 "# recipe: %s (%s)" % (name, r.get("type", "?")),
+                 "# inputs: %s" % (", ".join(r["inputs"]) or "-"),
+                 "# outputs: %s" % (", ".join(r["outputs"]) or "-"), ""]
+        for e in v.get("expressions", []):
+            lines.append("expression: %s" % e)
+        for x in v.get("values", []):
+            lines.append("value: %s" % x)
+        open(os.path.join(VISUAL_DIR, name + ".txt"), "w").write("\n".join(lines) + "\n")
+        seen_visual.add(name + ".txt")
+    # drop mirrors for recipes that no longer exist, or the deleted legacy branch would
+    # linger here exactly as it lingered in FLOW_MAP
+    for stale in sorted(set(os.listdir(VISUAL_DIR)) - seen_visual):
+        if stale.endswith(".txt"):
+            os.remove(os.path.join(VISUAL_DIR, stale))
+    print("snapshot: %d recipes, %d cypher mirrored to dss_recipes/cypher/, "
+          "%d visual mirrored to dss_recipes/visual/" % (len(snap), n_cy, len(seen_visual)))
     return snap
+
+
+def _visual_values(rtype, payload):
+    """The governed-looking literals inside a visual recipe's payload.
+
+    Formulas and comparison values only -- not the whole payload, which is mostly
+    column plumbing that would bury the two lines a reviewer needs to see. Returns
+    None for a code recipe, so the snapshot stays unchanged for those.
+    """
+    if rtype not in VISUAL_TYPES:
+        return None
+    # A visual recipe's steps live in the TOP-LEVEL `payload` key, not in `params` --
+    # `params` holds only engine config. `payload` is itself a JSON *string*, so the
+    # literals are double-escaped inside the settings blob; scan the parsed form.
+    body = payload.get("payload") if isinstance(payload, dict) else None
+    if isinstance(body, str):
+        try:
+            body = json.loads(body)
+        except (ValueError, TypeError):
+            pass
+    blob = json.dumps({"payload": body, "params": (payload or {}).get("params")})
+    exprs = sorted(set(re.findall(r'"expression"\s*:\s*"((?:[^"\\]|\\.){1,400})"', blob)))
+    values = sorted({v for v in re.findall(r'"value"\s*:\s*"([^"]{1,60})"', blob) if v})
+    if not exprs and not values:
+        return None
+    return {"expressions": [e.encode().decode("unicode_escape") for e in exprs],
+            "values": values}
 
 
 def source_for(name, rec):
@@ -194,8 +283,17 @@ def source_for(name, rec):
     return "", ""
 
 
-def mirror_status(stem, own, sibling):
+def mirror_status(stem, own, sibling, snap=None, path=None):
+    """Status of one mirrored file.
+
+    This used to test only whether a live recipe of that NAME existed anywhere, so "0 stale mirror"
+    was reported while twelve mirrors held m3-era code. Name-existence and content-freshness are
+    different questions; DRIFTED MIRROR answers the second."""
     if stem in own:
+        if snap and path and os.path.exists(path):
+            live = (snap.get(stem) or {}).get("code")
+            if live is not None and open(path).read() != live:
+                return "DRIFTED MIRROR (content differs from live DSS)"
         return "MIRROR"
     if stem in sibling:
         return "MIRROR (graph-build project)"
@@ -305,9 +403,12 @@ def main():
     mreg = reg.get("models", {})
 
     blob = {n: json.dumps(r) for n, r in snap.items() if not n.startswith("_")}
-    dec_lines = {}
-    dpath = os.path.join(ROOT, "DECISIONS.md")
-    dec_txt = open(dpath).read().split("\n") if os.path.exists(dpath) else []
+    decision_sources = []
+    for rel in ("docs/decisions/DECISION_REGISTER.md",
+                "archive/decisions/DECISIONS_2026-08-31.md"):
+        path = os.path.join(ROOT, rel)
+        if os.path.exists(path):
+            decision_sources.append((rel, open(path).read().split("\n")))
 
     # Cross-check the champion's hand-recorded metrics against .index/assertions.tsv. Without this
     # the registry becomes another unguarded number surface -- the very thing the indexes exist to
@@ -334,8 +435,14 @@ def main():
                 drift.append("%s=%s" % (key, v))
 
     mrows, strays, unrecorded = [], [], []
-    for mid, meta in sorted(models.items(), key=lambda kv: kv[1]["name"]):
-        name = meta["name"]
+    # Iterate live saved models UNION registry entries. Seven retired models were deleted from the
+    # flow on 2026-08-26; iterating only live objects would have silently dropped the whole ablation
+    # ladder from the index, which is the one place those numbers are meant to stay greppable.
+    combined = {mid: meta["name"] for mid, meta in models.items()}
+    for mid, rec_ in mreg.items():
+        combined.setdefault(mid, rec_.get("name", mid))
+    for mid, name in sorted(combined.items(), key=lambda kv: kv[1]):
+        meta = models.get(mid) or {"name": name}
         consumers = sorted(n for n, b in blob.items() if mid in b)
         # a consumer is "expected" if it is this model's own train/score recipe or a declared
         # ablation consumer; anything else is a live entry point on a retired model
@@ -349,14 +456,15 @@ def main():
         if rec is None:
             unrecorded.append("%s (%s)" % (name, mid))
             rec = {}
-        refs = [str(i + 1) for i, ln in enumerate(dec_txt) if name in ln]
-        dec_lines[mid] = refs
+        refs = ["%s:%d" % (rel, i + 1)
+                for rel, lines in decision_sources for i, ln in enumerate(lines) if name in ln]
 
         def g(k):
             v = rec.get(k)
             return "?" if v is None else v
         mrows.append({
             "model": name, "id": mid,
+            "in_flow": "yes" if mid in models else "no (lab %s)" % rec.get("lab_session", "?"),
             "role": (("CHAMPION" if mid == champion else
                       "ablation" if mid in ladder else "-")),
             "n_feat": g("n_features"),
@@ -368,7 +476,7 @@ def main():
             "delta": rec.get("delta", "?"),
             "verdict": rec.get("verdict", "NOT RECORDED"),
             "consumers": ",".join(consumers) or "-",
-            "decisions_lines": ",".join(refs) or "-",
+            "decision_refs": ",".join(refs) or "-",
         })
 
     # ---- code index: every tracked .py/.json, and whether anything references it ----
@@ -378,13 +486,22 @@ def main():
     code_files = [f for f in (sh(["git", "ls-files"]).split("\n")) if f.strip()
                   and (f.endswith(".py") or f.endswith(".json") or f.endswith(".cypher")
                        or f.endswith(".sh"))
+                  # Harness configuration is not project code. `.claude/`/`.codex/` are already
+                  # excluded from the claim manifest for the same reason; without this a tracked
+                  # .claude/settings.json would enter the code index and stale it on every edit.
+                  and not f.startswith(".claude/") and not f.startswith(".codex/")
                   and not f.startswith(".index/") and not f.startswith("__pycache__")]
     recipe_names = {n for n in snap if not n.startswith("_")}
     entry_points = set(classes.get("entry_points") or [])
     haystack = {}
     for f in (sh(["git", "ls-files"]).split("\n")):
         f = f.strip()
+        # `.claude/`/`.codex/` are excluded as reference sources for the same reason they are
+        # excluded as entries: a permission allowlist that names a tool is not a consumer of it, and
+        # the skill copies there would count one document as four independent references.
         if not f or f.startswith(".index/") or "__pycache__" in f:
+            continue
+        if f.startswith(".claude/") or f.startswith(".codex/"):
             continue
         fp = os.path.join(ROOT, f)
         if os.path.isfile(fp) and os.path.getsize(fp) < 4_000_000:
@@ -404,7 +521,8 @@ def main():
             status = mirror_status(stem, recipe_names, sibling_recipes)
         elif f.startswith("dss_recipes/"):
             kind = "recipe-mirror"
-            status = mirror_status(stem, recipe_names, sibling_recipes)
+            status = mirror_status(stem, recipe_names, sibling_recipes,
+                                   snap, os.path.join(ROOT, f))
         elif f.startswith("notebooks/"):
             kind, status = "notebook", "LIVE (tripwire)"
         elif f.startswith("tools/"):
@@ -431,10 +549,10 @@ def main():
                                                      not r["status"].startswith("STALE"),
                                                      r["path"])),
                         ["path", "kind", "status", "n_refs", "referenced_by"]),
-        "models.tsv": tsv(mrows, ["model", "id", "role", "n_feat", "assoc_auroc", "assoc_auprc",
+        "models.tsv": tsv(mrows, ["model", "id", "in_flow", "role", "n_feat", "assoc_auroc", "assoc_auprc",
                                   "hub_spread", "drug_all", "drug_supported", "tract_dm200",
                                   "disc_lift50", "disc_lift200", "delta", "verdict",
-                                  "consumers", "decisions_lines"]),
+                                  "consumers", "decision_refs"]),
         "recipes.tsv": tsv(sorted(rows, key=lambda r: (r["gate"] == "-", r["recipe"])),
                            ["recipe", "type", "gate", "class", "auto_hint", "source",
                             "inputs", "outputs"]),

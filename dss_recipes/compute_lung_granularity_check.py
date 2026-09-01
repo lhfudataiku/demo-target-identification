@@ -24,7 +24,7 @@ TOPN = 50
 SCORE = "proba_1"
 
 # Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46
-df = dataiku.Dataset("scored_m3").get_dataframe(
+df = dataiku.Dataset("scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", "disease_family_id", SCORE])
 df = df[df.disease_family_id == KEY]
 

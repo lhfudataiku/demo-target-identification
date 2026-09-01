@@ -1,0 +1,35 @@
+name: checks
+
+# The repository's guarantees are generated artifacts: harness entry points, ten .index/ tables and
+# the claim registry. Before this workflow they held only when a contributor remembered to run
+# tools/check_indexes.sh, so drift could reach main unnoticed.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # DSS runs Python 3.9 and the harness documents 3.9-only failure modes, so the checks run on
+      # the version the project actually targets.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      # Indexes current, claim registry valid, harness copies byte-identical to harness/ sources,
+      # every relative link and file mention resolving. Reads the committed DSS snapshot; needs no
+      # DSS credentials, no network and no third-party package.
+      - name: Indexes, harness parity and links
+        run: ./tools/check_indexes.sh
+
+      # Enumerated from git rather than discovered: tools/ carries no package marker, so
+      # `unittest discover` cannot import the start directory, and naming modules by hand would let
+      # a new test file be skipped in silence.
+      - name: Unit tests
+        run: git ls-files 'tools/tests/test_*.py' | sed 's|/|.|g; s|\.py$||' | xargs python3 -m unittest

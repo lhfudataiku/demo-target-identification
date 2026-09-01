@@ -194,9 +194,9 @@ if len(per) > 10:
     print(f"  Spearman(pool_size, coverage) = {r:+.3f}  "
           f"-> {'sparse diseases ARE the affected ones' if r > 0.3 else 'not simply a size effect'}")
 
-miss_out = miss.merge(dr, on="gene_index", how="left")
-miss_out["gene"] = miss_out.gene_index.map(gname)
-miss_out["disease"] = miss_out.disease_index.map(dname)
 dataiku.Dataset("pool_reachability").write_with_schema(per)
-dataiku.Dataset("pool_unreachable_targets").write_with_schema(miss_out)
+# `pool_unreachable_targets` dropped 2026-08-25: nothing read it. The WHY-unreachable breakdown it
+# summarised is still printed above from `miss`, which is where the analysis actually lives.
+
+
 

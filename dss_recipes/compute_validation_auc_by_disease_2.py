@@ -19,7 +19,7 @@ COLS = ["disease_index", "gene_index", "is_target", "disease_split_key",
         "split_key_name", "disease_family_id", "anchor_name", SCORE]
 
 # Dataset validation_set_2_scored renamed to scored_m2 by liheng.fu@dataiku.com on 2026-08-13 12:19:46
-df = dataiku.Dataset("scored_m3").get_dataframe(columns=COLS)
+df = dataiku.Dataset("scored_champion").get_dataframe(columns=COLS)
 print("scored rows:", len(df), "| diseases:", df.disease_index.nunique(),
       "| split keys:", df.disease_split_key.nunique())
 

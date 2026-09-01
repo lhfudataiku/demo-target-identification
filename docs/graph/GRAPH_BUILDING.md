@@ -1,5 +1,10 @@
 # Graph Building — `DEMO_KG_LS`
 
+> **Lifecycle:** Canonical · **Audience:** Part 1 builders and reviewers · **Authority:** accepted graph
+> construction method and contract · **Update when:** sources, schema, pipeline or acceptance contract
+> changes · **Generated dependencies:** none; measurements are re-derived from the flow · **Excludes:**
+> Part 2 modelling and routine job/build logs.
+
 > Technical documentation for the **data pipeline and graph-building webapp**: what goes in, how it
 > is harmonized, the schema it conforms to, and what comes out.
 >
