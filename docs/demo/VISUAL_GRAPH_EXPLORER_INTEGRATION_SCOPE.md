@@ -487,6 +487,89 @@ is a product and graph-semantics decision, not a mechanical consequence of adopt
    Prioritizer-provided launch presets.
 7. Present the proposed query set, results and wording for explicit user validation.
 
+**Approved Wave 4 outcome — 2026-09-02:** Act 1 provides the three deterministic launch presets
+below. They remain Target Prioritizer-owned narrative data; they are not duplicated as Explorer saved
+queries. The standalone TP53 PPI starter is removed as narrative duplication.
+
+#### Wave 4 approved query set
+
+Act 1 should use three deterministic launch presets. Each answers a different audience question and
+introduces a distinct part of the assembled evidence graph without turning Act 1 into a candidate-
+mechanism explanation.
+
+| Preset | Audience question | Expected graph result | Recognition evidence |
+|---|---|---|---|
+| Breast cancer evidence neighbourhood | How does the graph connect a disease to associated proteins and the interactions among them? | One breast-cancer disease node, its associated proteins and interactions among those proteins | Only `disease`, `protein`, `disease_protein` and `protein_protein` appear; the live result has 1 disease, 24 proteins, 24 association edges and 40 PPI edges |
+| TP53 pathway context | What curated pathway context can the graph show for a familiar protein? | TP53 and a bounded set of its pathways | Only `protein`, `pathway` and `pathway_protein` appear; the live result has 1 protein, 30 pathways and 30 edges |
+| TP53 drug context | What tractability context does the graph contain for a familiar protein? | TP53 and its directly linked drugs | Only `protein`, `drug` and `drug_protein` appear; the live result has 1 protein, 5 drugs and 5 edges; this is descriptive context, not a safety or target claim |
+
+The graph view is the intended result mode for all three presets. In table mode, one row represents
+one matched path binding, so the query `LIMIT` is a row bound rather than a promise about unique
+visible nodes or edges. The Explorer deduplicates repeated graph entities in its rendered totals.
+
+```cypher
+// Breast cancer evidence neighbourhood
+MATCH (d:disease)<-[e1:disease_protein]-(p1:protein)
+      -[e2:protein_protein]-(p2:protein)-[e3:disease_protein]->(d)
+WHERE LOWER(d.node_name) = LOWER("breast cancer")
+RETURN d, e1, p1, e2, p2, e3
+ORDER BY p1.node_index, p2.node_index,
+         OFFSET(id(e1)), OFFSET(id(e2)), OFFSET(id(e3))
+LIMIT 40
+```
+
+```cypher
+// TP53 pathway context
+MATCH (p:protein)-[e:pathway_protein]-(w:pathway)
+WHERE LOWER(p.node_name) = LOWER("TP53")
+RETURN p, e, w
+ORDER BY w.node_index, OFFSET(id(e))
+LIMIT 30
+```
+
+```cypher
+// TP53 drug context
+MATCH (p:protein)-[e:drug_protein]-(dr:drug)
+WHERE LOWER(p.node_name) = LOWER("TP53")
+RETURN p, e, dr
+ORDER BY dr.node_index, OFFSET(id(e))
+LIMIT 25
+```
+
+The standalone **TP53 protein interactions** starter is removed. Its PPI layer is already visible in
+the breast-cancer neighbourhood, while the adjacent Act 1 provenance card explains PPI sources more
+directly. The previously rejected “everything TP53 touches” query remains excluded because a global
+limit samples across relationship tables non-deterministically and duplicates the exact node- and
+relationship-type summary cards.
+
+The Target Prioritizer should own these three launch presets in source control because their names,
+order and explanatory copy are part of the Act 1 story. The Visual Graph Explorer owns execution,
+rendering and free exploration. The presets should not also be created as Explorer saved queries:
+without a supported deep-link contract, duplication would introduce configuration drift and the
+handoff still needs the exact visible/copyable Cypher in the Target Prioritizer.
+
+The proposed Act 1 card copy is:
+
+> Choose one of three evidence views, then open Visual Graph Explorer to run it. The presets show how
+> the graph connects a disease to proteins, a familiar protein to pathways, and a familiar protein to
+> drug context. Each query is ordered and bounded for a repeatable demonstration. For open-ended
+> questions, use the Explorer's query generator.
+
+##### Wave 4 live evidence — 2026-09-02
+
+All three queries were run twice in the published Visual Graph Explorer against
+`enriched_index_freezed`. Each repeat produced the same visible node- and edge-group counts listed
+above, with no parser or execution error. The relationships are deliberately traversed undirected,
+matching the published source/target orientations shown by the Explorer, and every relationship is
+returned so the graph remains connected and renderable. Relationship offsets break ordering ties
+before each row limit.
+
+The graph canvas reached a stable rendered state in roughly 1–4.5 seconds in this browser session,
+including editor interaction, UI response and graph-layout stabilization. This is a conservative
+end-to-end demo measurement, not the underlying Kuzu execution time; it therefore does not conflict
+with the sub-second query-engine response observed independently. No saved query, graph, dataset,
+recipe or live webapp configuration was changed during validation.
+
 **Exit criterion:** the user has approved the Act 1 default query set and its intended narrative role.
 No `EvidenceView.vue` migration begins before this gate passes.
 
@@ -500,6 +583,25 @@ No `EvidenceView.vue` migration begins before this gate passes.
 
 **Exit criterion:** Acts 1 and 4 instantiate the same component and differ only through supplied
 context, copy and query data.
+
+#### Wave 5 implementation candidate — awaiting user validation
+
+Act 1 now instantiates the same `VisualGraphExplorerCard` as Act 4 and supplies the approved three
+queries from a static frontend definition. Selecting a preset changes only the visible Cypher. The
+card no longer fetches graph defaults, sends Cypher or natural-language prompts, renders a local
+graph/table result, or exposes local Cypher editing and re-execution. Open-ended exploration is
+directed to the Explorer query generator.
+
+The legacy graph backend remains unchanged as the Phase 6 rollback seam. Repository search finds no
+remaining frontend consumer of `/api/graph/defaults`, `/api/graph/cypher`, `/api/graph/search` or
+`/api/graph/mechanism`; Act 1 continues to load its non-graph evidence cards from `/api/evidence`.
+
+The production frontend build passes. Local UI validation confirmed exactly three starters, stable
+first-starter selection, query-preview replacement on selection, shared-dialog launch, confirmed
+clipboard status, selectable fallback Cypher and focus restoration on close. Local development did
+not configure a DSS Explorer origin, so the shell correctly showed its configured-environment
+fallback instead of creating an iframe. Frontend type checking reports only the pre-existing ECharts
+option-callback diagnostics in the chart components; the Wave 5 files have no reported diagnostic.
 
 ### Phase 6 — backend and dependency cleanup
 
