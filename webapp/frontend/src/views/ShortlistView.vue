@@ -23,13 +23,14 @@
    */
   import { computed, nextTick, onMounted, ref, watch } from 'vue'
   import { apiUrl } from '@/utils/api'
+  import { buildA4ExplorerQueries } from '@/utils/a4ExplorerQueries'
   import ActCard from '@/components/act/ActCard.vue'
   import { EaSelect, EaEmpty } from '@/components/ui'
   import ActTabs from '@/components/act/ActTabs.vue'
   import ActInfo from '@/components/act/ActInfo.vue'
-  import ActGraph from '@/components/act/ActGraph.vue'
+  import VisualGraphExplorerCard from '@/components/graph/VisualGraphExplorerCard.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-  import { Check, Copy, ListFilter, Loader2, Microscope, Network, Play } from 'lucide-vue-next'
+  import { ListFilter, Microscope, Network } from 'lucide-vue-next'
 
   defineOptions({ name: 'ShortlistView' })
 
@@ -116,7 +117,7 @@
   /* ── The selected candidate ────────────────────────────────────────────────
      Both cards below the table read one selection rather than owning separate
      pickers: the act's move is "judge a row, then ask why that row", and two
-     independent selectors would let the drawer and the subgraph describe
+     independent selectors would let the detail and Explorer cards describe
      different genes at the same time. */
   const sel = ref<Row | null>(null)
   const detail = ref<Detail | null>(null)
@@ -126,12 +127,6 @@
   async function selectRow(r: Row) {
     if (selected.value === undefined) return
     sel.value = r
-    // The subgraph is per-gene and costs a DSS round-trip, so it is NOT
-    // refetched here — it waits for its own button. Clearing it keeps a stale
-    // picture of the previous gene from sitting under the new gene's name.
-    graph.value = null
-    graphError.value = null
-    copied.value = false
     detail.value = null
     detailError.value = null
     detailBusy.value = true
@@ -243,110 +238,29 @@
       .filter((g) => g.features.length)
   })
 
-  /* ── The mechanism, on the graph ───────────────────────────────────────────
-     FIVE evidence routes from this candidate to this disease, merged into one
-     subgraph by the backend. Four of them are the champion's own path features
-     (dwpc_GGD / GPGD / GFGD / GBGD); the fifth is the drug route, which is NOT
-     a feature — see the caveat rendered on the card.
-
-     The obvious single query — one OPTIONAL MATCH per route — does not work on
-     this engine: consecutive OPTIONAL MATCH clauses multiply rows instead of
-     adding them, so the four graph routes join to ~16M rows for a well-connected
-     gene and the engine kills the query (measured: 173s, then Interrupted).
-     LIMIT bounds the output, not the join. So the routes run as separate
-     queries, concurrently, and POST /api/graph/mechanism merges them. Every
-     query it ran comes back with the result and is shown below the canvas. */
-  interface GraphNode { id: string; label: string; group_name: string }
-  interface GraphEdge { id: string; src: string; dst: string; group_name: string }
-  interface MechRoute {
-    key: string; label: string
-    /** The champion feature this route is the graph form of; null for drugs. */
-    feature: string | null
-    n_edges: number; row_limit: number; error: string | null
-  }
-  interface GraphResult {
-    mode: 'graph' | 'empty'
-    nodes: GraphNode[]; edges: GraphEdge[]; n_nodes: number; n_edges: number
-    truncated: boolean; dropped_nodes: number
-    routes: MechRoute[]
-    queries: { key: string; label: string; cypher: string }[]
-    /** The five routes as ONE query — for the Visual Graph Explorer, not for here. */
-    explorer_cypher: string
-  }
-
-  const graph = ref<GraphResult | null>(null)
-  const graphBusy = ref(false)
-  const graphError = ref<string | null>(null)
-  const copied = ref(false)
-  const queriesOpen = ref(false)
-
-  /* Deliberately NOT automatic on row select. Five concurrent tool calls is a
-     real DSS round-trip (~4s warm), and firing that per row while someone scans
-     the list spends most of them on genes nobody looked at.
-
-     NB the FIRST call after the graph tool has been idle costs far more — 147s
-     measured cold against 4s warm. Act 1 uses the same tool, so a run-through
-     that opens the evidence base first arrives here warm. */
-  async function runMechanism() {
-    if (!sel.value || selected.value === undefined || graphBusy.value) return
-    graphBusy.value = true
-    graphError.value = null
-    try {
-      const res = await fetch(apiUrl('/api/graph/mechanism'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          disease: selected.value, gene: sel.value.gene_index,
-          disease_name: current.value?.disease_name ?? 'this disease',
-          gene_name: sel.value.gene_name,
-        }),
-      })
-      if (!res.ok) {
-        const d = await res.json().catch(() => null)
-        throw new Error(d?.detail ?? `HTTP ${res.status}`)
-      }
-      graph.value = await res.json()
-    } catch (e) {
-      graphError.value = e instanceof Error ? e.message : String(e)
-      graph.value = null
-    } finally { graphBusy.value = false }
-  }
-
-  /* Routes that found something, and routes that found nothing — both are the
-     answer. "No pathway route" is a fact about this candidate, not a gap. */
-  const routesFound = computed(() => (graph.value?.routes ?? []).filter((r) => r.n_edges > 0))
-  const routesEmpty = computed(() =>
-    (graph.value?.routes ?? []).filter((r) => r.n_edges === 0 && !r.error))
-  const routesFailed = computed(() => (graph.value?.routes ?? []).filter((r) => r.error))
-
-  /* "100 per route" would be false for three of the five, so report the range
-     when they differ and the single value when they do not. */
-  const routeBounds = computed(() => {
-    const ls = [...new Set((graph.value?.routes ?? []).map((r) => r.row_limit))].sort((a, b) => a - b)
-    if (!ls.length) return '—'
-    return ls.length === 1 ? `${ls[0]} paths per route` : `${ls[0]}–${ls[ls.length - 1]} paths per route`
+  /* ── The mechanism, in Visual Graph Explorer ───────────────────────────────
+     Five independently runnable default queries are generated from the live
+     disease/candidate pair. Nothing executes when a row is selected: the user
+     chooses one query, copies it, and runs it in the Explorer. A later query
+     replaces the current Explorer result; Target Prioritizer never joins or
+     accumulates graph responses. */
+  const explorerQueries = computed(() => {
+    if (!sel.value || selected.value === undefined) return []
+    return buildA4ExplorerQueries(selected.value, sel.value.gene_index)
+      .map(({ id, label, description, classification, feature, cap, cypher }) => ({
+        id,
+        label,
+        cypher,
+        description: classification === 'feature'
+          ? `${description} Model feature ${feature}; cap ${cap}.`
+          : `${description} Context only; cap ${cap}.`,
+      }))
   })
 
-  const allCypher = computed(() =>
-    (graph.value?.queries ?? [])
-      .map((q) => `// ${q.label}\n${q.cypher}`)
-      .join('\n\n'))
-
-  /* Copy hands over the ONE-query form, not the five this backend ran. That is
-     the form a person wants in the Explorer, where it returns in about a second
-     — the split exists only because the agent tool's Kuzu cannot hold the join.
-     Copying five queries someone then has to run one at a time would be
-     exporting our constraint rather than the answer. */
-  async function copyCypher() {
-    const text = graph.value?.explorer_cypher
-    if (!text) return
-    try {
-      await navigator.clipboard.writeText(text)
-      copied.value = true
-      setTimeout(() => { copied.value = false }, 1600)
-    } catch { /* clipboard blocked in the iframe — the query is on screen to select */ }
-  }
-
+  const explorerContextTitle = computed(() => {
+    if (!sel.value) return undefined
+    return `${sel.value.gene_name} → ${current.value?.disease_name ?? 'selected disease'}`
+  })
 
   async function loadDiseases() {
     try {
@@ -390,8 +304,6 @@
     sel.value = null
     detail.value = null
     detailError.value = null
-    graph.value = null
-    graphError.value = null
   })
 </script>
 
@@ -708,139 +620,38 @@
         </div>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-6" :icon="Network" title="The mechanism, on the graph"
-               :chips="[['live', 'live']]"
-               desc="Every route from this candidate to the disease's own annotated genes — interaction, pathway, molecular function, biological process, and drug."
-               :src="['Kuzu folder (ytvuniN8)', 'tool b6Rpbve']">
-        <EaEmpty v-if="!sel" :icon="Network" title="Pick a row"
-                 description="The queries are generated from the candidate you select." />
-
-        <div v-else class="flex flex-col gap-3">
-          <p class="text-[12.5px] leading-relaxed text-muted-foreground">
-            Four of these routes are the graph form of the model's own path features; the fifth is the
-            drug route, which is <b class="text-foreground">not</b> one.
-          </p>
-
-          <div class="flex flex-wrap items-center gap-2">
-            <button type="button" :disabled="graphBusy"
-                    class="flex items-center gap-1.5 rounded-md bg-primary px-2.5 py-1 text-xs
-                           text-primary-foreground disabled:opacity-50"
-                    @click="runMechanism">
-              <Loader2 v-if="graphBusy" class="size-3 animate-spin" />
-              <Play v-else class="size-3" />
-              {{ graphBusy ? 'Querying five routes…' : graph ? 'Run again' : 'Show the mechanism' }}
-            </button>
-            <button v-if="graph" type="button"
-                    class="flex items-center gap-1.5 rounded-md border border-input px-2.5 py-1
-                           text-xs text-muted-foreground hover:bg-accent/50"
-                    @click="copyCypher">
-              <Check v-if="copied" class="size-3" />
-              <Copy v-else class="size-3" />
-              {{ copied ? 'Copied' : 'Copy query for the Explorer' }}
-            </button>
-            <span class="font-mono text-[10.5px] text-muted-foreground">follows the selected row</span>
-          </div>
-
-          <p v-if="graphError"
-             class="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-            {{ graphError }}
-          </p>
-
-          <template v-if="graph">
-            <ActGraph v-if="graph.n_nodes" :nodes="graph.nodes" :edges="graph.edges" :height="380" />
-
-            <!-- Which routes exist, and which do not. An absent route is a fact
-                 about this candidate, not a gap in the picture — a novel gene
-                 with no drug route is exactly what "novel" means. -->
-            <div class="flex flex-col gap-1">
-              <div v-for="r in routesFound" :key="r.key"
-                   class="flex items-baseline justify-between gap-3 rounded-md bg-muted/40 px-2.5 py-1">
-                <span class="text-[12.5px]">
-                  via {{ r.label }}
-                  <span v-if="r.feature" class="ml-1 font-mono text-[10px] text-muted-foreground">{{ r.feature }}</span>
-                  <span v-else
-                        class="ml-1 rounded bg-chart-4/25 px-1 py-0.5 font-mono text-[9.5px] uppercase">not a feature</span>
-                </span>
-                <span class="flex-none font-mono text-[11px] tabular-nums text-muted-foreground">
-                  {{ r.n_edges }} edges
-                </span>
-              </div>
-              <p v-if="routesEmpty.length" class="text-[11.5px] leading-relaxed text-muted-foreground">
-                <b class="text-foreground">No route via</b>
-                {{ routesEmpty.map((r) => r.label).join(', ') }} — nothing connects this candidate to
-                the disease that way, which is part of the answer rather than a missing picture.
-              </p>
-              <p v-for="r in routesFailed" :key="r.key"
-                 class="text-[11.5px] leading-relaxed text-destructive">
-                The {{ r.label }} route did not run: {{ r.error }}
-              </p>
-            </div>
-
-            <div class="flex flex-wrap items-baseline gap-x-4 font-mono text-[10.5px] text-muted-foreground">
-              <span>
-                <b class="text-primary-foreground">{{ graph.n_nodes }}</b> nodes ·
-                <b class="text-primary-foreground">{{ graph.n_edges }}</b> edges
-              </span>
-              <span v-if="graph.truncated" class="text-destructive">
-                capped — {{ graph.dropped_nodes }} further nodes not drawn
-              </span>
-              <!-- Per-route, because the bounds differ: the GO routes are tighter
-                   than PPI and the drug route tighter still. One number here
-                   would be wrong for three of the five. -->
-              <span>path bound {{ routeBounds }}</span>
-            </div>
-
-            <!-- Two forms, and the difference is the point. The one-query form
-                 is what a person should run in the Explorer; the five are what
-                 this backend had to execute to draw the canvas above. -->
-            <div class="rounded-md border border-border">
-              <button type="button"
-                      class="flex w-full items-center justify-between px-2.5 py-1.5 font-mono
-                             text-[10.5px] text-muted-foreground hover:bg-muted/40"
-                      @click="queriesOpen = !queriesOpen">
-                <span>{{ queriesOpen ? '▾' : '▸' }} the Cypher — one query for the Explorer,
-                  {{ graph.queries.length }} for this canvas</span>
-                <span class="text-[10px]">{{ queriesOpen ? 'hide' : 'show' }}</span>
-              </button>
-              <div v-if="queriesOpen" class="flex flex-col gap-2 border-t border-border p-2">
-                <p class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
-                  one query · run this in the Visual Graph Explorer
-                </p>
-                <pre class="max-h-72 overflow-auto rounded-md bg-muted/40 p-2.5 font-mono
-                            text-[10.5px] leading-relaxed">{{ graph.explorer_cypher }}</pre>
-                <p class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
-                  the {{ graph.queries.length }} that drew the canvas above
-                </p>
-                <pre class="max-h-72 overflow-auto rounded-md bg-muted/40 p-2.5 font-mono
-                            text-[10.5px] leading-relaxed">{{ allCypher }}</pre>
-              </div>
-            </div>
-          </template>
-
-          <div class="rounded-lg border border-dashed border-border px-3.5 py-2.5 text-[11.5px] leading-relaxed text-muted-foreground">
-            <p><b class="text-foreground">The drug route is not a model feature.</b> No feature
-              traverses a drug node, so nothing on that route fed the score. It <b class="text-foreground">is</b>
-              one of three routes admitting a pair into the candidate pool, so it shaped the population
-              that got scored — <i>not a feature</i>, never <i>not used</i>. Only `indication` and
-              `drug_investigated_for` exist here; contraindication was never built.</p>
-            <p class="mt-1.5"><b class="text-foreground">Why five queries here and one in the Explorer.</b>
-              As a single query the <code class="font-mono text-[10.5px]">OPTIONAL MATCH</code> clauses
-              <b class="text-foreground">multiply</b> rows rather than adding them, and
-              <code class="font-mono text-[10.5px]">LIMIT</code> bounds the output, not the join. The
-              <b class="text-foreground">Visual Graph Explorer runs it in about a second</b> — it talks to
-              Kuzu directly. This card cannot: its only path is the graph agent tool, whose Kuzu runs in a
-              memory-capped kernel and answers <i>“the buffer pool is full”</i> after a minute or more. So
-              the canvas is drawn from the five routes run separately and merged, and the copy button hands
-              you the single query for the Explorer.</p>
-            <p class="mt-1.5">Traversal is <b class="text-foreground">undirected</b>; relationship variables
-              must be <b class="text-foreground">bound and returned</b> or the canvas shows floating nodes;
-              the engine's label for genes is <code class="font-mono text-[10.5px]">protein</code>. The two
-              GO routes cap the term's own degree at 200, or a hub like <i>protein binding</i> matches
-              everything and means nothing. Node indices are snapshot-specific and generated from the live
-              row. Run these in the interactive explorer, never a query recipe.</p>
-          </div>
-        </div>
+      <ActCard v-if="!sel" span="col-span-12 lg:col-span-6" :icon="Network"
+               title="Explore the evidence graph"
+               desc="Choose one of five default evidence queries to run in Visual Graph Explorer."
+               :chips="[['live', 'live']]" :src="['Kuzu folder (ytvuniN8)']">
+        <EaEmpty :icon="Network" title="Pick a row"
+                 description="The five queries are generated locally from the candidate you select." />
       </ActCard>
+
+      <VisualGraphExplorerCard v-else span="col-span-12 lg:col-span-6"
+               title="Explore the evidence graph"
+               description="Choose one of five default evidence queries. The Explorer displays one query result at a time; results are not combined."
+               :context-title="explorerContextTitle"
+               :starter-queries="explorerQueries"
+               handoff="Create a new query in the Explorer, paste the copied Cypher, and run it. Running another default query replaces the current result."
+               :chips="[['live', 'live']]" :src="['Kuzu folder (ytvuniN8)']">
+        <div class="rounded-lg border border-dashed border-border px-3.5 py-2.5 text-[11.5px] leading-relaxed text-muted-foreground">
+          <p><b class="text-foreground">Four queries correspond to model features.</b> PPI interaction,
+            shared pathway, shared molecular function, and shared biological process are graph forms
+            of the model's path features. The drug query is additional context.</p>
+          <p class="mt-1.5"><b class="text-foreground">The drug route is not a model feature.</b> No
+            feature traverses a drug node, so nothing on that route fed the score. It is one of three
+            routes admitting a pair into the candidate pool, so it shaped the population that got
+            scored — <i>not a feature</i>, never <i>not used</i>.</p>
+          <p class="mt-1.5"><b class="text-foreground">Each query is independent.</b> Selecting a row
+            only prepares Cypher; it does not query the graph. Run one query at a time in the Explorer.
+            Publishing captures only the currently displayed result.</p>
+          <p class="mt-1.5">Traversal is <b class="text-foreground">undirected</b>, relationship variables
+            are bound and returned, and the engine's gene label is
+            <code class="font-mono text-[10.5px]">protein</code>. The two GO queries exclude terms with
+            degree above 200. Node indices are snapshot-specific and generated from the selected row.</p>
+        </div>
+      </VisualGraphExplorerCard>
     </div>
   </div>
 </template>

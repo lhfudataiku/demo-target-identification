@@ -23,6 +23,8 @@
     cypher?: string
     handoff?: ExplorerLaunchContext['handoff']
     starterQueries?: VisualGraphExplorerStarter[]
+    chips?: [string, string][]
+    src?: string[]
     span?: string
   }>(), { span: 'col-span-12' })
 
@@ -36,13 +38,23 @@
   const copied = ref(false)
   const copyFailed = ref(false)
 
+  const selectedStarter = computed(() =>
+    props.starterQueries?.find((starter) => starter.id === selectedStarterId.value) ?? null)
   const preparedCypher = computed(() => {
-    const selected = props.starterQueries?.find((starter) => starter.id === selectedStarterId.value)
-    return selected?.cypher ?? props.cypher ?? ''
+    return selectedStarter.value?.cypher ?? props.cypher ?? ''
   })
   const hasQuery = computed(() => Boolean(preparedCypher.value.trim()))
 
-  watch(() => props.cypher, () => { selectedStarterId.value = null })
+  watch(
+    () => props.starterQueries?.map((starter) => starter.id).join('\u0000') ?? '',
+    () => {
+      const starters = props.starterQueries ?? []
+      if (!starters.some((starter) => starter.id === selectedStarterId.value)) {
+        selectedStarterId.value = starters[0]?.id ?? null
+      }
+    },
+    { immediate: true },
+  )
   watch(preparedCypher, () => {
     copied.value = false
     copyFailed.value = false
@@ -76,9 +88,11 @@
 </script>
 
 <template>
-  <ActCard :span="span" :title="title" :desc="description" :icon="Network" accent="var(--chart-2)">
+  <ActCard :span="span" :title="title" :desc="description" :icon="Network" :chips="chips" :src="src"
+           accent="var(--chart-2)">
     <div class="flex flex-col gap-3">
-      <div v-if="starterQueries?.length" class="flex flex-wrap gap-2" aria-label="Prepared graph queries">
+      <div v-if="starterQueries?.length" role="group" aria-label="Available graph queries"
+           class="flex flex-wrap gap-2">
         <button v-for="starter in starterQueries" :key="starter.id" type="button"
                 :aria-pressed="selectedStarterId === starter.id" :title="starter.description"
                 class="rounded-md border px-2.5 py-1 text-left text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
@@ -94,6 +108,19 @@
         Context: {{ contextTitle }}
       </p>
 
+      <div v-if="hasQuery" class="rounded-md border border-border bg-muted/25">
+        <div class="border-b border-border px-2.5 py-1.5">
+          <p class="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+            Selected query<span v-if="selectedStarter"> · {{ selectedStarter.label }}</span>
+          </p>
+          <p v-if="selectedStarter?.description" class="mt-0.5 text-[11.5px] leading-relaxed text-muted-foreground">
+            {{ selectedStarter.description }}
+          </p>
+        </div>
+        <pre tabindex="0" aria-label="Selected Cypher query, selectable for manual copy"
+             class="max-h-44 overflow-auto p-2.5 font-mono text-[10.5px] leading-relaxed text-foreground outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40">{{ preparedCypher }}</pre>
+      </div>
+
       <div class="flex flex-wrap items-center gap-2">
         <EaButton size="sm" @click="openExplorer">
           <ExternalLink class="size-3.5" /> Open full Explorer
@@ -107,6 +134,8 @@
           Copy was not available. The full Explorer shows the selectable query.
         </span>
       </div>
+
+      <slot />
     </div>
   </ActCard>
 </template>
