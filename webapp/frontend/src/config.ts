@@ -16,6 +16,9 @@ export const VISUAL_GRAPH_PROJECT_KEY: string =
   import.meta.env.VITE_VISUAL_GRAPH_PROJECT_KEY?.trim() ?? ''
 export const VISUAL_GRAPH_WEBAPP_ID: string =
   import.meta.env.VITE_VISUAL_GRAPH_WEBAPP_ID?.trim() ?? ''
+/** DSS navigation object ID (webapp ID plus its current slug). */
+export const VISUAL_GRAPH_OBJECT_ID: string =
+  import.meta.env.VITE_VISUAL_GRAPH_OBJECT_ID?.trim() ?? ''
 /** Optional DSS origin for local development; production defaults to same-origin. */
 export const DSS_ORIGIN: string = import.meta.env.VITE_DSS_ORIGIN?.trim() ?? ''
 

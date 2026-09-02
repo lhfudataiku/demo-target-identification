@@ -255,6 +255,8 @@ selected live candidate row; examples in documentation are not runtime defaults.
   question.
 - The orchestrator owns shared interfaces, cross-agent changes, final integration tests and all
   approval gates.
+- If evidence suggests a deviation from this approved scope or a new implementation hypothesis, the
+  orchestrator stops and asks for permission before launching an expansive investigation.
 
 ### Phase 0 — integration spike and baseline
 
@@ -273,7 +275,8 @@ redesign and validation.
 
 ### Phase 1 — shared shell and configuration
 
-1. Add explicit build-time configuration for Explorer project key and webapp ID.
+1. Add explicit build-time configuration for the Explorer project key, backend webapp ID and
+   browser-navigation object ID.
 2. Add the URL-construction utility.
 3. Add global Explorer launch state.
 4. Implement the accessible, lazy full-screen shell.
@@ -293,7 +296,7 @@ unordered global `LIMIT 400` can omit route evidence even when every route exist
    drug-linked and GO-hub candidates.
 2. Compare route-presence truth separately from raw edge-set coverage.
 3. Measure raw query output separately from the Explorer's renderer cap.
-4. Test route-specific presets with the existing per-route bounds as the default design: 100 PPI,
+4. Test route-specific queries with the existing per-route bounds as the default design: 100 PPI,
    100 pathway, 60 molecular-function, 100 biological-process and 40 drug paths. Apply a stable
    `ORDER BY`, including a unique node or relationship tie-breaker, before every route's `LIMIT`;
    a limit without ordering is not deterministic.
@@ -303,17 +306,168 @@ unordered global `LIMIT 400` can omit route evidence even when every route exist
    explicitly as a bounded illustrative sample rather than “every evidence route.”
 7. Present the proposed query set, card wording and evidence for explicit user validation.
 
-**Exit criterion:** the user has approved the A4 Explorer query/preset design and its claims.
+**Exit criterion:** the user has approved the A4 Explorer default-query design and its claims.
+
+**Approved Wave 2 outcome — 2026-09-02:** A4 provides all five routes as the default query set.
+Each query runs independently in Visual Graph Explorer and replaces the preceding result. Target
+Prioritizer does not execute the queries in sequence, union their outputs, accumulate graph state, or
+join their different result shapes. Publishing from the Explorer publishes only the currently
+displayed query result.
+
+#### Wave 2 design — five independent A4 default queries
+
+Use five default queries rather than one combined query. Each query receives the selected
+`disease_index` and `gene_index`, preserves one existing evidence route, orders the complete route
+binding with stable relationship offsets, and only then applies its own cap. The A4 card exposes the
+complete set and lets the user select and copy one query before opening the Explorer. It does not
+execute queries itself, concatenate their results, or claim that one canvas contains every route.
+
+The interaction contract is deliberately one-query-at-a-time:
+
+1. Selecting a candidate regenerates the five query strings locally; it does not call a graph API.
+2. The user selects one of the five default queries in the A4 card.
+3. The card makes that query visible and copyable, then opens Visual Graph Explorer.
+4. The user pastes and executes the selected query in the Explorer.
+5. The Explorer displays—and may publish—only that query's result.
+6. Running another default query replaces the current Explorer result; no prior result is retained or
+   merged.
+
+| Default query | Scientific role | Ordering keys | Cap |
+|---|---|---|---:|
+| PPI interaction | Model feature `dwpc_GGD` | mediator, PPI edge, disease edge | 100 |
+| Shared pathway | Model feature `dwpc_GPGD` | pathway, mediator, both pathway edges, disease edge | 100 |
+| Shared molecular function | Model feature `dwpc_GFGD`; GO term degree at most 200 | function, mediator, both function edges, disease edge | 60 |
+| Shared biological process | Model feature `dwpc_GBGD`; GO term degree at most 200 | process, mediator, both process edges, disease edge | 100 |
+| Drug context | Context only, not a model feature | drug, relation label, drug-target edge, drug-disease edge | 40 |
+
+The published Explorer graph exposes drug-to-disease edges as the relationship tables `indication`
+and `drug_investigated_for`. It does not expose the old `drug_disease` table used by the current
+backend template. The drug query therefore binds the endpoint-constrained edge and filters with
+`LABEL(r2)`. Kuzu's `OFFSET(id(r))` is the tested numeric relationship tie-breaker; `r._ID` is a
+reserved name and must not be used.
+
+```cypher
+// PPI interaction
+MATCH (D:disease {node_index: {disease_index}})
+MATCH (g:protein {node_index: {gene_index}})
+MATCH (g)-[r1:protein_protein]-(m:protein)-[a:disease_protein]-(D)
+WHERE m.node_index <> g.node_index
+RETURN g, D, r1, m, a
+ORDER BY m.node_index, OFFSET(id(r1)), OFFSET(id(a))
+LIMIT 100
+```
+
+```cypher
+// Shared pathway
+MATCH (D:disease {node_index: {disease_index}})
+MATCH (g:protein {node_index: {gene_index}})
+MATCH (g)-[r1:pathway_protein]-(x:pathway)-[r2:pathway_protein]-(m:protein)-[a:disease_protein]-(D)
+WHERE m.node_index <> g.node_index
+RETURN g, D, r1, x, r2, m, a
+ORDER BY x.node_index, m.node_index,
+         OFFSET(id(r1)), OFFSET(id(r2)), OFFSET(id(a))
+LIMIT 100
+```
+
+```cypher
+// Shared molecular function
+MATCH (D:disease {node_index: {disease_index}})
+MATCH (g:protein {node_index: {gene_index}})
+MATCH (g)-[r1:molfunc_protein]-(x:molecular_function)-[r2:molfunc_protein]-(m:protein)-[a:disease_protein]-(D)
+WHERE m.node_index <> g.node_index
+  AND COUNT { MATCH (x)-[:molfunc_protein]-() } <= 200
+RETURN g, D, r1, x, r2, m, a
+ORDER BY x.node_index, m.node_index,
+         OFFSET(id(r1)), OFFSET(id(r2)), OFFSET(id(a))
+LIMIT 60
+```
+
+```cypher
+// Shared biological process
+MATCH (D:disease {node_index: {disease_index}})
+MATCH (g:protein {node_index: {gene_index}})
+MATCH (g)-[r1:bioprocess_protein]-(x:biological_process)-[r2:bioprocess_protein]-(m:protein)-[a:disease_protein]-(D)
+WHERE m.node_index <> g.node_index
+  AND COUNT { MATCH (x)-[:bioprocess_protein]-() } <= 200
+RETURN g, D, r1, x, r2, m, a
+ORDER BY x.node_index, m.node_index,
+         OFFSET(id(r1)), OFFSET(id(r2)), OFFSET(id(a))
+LIMIT 100
+```
+
+```cypher
+// Drug context — additional evidence, not a model feature
+MATCH (D:disease {node_index: {disease_index}})
+MATCH (g:protein {node_index: {gene_index}})
+MATCH (g)-[r1:drug_protein]-(x:drug)-[r2]-(D)
+WHERE LABEL(r2) IN ['indication', 'drug_investigated_for']
+RETURN g, D, r1, x, r2
+ORDER BY x.node_index, LABEL(r2), OFFSET(id(r1)), OFFSET(id(r2))
+LIMIT 40
+```
+
+The UI contract is route-level:
+
+- zero rows means that this route found no evidence for the selected pair;
+- one or more rows means that the route is present;
+- fewer rows than the cap means the returned route bindings are complete under the query's filters;
+- exactly the cap means **cap reached**, not automatically “truncated” and not an estimate of the
+  uncapped total;
+- raw query rows are reported separately from the Explorer renderer's deduplicated visible node and
+  edge counts;
+- feature values in the target card do not substitute for graph-route presence.
+
+The approved card copy is:
+
+> Choose one of five default evidence queries to run in Visual Graph Explorer. Four correspond to
+> model features—PPI interaction, shared pathway, shared molecular function, and shared biological
+> process. The drug query is additional context, not a model feature. Each query is independently
+> ordered and capped: PPI 100, pathway 100, molecular function 60, biological process 100, and drug
+> 40. The Explorer displays one query result at a time; results are not combined.
+
+#### Wave 2 live evidence — 2026-09-02
+
+The queries were exercised in the live Visual Graph Explorer against `enriched_index_freezed`, using
+HER2-positive breast carcinoma (`node_index` 48537). The indices below are snapshot-specific test
+fixtures, not durable biological identifiers.
+
+| Case | Query | Raw rows | Repeat result | Observation |
+|---|---|---:|---|---|
+| HRAS (`88097`) | PPI | 80 | same row count and visible ordered rows | Under cap; duplicated PPI storage makes relationship tie-breakers necessary |
+| HRAS (`88097`) | Pathway | 100 | same row count and visible ordered rows | Cap reached |
+| HRAS (`88097`) | Molecular function | 16 | same row count and visible ordered rows | Under cap after degree filter |
+| HRAS (`88097`) | Biological process | 100 | same row count and visible ordered rows | Cap reached after degree filter |
+| HRAS (`88097`) | Drug context | 0 | stable absence | No drug route for this pair |
+| TBX1 (`95790`) | PPI | 0 | stable absence | Sparse-case empty state is valid |
+| ERBB2 (`84431`) | Drug context | 2 | same row count and visible ordered rows | One `indication` and one `drug_investigated_for` binding |
+| RPS27A (`94544`) | Pathway | 100 | same row count and visible ordered rows | Hub-stress case reaches its route cap |
+| RPS27A (`94544`) | Molecular function | 1 | same row count and visible ordered rows | Degree filter prevents a broad GO expansion |
+| RPS27A (`94544`) | Biological process | 5 | same row count and visible ordered rows | Degree filter prevents a broad GO expansion |
+
+For the HRAS reference case, the scalar forms used to inspect IDs completed in approximately
+0.85–1.06 seconds in the Explorer. Graph-returning forms rendered successfully in approximately
+1.6–2.4 seconds for PPI, pathway and molecular function. Renderer totals differed from raw row totals
+because the Explorer deduplicates shared nodes while retaining route edges; this is expected and is
+why the two measurements remain separate.
+
+The combined `OPTIONAL MATCH` template is rejected for A4 migration: it multiplies independent route
+bindings, applies one unordered global cap, and references a drug relationship table absent from the
+published Explorer graph. Union, cross-shape joining, sequential execution and result accumulation
+are all out of scope for Phase 3.
 
 ### Phase 3 — Act 4 migration
 
-1. Move the approved mechanism query or preset builders from Python to pure frontend functions.
+1. Implement the five approved query builders as pure frontend functions.
 2. Wire the selected candidate and disease into the shared card.
-3. Replace **Show the mechanism** with **Open full Explorer**.
-4. Remove the inline `ActGraph` canvas, five-route loading state and route-result summaries.
-5. Preserve the scientific caveats and query visibility.
-6. Verify that selecting a candidate performs only the candidate-detail request.
-7. Keep the legacy backend route temporarily until the live Explorer handoff passes acceptance tests.
+3. Add the five-query selector, visible query text and copy action; do not auto-execute queries.
+4. Replace **Show the mechanism** with **Open full Explorer** for the selected query.
+5. Remove the inline `ActGraph` canvas, five-route loading state, route-result summaries and all
+   frontend result-merging behavior.
+6. Preserve the scientific caveats and state that the Explorer displays one result at a time.
+7. Verify that selecting a candidate performs only the candidate-detail request and generates no
+   graph request.
+8. Do not carry the legacy backend aggregation into the new card. Its endpoint may remain temporarily
+   as an unused rollback seam until the live handoff passes, then is deleted in Phase 6.
 
 **Exit criterion:** Act 4 no longer calls `/api/graph/mechanism`, and the selected candidate's query can
 be run successfully in the Explorer.
@@ -381,16 +535,18 @@ The planned build-time settings are:
 ```text
 VITE_VISUAL_GRAPH_PROJECT_KEY=DEMO_TARGET_IDENTIFICATION
 VITE_VISUAL_GRAPH_WEBAPP_ID=wBcApLN
+VITE_VISUAL_GRAPH_OBJECT_ID=wBcApLN_graph-search
 VITE_DSS_ORIGIN=  # optional local-development override; production is same-origin
 ```
 
 They belong in `webapp/app.env`, are exposed through `frontend/src/config.ts`, and are baked into the
 single Vite bundle. They are not secrets.
 
-The Visual Graph object reference supplied for this instance is `wBcApLN_graph-search`. It is recorded
-separately from the addressable DSS webapp ID: the live webapp definition and status API identify
-`wBcApLN`, and the canonical launch route is `/projects/DEMO_TARGET_IDENTIFICATION/webapps/wBcApLN/view`.
-The object reference must not replace `VITE_VISUAL_GRAPH_WEBAPP_ID` in that URL.
+The two IDs serve different DSS surfaces. The live definition, status and log APIs identify the
+underlying webapp as `wBcApLN`. Browser navigation requires the object ID `wBcApLN_graph-search`, so
+the canonical launch route is
+`/projects/DEMO_TARGET_IDENTIFICATION/webapps/wBcApLN_graph-search/view`. Both are explicit to prevent
+the navigation slug from being mistaken for the backend webapp identifier.
 
 The graph snapshot ID must not be part of this contract. The Explorer remains responsible for listing
 the currently published graphs and their freshness.

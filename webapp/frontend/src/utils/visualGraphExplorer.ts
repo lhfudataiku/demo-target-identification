@@ -1,5 +1,6 @@
 import {
   DSS_ORIGIN,
+  VISUAL_GRAPH_OBJECT_ID,
   VISUAL_GRAPH_PROJECT_KEY,
   VISUAL_GRAPH_WEBAPP_ID,
 } from '@/config'
@@ -7,6 +8,7 @@ import {
 export interface VisualGraphExplorerConfig {
   projectKey: string
   webappId: string
+  objectId: string
   origin?: string
 }
 
@@ -26,15 +28,17 @@ export function visualGraphExplorerUrl(
   config: VisualGraphExplorerConfig = {
     projectKey: VISUAL_GRAPH_PROJECT_KEY,
     webappId: VISUAL_GRAPH_WEBAPP_ID,
+    objectId: VISUAL_GRAPH_OBJECT_ID,
     origin: DSS_ORIGIN,
   },
 ): string | null {
   const projectKey = config.projectKey.trim()
   const webappId = config.webappId.trim()
+  const objectId = config.objectId.trim()
   const origin = cleanOrigin(config.origin ?? '') || currentOrigin()
-  if (!projectKey || !webappId || !origin) return null
+  if (!projectKey || !webappId || !objectId || !origin) return null
 
-  return `${origin}/projects/${encodeURIComponent(projectKey)}/webapps/${encodeURIComponent(webappId)}/view`
+  return `${origin}/projects/${encodeURIComponent(projectKey)}/webapps/${encodeURIComponent(objectId)}/view`
 }
 
 export function isVisualGraphExplorerConfigured(): boolean {
