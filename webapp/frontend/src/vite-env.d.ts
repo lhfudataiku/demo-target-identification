@@ -9,3 +9,13 @@ declare module '*.vue' {
   const component: DefineComponent<Record<string, unknown>, Record<string, unknown>, unknown>
   export default component
 }
+
+interface ImportMetaEnv {
+  readonly VITE_DSS_ORIGIN?: string
+  readonly VITE_VISUAL_GRAPH_PROJECT_KEY?: string
+  readonly VITE_VISUAL_GRAPH_WEBAPP_ID?: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}

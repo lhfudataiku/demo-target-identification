@@ -1,0 +1,495 @@
+# Visual Graph Explorer integration scope
+
+> **Lifecycle:** Decision · **Audience:** webapp implementers and technical reviewers · **Authority:**
+> the agreed scope, target architecture, migration sequence and acceptance criteria for consolidating
+> graph exploration in the Target Prioritizer · **Update when:** the agreed scope changes or an
+> implementation phase is accepted · **Generated dependencies:** none · **Excludes:** current deployed
+> webapp behavior, which remains governed by [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) until this migration
+> is implemented and verified.
+
+**Status: APPROVED FOR IMPLEMENTATION — 2026-09-02.** Repository implementation may proceed through
+the phased rollout below. Live DSS configuration changes, deployment, commit and push remain separate
+actions requiring their own approval.
+
+## 1. Decision summary
+
+Act 1 and Act 4 will use **one shared graph-exploration implementation** backed by the Visual Graph
+Explorer webapp. They remain different narrative contexts, not different technical products:
+
+| act | context passed to the shared implementation |
+|---|---|
+| Act 1 — Explore the graph | general graph exploration and deterministic starter queries |
+| Act 4 — The mechanism, on the graph | the selected disease, target gene and generated mechanism query |
+
+The Visual Graph Explorer will own Cypher execution, graph and table rendering, graph layouts, neighbor
+expansion, edge inspection and other exploratory interactions. The Target Prioritizer will own the
+demo narrative, candidate selection, query construction, scientific caveats and the action that opens
+the Explorer.
+
+The end state is **two uses, one implementation**. The migration must not leave a permanent Act 1
+native graph path beside an Act 4 Explorer path.
+
+## 2. Why this change is needed
+
+### 2.1 Current Act 4 execution is disproportionately complex
+
+The current Act 4 mechanism card cannot execute its natural combined Cypher through the graph agent
+tool. Consecutive `OPTIONAL MATCH` clauses multiply rows before the final `LIMIT`, exhausting the
+tool kernel for well-connected genes. It therefore:
+
+1. constructs five route-specific Cypher queries;
+2. submits five graph-tool calls concurrently;
+3. extracts a graph artifact from each response;
+4. merges nodes and edges by identifier;
+5. calculates per-route summaries;
+6. applies a second display cap; and
+7. separately constructs the one-query form offered to the Visual Graph Explorer.
+
+This logic exists only to reproduce a subset of a product already available in the Visual Graph
+plug-in. The merge itself is not the main performance cost; the expensive boundary is the five graph
+tool executions and their cold execution environment.
+
+### 2.2 Act 1 and Act 4 already overlap
+
+Both acts currently use the same local `ActGraph.vue` node-link renderer. Act 1 adds deterministic
+starters, natural-language translation and editable Cypher. Act 4 adds selected-candidate state,
+five-route orchestration and merging. Maintaining separate orchestration paths creates two places to
+solve loading, errors, query display, graph limits and Explorer escalation.
+
+### 2.3 The Explorer already owns the richer interaction
+
+The configured Visual Graph Explorer provides the capabilities that would otherwise have to be
+maintained locally: schema-aware Cypher editing, graph and table views, layouts, edge merging, node and
+edge details, neighbor expansion, conditional styling, saved queries and an optional query generator.
+The Target Prioritizer should link these capabilities into its narrative rather than reimplement them.
+
+### 2.4 Current integration baseline
+
+The integration target inspected on 2026-09-02 is:
+
+| item | value |
+|---|---|
+| DSS project | `DEMO_TARGET_IDENTIFICATION` |
+| Target Prioritizer standard webapp | `OlmPX9a` |
+| Visual Graph Explorer webapp | `wBcApLN` |
+| Visual Graph plug-in | `visual-graph` 1.4.0 |
+| Published graph folder | `graph` (`ytvuniN8`) |
+
+The Explorer is a self-mounted Vue application with its own Flask backend. Plug-in version 1.4.0 has
+no supported query deep link or parent-window `postMessage` contract for loading and executing a
+supplied Cypher query. Its internal `/api/cypher/run` route is not an integration contract and must not
+be called by the Target Prioritizer.
+
+## 3. Goals
+
+The work must:
+
+1. Provide one reusable Explorer card and one reusable full-screen Explorer shell for Acts 1 and 4.
+2. Preserve each act's narrative context while removing duplicate graph execution and rendering code.
+3. Remove Act 4's five-query backend and merged-canvas path.
+4. Migrate Act 1's starters and graph exploration to the same shared implementation.
+5. Preserve deterministic Cypher handoff and make the query visible and copyable.
+6. Keep the Explorer lazy: selecting a candidate or opening an act must not execute a graph query.
+7. Preserve the current scientific caveats around model features, candidate admission and drug routes.
+8. Work inside the nested DSS iframe, with a new-tab fallback if nested embedding is blocked.
+9. Avoid any graph rebuild, dataset rebuild or modification to `KNOWLEDGE_GRAPH_PRIMEKG`.
+
+## 4. Non-goals
+
+This scope does not include:
+
+- changing the graph schema, graph snapshot, graph folder or graph-building flow;
+- modifying or forking the Visual Graph plug-in;
+- calling undocumented Explorer backend endpoints;
+- automatically executing a query on the user's behalf through DOM manipulation;
+- reproducing Explorer layouts, neighbor expansion, conditional styling or rich table rendering;
+- changing the target-prioritization model, features, candidate pool or ranked-list data contract;
+- changing the Act 4 target-detail card beyond the wiring needed to launch the shared Explorer;
+- introducing a new frontend component library;
+- deploying, committing or pushing as part of implementation without the required separate approval.
+
+## 5. Target architecture
+
+```text
+Act 1 card ──┐
+             ├──► shared VisualGraphExplorerCard
+Act 4 card ──┘              │
+                            ├── builds or receives Cypher
+                            ├── copies / exposes Cypher
+                            └── opens shared Explorer shell
+                                         │
+                                         ▼
+                         Visual Graph Explorer webapp wBcApLN
+                         ├── query editor / saved queries
+                         ├── direct Kuzu execution
+                         ├── graph and table rendering
+                         └── interactive graph exploration
+```
+
+### 5.1 Ownership boundary
+
+| responsibility | owner |
+|---|---|
+| Act ordering and narrative | Target Prioritizer |
+| Selected disease and gene | Target Prioritizer |
+| Mechanism-query template | Target Prioritizer |
+| Query visibility and copy handoff | shared Explorer card/shell |
+| Cypher execution | Visual Graph Explorer |
+| Graph/table visualization | Visual Graph Explorer |
+| Layout, filtering and neighbor exploration | Visual Graph Explorer |
+| Graph schema and publication | existing Visual Graph flow |
+
+### 5.2 Shared frontend units
+
+The implementation should introduce narrowly scoped shared units rather than one large view-specific
+component:
+
+- `frontend/src/components/graph/VisualGraphExplorerCard.vue` — shared card presentation and actions;
+- `frontend/src/components/graph/VisualGraphExplorerDialog.vue` — full-screen iframe shell;
+- `frontend/src/features/graph/mechanismCypher.ts` — pure Act 4 query builder;
+- `frontend/src/utils/visualGraphExplorer.ts` — Explorer URL construction and environment checks;
+- a small Pinia store or shared composable — open/close state, context title and optional query.
+
+The dialog should be mounted once from the application layout. Act views pass context to it; they do
+not each create and manage a separate Explorer iframe.
+
+## 6. User experience contract
+
+### 6.1 Shared card behavior
+
+Both acts render the same card component with different props:
+
+- title and act-specific explanatory copy;
+- optional starter queries;
+- optional selected disease and gene context;
+- optional generated or currently edited Cypher;
+- the primary **Open full Explorer** action;
+- a secondary **Copy Cypher** action when a query exists.
+
+No graph query runs on card mount. No query runs when an Act 4 candidate is selected.
+
+### 6.2 Full Explorer shell
+
+The full-screen shell should provide:
+
+- an iframe created only when the shell opens;
+- a loading state until the iframe reports `load`;
+- an act-specific title such as `HRAS · HER2 positive breast carcinoma`;
+- persistent `Copy Cypher`, `Open in new tab` and `Close` actions;
+- Escape-to-close behavior and focus restoration;
+- a retry state if the Explorer fails to load;
+- no backdrop-click dismissal;
+- a concise handoff message when a query was copied.
+
+The iframe should use the DSS Visual Webapp view URL constructed from configured project and webapp
+identifiers. It must not use the current app's `apiUrl()`, which targets the Target Prioritizer FastAPI
+backend.
+
+### 6.3 Query handoff
+
+Until Visual Graph provides a supported deep-link or messaging contract, the handoff is explicit:
+
+1. the user activates **Open full Explorer**;
+2. the Target Prioritizer attempts to copy the relevant Cypher during that user gesture;
+3. the full Explorer opens;
+4. the shell explains: open the graph, select **New query**, paste and run;
+5. if clipboard access is blocked, the query remains visible and selectable in the shell.
+
+The implementation must not claim that the query was copied unless the Clipboard API confirms it.
+
+### 6.4 Act 1 behavior
+
+Act 1 passes general graph-exploration context to the shared card:
+
+- deterministic starter queries remain available;
+- selecting a starter prepares its literal Cypher for the Explorer;
+- if an edited or previously generated Cypher exists during migration, that exact text is handed off;
+- natural-language exploration moves to the Explorer's query generator;
+- the final state has no Act 1-specific local graph renderer or graph-execution API.
+
+### 6.5 Act 4 behavior
+
+Act 4 passes the selected disease and target gene to the shared card. A pure frontend function generates
+the approved launch query or route-specific preset immediately from their numeric node indices. The
+query-design gate below decides whether the Explorer receives one bounded illustrative query or a set
+of independently bounded route presets. The card keeps the distinction between:
+
+- four graph routes corresponding to model path features; and
+- the drug route, which is not a model feature but did affect candidate-pool admission.
+
+The card must not report route presence, absence or edge counts before the Explorer query establishes
+them. Those summaries currently come from the backend being removed.
+
+## 7. Cypher contract
+
+The Act 4 query design must preserve the reviewed mechanism semantics across its approved preset set:
+
+- bind one disease node and one protein node by numeric `node_index`;
+- traverse relationships undirected;
+- bind and return relationship variables so the Explorer renders connected edges;
+- cover direct protein interaction, pathway, molecular-function, biological-process and drug routes,
+  without claiming that one globally limited result exhaustively represents all five;
+- exclude the selected gene from the disease's annotated neighbor genes;
+- cap molecular-function and biological-process mediator degree at 200;
+- restrict drug-disease relations to `indication` and `drug_investigated_for`;
+- retain a bounded result limit;
+- include human-readable names only in sanitized comment lines, never executable clauses.
+
+Numeric node indices are snapshot-specific. The query must always be generated from the currently
+selected live candidate row; examples in documentation are not runtime defaults.
+
+## 8. Implementation phases
+
+### Execution governance
+
+- Work proceeds as discrete waves matching the phases below. At the end of every wave, the
+  orchestrator presents evidence against that phase's exit criterion and stops for user validation.
+- No later wave begins from an agent's unreviewed output.
+- Delegates receive the smallest model and reasoning level sufficient for their bounded task. Higher
+  reasoning is reserved for iframe/authentication behavior, Cypher semantics and scientific copy;
+  mechanical cleanup and inventories use lighter delegates.
+- Every delegate receives an exclusive file or read-only evidence boundary. Delegates do not commit,
+  deploy, change live DSS configuration, rebuild data, or modify the graph.
+- Searches remain bounded to the affected code, generated indexes and routed documents. Agents do not
+  load the large documentation corpus or plug-in bundle wholesale when a targeted query answers the
+  question.
+- The orchestrator owns shared interfaces, cross-agent changes, final integration tests and all
+  approval gates.
+
+### Phase 0 — integration spike and baseline
+
+1. Use HER2-positive breast carcinoma and HRAS as the primary reference case.
+2. Record the existing Act 4 cold and warm timings.
+3. Record Explorer first-paint and query-execution timings.
+4. Compare route coverage for connected, sparse, drug-linked and GO-hub candidates.
+5. Verify that the Explorer can render inside the Target Prioritizer's existing DSS iframe.
+6. Verify the same flow with a representative non-owner user.
+7. Confirm that opening in a new tab is a viable fallback.
+
+**Approved Wave 0 outcome — 2026-09-02:** conditional go for the launcher shell. No static frame
+blocker was found, but authenticated owner and representative non-owner tests remain mandatory before
+either act migrates. The current combined query did not pass semantic coverage; Phase 2 owns its
+redesign and validation.
+
+### Phase 1 — shared shell and configuration
+
+1. Add explicit build-time configuration for Explorer project key and webapp ID.
+2. Add the URL-construction utility.
+3. Add global Explorer launch state.
+4. Implement the accessible, lazy full-screen shell.
+5. Add clipboard-success, clipboard-failure, load-failure and new-tab behavior.
+6. Add the shared card component with no act-specific data fetching.
+
+**Exit criterion:** a temporary launch control can open and close the Explorer reliably without
+executing a graph query or disturbing normal app navigation.
+
+### Phase 2 — Act 4 query-design gate
+
+The current one-query Explorer template is fast but is not semantically equivalent to the five
+independently bounded routes. Consecutive `OPTIONAL MATCH` clauses multiply route bindings, and the
+unordered global `LIMIT 400` can omit route evidence even when every route exists.
+
+1. Compare normalized route-level node and relationship IDs for HRAS plus connected, sparse,
+   drug-linked and GO-hub candidates.
+2. Compare route-presence truth separately from raw edge-set coverage.
+3. Measure raw query output separately from the Explorer's renderer cap.
+4. Test route-specific presets with the existing per-route bounds as the default design: 100 PPI,
+   100 pathway, 60 molecular-function, 100 biological-process and 40 drug paths. Apply a stable
+   `ORDER BY`, including a unique node or relationship tie-breaker, before every route's `LIMIT`;
+   a limit without ordering is not deterministic.
+5. Treat a one-shot combined result as viable only if Kuzu supports independently bounded isolated
+   route subqueries or a uniform-schema union for the published graph.
+6. Retain a combined query only if it has proven coverage and deterministic ordering, or label it
+   explicitly as a bounded illustrative sample rather than “every evidence route.”
+7. Present the proposed query set, card wording and evidence for explicit user validation.
+
+**Exit criterion:** the user has approved the A4 Explorer query/preset design and its claims.
+
+### Phase 3 — Act 4 migration
+
+1. Move the approved mechanism query or preset builders from Python to pure frontend functions.
+2. Wire the selected candidate and disease into the shared card.
+3. Replace **Show the mechanism** with **Open full Explorer**.
+4. Remove the inline `ActGraph` canvas, five-route loading state and route-result summaries.
+5. Preserve the scientific caveats and query visibility.
+6. Verify that selecting a candidate performs only the candidate-detail request.
+7. Keep the legacy backend route temporarily until the live Explorer handoff passes acceptance tests.
+
+**Exit criterion:** Act 4 no longer calls `/api/graph/mechanism`, and the selected candidate's query can
+be run successfully in the Explorer.
+
+### Phase 4 — Act 1 default-query redesign gate
+
+Act 1's default and starter queries must be redesigned and validated before its view is migrated. This
+is a product and graph-semantics decision, not a mechanical consequence of adopting the shared card.
+
+1. State the audience question each default or starter query answers.
+2. Remove queries that duplicate one another or do not advance the Act 1 narrative.
+3. Define the expected graph/table result and the evidence needed to recognize a correct result.
+4. Validate directionality, node and relationship labels, bounds and deterministic ordering against
+   the current published graph.
+5. Measure the queries in the Visual Graph Explorer and confirm they remain suitable for a live demo.
+6. Decide which queries belong as Visual Graph saved queries and which, if any, remain Target
+   Prioritizer-provided launch presets.
+7. Present the proposed query set, results and wording for explicit user validation.
+
+**Exit criterion:** the user has approved the Act 1 default query set and its intended narrative role.
+No `EvidenceView.vue` migration begins before this gate passes.
+
+### Phase 5 — Act 1 migration
+
+1. Replace the Act 1 graph card with the same shared card.
+2. Pass its deterministic starters into the shared component.
+3. Move natural-language exploration to the Explorer query generator.
+4. Remove Act 1's local result canvas, graph/table toggle and local Cypher execution controls.
+5. Confirm the narrative still supports a concise, reproducible starter-query demonstration.
+
+**Exit criterion:** Acts 1 and 4 instantiate the same component and differ only through supplied
+context, copy and query data.
+
+### Phase 6 — backend and dependency cleanup
+
+After both acts pass acceptance:
+
+1. delete `POST /api/graph/mechanism` and its models, route templates and executor pool;
+2. delete Act 1's `/api/graph/cypher` and `/api/graph/search` routes if no other consumer remains;
+3. delete graph artifact shaping helpers that have no remaining caller;
+4. remove the `ActGraph.vue` renderer if repository search confirms no remaining use;
+5. remove `vis-network` and `vis-data` if they are then unused;
+6. retain graph defaults only if the frontend still sources starter metadata from the backend;
+7. update module documentation and remove stale latency explanations.
+
+**Exit criterion:** repository search finds one Explorer card implementation, one Explorer shell and no
+dead native graph execution or rendering path.
+
+### Phase 7 — documentation and release verification
+
+1. Update `WEBAPP_DESIGN.md` to make the implemented architecture canonical.
+2. Update the webapp README with the integration configuration.
+3. Update `DEPLOYMENT.md` with iframe, permissions and new-tab fallback checks.
+4. Rebuild repository indexes without refreshing DSS recipe snapshots.
+5. Run frontend type checking and production build.
+6. Validate backend startup and the remaining API surface.
+7. With explicit approval, deploy and verify the built bundle and live webapp logs.
+
+**Exit criterion:** the deployed behavior, canonical design document and repository source agree.
+
+## 9. Configuration contract
+
+The planned build-time settings are:
+
+```text
+VITE_VISUAL_GRAPH_PROJECT_KEY=DEMO_TARGET_IDENTIFICATION
+VITE_VISUAL_GRAPH_WEBAPP_ID=wBcApLN
+VITE_DSS_ORIGIN=  # optional local-development override; production is same-origin
+```
+
+They belong in `webapp/app.env`, are exposed through `frontend/src/config.ts`, and are baked into the
+single Vite bundle. They are not secrets.
+
+The Visual Graph object reference supplied for this instance is `wBcApLN_graph-search`. It is recorded
+separately from the addressable DSS webapp ID: the live webapp definition and status API identify
+`wBcApLN`, and the canonical launch route is `/projects/DEMO_TARGET_IDENTIFICATION/webapps/wBcApLN/view`.
+The object reference must not replace `VITE_VISUAL_GRAPH_WEBAPP_ID` in that URL.
+
+The graph snapshot ID must not be part of this contract. The Explorer remains responsible for listing
+the currently published graphs and their freshness.
+
+## 10. Acceptance criteria
+
+The migration is complete only when all of the following are true:
+
+### Architecture
+
+- Acts 1 and 4 use the same shared Explorer card component.
+- One global Explorer shell serves both acts.
+- No act embeds the Explorer's three-panel interface inside a half-width dashboard card.
+- No Target Prioritizer code calls a private Visual Graph plug-in endpoint.
+- No code reaches into the Explorer iframe DOM.
+- No graph query executes on act load or candidate selection.
+
+### Act 1
+
+- Starter queries remain deterministic and visible.
+- A starter can be copied and run in the Explorer.
+- Natural-language exploration is available through the Explorer query generator.
+- The Act 1 narrative no longer depends on a local graph renderer.
+
+### Act 4
+
+- Selecting a row still updates the existing target-detail card.
+- The shared graph card follows the same selected disease and gene.
+- The generated query contains the correct numeric node indices.
+- Clipboard success and failure are both handled honestly.
+- No request reaches `/api/graph/mechanism`.
+- No route-presence or edge-count claim is displayed before query execution.
+- The drug-route caveat remains visible.
+
+### Explorer shell
+
+- It loads inside DSS for an authorized user.
+- Loading, retry, close, Escape and focus restoration work.
+- `Open in new tab` works as a fallback.
+- Closing and reopening does not leave an unusable overlay or duplicate iframe.
+- An access-denied response gives actionable guidance rather than a blank panel.
+
+### Correctness and performance
+
+- The approved A4 query or preset set is tested on connected, sparse, drug-linked and GO-hub
+  candidates.
+- The reference case preserves the required route families and key biological connections.
+- Explorer execution remains materially faster than the current five-tool-call path.
+- Performance is measured separately for iframe cold start and warm query execution.
+- A fast but route-biased `LIMIT` result does not pass semantic acceptance.
+
+### Repository and operations
+
+- `npm run typecheck` passes.
+- `npm run build` passes with the existing single-bundle contract.
+- The backend starts with the reduced route set.
+- Repository search finds no stale `/api/graph/mechanism` consumer.
+- `vis-network` and `vis-data` are removed if unused.
+- No graph, dataset, recipe, model or frozen reference is modified.
+- Deployment, commit and push occur only after their separate approvals.
+
+## 11. Risks and mitigations
+
+| risk | mitigation |
+|---|---|
+| DSS prevents a nested webapp iframe through security headers | Make new-tab launch a first-class fallback and keep the launcher contract independent of presentation mode. |
+| Clipboard access is blocked inside the parent iframe | Keep the query visible and selectable; report copy success only after confirmation. |
+| The Explorer does not accept a query through a supported deep link | Use explicit copy-and-paste handoff; do not use private APIs or DOM manipulation. |
+| The combined query is fast but its shared limit biases route coverage | Keep A4 behind its query-design gate; prefer independently bounded route presets and use illustrative wording for any globally limited combined result. |
+| Explorer backend cold start obscures the query-speed improvement | Measure first paint separately from warm query time and rehearse the same operational state used for the demo. |
+| A user can access Target Prioritizer but not Explorer | Test with a representative non-owner and show a clear permissions error plus new-tab option. |
+| Plug-in upgrade changes view routing | Centralize URL construction and cover it with a live smoke test after plug-in upgrades. |
+| Removing Act 1's inline canvas weakens presentation pacing | Validate the Act 1 talk track before cleanup; retain concise starter controls in the shared card. |
+| Old scientific claims survive after route summaries are removed | Remove route-presence and edge-count copy with the backend and update `WEBAPP_DESIGN.md` in the same implementation. |
+
+## 12. Rollout and rollback
+
+The migration should be reviewed in separable changes:
+
+1. shared configuration, launcher state and Explorer shell;
+2. Act 4 query/preset redesign and explicit validation;
+3. Act 4 cutover with the legacy route still available for comparison;
+4. Act 1 default-query redesign and explicit validation;
+5. Act 1 cutover to the same shared card;
+6. removal of legacy endpoints, renderer and dependencies;
+7. canonical documentation update and approved deployment.
+
+The rollback boundary is the frontend cutover. Until Phase 6 cleanup, the legacy APIs remain available
+for comparison. After cleanup, normal Git history is the rollback mechanism; no DSS data rollback is
+needed because this migration changes neither graph data nor its publication.
+
+## 13. Deferred enhancement
+
+Automatic query loading and execution in the Explorer is deferred until Visual Graph provides a
+supported integration contract, preferably either:
+
+- a documented URL containing graph and query state; or
+- a strict-origin `postMessage` API accepting graph ID, query text and an explicit execution choice.
+
+If that capability becomes available, it should be implemented inside the shared shell without
+changing either act. It must not be approximated through a private plug-in endpoint or iframe DOM
+automation.
