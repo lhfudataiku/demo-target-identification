@@ -16,7 +16,7 @@
   import { CustomChart } from 'echarts/charts'
   import { GridComponent, MarkLineComponent, TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
-  import type { EChartsOption } from 'echarts'
+  import type { CustomSeriesRenderItemReturn, EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
 
   use([CustomChart, GridComponent, MarkLineComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActIntervals' })
@@ -41,8 +41,9 @@
       grid: { left: 128, right: 84, top: 8, bottom: 28, containLabel: false },
       tooltip: {
         trigger: 'item',
-        formatter: (p: { dataIndex: number }) => {
-          const r = props.rows[p.dataIndex]
+        formatter: (params: TooltipComponentFormatterCallbackParams) => {
+          const entry = Array.isArray(params) ? params[0] : params
+          const r = entry && props.rows[entry.dataIndex]
           if (!r) return ''
           return `<b>${r.label}</b><br/>AUC <b>${r.value.toFixed(3)}</b>` +
                  `<br/>95% interval ${r.lo.toFixed(3)} – ${r.hi.toFixed(3)}` +
@@ -60,12 +61,12 @@
         axisLine: { show: false }, axisTick: { show: false },
         axisLabel: {
           fontSize: 11, width: 120, overflow: 'truncate',
-          color: (_v: string, i: number) => (props.rows[i]?.muted ? bad : dim),
+          color: (_value, index) => (index !== undefined && props.rows[index]?.muted ? bad : dim),
         },
       },
       series: [{
         type: 'custom',
-        renderItem: (params, api) => {
+        renderItem: (params, api): CustomSeriesRenderItemReturn => {
           // NOT api.value(7): with `encode` set, only the encoded dimensions are
           // addressable by index and the rest read back as 0 — which is where
           // the n=0 in the gutter came from. dataIndex is exact.
@@ -80,24 +81,26 @@
           const hi = api.coord([Math.min(rawHi, HI), cat])
           const n = row.n ?? 0
           const width = api.getWidth()
-          const children: unknown[] = [
-            { type: 'line', shape: { x1: lo[0], y1: lo[1], x2: hi[0], y2: hi[1] },
-              style: { stroke: colour, lineWidth: 1.5 } },
-            { type: 'line', shape: { x1: lo[0], y1: lo[1] - 4, x2: lo[0], y2: lo[1] + 4 },
-              style: { stroke: colour, lineWidth: 1.5 } },
-            over
-              // past the ceiling: an arrow, not a cap — the value is unpinned
-              ? { type: 'polygon', shape: { points: [[hi[0], hi[1] - 5], [hi[0] + 7, hi[1]], [hi[0], hi[1] + 5]] },
-                  style: { fill: colour } }
-              : { type: 'line', shape: { x1: hi[0], y1: hi[1] - 4, x2: hi[0], y2: hi[1] + 4 },
-                  style: { stroke: colour, lineWidth: 1.5 } },
-            { type: 'circle', shape: { cx: v[0], cy: v[1], r: 3.4 }, style: { fill: colour } },
-            { type: 'text', style: {
-                x: width - 6, y: v[1] - 6, textAlign: 'right',
-                text: `n=${n}` + (over ? `  hi ${rawHi.toFixed(3)}` : ''),
-                fill: muted ? bad : dim, font: '9.5px "DM Mono", monospace' } },
-          ]
-          return { type: 'group', children }
+          return {
+            type: 'group',
+            children: [
+              { type: 'line', shape: { x1: lo[0], y1: lo[1], x2: hi[0], y2: hi[1] },
+                style: { stroke: colour, lineWidth: 1.5 } },
+              { type: 'line', shape: { x1: lo[0], y1: lo[1] - 4, x2: lo[0], y2: lo[1] + 4 },
+                style: { stroke: colour, lineWidth: 1.5 } },
+              over
+                // past the ceiling: an arrow, not a cap — the value is unpinned
+                ? { type: 'polygon', shape: { points: [[hi[0], hi[1] - 5], [hi[0] + 7, hi[1]], [hi[0], hi[1] + 5]] },
+                    style: { fill: colour } }
+                : { type: 'line', shape: { x1: hi[0], y1: hi[1] - 4, x2: hi[0], y2: hi[1] + 4 },
+                    style: { stroke: colour, lineWidth: 1.5 } },
+              { type: 'circle', shape: { cx: v[0], cy: v[1], r: 3.4 }, style: { fill: colour } },
+              { type: 'text', style: {
+                  x: width - 6, y: v[1] - 6, align: 'right',
+                  text: `n=${n}` + (over ? `  hi ${rawHi.toFixed(3)}` : ''),
+                  fill: muted ? bad : dim, font: '9.5px "DM Mono", monospace' } },
+            ],
+          }
         },
         encode: { x: [1, 2, 3], y: 0 },
         data: props.rows.map((r, i) =>

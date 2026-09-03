@@ -10,7 +10,7 @@
   import { BarChart } from 'echarts/charts'
   import { GridComponent, TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
-  import type { EChartsOption } from 'echarts'
+  import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
 
   use([BarChart, GridComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActHistogram' })
@@ -30,9 +30,12 @@
     grid: { left: 34, right: 10, top: 10, bottom: 30 },
     tooltip: {
       trigger: 'axis', axisPointer: { type: 'shadow' },
-      formatter: (ps: { dataIndex: number; value: number }[]) => {
-        const b = props.bins[ps[0].dataIndex]
-        return `${b.lo.toFixed(2)} – ${b.hi.toFixed(2)}<br/><b>${ps[0].value}</b>`
+      formatter: (params: TooltipComponentFormatterCallbackParams) => {
+        const entry = Array.isArray(params) ? params[0] : params
+        const bin = entry && props.bins[entry.dataIndex]
+        if (!entry || !bin) return ''
+        const value = typeof entry.value === 'number' ? entry.value : ''
+        return `${bin.lo.toFixed(2)} – ${bin.hi.toFixed(2)}<br/><b>${value}</b>`
       },
     },
     xAxis: {

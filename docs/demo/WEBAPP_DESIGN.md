@@ -123,6 +123,22 @@ STANDARD webapp definition to serve it.
 itself from route `meta`; real prose beside real charts; display-only columns; row-level drill; a single
 deploy command; and a design system already themed to the Dataiku brand.
 
+### 3.1.1 Graph exploration — one shared handoff, not a second graph product
+
+Acts 1 and 4 use the same `VisualGraphExplorerCard` and one application-level
+`VisualGraphExplorerDialog` shell. The card prepares context-specific Cypher but does not execute it;
+the lazy dialog opens the Visual Graph Explorer only when the user asks. The card and dialog provide an
+explicit copy-and-paste handoff: the query is shown, copying is attempted only during a user action, and
+the user pastes and runs it in the Explorer. There is no supported query deep link, private plug-in API
+call, or iframe-DOM integration.
+
+Act 1 supplies three deterministic starter queries. Act 4 supplies five independently bounded presets
+for the selected disease and target gene: interaction, pathway, molecular function, biological process
+and drug context. Each preset is a prepared illustration, not a claim that it exhaustively summarizes a
+route. Target Prioritizer performs no graph query execution, result joining, accumulation, graph/table
+rendering or graph-route API call; the Visual Graph Explorer owns execution and all exploratory display.
+The Target Prioritizer backend consequently has no `/api/graph/*` surface.
+
 ### 3.2 The lineage rule — non-negotiable
 
 A custom app is opaque to lineage, and act 6 closes on *"the record of why is in the flow, not someone's
@@ -230,7 +246,7 @@ make deploy                                                 # build, upload libs
 | **Every edge knows where it came from** | stacked bars | of 520,380 protein interactions: menche 189,982 · string 151,254 · huri 92,536 · menche+string 54,554 · huri+menche 28,478 · all three 2,714 · huri+string 862. **86,608 (16.6%) are corroborated by more than one independent interactome, and the graph records which** |
 | **What "known target" actually means** | donut | of 323,786 annotated disease–gene edges: genetic_association **171,810** · somatic_mutation **150,266** · both **1,710**. These edges *are* the training label |
 | Accepted against a frozen reference | stat row | nodes −0.13%, edges −0.03%, **14 of 18 relations reproduce exactly**, identical relation inventory |
-| Explore the graph | link out | the `graph search` explorer (`wBcApLN`), which act 4 returns to |
+| Explore the graph | shared Explorer card | three deterministic starter queries; each is visible, copyable and opened in the same full Explorer shell that Act 4 uses |
 
 **The provenance data is two disjoint stories.** `edge_metadata`'s 844,166 rows split cleanly: 520,380
 protein_protein rows carry `ppi_sources` with blank `datatypes`; 323,786 disease_protein rows carry the
@@ -243,6 +259,11 @@ defuses part of act 5's ground-truth objection four acts early.
 
 ⚠ **`disease_protein` has 378,888 edges but only 323,786 metadata rows** — 55,102 (14.5%) carry no
 evidence-type annotation. Do not describe the donut as covering all disease–gene edges.
+
+**Explore is an explicit handoff.** Selecting an Act 1 starter changes only the visible Cypher. The
+shared card opens the Visual Graph Explorer and, when the browser permits it, copies the selected query
+for the user to paste and run there. The Explorer's query generator owns natural-language exploration;
+Act 1 has no local Cypher executor, graph/table toggle or graph renderer.
 
 > **Must not appear:** the build pipeline, recipe counts, how long it took. No model, no score — the model
 > has not been mentioned yet.
@@ -314,13 +335,13 @@ TNBC's 8 known targets on screen *before* act 6 claims anything about it.
 | The ranked list | virtualised table | 12,272 rows, rank + percentile + score + SHAP drivers + status badges |
 | The validated filter | three checkboxes + live count | **12,272 → novel 11,673 → tractable 7,951 → not secreted 7,274 → rank ≤ 200 → 38** |
 | Candidate detail | card, follows the selected row | rank against pool, SHAP drivers, **every champion feature** against **this disease's own distribution** |
-| The mechanism, on the graph | five merged route queries + rendered subgraph | every evidence route from the selected gene to the disease's own annotated genes, counted per route |
+| The mechanism, on the graph | shared Explorer card with five independent bounded presets | prepared interaction, pathway, molecular-function, biological-process and drug-context queries for the selected disease and gene |
 
 **Selection, not two pickers.** Clicking a row in the ranked list drives BOTH cards and scrolls the
 page to the detail card — the act's move is *judge a row, then ask why that row*, and separate pickers
-would let the drawer and the subgraph describe different genes at once. The subgraph is the one thing
-that does **not** follow automatically: it costs a DSS round-trip (~2.7 s), so it waits for its own
-button rather than firing once per row while someone scans the list.
+would let the drawer and the graph context describe different genes at once. Candidate selection prepares
+the five route-specific queries but does not execute one; the user chooses a preset and opens the shared
+Explorer shell when ready to inspect the graph.
 
 **The detail card shows the champion's own inputs, not a selection.** webapp v1's drawer showed five
 features, of which three — `rwr_score`, `ppi_common_neighbors`, `shared_pathway_count` — are **not
@@ -344,35 +365,23 @@ not held to act 6. A vendor who leads with its limits has bought the right to be
 — the count is meaningless without it, which is how the obesity version acquired two conflicting values
 (§10.3).
 
-**Five routes, and only four are features.** The mechanism card runs one query per evidence route —
-interaction (`dwpc_GGD`), shared pathway (`dwpc_GPGD`), shared molecular function (`dwpc_GFGD`),
-shared biological process (`dwpc_GBGD`), and the drug route — and merges the subgraphs by node and
-edge id. The per-route edge counts are part of the answer: *"no pathway route"* is a fact about the
-candidate, not a gap in the picture. The two GO routes cap the term's own degree at 200, or a hub like
-*protein binding* matches everything and means nothing.
+**Five routes, and only four are features.** The mechanism card offers one independent, bounded preset
+per evidence route — interaction (`dwpc_GGD`), shared pathway (`dwpc_GPGD`), shared molecular function
+(`dwpc_GFGD`), shared biological process (`dwpc_GBGD`) and the drug route. It neither combines their
+result shapes nor reports route presence, absence or edge counts before the Explorer executes the chosen
+query. The two GO presets cap the mediator term's degree at 200, so a hub such as *protein binding* does
+not dominate the displayed context.
 
 The drug route carries the §4 caveat **on the card**: no model feature traverses a drug node, so
 nothing on it fed the score, but it is one of three routes admitting a pair into the candidate pool.
 *Not a feature*, never *not used*. Only `indication` and `drug_investigated_for` exist in this graph —
 contraindication was never built.
 
-⚠ **The single-query form does not run in the webapp, and the card says so.** Written as one query with
-an `OPTIONAL MATCH` per route it is the natural form, and the **Visual Graph Explorer returns it in
-about a second** because it talks to Kuzu directly. The webapp's only path is the graph agent tool
-(`b6Rpbve`), whose Kuzu runs in a memory-capped kernel: the chained clauses *multiply* rows rather than
-adding them, `LIMIT` bounds the output and not the join, and the engine answers
-`Buffer manager exception: the buffer pool is full` after 68–108s (reproduced on three warm attempts;
-an earlier run reported `Interrupted` at 173s). Hence five queries here, issued concurrently, ~4s warm.
-**The card renders the merged canvas and its copy button hands over the single query for the Explorer** —
-the constraint is ours, so it should not be exported to the person holding the mouse.
-
-⚠ **Cold start.** The first call after the graph tool has been idle cost **147s** against ~4s warm.
-Act 1 uses the same tool, so a run-through that opens the evidence base first arrives here warm.
-
-**The on-graph shot.** Interactive explorer, never a query recipe. Traversal is **undirected**,
-relationship variables must be **bound and returned** or the canvas shows floating nodes, and the engine's
-label for genes is `protein`. Node indices are snapshot-specific — the drawer generates them live, so
-prefer its copy button to any literal.
+**The on-graph shot.** The Visual Graph Explorer is the interactive surface, not a Target Prioritizer
+query recipe or canvas. The shared card exposes the generated query and opens a single full-screen shell;
+the user pastes and runs it in the Explorer. Traversal is **undirected**, relationship variables are bound
+and returned, and the graph label for genes is `protein`. Node indices are snapshot-specific, so the Act 4
+presets are generated from the selected live candidate row rather than copied from documentation.
 
 ```cypher
 // Why the head of the HER2+ list? The PI3K/AKT + RAS-MAPK axis, and its

@@ -10,7 +10,7 @@
   import { ScatterChart } from 'echarts/charts'
   import { GridComponent, MarkAreaComponent, MarkLineComponent, TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
-  import type { EChartsOption } from 'echarts'
+  import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
 
   use([ScatterChart, GridComponent, MarkAreaComponent, MarkLineComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActBeeswarm' })
@@ -44,8 +44,13 @@
       tooltip: {
         trigger: 'item',
         // The label travels as the third element so the hover names the disease.
-        formatter: (p: { value: [number, number, string] }) =>
-          `<b>${p.value[2]}</b><br/>${props.unit} ${p.value[0].toFixed(2)}`,
+        formatter: (params: TooltipComponentFormatterCallbackParams) => {
+          const entry = Array.isArray(params) ? params[0] : params
+          const value = Array.isArray(entry?.value) ? entry.value : []
+          const score = typeof value[0] === 'number' ? value[0].toFixed(2) : ''
+          const label = typeof value[2] === 'string' ? value[2] : ''
+          return `<b>${label}</b><br/>${props.unit} ${score}`
+        },
       },
       xAxis: {
         type: 'value', min: props.min, max: props.max, name: props.unit,

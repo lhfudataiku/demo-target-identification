@@ -584,7 +584,7 @@ No `EvidenceView.vue` migration begins before this gate passes.
 **Exit criterion:** Acts 1 and 4 instantiate the same component and differ only through supplied
 context, copy and query data.
 
-#### Wave 5 implementation candidate — awaiting user validation
+#### Wave 5 approved and deployed — 2026-09-02
 
 Act 1 now instantiates the same `VisualGraphExplorerCard` as Act 4 and supplies the approved three
 queries from a static frontend definition. Selecting a preset changes only the visible Cypher. The
@@ -592,9 +592,10 @@ card no longer fetches graph defaults, sends Cypher or natural-language prompts,
 graph/table result, or exposes local Cypher editing and re-execution. Open-ended exploration is
 directed to the Explorer query generator.
 
-The legacy graph backend remains unchanged as the Phase 6 rollback seam. Repository search finds no
-remaining frontend consumer of `/api/graph/defaults`, `/api/graph/cypher`, `/api/graph/search` or
-`/api/graph/mechanism`; Act 1 continues to load its non-graph evidence cards from `/api/evidence`.
+The legacy graph backend remained unchanged through the Wave 5 validation and deployment as the
+Phase 6 rollback seam. Repository search found no remaining frontend consumer of
+`/api/graph/defaults`, `/api/graph/cypher`, `/api/graph/search` or `/api/graph/mechanism`; Act 1
+continues to load its non-graph evidence cards from `/api/evidence`.
 
 The production frontend build passes. Local UI validation confirmed exactly three starters, stable
 first-starter selection, query-preview replacement on selection, shared-dialog launch, confirmed
@@ -618,6 +619,28 @@ After both acts pass acceptance:
 **Exit criterion:** repository search finds one Explorer card implementation, one Explorer shell and no
 dead native graph execution or rendering path.
 
+#### Wave 6 accepted — 2026-09-02
+
+The unused native graph path has been removed. The FastAPI application no longer imports or
+registers the graph router, and the deleted route module contained the complete retired surface:
+starter defaults, Cypher and natural-language execution, the five-route mechanism executor, result
+accumulation and graph/table shaping. The evidence payload used by Act 1 is unaffected.
+
+The unused `ActGraph.vue` canvas renderer has also been deleted. With no remaining caller,
+`vis-network` and `vis-data` and their orphaned lockfile entries have been removed. The graph colour
+tokens remain available as a neutral integration palette rather than being documented as inputs to
+the retired canvas renderer.
+
+Repository search now finds exactly one shared `VisualGraphExplorerCard` implementation and one
+global `VisualGraphExplorerDialog` shell, with both Acts 1 and 4 as consumers. It finds no runtime
+reference to `ActGraph`, `vis-network`, `vis-data`, the graph router or any `/api/graph/*` endpoint.
+The backend imports with no graph routes registered, and the production frontend build passes.
+Frontend type checking continues to report only the pre-existing ECharts option-callback diagnostics
+in unrelated chart components; Wave 6 adds no type diagnostic.
+
+The user accepted this cleanup, and Wave 7 subsequently deployed it after the release gates passed.
+Normal Git history remains the rollback path; no graph or dataset rollback is involved.
+
 ### Phase 7 — documentation and release verification
 
 1. Update `WEBAPP_DESIGN.md` to make the implemented architecture canonical.
@@ -630,9 +653,35 @@ dead native graph execution or rendering path.
 
 **Exit criterion:** the deployed behavior, canonical design document and repository source agree.
 
+#### Wave 7 completed — 2026-09-02
+
+The canonical design and webapp operations documentation now describe the shared Explorer card and global
+shell, the explicit copy-and-paste handoff, the Act 1 three-starter and Act 4 five-preset contracts, and
+the removal of Target Prioritizer graph execution and `/api/graph/*` routes. The deployment procedure
+also records the nested-frame permission and new-tab checks, plus the explicit remote-file pruning step
+that is necessary because deployment uploads files but does not remove previously deployed ones.
+
+Frontend type checking and the production build pass. Backend validation finds 17 registered paths,
+including `/api/evidence`, and no `/api/graph/*` route. Repository indexes were rebuilt without a DSS
+recipe refresh; governance, link and index checks pass. The final diff review found no release blocker.
+
+The release was deployed to `DEMO_TARGET_IDENTIFICATION` webapp `OlmPX9a` with code environment
+`primekg_kg`. The deployed bundle contains the Explorer navigation object and **Open full Explorer**,
+with no `/api/graph/`, `ActGraph` or `vis-network` marker. The upload-only deployment left the retired
+remote `backend/routes/graph.py` in place, so that exact file was deleted non-recursively and its absence
+verified. The restarted backend reports `running: true`, `crashCount: 0`, and successful `GET /__ping`
+responses.
+
+Live browser verification confirmed three Act 1 starters and five Act 4 presets after selecting TP53.
+Both acts open one shared dialog, keep the chosen Cypher visible, report a confirmed copy and load the
+authorized Visual Graph Explorer. **Open in new tab** reached the configured
+`wBcApLN_graph-search` route. This session used the authorized project owner; the representative
+non-owner permissions check remains an operational rehearsal item rather than a code or deployment
+failure. No graph, dataset, recipe or frozen reference was changed.
+
 ## 9. Configuration contract
 
-The planned build-time settings are:
+The implemented build-time settings are:
 
 ```text
 VITE_VISUAL_GRAPH_PROJECT_KEY=DEMO_TARGET_IDENTIFICATION

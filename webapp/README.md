@@ -414,6 +414,10 @@ they are set.
 | `ENV_NAME` | `deploy.sh` | Code env on the DSS instance (Python ≥3.11 recommended) |
 | `BACKEND_PORT` | `Makefile` | Local dev port for FastAPI (default: 5000) |
 | `FRONTEND_PORT` | `Makefile` | Local dev port for Vite (default: 5173) |
+| `VITE_VISUAL_GRAPH_PROJECT_KEY` | `frontend/src/config.ts` | Project containing the Visual Graph Explorer |
+| `VITE_VISUAL_GRAPH_WEBAPP_ID` | `frontend/src/config.ts` | Explorer backend webapp identifier, retained for identity and operational checks |
+| `VITE_VISUAL_GRAPH_OBJECT_ID` | `frontend/src/config.ts` | Explorer navigation object identifier (webapp ID plus current slug) |
+| `VITE_DSS_ORIGIN` | `frontend/src/config.ts` | Optional DSS origin for local development; deployed builds use their current origin |
 
 Local secrets that shouldn't be committed (DSS URL, API key override) go in `.env`
 (gitignored). Copy `.env.example` to get started.
@@ -424,6 +428,31 @@ tokens to rewrite: the display name and the FastAPI title read `VITE_APP_NAME`, 
 DSS webapp Python is generated from `LIB_NS`/`APP_PREFIX` at deploy time, and the
 sidebar icon is a fixed brand mark in `frontend/src/config.ts` (swap it there if you
 want a different one).
+
+---
+
+## Target Prioritizer Visual Graph Explorer integration
+
+This application uses the Visual Graph Explorer as the single interactive graph surface for both Act 1
+and Act 4. `VisualGraphExplorerCard` is the shared card and `VisualGraphExplorerDialog` is mounted once
+at application level as the lazy full-screen shell. The dialog's URL is built from the four
+`VITE_VISUAL_GRAPH_*` / `VITE_DSS_ORIGIN` settings above. In the deployed DSS webapp the origin is
+same-origin; local development needs `VITE_DSS_ORIGIN` set to the relevant DSS host.
+
+The two Explorer identifiers intentionally differ. `wBcApLN` identifies the underlying webapp for DSS
+status and log operations; `wBcApLN_graph-search` is the browser-navigation object used in
+`/projects/DEMO_TARGET_IDENTIFICATION/webapps/wBcApLN_graph-search/view`. Do not replace one with the
+other or add a graph snapshot ID to the configuration.
+
+The handoff is deliberately explicit. The Target Prioritizer prepares visible Cypher and attempts to
+copy it during the user's **Open full Explorer** action; the user then pastes and runs it in the Explorer.
+If clipboard access or nested framing is unavailable, the query remains selectable and **Open in new tab**
+is the supported fallback. Do not call a Visual Graph plug-in endpoint, modify the Explorer iframe DOM or
+claim an unconfirmed clipboard copy.
+
+Act 1 offers three deterministic starters. Act 4 offers five independent bounded presets for the current
+disease and target gene. The Target Prioritizer has no `/api/graph/*` endpoint and does not execute
+Cypher, join graph results or render a graph/table canvas; those responsibilities belong to the Explorer.
 
 ---
 

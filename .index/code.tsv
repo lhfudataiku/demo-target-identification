@@ -1,7 +1,6 @@
 path	kind	status	n_refs	referenced_by
 webapp/backend/routes/chat.py	webapp	ORPHAN (referenced by nothing)	0	-
 webapp/backend/routes/documents.py	webapp	ORPHAN (referenced by nothing)	0	-
-webapp/backend/routes/graph.py	webapp	ORPHAN (referenced by nothing)	0	-
 webapp/backend/services/chat_agent.py	webapp	ORPHAN (referenced by nothing)	0	-
 webapp/backend/services/db.py	webapp	ORPHAN (referenced by nothing)	0	-
 webapp/backend/services/document_describer.py	webapp	ORPHAN (referenced by nothing)	0	-
@@ -118,6 +117,7 @@ webapp/backend/routes/evidence.py	webapp	LIVE (referenced)	1	webapp/DEPLOYMENT.m
 webapp/backend/routes/example.py	webapp	LIVE (referenced)	2	webapp/README.md,webapp/backend/tools/registry.py
 webapp/backend/routes/families.py	webapp	LIVE (referenced)	2	docs/prioritizer/CLAIM_REGISTRY.json,webapp/DEPLOYMENT.md
 webapp/backend/routes/flow.py	webapp	LIVE (referenced)	1	webapp/frontend/src/types/flow.ts
+webapp/backend/routes/graph.py	webapp	LIVE (referenced)	2	docs/demo/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md,webapp/DEPLOYMENT.md
 webapp/backend/routes/system.py	webapp	LIVE (referenced)	1	webapp/README.md
 webapp/backend/routes/wizard.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/frontend/src/types/wizard.ts,webapp/frontend/src/views/wizard/WizardFlowView.vue
 webapp/backend/services/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh

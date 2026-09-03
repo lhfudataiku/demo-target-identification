@@ -6,7 +6,7 @@
   import { SankeyChart } from 'echarts/charts'
   import { TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
-  import type { EChartsOption } from 'echarts'
+  import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
 
   use([SankeyChart, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActSankey' })
@@ -32,10 +32,14 @@
     animationEasing: 'cubicOut',
     tooltip: {
       trigger: 'item', triggerOn: 'mousemove',
-      formatter: (p: { dataType: string; name: string; value: number }) =>
-        p.dataType === 'edge'
-          ? `${p.name}<br/><b>${p.value.toLocaleString()}</b> pairs`
-          : `${p.name}`,
+      formatter: (params: TooltipComponentFormatterCallbackParams) => {
+        const entry = Array.isArray(params) ? params[0] : params
+        if (!entry) return ''
+        const value = typeof entry.value === 'number' ? entry.value.toLocaleString() : String(entry.value ?? '')
+        return entry.dataType === 'edge'
+          ? `${entry.name}<br/><b>${value}</b> pairs`
+          : entry.name
+      },
     },
     series: [{
       type: 'sankey',

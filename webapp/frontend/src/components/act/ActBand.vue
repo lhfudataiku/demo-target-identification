@@ -10,7 +10,7 @@
   import { BarChart } from 'echarts/charts'
   import { GridComponent, TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
-  import type { EChartsOption } from 'echarts'
+  import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
 
   use([BarChart, GridComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActBand' })
@@ -30,8 +30,13 @@
     grid: { left: 0, right: 0, top: 4, bottom: 4, containLabel: false },
     tooltip: {
       trigger: 'axis', axisPointer: { type: 'shadow' },
-      formatter: (ps: { seriesName: string; value: number }[]) =>
-        ps.map((p) => `${p.seriesName}: <b>${p.value.toLocaleString()}</b>`).join('<br/>'),
+      formatter: (params: TooltipComponentFormatterCallbackParams) => {
+        const entries = Array.isArray(params) ? params : [params]
+        return entries.map((entry) => {
+          const value = typeof entry.value === 'number' ? entry.value.toLocaleString() : String(entry.value ?? '')
+          return `${entry.seriesName ?? ''}: <b>${value}</b>`
+        }).join('<br/>')
+      },
     },
     xAxis: { type: 'value', show: false, max: props.inValue + props.outValue },
     yAxis: { type: 'category', show: false, data: [''] },
