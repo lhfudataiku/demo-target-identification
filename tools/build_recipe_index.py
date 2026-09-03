@@ -131,12 +131,19 @@ def refresh():
         nm = (ln.split("\t") or [""])[0].strip()
         if not nm or nm in ("name", "Datasets", "dataset"):
             continue
-        out = sh(["dku", "dataset", "schema", nm, "-P", PROJECT])
-        cols = []
-        for row in out.split("\n"):
-            parts = row.split("\t")
-            if len(parts) == 2 and parts[0] not in ("name",) and not row.startswith("Schema:"):
-                cols.append(parts[0].strip())
+        # JSON, not the text table. The text table gains a third `description` column as soon as a
+        # dataset has column comments, and this loop used to require EXACTLY two tab-separated
+        # fields -- so on 2026-09-03, describing 50 datasets silently dropped 47 of them from the
+        # capture and features.tsv fell from 324 columns to 231 with a green exit code.
+        out = sh(["dku", "--format", "json", "dataset", "schema", nm, "-P", PROJECT])
+        try:
+            parsed = json.loads(out)
+        except (ValueError, TypeError):
+            parsed = []
+        if isinstance(parsed, dict):
+            parsed = parsed.get("columns", [])
+        cols = [c.get("name") for c in parsed
+                if isinstance(c, dict) and c.get("name")]
         if cols:
             schemas[nm] = cols
     print("schemas: %d datasets" % len(schemas))

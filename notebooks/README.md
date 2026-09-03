@@ -36,7 +36,7 @@ work happens in. A reviewer coming to this cold should follow the lifecycle:
 
 | # | lifecycle stage | notebook | backs | reads from |
 |--:|---|---|---|---|
-| 1 | **Data understanding** | `nb5_data_exploration` | §3 | zone 00 — raw graph |
+| 1 | **Data understanding** | `nb5_data_exploration` | §3 | zones 00–04 — the imported graph |
 | 2 | **Feature engineering** | `nb1_features_and_config` *(first half)* | §4.1, §4.2 | zone 30 — `psplit_train_set` |
 | 3 | **Split & leakage control** | `nb2_splitting_and_pool` | §5, §5.2.1, §5.4 | zone 30, A2 |
 | 4 | **Model selection & config** | `nb1_features_and_config` *(second half)* | §6.1, §6.3 | zone 31 — `scored_champion` |
@@ -75,19 +75,21 @@ exists, and **no script reads a dataset that does not**:
 | `nb5` | 5 | — |
 | `nb7` | 6 | — |
 | `nb2` | 5 | `pool_reachability` |
-| `nb3` | 4 | `family_auc_by_family` |
+| `nb3` | 4 | — *(`family_auc_by_family` moved to A2)* |
 | `nb6` | 12 | `tractability_axis` |
 | `nb4` | 9 | `breast_panel_metrics`, `tractability_axis` |
 
-Four zone-90 datasets are read by a script; the other three (`family_auc_grouped`,
-`family_validation_ranked`, `family_validation_scored`) are recipe intermediates in the
-`family_auc_by_family` chain.
+All three remaining zone-90 datasets are read by a script. The `family_auc_by_family` chain —
+including its `family_auc_grouped`, `family_validation_ranked` and `family_validation_scored`
+intermediates — moved to A2, because the webapp reads its endpoint and A2 is where its consumer's
+data belongs.
 
-**The old blocker is cleared.** `safety_lift` and `tractability_lift` were named as the acute case —
-carrying the act-6 punch line, gating any pruning, and requiring `nb6` to run green first. Both
-datasets have since been deleted, and `nb6` now runs green (34 checks, 0 stale). Note also that
-`family_auc_by_family` is read by the **webapp** as well as `nb3`, so zone 90 is no longer
-notebook-only staging and its description overstates how disposable it is.
+**The old blocker is cleared, and the zone has been renamed.** `safety_lift` and `tractability_lift`
+were named as the acute case — carrying the act-6 punch line, gating any pruning, and requiring `nb6`
+to run green first. Both datasets have since been deleted and `nb6` now runs green (34 checks, 0
+stale). On 2026-09-03 the zone became **`90 Validation evidence (asserted)`**: the `family_auc_*`
+chain moved to A2, where the webapp reads its endpoint, and what remains is the three tables above —
+permanent unless an assertion stops reading them, not staging for deletion.
 
 `nb7` is the one script with a repository dependency: it compares live DSS data against frozen
 expectations in `docs/demo/panel_selection/analysis/eyeball_test.csv`, and guards every figure in

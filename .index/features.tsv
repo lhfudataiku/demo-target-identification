@@ -55,6 +55,7 @@ auc	compute_breast_panel	-	-
 auc_assoc_labels	compute_drug_target_benchmark	-	-		
 auc_disease	compute_validation_auc_by_disease	-	-		
 auc_drug_targets	compute_drug_target_benchmark	-	-		
+auc_family	compute_family_auc	-	-		
 auc_hi95	compute_breast_panel	-	-		
 auc_hi95	compute_validation_auc_ci	-	-		
 auc_lo95	compute_breast_panel	-	-		
@@ -102,7 +103,6 @@ depth_a	compute_family_panel_overlap	-	-
 depth_b	compute_family_panel_overlap	-	-		
 depth_gap	compute_family_panel_overlap	-	-		
 disease	compute_breast_panel	-	-		
-disease	compute_demo_panel_config	-	-		
 disease	compute_filter_three_axes	-	-		
 disease	compute_novel_discovery_eval	-	-		
 disease	compute_pool_reachability	-	-		
@@ -245,6 +245,7 @@ n_rows	compute_hub_bias_meter	-	-
 n_split_keys	compute_split_audit_2	-	-		
 n_unreachable	compute_pool_reachability	-	-		
 n_validated_targets	compute_drug_target_benchmark	-	-		
+name	extract_hetionet_disease_slim	-	-		
 near_duplicate	compute_family_panel_overlap	-	-		
 node_group	compute_enriched_node_centrality_1	-	-		
 node_id	compute_enriched_node_centrality_1	-	-		
@@ -293,7 +294,9 @@ rank_in_disease	compute_family_panel_top50	-	-
 rank_in_disease	join_disease_name	-	-		
 rank_in_subtype	compute_family_panel_programme	-	-		
 rank_percentile	finalize_dashboard_candidates	-	-		
+recall_at_20	compute_family_auc	-	-		
 recall_at_20	compute_validation_auc_by_disease	-	-		
+recall_at_50	compute_family_auc	-	-		
 recall_ceiling	compute_pool_reachability	-	-		
 rho_degree_proba	compute_hub_bias_meter	-	-		
 role_a	compute_family_panel_overlap	-	-		

@@ -148,7 +148,7 @@
   },
   "SybkzSdu": {
    "name": "graph_explorer",
-   "verdict": "NOT A PRIORITIZER MODEL -- saved model of type LLM_GENERIC_RAW, backing the graph-search agent webapp. Recorded so the index accounts for every saved model in the project; it has no prioritizer metrics and never enters the ablation ladder or the champion comparison."
+   "verdict": "NOT A PRIORITIZER MODEL, and DELETED 2026-09-03. It was an LLM_GENERIC_RAW agent object left behind when Wave 6 removed the Act 1 graph agent path: the code went, the object stayed. Verified unused before deletion -- the Target Prioritizer has no /api/graph/* route, the Graph Explorer webapp reaches an LLM directly via config.llm_id rather than through an agent, and no recipe or scenario referenced it. Retained as a row here so the ladder history stays complete; it never had prioritizer metrics."
   }
  }
 }

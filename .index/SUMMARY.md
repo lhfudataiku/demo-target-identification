@@ -57,11 +57,11 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/WEBAPP_DESIGN.md:435` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
 | `docs/demo/panel_selection/README.md:75` | - | 0.350 | distance either way: Spearman −0.350 over the 148 shipped pairs. |
 | `docs/overview/PROJECT_CONTEXT.md:114` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
-| `docs/overview/PROJECT_CONTEXT.md:246` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `docs/overview/PROJECT_CONTEXT.md:246` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `docs/overview/PROJECT_CONTEXT.md:247` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `docs/overview/PROJECT_CONTEXT.md:247` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `docs/overview/PROJECT_CONTEXT.md:258` | 4.6 | 129,253 | solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying |
+| `docs/overview/PROJECT_CONTEXT.md:263` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
+| `docs/overview/PROJECT_CONTEXT.md:263` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
+| `docs/overview/PROJECT_CONTEXT.md:264` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
+| `docs/overview/PROJECT_CONTEXT.md:264` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
+| `docs/overview/PROJECT_CONTEXT.md:275` | 4.6 | 129,253 | solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.646 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.567 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.328 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |

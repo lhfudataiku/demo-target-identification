@@ -100,11 +100,13 @@ tools/check_governed_values.py	tool	LIVE	3	docs/decisions/DECISION_REGISTER.md,t
 tools/check_harness.py	tool	LIVE	2	harness/README.md,tools/check_indexes.sh
 tools/check_indexes.sh	tool	LIVE	12	.github/workflows/checks.yml,README.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot
 tools/check_links.py	tool	LIVE	6	archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/operations/PHASE_0_BASELINE_2026-08-28.md
+tools/dataset_descriptions.json	tool	LIVE	2	tools/check_indexes.sh,tools/push_descriptions.py
 tools/index_manifest.json	tool	LIVE	3	docs/README.md,docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md,tools/build_index.py
 tools/model_registry.json	tool	LIVE	8	archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md
 tools/nb_assertions/__init__.py	tool	LIVE	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
 tools/nb_assertions/runner.py	tool	LIVE	5	archive/notebooks-dss-2026-09-03/README.md,harness/skills/target-id/references/number-update.md,notebooks/README.md,notebooks/nb6_interrogation_and_close.py
 tools/push_assertions.py	tool	LIVE	3	harness/skills/target-id/references/number-update.md,notebooks/README.md,tools/check_indexes.sh
+tools/push_descriptions.py	tool	LIVE	2	tools/check_indexes.sh,tools/dataset_descriptions.json
 tools/recipe_classes.json	tool	LIVE	6	archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md,docs/prioritizer/PHASE3_PREREGISTRATION.md
 tools/sync_harness.py	tool	LIVE	7	AGENTS.md,CLAUDE.md,README.md,harness/README.md
 tools/tests/fixtures/build_governance/accepted-baseline.json	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
@@ -116,7 +118,7 @@ webapp/backend/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,w
 webapp/backend/app.py	webapp	LIVE (referenced)	7	tools/recipe_classes.json,webapp/DEPLOYMENT.md,webapp/README.md,webapp/backend/routes/chat.py
 webapp/backend/config.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/app.env,webapp/dss_webapp/backend.py
 webapp/backend/dss_client.py	webapp	LIVE (referenced)	7	docs/demo/WEBAPP_DESIGN.md,harness/WEBAPP_OVERLAY.md,webapp/AGENTS.md,webapp/CLAUDE.md
-webapp/backend/feature_glossary.py	webapp	LIVE (referenced)	3	docs/demo/WEBAPP_DESIGN.md,webapp/backend/routes/calibration.py,webapp/frontend/src/views/ShortlistView.vue
+webapp/backend/feature_glossary.py	webapp	LIVE (referenced)	6	docs/demo/WEBAPP_DESIGN.md,tools/check_indexes.sh,tools/dataset_descriptions.json,tools/push_descriptions.py
 webapp/backend/routes/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
 webapp/backend/routes/agents.py	webapp	LIVE (referenced)	1	webapp/frontend/src/types/agents.ts
 webapp/backend/routes/calibration.py	webapp	LIVE (referenced)	4	docs/demo/FLOW_MAP.md,docs/prioritizer/CLAIM_REGISTRY.json,tools/build_flow_map.py,webapp/DEPLOYMENT.md

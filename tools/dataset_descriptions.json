@@ -1,0 +1,310 @@
+{
+ "_note": "Source for DSS dataset and column descriptions. Feature-column wording is NOT here: webapp/backend/feature_glossary.py is the single copy and tools/push_descriptions.py reads it at push time. Apply with tools/push_descriptions.py --push.",
+ "columns": {
+  "disease_index": "MONDO disease node index from graph_nodes. The join key for every per-disease table -- an internal integer, not a MONDO CURIE.",
+  "gene_index": "Gene/protein node index from graph_nodes. Pairs with disease_index to key one candidate.",
+  "disease": "Human-readable disease label. Display only -- join on disease_index.",
+  "disease_name": "Human-readable disease label. Display only -- join on disease_index.",
+  "gene": "HGNC gene symbol. Display only -- join on gene_index.",
+  "gene_name": "HGNC gene symbol. Display only -- join on gene_index.",
+  "node_id": "Source-native identifier as it arrived (MONDO CURIE, Entrez id, ChEMBL id, ...). Display and provenance; join on node_index.",
+  "node_group": "Node type bucket used by the graph webapp's grouping (protein, disease, drug, pathway, effect, ...).",
+  "relation": "Edge relation type, one of the graph's 18 relations.",
+  "display_relation": "Relation label for display; several raw relations collapse to one display label.",
+  "count": "Row count for the grouping this table aggregates over.",
+  "n_genes": "Number of distinct genes in this row's scope.",
+  "n_known": "Number of already-annotated known targets in this row's scope.",
+  "n_known_targets": "Number of curated known targets for this disease.",
+  "disease_family_id": "Disease family the grouped split groups on. Terms in the same family never straddle train/test.",
+  "disease_split_key": "The grouped-split key. Zero straddling keys is what makes every held-out number mean anything.",
+  "split_key_name": "Human-readable label for disease_split_key.",
+  "split_key_rule": "Which rule assigned this split key -- the audit trail for the leakage control.",
+  "anchor_name": "The family anchor term this split key was derived from.",
+  "hop_depth": "Hops from the family anchor in the MONDO hierarchy. Act 3's ontology indentation is this column drawn.",
+  "split": "Train / validation / test membership, assigned by disease_split_key rather than by row.",
+  "is_target": "Label: 1 when the gene is an annotated target for this disease. NEVER a model input.",
+  "proba_1": "Champion m7-f14 predicted probability that the pair is a target.",
+  "proba_0": "Complement of proba_1.",
+  "prediction": "Thresholded class from the champion. The ranking, not this flag, is what the demo shows.",
+  "score": "Champion score used for ranking within a disease.",
+  "rank": "Rank within the disease pool, 1 = highest scoring.",
+  "rank_in_disease": "Rank within this disease's candidate pool, 1 = highest scoring.",
+  "rank_in_subtype": "Rank within the subtype's candidate pool, 1 = highest scoring.",
+  "rank_percentile": "Percentile position within the disease pool.",
+  "target_rank_sum": "Sum of known-target ranks; lower is better. Used to compare rankings without a threshold.",
+  "auc_disease": "Per-disease AUROC on held-out data. Aggregate as a MACRO mean across diseases; a pooled AUC is a different and wrong number.",
+  "auc": "AUROC for this row's scope.",
+  "auc_se": "Hanley-McNeil standard error for auc_disease.",
+  "auc_lo95": "Lower bound of the Hanley-McNeil 95% interval for auc_disease.",
+  "auc_hi95": "Upper bound of the Hanley-McNeil 95% interval for auc_disease.",
+  "auc_trustworthy": "Whether this disease has enough positives for its AUC to carry weight. Filter on it before quoting a per-disease number.",
+  "auc_drug_targets": "AUROC against curated drug-target labels instead of association labels -- the therapeutic axis. A warning signal, never an optimisation target.",
+  "auc_assoc_labels": "AUROC against the association labels, for comparison with auc_drug_targets.",
+  "n_pos": "Positives in this disease's held-out pool.",
+  "n_neg": "Negatives in this disease's held-out pool.",
+  "hits_at_10": "Known targets recovered in the top 10.",
+  "hits_at_20": "Known targets recovered in the top 20.",
+  "hits_at_50": "Known targets recovered in the top 50.",
+  "recall_at_20": "Share of this disease's known targets recovered in the top 20.",
+  "rank_enrichment": "How much higher known targets rank than chance for this disease.",
+  "enrichment_at_50": "Enrichment of known targets in the top 50 over the pool base rate.",
+  "module_size": "Protein seeds annotated for the disease. A property of the DISEASE, not the pair, and NOT a champion input.",
+  "dwpc_GCD": "Degree-weighted paths reaching the disease through a shared drug. NOT a champion input -- retained for the ablation record.",
+  "gene_n_diseases": "How many diseases the gene is already annotated for. NOT a champion input: alone it scores 0.8567 AUC, which measures gene popularity rather than biology.",
+  "degree": "Gene degree in the graph, independent of any disease. NOT a champion input.",
+  "pagerank": "Gene PageRank, independent of any disease. NOT a champion input.",
+  "eigenvector_centrality": "Gene eigenvector centrality, independent of any disease. NOT a champion input.",
+  "triangles": "Triangle count around the gene. NOT a champion input.",
+  "clustering_coefficient": "Local clustering coefficient of the gene. NOT a champion input.",
+  "ppi_common_neighbors": "Raw count of interaction partners shared with the disease module. NOT a champion input -- the champion uses the degree-corrected z-score ppi_common_neighbors_z instead.",
+  "ppi_cn_expected": "Shared partners that gene degree alone predicts; the baseline ppi_common_neighbors_z is measured against.",
+  "ppi_edges_with_provenance": "Interactions carrying at least one named source; the denominator behind the provenance features.",
+  "rwr_score": "Random-walk-with-restart proximity to the disease module. NOT a champion input.",
+  "rwr_norm": "Normalised rwr_score. NOT a champion input.",
+  "prox_mean": "Mean hop distance to the disease module; companion to prox_closest. NOT a champion input.",
+  "prox_n_reach": "How many module genes are reachable at all; the denominator prox_mean is computed over.",
+  "shared_pathway_count": "Raw count of pathways shared with the disease module; the champion uses the fraction (shared_pathway_frac) instead.",
+  "disease_context": "Disease-side context feature. NOT a champion input.",
+  "has_inflammatory_go_annotation": "Whether the gene carries an inflammatory GO annotation. NOT a champion input.",
+  "druggability_class": "Open Targets tractability bucket. Display annotation and a filter the scientist sets -- never a model input.",
+  "druggability_evidence": "Evidence backing druggability_class.",
+  "safety_flag": "Public safety-liability flag. Display only: the discovery lift is measured against exactly these labels, so filtering on it makes the headline claim circular.",
+  "localization_class": "Subcellular localisation bucket, from the GO hierarchy. Display annotation only.",
+  "lof_intolerant": "Loss-of-function intolerance flag. Display annotation only.",
+  "ground_truth": "Which label set this row is scored against (approved / investigational / curated).",
+  "act3_family": "Which act 3 family this term belongs to.",
+  "subtype": "Subtype term within the family. Subtype means something different per family -- biomarker for breast, histological for lung.",
+  "pool": "Candidate pool the row was drawn from.",
+  "pool_size": "Size of the candidate pool for this disease.",
+  "disease_pool_size": "Number of scored candidates for this disease.",
+  "is_eligible": "Whether the disease passes the seed gate. Only 1,157 of 27,153 disease nodes do; the 95.7% excluded is the study's central limit.",
+  "node_index": "Internal integer node identity. THIS is what every edge and feature table joins on, not node_id.",
+  "node_type": "One of the graph's 8 node types: protein, disease, drug, pathway, effect/phenotype, biological_process, molecular_function, cellular_component.",
+  "node_name": "Human-readable label for the node. Display only.",
+  "node_source": "Which source system the node came from. Six are external; MONDO_grouped is ours, and saying so is part of act 1's honesty.",
+  "in_act3": "Whether this term appears in act 3's family panel.",
+  "act3_role": "The term's role inside its family: the family anchor, or one of its subtypes.",
+  "in_act4": "Whether this disease appears in act 4's disease picker.",
+  "act4_area": "Therapeutic area label act 4 groups the singleton diseases under.",
+  "act4_order": "Display order in act 4's disease picker.",
+  "top_shap_drivers": "The candidate's strongest SHAP contributions, precomputed for the detail card. Explanation, not a score.",
+  "ot_class_l1": "Open Targets top-level target class. Display annotation only.",
+  "ot_sm_tractable": "Small-molecule tractability flag from Open Targets. Display annotation and a user-set filter, never a model input.",
+  "ot_ab_tractable": "Antibody tractability flag from Open Targets. Display annotation and a user-set filter, never a model input.",
+  "has_approved_drug": "Whether any approved drug hits this gene, for any disease. A badge, not a filter -- the discovery lift is measured against this label.",
+  "approved_for_disease": "Whether an approved drug links this gene to THIS disease. This is the label act 4's lift is measured against, so it must never become a filter.",
+  "investigational_for_disease": "Whether an investigational drug links this gene to this disease. Same rule as approved_for_disease.",
+  "has_safety_liability": "Whether the gene carries any public safety flag. Display only; filtering on it deletes ERBB2 from its own disease's list.",
+  "n_safety_liabilities": "How many distinct safety flags the gene carries. Display only.",
+  "safety_events": "Reported adverse-event categories for the gene. Display only -- this is not a toxicity assessment.",
+  "safety_dosing": "Dosing-related safety notes for the gene. Display only.",
+  "lof_oe": "Observed/expected loss-of-function ratio; lower means more intolerant to loss of function.",
+  "lof_oe_upper": "Upper confidence bound on lof_oe; the bound, not the point estimate, is what constraint claims should use.",
+  "lof_bin6": "Loss-of-function intolerance bucket, six bins.",
+  "mis_oe": "Observed/expected missense ratio for the gene.",
+  "datatypes": "Which evidence datatypes back the disease-gene labels, and in what proportion -- the definition of \"known target\".",
+  "feature": "Feature column name this row reports on."
+ },
+ "datasets": {
+  "graph_node_type_counts": {
+   "short": "Act 1: node count per type across the assembled graph. Read whole at webapp startup and cached.",
+   "long": ""
+  },
+  "graph_node_source_counts": {
+   "short": "Act 1: node count per source. Six sources are external; MONDO_grouped is ours, which is the one to say out loud.",
+   "long": ""
+  },
+  "graph_relation_counts": {
+   "short": "Act 1: edge count for each of the graph's 18 relations.",
+   "long": ""
+  },
+  "graph_ppi_provenance": {
+   "short": "Act 1: how many interaction edges are corroborated by one, two or more interactomes.",
+   "long": "This is the table act 1's provenance chart is built from, and it pays off later: the champion's two strongest SHAP drivers are ppi_evidence_depth and ppi_multi_source_frac, both derived from this same corroboration signal."
+  },
+  "graph_label_evidence": {
+   "short": "Act 1: the disease-gene evidence split that defines what \"known target\" means.",
+   "long": "The act's honesty depends on this table. \"Known target\" is a curated label with a provenance mix, not a fact, and this is where that mix is shown."
+  },
+  "disease_eligibility": {
+   "short": "Act 2: the seed-gate funnel, 27,153 disease nodes down to 1,157 eligible.",
+   "long": "The 95.7% this gate excludes is the study's central limit and the demo says so explicitly. A disease with too few annotated seeds cannot be scored or evaluated, so it never enters the population."
+  },
+  "validation_auc_by_disease": {
+   "short": "Act 2: per-disease held-out AUROC with Hanley-McNeil confidence intervals, for all 670 validation diseases.",
+   "long": "Read THIS dataset, not validation_auc_by_disease_2 -- the _2 variant is a two-level table nothing reads. Aggregate as a macro mean across diseases; a pooled AUC is a different and wrong number."
+  },
+  "validation_auc_ci": {
+   "short": "Intermediate: per-disease AUC with its interval, feeding family_panel in A3.",
+   "long": ""
+  },
+  "hub_bias_meter": {
+   "short": "Act 2: whether the model under-scores poorly connected true targets, with biology held constant.",
+   "long": "This is the detection question, and it is deliberately measured twice: nb3 asks whether the top 50 over-samples high-degree genes (about the ranking), nb3b asks this (about detection). They point opposite ways and both are true."
+  },
+  "orthogonality_scatter": {
+   "short": "Act 2: per-disease association AUC against drug-target-benchmark AUC.",
+   "long": "The point of the scatter is that the two axes are only loosely related. A high association AUC does not buy therapeutic relevance, which is why the drug benchmark is reported as a warning rather than optimised."
+  },
+  "drug_target_benchmark": {
+   "short": "Per-disease AUROC scored against curated drug-target labels instead of association labels.",
+   "long": "Treat as a WARNING signal, never an optimisation target: this benchmark can measure gene popularity rather than model quality."
+  },
+  "novel_discovery_eval": {
+   "short": "Discovery lift on genes the labels do not already claim, by ground-truth class and rank cutoff.",
+   "long": "This is the closest thing the project has to a discovery claim, and it is deliberately modest -- the ranked list beats chance on not-yet-annotated genes, which is not the same as finding something new."
+  },
+  "persona_enrichment": {
+   "short": "Per-disease enrichment used to pick the demo panel and to render act 3's spread.",
+   "long": ""
+  },
+  "persona_candidates": {
+   "short": "Candidate diseases considered for the demo panel, with the metrics the choice was made on.",
+   "long": ""
+  },
+  "split_audit_2": {
+   "short": "Act 2: proof that no disease split key straddles train, validation or test.",
+   "long": "Zero straddling keys is the claim every held-out number rests on. Its recipe once failed silently for weeks, leaving the leakage guarantee unverified -- which is why this table is shown rather than asserted."
+  },
+  "family_validation_scored": {
+   "short": "Intermediate: champion scores joined to family membership, first step of the per-family AUC chain.",
+   "long": ""
+  },
+  "family_validation_ranked": {
+   "short": "Intermediate: per-family ranking, second step of the per-family AUC chain.",
+   "long": ""
+  },
+  "family_auc_grouped": {
+   "short": "Intermediate: per-family aggregation, third step of the per-family AUC chain.",
+   "long": ""
+  },
+  "family_auc_by_family": {
+   "short": "Per-therapeutic-area AUC, the endpoint of the family AUC chain. Read by the webapp and by nb3.",
+   "long": "Moved from zone 90 to A2 on 2026-09-03 because the webapp reads it -- it is serving data, not notebook staging."
+  },
+  "validation_set_scored_grouped": {
+   "short": "Intermediate: grouped validation scores.",
+   "long": ""
+  },
+  "validation_set_scored_windows": {
+   "short": "Intermediate: windowed validation scores.",
+   "long": ""
+  },
+  "demo_panel_config": {
+   "short": "Which families and diseases the demo carries. Changing this repoints act 3 and, through validation_set_personas_2, the whole candidate chain.",
+   "long": "Read docs/demo/panel_selection.html before repointing it. The panel was measured over all 670 validation diseases: subtype structure exists only in oncology, so act 3 is breast plus uterine and therapeutic-area breadth comes from act 4's singletons."
+  },
+  "family_panel": {
+   "short": "Family panel with hop depth, the ontology skeleton act 3 indents.",
+   "long": ""
+  },
+  "family_panel_metrics": {
+   "short": "Act 3: per-subtype AUC with its interval and known-target count, for every term in the panel.",
+   "long": ""
+  },
+  "family_panel_top50": {
+   "short": "Act 3: the gene-by-term top-50 rank matrix. Covers every term in the config, not just the persona diseases.",
+   "long": "It replaced top50_membership, which held only the persona diseases and made the matrix look like a subset of itself."
+  },
+  "family_panel_overlap": {
+   "short": "Act 3: pairwise top-50 overlap between terms, with the ontology gap between them.",
+   "long": "This is the table that decides whether a family's subtypes are really distinguishable. Breast subtypes share only about 4% of their top-50 novel candidates; lung histological subtypes do not separate at all."
+  },
+  "family_panel_programme": {
+   "short": "Act 3: which candidates are common to a family versus specific to one subtype.",
+   "long": ""
+  },
+  "dashboard_candidates": {
+   "short": "Act 4: the ranked candidate table the scientist filters. The only dataset with a per-request WHERE and the only Snowflake candidate.",
+   "long": "Everything else in the serving zones is read whole and cached; this one is queried per disease. The drug badges and the liability flag on it are display-only and must never become filters, because the discovery lift is measured against exactly those labels."
+  },
+  "filter_three_axes": {
+   "short": "Act 4: the three-axis filter counts -- novel, tractable, and free of known liabilities.",
+   "long": ""
+  },
+  "known_drug_truth": {
+   "short": "Curated drug-target ground truth used to score the shortlist.",
+   "long": ""
+  },
+  "shap_driver_frequency": {
+   "short": "Act 2: how often each feature is a top SHAP driver, standing in for feature importance.",
+   "long": "Lives in zone 40 beside the scored table it is computed from, not in A2 where it is displayed. It is a frequency over the scoring output, not a global importance."
+  },
+  "shap_drivers_long": {
+   "short": "Intermediate: per-candidate SHAP drivers in long form, feeding shap_driver_frequency.",
+   "long": ""
+  },
+  "breast_panel_metrics": {
+   "short": "Breast subtype panel built to be falsified by a breast surgeon rather than by our own labels.",
+   "long": "A surgeon can falsify a candidate list in minutes, which is a harder test than any metric in the document. The risk measured first was whether breast subtypes resolve at all: they do, sharing only ~4% of their top-50 novel candidates, unlike lung histological subtypes."
+  },
+  "pool_reachability": {
+   "short": "Which candidate pairs are reachable in the graph at all, and which are not.",
+   "long": "Reachability is the ceiling on recall: a target no path reaches cannot be ranked, however good the model is."
+  },
+  "tractability_axis": {
+   "short": "Tractability lift, naive against degree-matched, under both estimators.",
+   "long": "The degree-matched estimator is the honest one. Naive lift partly measures gene popularity, and the gap between the two is the act-6 punch line."
+  },
+  "graph_nodes": {
+   "short": "Node identity, type, name and source for the whole graph. 22 recipes read it -- the index-to-entity lookup almost everything joins on.",
+   "long": ""
+  },
+  "graph_edges": {
+   "short": "Every edge in the assembled graph, with its relation. Feeds the matrix-form features computed outside Kuzu.",
+   "long": ""
+  },
+  "drug_disease_edges": {
+   "short": "Therapeutic-axis ground truth: indication and drug_investigated_for, kept as TWO relations.",
+   "long": "Only about 13% of Open Targets indication rows are approvals. Flattening the two relations into one would badly overstate approved evidence."
+  },
+  "drug_protein_edges": {
+   "short": "Tractability-axis ground truth, and the only uninflated drug label in the project.",
+   "long": ""
+  },
+  "raw_disease_disease": {
+   "short": "The PRE-REVERSAL disease hierarchy. Assembly makes edges undirected, so hierarchy direction survives only here.",
+   "long": "This is the sole reason act 3's ontology indentation can be drawn: parent/child is unrecoverable from the assembled graph."
+  },
+  "raw_ot_known_drug": {
+   "short": "Open Targets known-drug rows, the source of the curated drug labels.",
+   "long": ""
+  },
+  "disease_family_id": {
+   "short": "The disease-to-family mapping the grouped split groups on.",
+   "long": ""
+  },
+  "enriched_gene_druggability_v2": {
+   "short": "Druggability class per gene, derived from Open Targets tractability buckets.",
+   "long": "Display annotation and a user-set filter only. Feeding it to the model was measured and rejected three times over."
+  },
+  "enriched_gene_safety_v2": {
+   "short": "Safety liabilities per gene, from public flags.",
+   "long": "Display only. The discovery lift is measured against exactly these labels, so filtering on them makes the headline claim circular -- filtering the liability flag deletes ERBB2 from its own disease's list."
+  },
+  "psplit_train_set": {
+   "short": "The training half of the grouped split, one row per candidate pair with all feature columns.",
+   "long": "Sample it rather than reading it whole: the full 2.19M x 31 frame plus a correlation matrix gets OOM-killed. A 25% sample resolves null rates to ~0.1pp."
+  },
+  "enriched_graph_features_candidate_psplit": {
+   "short": "The assembled per-pair feature table the model trains and scores on.",
+   "long": ""
+  },
+  "scored_champion": {
+   "short": "Champion m7-f14 scores over the validation population. The most upstream dataset the assertion scripts recompute from.",
+   "long": ""
+  },
+  "enriched_dwpc_GGD": {
+   "short": "Degree-weighted path count reaching the disease through an interacting gene. A champion feature.",
+   "long": ""
+  },
+  "enriched_dwpc_GPGD": {
+   "short": "Degree-weighted path count reaching the disease through a shared pathway. A champion feature.",
+   "long": ""
+  },
+  "enriched_dwpc_GCD": {
+   "short": "Degree-weighted path count reaching the disease through a shared drug. NOT a champion input.",
+   "long": ""
+  }
+ }
+}

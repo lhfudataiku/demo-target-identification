@@ -1,9 +1,5 @@
 {
  "_models": {
-  "SybkzSdu": {
-   "name": "graph_explorer",
-   "type": "LLM_GENERIC_RAW"
-  },
   "hJLGoYn4": {
    "name": "m7-f14",
    "type": "PREDICTION"
@@ -220,6 +216,7 @@
    "druggability_class",
    "ot_sm_tractable",
    "ot_ab_tractable",
+   "name",
    "entrez_id",
    "uniprot_id",
    "omim_id",
@@ -262,6 +259,7 @@
    "ot_subcell_secreted",
    "ot_sm_tractable",
    "ot_ab_tractable",
+   "name",
    "entrez_id",
    "uniprot_id",
    "omim_id",
@@ -557,6 +555,21 @@
    "shared_pathway_count",
    "shared_pathway_frac"
   ],
+  "family_auc_by_family": [
+   "disease_family_id",
+   "target_rank_sum",
+   "n_pos",
+   "n_neg",
+   "auc_family",
+   "hits_at_10",
+   "hits_at_20",
+   "recall_at_20",
+   "hits_at_50",
+   "recall_at_50",
+   "n_diseases_in_family",
+   "n_distinct_genes",
+   "count"
+  ],
   "family_auc_grouped": [
    "disease_family_id",
    "target_rank_sum",
@@ -770,6 +783,7 @@
   ],
   "gene_crosswalk": [
    "symbol",
+   "name",
    "entrez_id",
    "uniprot_id",
    "omim_id",
@@ -782,6 +796,7 @@
   ],
   "gene_names": [
    "symbol",
+   "name",
    "entrez_id",
    "uniprot_id",
    "omim_id",
@@ -799,6 +814,7 @@
    "lof_bin6",
    "mis_oe",
    "has_safety_liability",
+   "name",
    "entrez_id",
    "uniprot_id",
    "omim_id",
@@ -843,7 +859,8 @@
    "count"
   ],
   "hetionet_disease_slim": [
-   "doid"
+   "doid",
+   "name"
   ],
   "hub_bias_meter": [
    "quintile",
@@ -920,6 +937,7 @@
    "ot_subcell_secreted",
    "ot_sm_tractable",
    "ot_ab_tractable",
+   "name",
    "entrez_id",
    "uniprot_id",
    "omim_id",
@@ -1052,6 +1070,15 @@
    "ok_ranking",
    "ok_discovery",
    "ok_found"
+  ],
+  "persona_enrichment": [
+   "disease",
+   "n_pos",
+   "auc_disease",
+   "rank_enrichment",
+   "disease_index",
+   "module_size",
+   "is_current"
   ],
   "pool_reachability": [
    "disease_index",
@@ -1716,7 +1743,6 @@
  "_sibling_recipes": [
   "assign_node_index",
   "attach_node_index",
-  "build-graph-6bRVGs",
   "build-graph-AWefP6",
   "build-graph-Mp25kL",
   "build-graph-ViVCmL",

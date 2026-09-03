@@ -189,9 +189,26 @@ result.
 
 ### 4.3 The interface between them
 
-`DEMO_KG_LS` exposes **13 objects** to `DEMO_TARGET_IDENTIFICATION`, which appear in its
-`00 Imported from DEMO_KG_LS (synced)` flow zone. This list *is* the contract — anything else in the
-graph project can change freely.
+`DEMO_KG_LS` exposes **13 objects** to `DEMO_TARGET_IDENTIFICATION`. This list *is* the contract —
+anything else in the graph project can change freely.
+
+Each of the 13 foreign references now sits in the same zone as its local copy, mirroring
+`DEMO_KG_LS`'s own zoning, so act 1's "six public sources" is visible in the flow rather than hidden
+in one undifferentiated box:
+
+| zone | foreign reference and local copy | mirrors the `DEMO_KG_LS` zone |
+|---|---|---|
+| `00 Import · genes & interactome` | `gene_names` | Gene & interactome (HGNC, PPI) |
+| `01 Import · diseases & phenotypes` | `mondo_references`, `raw_disease_disease` | Disease & phenotypes (MONDO, HPO) |
+| `02 Import · drugs & gene-disease` | `drug_disease_edges`, `drug_protein_edges`, `raw_ot_known_drug`, `raw_ot_druggability`, `raw_ot_safety` | Drugs & gene-disease (Open Targets) |
+| `03 Import · function & pathways` | `raw_go_hierarchy` | Function & pathways (GO, Reactome) |
+| `04 Graph backbone (imported)` | `graph_nodes`, `graph_edges`, `edge_metadata`, and the `published_kg_ls` folder | Graph build |
+
+Zone 04 is separated from 00–03 on purpose: those carry the raw sources, this carries what
+`DEMO_KG_LS` assembly *produced* from them. It also holds `llm_hx`, the Graph Explorer webapp's query
+history — no recipe produces or reads it, which is expected, since its consumer is a webapp rather
+than the flow. The retired snapshot `enriched_index_freezed-6bRVGs` is no longer referenced from this
+project at all; it remains in `DEMO_KG_LS` as the provenance record for the published feature numbers.
 
 **Since 2026-08-18 the datasets are consumed through local synced copies, not read across the project
 boundary.** Each of the 12 foreign dataset references now feeds **exactly one Sync recipe** and

@@ -13,7 +13,7 @@
 > python3 tools/build_flow_map.py
 > ```
 
-Live DSS: **92 datasets across 14 zones**, cross-referenced against the recipe graph (90 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
+Live DSS: **92 datasets across 18 zones**, cross-referenced against the recipe graph (90 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
 
 A dataset counts as **read** only when its name appears *quoted* in reader code. A bare
 mention is prose: `calibration.py` names the three DWPC feature datasets in a display
@@ -49,22 +49,53 @@ one with it.
 of its outputs either read or consumed, so no recipe is load-bearing for a dataset that
 looks disposable.
 
-## 00 Imported from DEMO_KG_LS (synced)  (10 datasets, 13 recipes)
+## 00 Import · genes & interactome  (1 datasets, 1 recipes)
 
-Foreign references in this zone (12), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.drug_disease_edges`, `DEMO_KG_LS.drug_protein_edges`, `DEMO_KG_LS.edge_metadata`, `DEMO_KG_LS.gene_names`, `DEMO_KG_LS.graph_edges`, `DEMO_KG_LS.graph_nodes`, `DEMO_KG_LS.mondo_references`, `DEMO_KG_LS.raw_disease_disease`, `DEMO_KG_LS.raw_go_hierarchy`, `DEMO_KG_LS.raw_ot_druggability`, `DEMO_KG_LS.raw_ot_known_drug`, `DEMO_KG_LS.raw_ot_safety`
+Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.gene_names`
+
+| dataset | read by | producing recipe | recipe consumers | flag |
+|---|---|---|--:|---|
+| `gene_names` | — | `compute_DEMO_KG_gene_names_copy` | 2 | intermediate |
+
+## 01 Import · diseases & phenotypes  (2 datasets, 2 recipes)
+
+Foreign references in this zone (2), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.mondo_references`, `DEMO_KG_LS.raw_disease_disease`
+
+| dataset | read by | producing recipe | recipe consumers | flag |
+|---|---|---|--:|---|
+| `mondo_references` | — | `compute_DEMO_KG_mondo_references_copy` | 1 | intermediate |
+| `raw_disease_disease` | nb5 | `compute_DEMO_KG_raw_disease_disease_copy` | 1 | notebook |
+
+## 02 Import · drugs & gene-disease  (5 datasets, 5 recipes)
+
+Foreign references in this zone (5), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.drug_disease_edges`, `DEMO_KG_LS.drug_protein_edges`, `DEMO_KG_LS.raw_ot_druggability`, `DEMO_KG_LS.raw_ot_known_drug`, `DEMO_KG_LS.raw_ot_safety`
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `drug_disease_edges` | nb6 | `compute_DEMO_KG_drug_disease_edges_copy` | 7 | notebook |
 | `drug_protein_edges` | nb6 | `compute_DEMO_KG_drug_protein_edges_copy` | 8 | notebook |
+| `raw_ot_druggability` | — | `compute_DEMO_KG_raw_ot_druggability_copy` | 1 | intermediate |
+| `raw_ot_known_drug` | nb4 | `compute_raw_ot_known_drug` | 1 | notebook |
+| `raw_ot_safety` | — | `compute_DEMO_KG_raw_ot_safety_copy` | 1 | intermediate |
+
+## 03 Import · function & pathways  (1 datasets, 1 recipes)
+
+Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.raw_go_hierarchy`
+
+| dataset | read by | producing recipe | recipe consumers | flag |
+|---|---|---|--:|---|
+| `raw_go_hierarchy` | — | `compute_DEMO_KG_raw_go_hierarchy_copy` | 1 | intermediate |
+
+## 04 Graph backbone (imported)  (4 datasets, 4 recipes)
+
+Foreign references in this zone (3), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.edge_metadata`, `DEMO_KG_LS.graph_edges`, `DEMO_KG_LS.graph_nodes`
+
+| dataset | read by | producing recipe | recipe consumers | flag |
+|---|---|---|--:|---|
 | `edge_metadata` | — | `compute_DEMO_KG_edge_metadata_copy` | 3 | intermediate |
-| `gene_names` | — | `compute_DEMO_KG_gene_names_copy` | 2 | intermediate |
 | `graph_edges` | nb5 | `compute_DEMO_KG_graph_edges_copy` | 8 | notebook |
 | `graph_nodes` | nb5, nb6 | `compute_DEMO_KG_graph_nodes_copy` | 22 | notebook |
-| `mondo_references` | — | `compute_DEMO_KG_mondo_references_copy` | 1 | intermediate |
-| `raw_disease_disease` | nb5 | `compute_DEMO_KG_raw_disease_disease_copy` | 1 | notebook |
-| `raw_go_hierarchy` | — | `compute_DEMO_KG_raw_go_hierarchy_copy` | 1 | intermediate |
-| `raw_ot_known_drug` | nb4 | `compute_raw_ot_known_drug` | 1 | notebook |
+| `llm_hx` | — | — *(source)* | 0 | **ORPHAN** |
 
 ## 10 Features - graph traversal (Cypher)  (10 datasets, 10 recipes)
 
@@ -99,7 +130,7 @@ Foreign references in this zone (12), each feeding exactly one Sync or Merge rec
 | `enriched_graph_features_1` | — | `compute_enriched_graph_features_1` | 2 | intermediate |
 | `enriched_pair_features_index_1` | — | `compute_enriched_pair_features_index_1` | 1 | intermediate |
 
-## 20 Annotations & split key  (13 datasets, 11 recipes)
+## 20 Annotations & split key  (11 datasets, 11 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
@@ -114,8 +145,6 @@ Foreign references in this zone (12), each feeding exactly one Sync or Merge rec
 | `gene_safety_joined` | — | `compute_gene_safety_join` | 1 | intermediate |
 | `hetionet_disease_slim` | — | `extract_hetionet_disease_slim` | 1 | intermediate |
 | `ot_drug_mapped` | — | `compute_ot_drug_mapped` | 1 | intermediate |
-| `raw_ot_druggability` | — | `compute_DEMO_KG_raw_ot_druggability_copy` | 1 | intermediate |
-| `raw_ot_safety` | — | `compute_DEMO_KG_raw_ot_safety_copy` | 1 | intermediate |
 
 ## 30 Split & modelling table  (5 datasets, 3 recipes)
 
@@ -207,11 +236,9 @@ Foreign references in this zone (12), each feeding exactly one Sync or Merge rec
 | `filter_three_axes` | nb4 | `compute_filter_three_axes` | 0 | notebook |
 | `known_drug_truth` | nb2, nb4 | `compute_known_drug_truth` | 2 | notebook |
 
-## Default  (1 datasets, 0 recipes)
+## Default  (0 datasets, 0 recipes)
 
 Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.UBUlwwxT`
 
-| dataset | read by | producing recipe | recipe consumers | flag |
-|---|---|---|--:|---|
-| `llm_hx` | — | — *(source)* | 0 | **ORPHAN** |
+_No datasets in this zone._
 
