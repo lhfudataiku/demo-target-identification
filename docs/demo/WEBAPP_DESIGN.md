@@ -222,6 +222,42 @@ make deploy                                                 # build, upload libs
 `PROJECT_KEY=DEMO_TARGET_IDENTIFICATION` in `app.env`, plus `LIB_NS` / `APP_PREFIX` /
 `VITE_APP_NAME`. First deploy creates the webapp and writes its id back to `app.env`.
 
+### 3.7 The card copy contract
+
+Added 2026-09-03. Two audiences read every card — the Dataiku data scientist demonstrating it, and a
+client whose room spans business, engineering and science. Before this, one register served both and
+neither was served well: titles carried the card's argument, subtitles carried methodology and chart
+furniture at the same time, and presenter script rendered identically to audience copy.
+
+`ActCard` now divides that work into four slots, and the division is the contract:
+
+| slot | job | rule |
+|---|---|---|
+| `title` | names the card | short noun phrase. Never an argument, never led by a count |
+| `desc` | the finding | **one** sentence, carrying its live number |
+| `#note` | the insight that did not fit | always visible, in the footer bar |
+| `#method` | methodology, caveats, formulas, internal references | **collapsed** behind a labelled disclosure; `method-label` renames it |
+| `#presenter` | the line for whoever is demoing | hidden unless presenter mode is on |
+
+The pattern is act 4's *Why this gene?* generalised — its percentile explanation was the only
+methodology block in the app that read well, and the only thing wrong with it was that it was always
+open.
+
+**Presenter mode** (`stores/presenter.ts`, Settings → Presenting) is per-browser in `localStorage`,
+deliberately **not** a DSS project variable: it is a property of who is standing in front of the
+screen, it must not change what a colleague sees, and it must not need a backend round trip thirty
+seconds before a demo. Default on — the person running it locally is usually rehearsing.
+
+**One glossary, two halves.** `utils/glossary.ts` holds the user-facing definition of every
+data-science and biology term, and `<ActTerm t="key">` renders any word with that definition attached
+via the existing `ActInfo` affordance. It exists for the reason `backend/feature_glossary.py` does,
+and the drift it prevents had already happened: *enrichment* carried two differently-worded glosses,
+*novel* was defined in act 4 and used undefined in act 3, and *top 50* was used nine times in act 3
+and defined nowhere. The two files divide cleanly — **`feature_glossary.py` owns the model's
+features** and reaches the frontend on the payload; **`glossary.ts` owns everything else**. Neither
+restates the other.
+
+
 ---
 
 ## 4. The four acts, and the talk track
@@ -234,6 +270,35 @@ make deploy                                                 # build, upload libs
 | **4** | **The shortlist** — the list, the filter, the SHAP, the pathway | the deliverable |
 | **5** | **The interrogation** — famous genes, novel discovery, the ground truth | every objection, answered on the spine disease *and* across 670 |
 | **6** | **The limits and the punch line** — TNBC, then three refuted ideas | what makes acts 1–5 believable, and the platform close |
+
+**Card names below are the narrative's, and several no longer match the app's.** The §3.7 rewrite
+retitled 19 cards so a title names its card rather than arguing it. The claims in these tables are
+unchanged and still authoritative; this table is how to find the card that carries one.
+
+| act | narrative / mockup name | title in the app |
+|---|---|---|
+| 1 | Node inventory · 8 node types | **What's in the graph** |
+| 1 | Relation inventory · 18 relations | **How things connect** |
+| 1 | Where the nodes came from | **Where the data came from** |
+| 1 | Every edge knows where it came from | **Provenance on every edge** |
+| 1 | What "known target" actually means | **What counts as "known"** |
+| 1 | The graph, in four numbers | **The knowledge graph** |
+| 1 | Explore the graph | **Explore the graph yourself** |
+| 2 | Where the candidates come from | split in two: **Which diseases qualify** + **How the candidate pool is built** |
+| 2 | Precision, against the base rate it has to beat | **Precision vs. chance** |
+| 2 | How well the ranking holds | **AUC, disease by disease** |
+| 2 | Usefulness is not uniform | **Enrichment, disease by disease** |
+| 2 | What the model actually keys on | **What drives the score** |
+| 2 | What the 14 features actually are | **The model's inputs** |
+| 3 | Choose a family | **The family panel** |
+| 3 | AUC, with the uncertainty it actually has | **AUC with confidence intervals** |
+| 3 | For the thin diseases, change the metric | **When AUC stops working** |
+| 3 | How much do the subtypes overlap? | **Subtype overlap** |
+| 3 | The common programme, and what is subtype-specific | **Shared vs. subtype-specific** |
+| 3 | Every gene, against every term it reaches | **Gene coverage across the family** |
+| 4 | The ranked list — *disease* | **The ranked list** (the disease moved into the subtitle) |
+| 4 | Why this gene? | unchanged — it is the pattern the rest were rebuilt against |
+| 4 | Explore the evidence graph | **See the evidence on the graph** |
 
 ---
 
@@ -536,6 +601,7 @@ the pivot matters more than it looks.
 | A number with no provenance | undercuts the platform claim the deck closes on | §3.2 — every card footers its source dataset |
 | A tooltip-free "novel" or "no liability" label | *"novel"* reads as *undiscovered*, *"no liability"* reads as *safe* — both wrong | the old webapp's `TIPS` copy ports across verbatim |
 | A discovery-enrichment figure on a summary tile or opening screen | the narrative makes a **reconstruction** claim, not a discovery one; a headline number turns one into the other and the slide is not recoverable in the room | the enrichment lives below the fold in act 4, labelled as an observation, and appears on no tile |
+| A headline number typed into card copy | act 2 carried a literal `1.9%` positive rate and a literal `0.9776` accuracy while their neighbours read live from `data.champion`, so a retrain made one card contradict itself on screen. Two proposed subtitles asserted *"most PPIs are corroborated"* (16.6% are) and *"provenance features dominate"* (path features are collectively larger) — both written from intuition, both false, both plausible enough to survive an eyeball review | every figure in a title, subtitle or note is derived from the payload; a claim that cannot be derived is not made. Where a card figure has a canonical value here, the card matches this document's precision, not its own rounding |
 | Language that prescribes research direction — *"you should pursue…"*, *"the next target is…"* | we are a platform company, not a domain authority. Prescribing costs the room | the app ranks and explains; every verb in the copy is about evidence, never about what to do next |
 
 ---

@@ -191,16 +191,21 @@
   const personaSpread = computed(() => {
     const v = [...(data.value?.personas ?? [])].map((p) => p.value).sort((a, b) => a - b)
     if (!v.length) return null
-    const at = (q: number) => v[Math.min(v.length - 1, Math.floor(q * v.length))]
-    // Even counts average the two middle values, so this agrees with the
-    // documented median rather than sitting 0.1 above it.
-    const mid = v.length % 2 ? v[(v.length - 1) / 2]
-                             : (v[v.length / 2 - 1] + v[v.length / 2]) / 2
+    // Linear interpolation between order statistics -- the method behind the
+    // quartiles documented in WEBAPP_DESIGN.md §4 act 2 (median 19.2x,
+    // quartiles 9.1-28.2x). A floor-index quantile lands 0.1 off those and
+    // makes the card disagree with the doc it is derived from.
+    const at = (p: number) => {
+      const i = p * (v.length - 1)
+      const lo = Math.floor(i)
+      const hi = Math.min(lo + 1, v.length - 1)
+      return v[lo] + (v[hi] - v[lo]) * (i - lo)
+    }
     return {
-      median: mid.toFixed(1),
-      q1: at(0.25).toFixed(0),
-      q3: at(0.75).toFixed(0),
-      max: v[v.length - 1].toFixed(0),
+      median: at(0.5).toFixed(1),
+      q1: at(0.25).toFixed(1),
+      q3: at(0.75).toFixed(1),
+      max: v[v.length - 1].toFixed(1),
     }
   })
 

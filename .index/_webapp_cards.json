@@ -1,186 +1,262 @@
 {
  "ACT 1": [
   {
-   "title": "What this demo claims \u2014 and what it does not",
-   "components": [
-    "ActSay",
-    "Table"
-   ]
+   "title": "The knowledge graph",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note"
+   ],
+   "method_label": null,
+   "conditional": false
   },
   {
-   "title": "The graph, in four numbers",
-   "components": [
-    "ActStat"
-   ]
+   "title": "Explore the graph yourself",
+   "component": "VisualGraphExplorerCard",
+   "slots": [
+    "note",
+    "method"
+   ],
+   "method_label": "How this works",
+   "conditional": false
   },
   {
-   "title": "8 node types",
-   "components": [
-    "ActBar"
-   ]
+   "title": "What's in the graph",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note"
+   ],
+   "method_label": null,
+   "conditional": false
   },
   {
-   "title": "18 relations",
-   "components": [
-    "ActBar"
-   ]
+   "title": "How things connect",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": null,
+   "conditional": false
   },
   {
-   "title": "Where the nodes came from",
-   "components": [
-    "ActBar"
-   ]
+   "title": "Where the data came from",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "presenter"
+   ],
+   "method_label": null,
+   "conditional": false
   },
   {
-   "title": "Every edge knows where it came from",
-   "components": [
-    "ActBar"
-   ]
+   "title": "Provenance on every edge",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note"
+   ],
+   "method_label": null,
+   "conditional": false
   },
   {
-   "title": "What \u201cknown target\u201d actually means",
-   "components": [
-    "ActDonut"
-   ]
-  },
-  {
-   "title": "What this act must not do",
-   "components": []
+   "title": "What counts as “known”",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note"
+   ],
+   "method_label": null,
+   "conditional": false
   }
  ],
  "ACT 2": [
   {
-   "title": "Where the candidates come from",
-   "components": [
-    "ActSankey",
-    "ActSay"
-   ]
+   "title": "Which diseases qualify",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "presenter"
+   ],
+   "method_label": null,
+   "conditional": false
   },
   {
-   "title": "Zero straddling keys",
-   "components": [
-    "ActSay"
-   ]
+   "title": "How the candidate pool is built",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": null,
+   "conditional": false
   },
   {
-   "title": "The distribution, not the summary",
-   "components": [
-    "ActBar",
-    "ActSay",
-    "ActStat"
-   ]
+   "title": "Precision vs. chance",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": null,
+   "conditional": false
   },
   {
-   "title": "Usefulness is not uniform \u2014 every disease, not just a summary",
-   "components": [
-    "ActBeeswarm",
-    "ActSay"
-   ]
+   "title": "AUC, disease by disease",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": "Three AUCs, and why they differ",
+   "conditional": false
   },
   {
-   "title": "Where it still under-scores",
-   "components": [
-    "ActSay",
-    "Table"
-   ]
+   "title": "Enrichment, disease by disease",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": null,
+   "conditional": false
   },
   {
-   "title": "What the model actually keys on",
-   "components": [
-    "ActBar"
-   ]
+   "title": "What drives the score",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": null,
+   "conditional": false
   },
   {
-   "title": "What the 14 features actually are",
-   "components": [
-    "ActSay"
-   ]
-  },
-  {
-   "title": "A high AUC does not buy therapeutic relevance",
-   "components": [
-    "ActScatter",
-    "ActStat"
-   ]
-  },
-  {
-   "title": "Why the drug benchmark is never a score",
-   "components": [
-    "ActSay"
-   ]
+   "title": "The model's inputs",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": null,
+   "conditional": false
   }
  ],
  "ACT 3": [
   {
-   "title": "Choose a family",
-   "components": [
-    "ActStat",
-    "EaSelect"
-   ]
+   "title": "The family panel",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": "Why families, and why we split by them",
+   "conditional": false
   },
   {
-   "title": "AUC, with the uncertainty it actually has",
-   "components": [
-    "ActIntervals",
-    "EaEmpty"
-   ]
+   "title": "AUC with confidence intervals",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": "Why an interval can exceed 1.0",
+   "conditional": false
   },
   {
-   "title": "How much do the subtypes overlap?",
-   "components": [
-    "ActMatrix",
-    "EaEmpty"
-   ]
+   "title": "When AUC stops working",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": "How enrichment is computed",
+   "conditional": false
   },
   {
-   "title": "For the thin diseases, change the metric",
-   "components": [
-    "ActBar",
-    "ActSay"
-   ]
+   "title": "Subtype overlap",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": "What the top 50 is",
+   "conditional": false
   },
   {
-   "title": "The common programme, and what is subtype-specific",
-   "components": [
-    "ActSay"
-   ]
+   "title": "Shared vs. subtype-specific",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": "Why only the curated leaf terms",
+   "conditional": false
   },
   {
-   "title": "What this tells you before you build on it",
-   "components": []
+   "title": "Gene coverage across the family",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": "How to read the grid",
+   "conditional": false
   }
  ],
  "ACT 4": [
   {
-   "title": "The contract",
-   "components": []
+   "title": "The ranked list",
+   "component": "ActCard",
+   "slots": [
+    "desc",
+    "note",
+    "method"
+   ],
+   "method_label": "How genes are ranked",
+   "conditional": false
   },
   {
-   "title": "Your thresholds, not ours",
-   "components": [
-    "EaSelect"
-   ]
+   "title": "Why ${sel.gene_name}? / Why this gene?",
+   "component": "ActCard",
+   "slots": [
+    "method"
+   ],
+   "method_label": "How the percentile is computed",
+   "conditional": false
   },
   {
-   "title": "What a safety filter would cost you",
-   "components": [
-    "ActSay"
-   ]
+   "title": "See the evidence on the graph",
+   "component": "ActCard",
+   "slots": [],
+   "method_label": null,
+   "conditional": true
   },
   {
-   "title": "`The ranked list${current ? ' \u2014 ' + current.disease_name : ''}`",
-   "components": [
-    "EaEmpty",
-    "Table"
-   ]
-  },
-  {
-   "title": "Why this gene?",
-   "components": []
-  },
-  {
-   "title": "The mechanism, on the graph",
-   "components": []
+   "title": "See the evidence on the graph",
+   "component": "VisualGraphExplorerCard",
+   "slots": [
+    "note",
+    "method"
+   ],
+   "method_label": "Query details",
+   "conditional": true
   }
  ]
 }

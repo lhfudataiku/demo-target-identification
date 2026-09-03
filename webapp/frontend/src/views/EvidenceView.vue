@@ -78,7 +78,10 @@
     const total = rows.reduce((a, r) => a + r.count, 0)
     if (!total) return null
     const multi = rows.filter((r) => r.label.includes('+')).reduce((a, r) => a + r.count, 0)
-    return Math.round((100 * multi) / total)
+    // One decimal, not a round: WEBAPP_DESIGN.md §4 act 1 documents this as
+    // 16.6%, and a card reading 17% against a canonical 16.6% is exactly the
+    // drift the project's number discipline exists to prevent.
+    return ((100 * multi) / total).toFixed(1)
   })
 
   /** The largest evidence type, named in the subtitle so the card says which
