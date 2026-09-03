@@ -370,6 +370,11 @@ def main():
 
     rows, feats, unclassified = [], [], []
     for name in sorted(snap):
+        # `_schemas` and `_sibling_recipes` are popped above, but `_models` and
+        # `_variables` are not -- without this they land in recipes.tsv as two
+        # phantom recipes, so the printed count read 92 against 90 live.
+        if name.startswith("_"):
+            continue
         rec = snap[name]
         text, where = source_for(name, rec)
         gates = find_gates(text) if text else []

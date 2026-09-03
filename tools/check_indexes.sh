@@ -10,5 +10,8 @@ python3 tools/build_index.py --check
 python3 tools/check_claim_registry.py --check
 python3 tools/build_recipe_index.py --check
 python3 tools/check_governed_values.py
+# FLOW_MAP.md is generated from live DSS, so --check queries DSS. It is last among
+# the index checks because it is the only one that needs network access.
+python3 tools/build_flow_map.py --check
 python3 tools/check_harness.py
 python3 tools/check_links.py

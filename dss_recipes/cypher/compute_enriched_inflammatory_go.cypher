@@ -1,7 +1,7 @@
 // MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
 // this file is a copy for review and grep. The live query is in the DSS recipe.
 // recipe: compute_enriched_inflammatory_go
-// inputs: DEMO_KG_LS.Lg8lbpl5
+// inputs: ytvuniN8
 // outputs: enriched_has_inflammatory_go_annotation_1
 
 MATCH (bp:biological_process)

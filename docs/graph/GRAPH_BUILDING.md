@@ -319,21 +319,32 @@ Schema mapping: node id = `node_index`, label = `node_name`, grouping by `node_t
 - **Every relation needs its own edge group with an explicit relation filter.** A missing filter
   drops that relation without an error — this happened twice.
 
-The Kuzu folder is the **primary shared deliverable** to the modelling project. It is consumed two
-ways as of 2026-09-03: `published_kg_ls-Mp25kL` is merged into the modelling project's local `graph`
-folder and read by the Graph Explorer webapp, while the 10 Cypher feature recipes still read
-`enriched_index_freezed-6bRVGs` directly. Consolidating both onto the local folder is approved and
-pending verification (PROJECT_CONTEXT §4.3).
+The Kuzu folder is the **primary shared deliverable** to the modelling project, and since 2026-09-03
+it is delivered one way: `published_kg_ls-Mp25kL` is merged into the modelling project's local `graph`
+folder (`ytvuniN8`) by `compute_ytvuniN8`, and **both** the Graph Explorer webapp and all 10 Cypher
+feature recipes read that local folder. Nothing in `DEMO_TARGET_IDENTIFICATION` reads a Kuzu folder
+across the project boundary any more (PROJECT_CONTEXT §4.3).
 
-> ⚠ **Two Kuzu snapshots exist, and they are not interchangeable.**
+> ⚠ **Two Kuzu snapshots exist. `published_kg_ls-Mp25kL` is the only one anything reads.**
 > `published_kg_ls-Mp25kL` (`build-graph-Mp25kL`, 2026-09-03) is current and carries the saved queries
 > that back the webapp demo narratives. `enriched_index_freezed-6bRVGs` (`build-graph-6bRVGs`,
-> 2026-08-14) is the snapshot **every published feature number was derived from** and must survive
-> until the Cypher recipes are switched and their outputs verified equal.
+> 2026-08-14) is the snapshot every published feature number was **originally** derived from. It is now
+> referenced by nothing and is retained deliberately as a provenance record, not as a dependency.
 >
-> Both build recipes read the same `graph_nodes` and `graph_edges`; only `vg_saved_config_ds` differs.
-> They are nonetheless not byte-equal — `db.kz` is 87.6 MB against 88.7 MB, and `configuration.json`
-> 27.5 KB against 29.9 KB — so equality of Cypher results is a hypothesis to test, not an assumption.
+> **The two graphs were verified equivalent before the switch, and the equivalence is why the numbers
+> did not have to move.** Both build recipes read the same `graph_nodes` and `graph_edges`, and the
+> `nodes`, `nodes_view`, `edges` and `edges_view` blocks of `configuration.json` are byte-identical
+> (SHA-256 match on all four), so all 18 relation filters are provably unchanged — the silent
+> edge-dropping failure above cannot have fired. Only `cypher_queries` (2 → 8), `comment`, `id` and
+> `epoch_ms` differ. The folders are nonetheless not byte-equal (`db.kz` 87.6 MB against 88.7 MB),
+> which is Kuzu storage overhead from a fresh load rather than graph payload.
+>
+> Rebuilding all 10 feature datasets from the new folder confirmed it over 18,510,084 rows: row counts
+> unchanged, and every count/min/max/sum identical across all 34 numeric columns. Five outputs were
+> bit-identical; the five carrying order-dependent float aggregation (the three DWPC metapaths,
+> guilt-by-association and node centrality) matched to **6 decimal places**, which is float
+> accumulation order, not content. Full record and machine-readable fingerprints:
+> [`../operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md`](../operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md).
 >
 > The older `enriched_clean-gFdnaU` named in earlier revisions of this section **has since been
 > deleted**; the graph project now holds these two Kuzu folders and no third.

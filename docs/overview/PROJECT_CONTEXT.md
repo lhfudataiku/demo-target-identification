@@ -198,18 +198,18 @@ boundary.** Each of the 12 foreign dataset references now feeds **exactly one Sy
 nothing else; every downstream recipe reads the local copy of the same name. That makes the import
 surface auditable in one place and stops a rename in the graph project breaking 26 recipes at once.
 
-**The Kuzu folder was the exception, and is being brought into the same pattern.** A folder cannot be
+**The Kuzu folder was the exception, and since 2026-09-03 it no longer is.** A folder cannot be
 Sync'd, but it can be merged: `compute_ytvuniN8` is a Merge-Folder recipe that copies
-`DEMO_KG_LS.published_kg_ls-Mp25kL` into the local managed folder **`graph` (`ytvuniN8`)**. As of
-2026-09-03 the Graph Explorer webapp already reads the local `graph` folder, while the **10 Cypher
-feature recipes still read `DEMO_KG_LS.enriched_index_freezed-6bRVGs` directly across the boundary**.
-Switching those 10 to the local folder is approved and pending verification (Phase C); until then two
-Kuzu read paths coexist and this table records both.
+`DEMO_KG_LS.published_kg_ls-Mp25kL` into the local managed folder **`graph` (`ytvuniN8`)**. The Graph
+Explorer webapp and all 10 Cypher feature recipes now read that local folder, so **every foreign
+reference — all 13 — passes through exactly one Sync or Merge recipe**, and nothing reads a Kuzu
+folder across the boundary. The equivalence of the old and new snapshots was verified before the
+switch, over 18,510,084 rows, and is recorded in GRAPH_BUILDING §6 and
+[`../operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md`](../operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md).
 
 | Shared object | Local consumers | Why the modelling project needs it |
 |---|--:|---|
-| `published_kg_ls` *(Kuzu folder)* | 1 | the current materialized graph — merged into the local `graph` folder by `compute_ytvuniN8`, which the Graph Explorer webapp reads |
-| `enriched_index_freezed` *(Kuzu folder)* | 10 | **legacy path, pending Phase C.** The 10 Cypher feature recipes still read this snapshot across the boundary; not synced |
+| `published_kg_ls` *(Kuzu folder)* | 1 | the materialized graph — merged into local `graph` by `compute_ytvuniN8`; the Explorer webapp and all 10 Cypher feature recipes read the local copy |
 | `graph_nodes` | 26 | node identity, types, names; the index→entity lookup |
 | `drug_disease_edges` | 11 | therapeutic-axis ground truth — `indication` and `drug_investigated_for` |
 | `drug_protein_edges` | 11 | tractability-axis ground truth — the only uninflated drug label |

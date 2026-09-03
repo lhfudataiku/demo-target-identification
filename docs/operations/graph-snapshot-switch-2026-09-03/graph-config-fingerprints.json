@@ -1,0 +1,43 @@
+{
+ "_note": "Structural fingerprints of the two Kuzu build configurations. Equality of the four structural blocks is what proves the 18 relation filters and 8 node groups are unchanged.",
+ "old": {
+  "id": "6bRVGs",
+  "name": "enriched_index_freezed"
+ },
+ "new": {
+  "id": "Mp25kL",
+  "name": "published_kg_ls"
+ },
+ "fingerprints": {
+  "nodes": {
+   "old": "b0e639329dc053849fa8623eb91db3ca665fcc9e6e5329557459a242f3556c73",
+   "new": "b0e639329dc053849fa8623eb91db3ca665fcc9e6e5329557459a242f3556c73",
+   "match": true
+  },
+  "nodes_view": {
+   "old": "2e9a9c1a807bef8f6bc9e77bbfb0b59740f6cc30891704584e13d147136d8b9f",
+   "new": "2e9a9c1a807bef8f6bc9e77bbfb0b59740f6cc30891704584e13d147136d8b9f",
+   "match": true
+  },
+  "edges": {
+   "old": "7cb6d1084d0b4f5e329642038571477d79db23c4108c56e8a320f96128351253",
+   "new": "7cb6d1084d0b4f5e329642038571477d79db23c4108c56e8a320f96128351253",
+   "match": true
+  },
+  "edges_view": {
+   "old": "a0793c2d87a58a02c450d1a4da0ecfe3d0af9666538dff7df251ddfd25117e08",
+   "new": "a0793c2d87a58a02c450d1a4da0ecfe3d0af9666538dff7df251ddfd25117e08",
+   "match": true
+  }
+ },
+ "non_structural_differences": {
+  "cypher_queries": {
+   "old": 2,
+   "new": 8
+  },
+  "comment": {
+   "old": "",
+   "new": "version for release"
+  }
+ }
+}

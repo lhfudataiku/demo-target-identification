@@ -1718,6 +1718,7 @@
   "attach_node_index",
   "build-graph-6bRVGs",
   "build-graph-AWefP6",
+  "build-graph-Mp25kL",
   "build-graph-ViVCmL",
   "build-graph-gFdnaU",
   "clean_gene_name_1",
@@ -2298,7 +2299,7 @@
   "code": null,
   "cypher": "// per-gene hubness controls. PPI is double-stored -> /2 to recover true degree.\nMATCH (g:protein)\nRETURN g.node_index AS gene_index,\n       CAST(COUNT { MATCH (g)-[:protein_protein]-() } AS DOUBLE) / 2.0 AS gene_ppi_degree,\n       COUNT { MATCH (g)-[:disease_protein]-() }                       AS gene_n_diseases,\n       COUNT { MATCH (g)-[:pathway_protein]-() }                       AS gene_n_pathways",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_degree_controls_1"
@@ -2310,7 +2311,7 @@
   "code": null,
   "cypher": "// # of D's disease_disease-neighbors that candidate g is also associated with\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\nMATCH (D)-[:disease_disease]-(D2:disease)-[:disease_protein]-(g:protein)\nWHERE D2.node_index <> D.node_index\nWITH g.node_index AS gene_index, D.node_index AS disease_index,\n     count(DISTINCT D2.node_index) AS disease_context\nRETURN gene_index, disease_index, disease_context",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_disease_context_1"
@@ -2322,7 +2323,7 @@
   "code": null,
   "cypher": "// dwpc_GCD for every candidate (gene, disease) pair\n// metapath  g -targeted by- C(drug) -indication|drug_investigated_for- D(disease)\n// weight    pow( drug_g * target_C * ind_C * dind_D, -0.4 )\n// UPDATED 2026-08-06: drug_investigated_for now included alongside indication\n// (both approved AND investigational drug-disease links) -- see decision to add\n// drug_investigated_for to the graph, TARGET_PRIORITIZER.md \u00a711. No LOO: metapath\n// never touches g's disease_protein edge, so there is no label leakage.\n\n// 1) same disease scope as GGD/GPGD (>= 20 seeds) so the join keys line up\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\n\n// 2) shared-drug metapath + per-node degrees via COUNT{} subqueries\nMATCH (g:protein)-[:drug_protein]-(C:drug)-[:indication|drug_investigated_for]-(D)\nWITH g.node_index AS gene_index, D.node_index AS disease_index,\n     CAST(COUNT { MATCH (g)-[:drug_protein]-() } AS DOUBLE) AS drug_g,\n     CAST(COUNT { MATCH (C)-[:drug_protein]-() } AS DOUBLE) AS target_C,\n     CAST(COUNT { MATCH (C)-[:indication|drug_investigated_for]-() } AS DOUBLE) AS ind_C,\n     CAST(COUNT { MATCH (D)-[:indication|drug_investigated_for]-() } AS DOUBLE) AS dind_D\n\n// 3) degree-weight each path and sum per pair\nWITH gene_index, disease_index,\n     sum( pow(drug_g * target_C * ind_C * dind_D, -0.4) ) AS dwpc_GCD\nRETURN gene_index, disease_index, dwpc_GCD\n",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_dwpc_GCD"
@@ -2334,7 +2335,7 @@
   "code": null,
   "cypher": "// dwpc_GGD for every candidate (gene, disease) pair\n// metapath g -PPI- m -assoc- D ; weight pow(deg*deg*deg*module, -0.4) ; LOO on g\n// The count(DISTINCT) module_size is used ONLY to pick training diseases.\n// The weight uses a scalar COUNT{} subquery (mod_raw) so the final sum() has\n// no nested aggregation.\n\n// 1) keep diseases with a real module (>= 20 protein seeds)\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\n\n// 2) expand the metapath from those diseases; per-node degrees via COUNT{} subqueries\nMATCH (g:protein)-[:protein_protein]-(m:protein)-[:disease_protein]-(D)\nWHERE m.node_index <> g.node_index\nWITH g.node_index AS gene_index, D.node_index AS disease_index,\n     CAST(COUNT { MATCH (g)-[:protein_protein]-() } AS DOUBLE) AS ppi_g,\n     CAST(COUNT { MATCH (m)-[:protein_protein]-() } AS DOUBLE) AS ppi_m,\n     CAST(COUNT { MATCH (m)-[:disease_protein]-() } AS DOUBLE) AS assoc_m,\n     CAST(COUNT { MATCH (D)-[:disease_protein]-() } AS DOUBLE) AS mod_raw,\n     CASE WHEN COUNT { MATCH (g)-[:disease_protein]-(D) } > 0 THEN 1 ELSE 0 END AS g_in_mod\n\n// 3) degree-weight each path (LOO drops g from the module) and sum per pair\nWITH gene_index, disease_index,\n     sum( pow(ppi_g * ppi_m * assoc_m * (mod_raw - g_in_mod), -0.4) ) AS dwpc_GGD\nRETURN gene_index, disease_index, dwpc_GGD",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_dwpc_GGD"
@@ -2346,7 +2347,7 @@
   "code": null,
   "cypher": "// dwpc_GPGD for every candidate (gene, disease) pair\n// metapath  g -in- P(pathway) -contains- m(gene) -assoc- D(disease)\n// weight    pow( path_g * path_P^2 * path_m * assoc_m * mod_D, -0.4 )\n//           P sits on two pathway_protein metaedges -> weighted twice\n// LOO       m <> g  (m=g would traverse g's own disease_protein edge = leak)\n//           AND module-size drops g  (mod_raw - g_in_mod)\n\n// 1) training diseases (>= 20 protein seeds) -- filter only\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\n\n// 2) shared-pathway metapath + per-node degrees via COUNT{} subqueries\nMATCH (g:protein)-[:pathway_protein]-(P:pathway)-[:pathway_protein]-(m:protein)-[:disease_protein]-(D)\nWHERE m.node_index <> g.node_index\nWITH g.node_index AS gene_index, D.node_index AS disease_index,\n     CAST(COUNT { MATCH (g)-[:pathway_protein]-() } AS DOUBLE) AS path_g,\n     CAST(COUNT { MATCH (P)-[:pathway_protein]-() } AS DOUBLE) AS path_P,\n     CAST(COUNT { MATCH (m)-[:pathway_protein]-() } AS DOUBLE) AS path_m,\n     CAST(COUNT { MATCH (m)-[:disease_protein]-() } AS DOUBLE) AS assoc_m,\n     CAST(COUNT { MATCH (D)-[:disease_protein]-() } AS DOUBLE) AS mod_raw,\n     CASE WHEN COUNT { MATCH (g)-[:disease_protein]-(D) } > 0 THEN 1 ELSE 0 END AS g_in_mod\n\n// 3) degree-weight each path (P twice; LOO on module) and sum per pair\nWITH gene_index, disease_index,\n     sum( pow(path_g * path_P * path_P * path_m * assoc_m * (mod_raw - g_in_mod), -0.4) ) AS dwpc_GPGD\nRETURN gene_index, disease_index, dwpc_GPGD",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_dwpc_GPGD"
@@ -2411,7 +2412,7 @@
   "code": null,
   "cypher": "// ppi neighbor-overlap features (guilt-by-association):\n//   ppi_common_neighbors = |N_PPI(g) \u2229 module(D)|\n//   ppi_adamic_adar      = \u03a3_{m in overlap} 1/log(deg_PPI(m))\n//   ppi_jaccard          = |overlap| / |N_PPI(g) \u222a module(D)|\n// LOO: m <> g, and module excludes g in the Jaccard union (module_size - g_in_mod).\n// PPI is stored BOTH directions in this Kuzu build (verified) -> undirected COUNT{} PPI\n//   degree is 2x true, so /2.0; WITH DISTINCT collapses the doubled (g,m) edge.\n//   disease_protein is single-stored -> no correction.\n\n// 1) training diseases (>= 20 seeds)\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\n\n// 2) g's PPI neighbors that are module genes of D (collapse the doubled PPI edge)\nMATCH (g:protein)-[:protein_protein]-(m:protein)-[:disease_protein]-(D)\nWHERE m.node_index <> g.node_index\nWITH DISTINCT g, m, D, module_size\n\n// 3) true PPI degree of each shared neighbor m\nWITH g, D, module_size, m,\n     (CAST(COUNT { MATCH (m)-[:protein_protein]-() } AS DOUBLE) / 2.0) AS deg_m\n\n// 4) aggregate over shared neighbors; carry per-(g,D) scalars as grouping keys\nWITH g.node_index AS gene_index, D.node_index AS disease_index, module_size,\n     (CAST(COUNT { MATCH (g)-[:protein_protein]-() } AS DOUBLE) / 2.0)               AS ppi_deg_g,\n     (CASE WHEN COUNT { MATCH (g)-[:disease_protein]-(D) } > 0 THEN 1 ELSE 0 END)    AS g_in_mod,\n     count(m)                                                                         AS ppi_common_neighbors,\n     sum(CASE WHEN deg_m > 1.0 THEN 1.0 / log(deg_m) ELSE 0.0 END)                    AS ppi_adamic_adar\n\n// 5) Jaccard from the union size (module excludes g via g_in_mod)\nWITH gene_index, disease_index, ppi_common_neighbors, ppi_adamic_adar,\n     (ppi_deg_g + (module_size - g_in_mod) - ppi_common_neighbors) AS union_size\nRETURN gene_index, disease_index,\n       ppi_common_neighbors,\n       ppi_adamic_adar,\n       CASE WHEN union_size > 0 THEN ppi_common_neighbors * 1.0 / union_size ELSE 0.0 END AS ppi_jaccard",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_guilt_by_association_1"
@@ -2423,7 +2424,7 @@
   "code": null,
   "cypher": "MATCH (bp:biological_process)\nWHERE bp.node_name CONTAINS \"inflamm\"\n   OR bp.node_name CONTAINS \"cytokine\"\n   OR bp.node_name CONTAINS \"interleukin\"\n   OR bp.node_name CONTAINS \"tumor necrosis factor\"\n   OR bp.node_name CONTAINS \"chemokine\"\n   OR bp.node_name CONTAINS \"NF-kappaB\"\n   OR bp.node_name CONTAINS \"toll-like receptor\"\n   OR bp.node_name CONTAINS \"interferon\"\nWITH bp\nMATCH (g:protein)-[:bioprocess_protein]-(bp)\nWITH g.node_index AS gene_index, count(*) AS n_hits\nRETURN gene_index, 1 AS has_inflammatory_go_annotation",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_has_inflammatory_go_annotation_1"
@@ -2435,7 +2436,7 @@
   "code": null,
   "cypher": "// per-disease module size (feature-quality context + the \u226520 training scope)\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D.node_index AS disease_index, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\nRETURN disease_index, module_size",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_module_size_1"
@@ -2447,7 +2448,7 @@
   "code": null,
   "cypher": null,
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_node_centrality_1"
@@ -2507,7 +2508,7 @@
   "code": null,
   "cypher": "// pathways that contain BOTH candidate g and a module gene of D (shared-pathway overlap)\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\nMATCH (g:protein)-[:pathway_protein]-(P:pathway)-[:pathway_protein]-(m:protein)-[:disease_protein]-(D)\nWHERE m.node_index <> g.node_index\n// distinct bridging pathways\nWITH DISTINCT g, D, P                                   \nWITH g.node_index AS gene_index, D.node_index AS disease_index,\n     CAST(COUNT { MATCH (g)-[:pathway_protein]-() } AS DOUBLE) AS n_pathways_g,  \n     count(P) AS shared_pathway_count\nRETURN gene_index, disease_index,\n       shared_pathway_count,\n       CASE WHEN n_pathways_g > 0 THEN shared_pathway_count * 1.0 / n_pathways_g ELSE 0.0 END AS shared_pathway_frac",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_shared_pathway_count_1"
@@ -3022,7 +3023,7 @@
   "code": null,
   "cypher": null,
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "DEMO_KG_LS.UBUlwwxT"
   ],
   "outputs": [
    "ytvuniN8"
@@ -3182,19 +3183,6 @@
   ],
   "outputs": [
    "orthogonality_scatter"
-  ],
-  "type": "join",
-  "visual": null
- },
- "join_trust_for_personas": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "disease_pool_sizes",
-   "persona_candidates"
-  ],
-  "outputs": [
-   "dashboard_persona_trust"
   ],
   "type": "join",
   "visual": null
