@@ -19,12 +19,13 @@ normally, so run bare they would report success over stale numbers. `runner.py` 
 script's own `FAIL` list afterwards and raises. Do not "fix" that by editing the script tails — the
 index parses their assertion text and values.
 
-> **The direction reversed on 2026-09-03.** These were previously mirrors of DSS-hosted Jupyter
-> notebooks, and `tools/pull_notebooks.py` pulled DSS → repo. That is now deprecated and would destroy
-> the working copy: three DSS notebooks had drifted, and every dataset read only by the DSS side
+> **The DSS notebooks were retired on 2026-09-03**, archived in
+> [`../archive/notebooks-dss-2026-09-03/`](../archive/notebooks-dss-2026-09-03/). They were previously
+> the primary copy and `tools/pull_notebooks.py` pulled DSS → repo; both are gone. Retiring them
+> removed broken code, not work: three had drifted, and every dataset read only by the DSS side
 > (`pool_selection_bias`, `breast_panel_overlap`, `lung_granularity_check`, `safety_lift`,
 > `tractability_lift`) has since been deleted, while every dataset read only by these scripts still
-> exists. The DSS notebooks cannot run.
+> exists, so they could no longer run.
 
 ---
 
@@ -63,32 +64,57 @@ demo; `nb3b` remains the canonical artifact until acts 5–6 are signed off.
 > Read the **most upstream** dataset that still carries the number and recompute in code. Reading a
 > derived table and asserting its contents proves the recipe still runs, not that the number is right.
 
-Zone `90 Notebook — validation evidence` is a **staging area for deletion**, not a home. A notebook
-still reading from it has not yet been converted.
+Zone `90` was framed as a **staging area for deletion**, on the reasoning that a script still reading
+from it had not yet been converted. Recomputed from live DSS on 2026-09-03 — every dataset below
+exists, and **no script reads a dataset that does not**:
 
-| notebook | upstream reads | still reading zone 90 | status |
-|---|--:|---|---|
-| `nb3b` | 1 | — | ✅ exemplar — *"it has no recipe, so this notebook IS its artifact"* |
-| `nb5` | 4 | — | ✅ counts associations from raw edges |
-| `nb1` | 2 | — | ✅ structurally clean *(but see §15.3 — its feature list is stale)* |
-| `nb2` | 2 | `pool_reachability`, `pool_selection_bias` | ⚠️ 2 to convert |
-| `nb3` | 2 | `drug_target_benchmark`, `family_auc_by_family` | ⚠️ 2 to convert |
-| `nb6` | 4 | `novel_discovery_eval`, `drug_target_benchmark`, `tractability_axis`, `tractability_lift`, `safety_lift`, `lung_granularity_check`, `breast_panel_overlap` | ⚠️ 7 — adopts them so they are guarded before deletion |
-| `nb7` | 30 | `family_panel`, `persona_enrichment`, `dashboard_candidates`, `scored_champion`, `gene_crosswalk` — guards every figure in `docs/demo/panel_selection.html` and the tables in `docs/demo/panel_selection/`. Run after any graph rebuild, gate move, champion change or persona-filter repoint |
-| `nb4` | 3 | `breast_panel_metrics`, `breast_panel_overlap`, `known_drug_truth`, `novel_discovery_eval`, `tractability_axis` | ⚠️ 5 to convert — worst |
+| script | dataset reads | of which in zone 90 |
+|---|--:|---|
+| `nb1` | 2 | — |
+| `nb3b` | 1 | — *(exemplar: it has no recipe, so this script IS its artifact)* |
+| `nb5` | 5 | — |
+| `nb7` | 6 | — |
+| `nb2` | 5 | `pool_reachability` |
+| `nb3` | 4 | `family_auc_by_family` |
+| `nb6` | 12 | `tractability_axis` |
+| `nb4` | 9 | `breast_panel_metrics`, `tractability_axis` |
 
-**Nothing in zone 90 can be deleted while a notebook still reads it.** `safety_lift` and
-`tractability_lift` are the acute case: no recipe, no webapp and no other notebook touches them, and
-they carry the entire act-6 punch line. `nb6` must run green first.
+Four zone-90 datasets are read by a script; the other three (`family_auc_grouped`,
+`family_validation_ranked`, `family_validation_scored`) are recipe intermediates in the
+`family_auc_by_family` chain.
+
+**The old blocker is cleared.** `safety_lift` and `tractability_lift` were named as the acute case —
+carrying the act-6 punch line, gating any pruning, and requiring `nb6` to run green first. Both
+datasets have since been deleted, and `nb6` now runs green (34 checks, 0 stale). Note also that
+`family_auc_by_family` is read by the **webapp** as well as `nb3`, so zone 90 is no longer
+notebook-only staging and its description overstates how disposable it is.
+
+`nb7` is the one script with a repository dependency: it compares live DSS data against frozen
+expectations in `docs/demo/panel_selection/analysis/eyeball_test.csv`, and guards every figure in
+`docs/demo/panel_selection.html`. Run it after any graph rebuild, gate move, champion change or
+persona-filter repoint. `tools/push_assertions.py` uploads that CSV alongside the scripts so the
+relative path resolves in DSS.
 
 ---
 
-## Figures
+## Figures — and where they went
 
-`nb3` fig. 1 per-family AUC (distribution + ranked curve), fig. 2 the association-vs-therapeutic
-orthogonality scatter with regression. `nb4` fig. 1 discovery lift and absolute recovery vs K, fig. 2
-tractability naive-vs-degree-matched under both estimators with the rank-20 crossover marked. They
-render inline; the `Agg` backend means the same code runs headless.
+The plotting code is still here and still runs headless under the `Agg` backend, but **a scenario
+step has nowhere to render to**, so these figures are no longer viewable anywhere. The last rendered
+copies are archived in
+[`../archive/notebooks-dss-2026-09-03/`](../archive/notebooks-dss-2026-09-03/):
+
+| script | figure | still shown to the audience? |
+|---|---|---|
+| `nb1` | hub / network feature correlations | no equivalent |
+| `nb3` | per-family AUC — distribution + ranked curve | Act 2 histogram / beeswarm |
+| `nb3` | association-vs-therapeutic orthogonality scatter with regression | Act 2 orthogonality scatter |
+| `nb4` | discovery lift and absolute recovery vs K | Act 4 lift table |
+| `nb4` | tractability naive-vs-degree-matched, both estimators, rank-20 crossover marked | no equivalent |
+
+Three of the five have a webapp equivalent, so the demo does not depend on them. The two that do not
+are the feature-correlation heatmap and the tractability crossover — the latter backs the act-6 punch
+line, so if that act is ever shown from a screen rather than a talk track it needs a home.
 
 ## Sampling note
 

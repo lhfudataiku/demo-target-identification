@@ -91,7 +91,7 @@ scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.jso
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 tools/build_flow_map.py	tool	LIVE	2	docs/demo/FLOW_MAP.md,tools/check_indexes.sh
 tools/build_governance.py	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
-tools/build_index.py	tool	LIVE	12	archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/decisions/README.md
+tools/build_index.py	tool	LIVE	11	archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/decisions/README.md
 tools/build_recipe_index.py	tool	LIVE	34	README.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot
 tools/capture_build_governance.py	tool	LIVE	1	docs/operations/BUILD_GOVERNANCE.md
 tools/check_claim_registry.py	tool	LIVE	3	docs/prioritizer/VALIDATION.md,tools/check_indexes.sh,tools/index_manifest.json
@@ -103,9 +103,8 @@ tools/check_links.py	tool	LIVE	6	archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,arch
 tools/index_manifest.json	tool	LIVE	3	docs/README.md,docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md,tools/build_index.py
 tools/model_registry.json	tool	LIVE	8	archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md
 tools/nb_assertions/__init__.py	tool	LIVE	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
-tools/nb_assertions/runner.py	tool	LIVE	3	notebooks/README.md,notebooks/nb6_interrogation_and_close.py,tools/push_assertions.py
-tools/pull_notebooks.py	tool	LIVE	4	archive/DASHBOARD_BUILD_LOG.md,notebooks/README.md,tools/nb_assertions/runner.py,tools/push_assertions.py
-tools/push_assertions.py	tool	LIVE	3	notebooks/README.md,tools/check_indexes.sh,tools/pull_notebooks.py
+tools/nb_assertions/runner.py	tool	LIVE	5	archive/notebooks-dss-2026-09-03/README.md,harness/skills/target-id/references/number-update.md,notebooks/README.md,notebooks/nb6_interrogation_and_close.py
+tools/push_assertions.py	tool	LIVE	3	harness/skills/target-id/references/number-update.md,notebooks/README.md,tools/check_indexes.sh
 tools/recipe_classes.json	tool	LIVE	6	archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md,docs/prioritizer/PHASE3_PREREGISTRATION.md
 tools/sync_harness.py	tool	LIVE	7	AGENTS.md,CLAUDE.md,README.md,harness/README.md
 tools/tests/fixtures/build_governance/accepted-baseline.json	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py

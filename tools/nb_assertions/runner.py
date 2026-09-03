@@ -2,8 +2,8 @@
 
 WHY THIS EXISTS. The assertion logic used to exist in three places: the DSS Jupyter notebooks, the
 `notebooks/*.py` scripts in the repository, and inline copies pasted into the `validate_notebooks`
-scenario steps. `tools/pull_notebooks.py` records what that cost -- on 2026-08-25 all five copies had
-diverged in both directions, and `.index/assertions.tsv` counts expectations from the REPOSITORY
+scenario steps. `archive/notebooks-dss-2026-09-03/README.md` records what that cost -- on 2026-08-25 all five
+copies had diverged in both directions, and `.index/assertions.tsv` counts expectations from the REPOSITORY
 copy, so the index was describing scripts that were not the ones being run.
 
 This module makes the repository copy the only copy. The scripts are synced here verbatim from

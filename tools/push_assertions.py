@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Push the repository assertion scripts into the DSS project library, or report drift.
 
-Replaces `tools/pull_notebooks.py`, which mirrored the other way (DSS Jupyter -> repo) and whose
-docstring records the cost of having two editable copies: on 2026-08-25 all five had diverged in
-BOTH directions, while `.index/assertions.tsv` counted expectations from the repository copy -- so
-the index described scripts that were not the ones being run.
+Replaces `tools/pull_notebooks.py` (deleted 2026-09-03), which mirrored the other way
+(DSS Jupyter -> repo). Having two editable copies cost real correctness: on 2026-08-25 all five had
+diverged in BOTH directions, while `.index/assertions.tsv` counted expectations from the repository
+copy -- so the index described scripts that were not the ones being run. The DSS notebooks are now
+retired; see `archive/notebooks-dss-2026-09-03/README.md`.
 
 The direction is now one-way. `notebooks/*.py` is the single source of truth; the project library
 holds a generated copy that the `validate_notebooks` scenario executes through
