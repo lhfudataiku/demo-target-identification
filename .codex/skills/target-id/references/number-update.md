@@ -18,12 +18,27 @@ Then one job, all endpoints, recursive:
 dku job run --target A --target B --type RECURSIVE_BUILD --auto-update-schema --wait
 ```
 
-## 2. Run the notebooks first, and treat failures as the worklist
+## 2. Run the assertions first, and treat failures as the worklist
+
+One command runs all seven assertion scripts against live data:
 
 ```bash
-for NB in nb1_features_and_config nb2_splitting_and_pool nb3_validation_and_plots \
-          nb3b_hub_bias_meter nb4_results_three_axes; do ...  # see any prior session's scenario wrapper
+dku scenario run validate_notebooks -P DEMO_TARGET_IDENTIFICATION
+dku scenario run-log validate_notebooks --run <RUN_ID> -P DEMO_TARGET_IDENTIFICATION --grep "CHK|STALE"
 ```
+
+Takes about 20 minutes. Each step reports `ASSERT|<script>|checks_executed=N|stale=N`, and a stale
+check fails the step — the contract lives in `nb_assertions/runner.py`, because six of the seven
+scripts only *print* their stale count and would otherwise report SUCCESS over stale numbers.
+
+`notebooks/*.py` is the source of truth. After editing one, push it before running:
+
+```bash
+python3 tools/push_assertions.py --push
+```
+
+`tools/check_indexes.sh` fails if the library copy has drifted from the repo. There are no DSS
+Jupyter notebooks any more — they were retired 2026-09-03 (`archive/notebooks-dss-2026-09-03/`).
 
 **The failing assertions are the doc-update worklist.** Do not start editing docs before this — it is how §6.2's split sizes were caught as provably wrong and how §7.2's central claim was refuted.
 

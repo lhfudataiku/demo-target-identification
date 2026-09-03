@@ -1,9 +1,5 @@
 {
  "_models": {
-  "SybkzSdu": {
-   "name": "graph_explorer",
-   "type": "LLM_GENERIC_RAW"
-  },
   "hJLGoYn4": {
    "name": "m7-f14",
    "type": "PREDICTION"
@@ -220,6 +216,7 @@
    "druggability_class",
    "ot_sm_tractable",
    "ot_ab_tractable",
+   "name",
    "entrez_id",
    "uniprot_id",
    "omim_id",
@@ -262,6 +259,7 @@
    "ot_subcell_secreted",
    "ot_sm_tractable",
    "ot_ab_tractable",
+   "name",
    "entrez_id",
    "uniprot_id",
    "omim_id",
@@ -557,6 +555,21 @@
    "shared_pathway_count",
    "shared_pathway_frac"
   ],
+  "family_auc_by_family": [
+   "disease_family_id",
+   "target_rank_sum",
+   "n_pos",
+   "n_neg",
+   "auc_family",
+   "hits_at_10",
+   "hits_at_20",
+   "recall_at_20",
+   "hits_at_50",
+   "recall_at_50",
+   "n_diseases_in_family",
+   "n_distinct_genes",
+   "count"
+  ],
   "family_auc_grouped": [
    "disease_family_id",
    "target_rank_sum",
@@ -770,6 +783,7 @@
   ],
   "gene_crosswalk": [
    "symbol",
+   "name",
    "entrez_id",
    "uniprot_id",
    "omim_id",
@@ -782,6 +796,7 @@
   ],
   "gene_names": [
    "symbol",
+   "name",
    "entrez_id",
    "uniprot_id",
    "omim_id",
@@ -799,6 +814,7 @@
    "lof_bin6",
    "mis_oe",
    "has_safety_liability",
+   "name",
    "entrez_id",
    "uniprot_id",
    "omim_id",
@@ -843,7 +859,8 @@
    "count"
   ],
   "hetionet_disease_slim": [
-   "doid"
+   "doid",
+   "name"
   ],
   "hub_bias_meter": [
    "quintile",
@@ -920,6 +937,7 @@
    "ot_subcell_secreted",
    "ot_sm_tractable",
    "ot_ab_tractable",
+   "name",
    "entrez_id",
    "uniprot_id",
    "omim_id",
@@ -1052,6 +1070,15 @@
    "ok_ranking",
    "ok_discovery",
    "ok_found"
+  ],
+  "persona_enrichment": [
+   "disease",
+   "n_pos",
+   "auc_disease",
+   "rank_enrichment",
+   "disease_index",
+   "module_size",
+   "is_current"
   ],
   "pool_reachability": [
    "disease_index",
@@ -1532,56 +1559,6 @@
    "top_shap_drivers",
    "_rank"
   ],
-  "tractability_axis": [
-   "disease_index",
-   "disease",
-   "scope",
-   "n_cand",
-   "demonstrated_obs10",
-   "demonstrated_naive10",
-   "demonstrated_dm10",
-   "demonstrated_exp10",
-   "demonstrated_obs20",
-   "demonstrated_naive20",
-   "demonstrated_dm20",
-   "demonstrated_exp20",
-   "demonstrated_obs50",
-   "demonstrated_naive50",
-   "demonstrated_dm50",
-   "demonstrated_exp50",
-   "demonstrated_obs100",
-   "demonstrated_naive100",
-   "demonstrated_dm100",
-   "demonstrated_exp100",
-   "demonstrated_obs200",
-   "demonstrated_naive200",
-   "demonstrated_dm200",
-   "demonstrated_exp200",
-   "assessed_obs10",
-   "assessed_naive10",
-   "assessed_dm10",
-   "assessed_exp10",
-   "assessed_obs20",
-   "assessed_naive20",
-   "assessed_dm20",
-   "assessed_exp20",
-   "assessed_obs50",
-   "assessed_naive50",
-   "assessed_dm50",
-   "assessed_exp50",
-   "assessed_obs100",
-   "assessed_naive100",
-   "assessed_dm100",
-   "assessed_exp100",
-   "assessed_obs200",
-   "assessed_naive200",
-   "assessed_dm200",
-   "assessed_exp200",
-   "pct_secreted_top50",
-   "pct_membrane_top50",
-   "pct_secreted_all",
-   "pct_membrane_all"
-  ],
   "validation_auc_by_disease": [
    "disease_index",
    "target_rank_sum",
@@ -1716,8 +1693,8 @@
  "_sibling_recipes": [
   "assign_node_index",
   "attach_node_index",
-  "build-graph-6bRVGs",
   "build-graph-AWefP6",
+  "build-graph-Mp25kL",
   "build-graph-ViVCmL",
   "build-graph-gFdnaU",
   "clean_gene_name_1",
@@ -2298,7 +2275,7 @@
   "code": null,
   "cypher": "// per-gene hubness controls. PPI is double-stored -> /2 to recover true degree.\nMATCH (g:protein)\nRETURN g.node_index AS gene_index,\n       CAST(COUNT { MATCH (g)-[:protein_protein]-() } AS DOUBLE) / 2.0 AS gene_ppi_degree,\n       COUNT { MATCH (g)-[:disease_protein]-() }                       AS gene_n_diseases,\n       COUNT { MATCH (g)-[:pathway_protein]-() }                       AS gene_n_pathways",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_degree_controls_1"
@@ -2310,7 +2287,7 @@
   "code": null,
   "cypher": "// # of D's disease_disease-neighbors that candidate g is also associated with\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\nMATCH (D)-[:disease_disease]-(D2:disease)-[:disease_protein]-(g:protein)\nWHERE D2.node_index <> D.node_index\nWITH g.node_index AS gene_index, D.node_index AS disease_index,\n     count(DISTINCT D2.node_index) AS disease_context\nRETURN gene_index, disease_index, disease_context",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_disease_context_1"
@@ -2322,7 +2299,7 @@
   "code": null,
   "cypher": "// dwpc_GCD for every candidate (gene, disease) pair\n// metapath  g -targeted by- C(drug) -indication|drug_investigated_for- D(disease)\n// weight    pow( drug_g * target_C * ind_C * dind_D, -0.4 )\n// UPDATED 2026-08-06: drug_investigated_for now included alongside indication\n// (both approved AND investigational drug-disease links) -- see decision to add\n// drug_investigated_for to the graph, TARGET_PRIORITIZER.md \u00a711. No LOO: metapath\n// never touches g's disease_protein edge, so there is no label leakage.\n\n// 1) same disease scope as GGD/GPGD (>= 20 seeds) so the join keys line up\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\n\n// 2) shared-drug metapath + per-node degrees via COUNT{} subqueries\nMATCH (g:protein)-[:drug_protein]-(C:drug)-[:indication|drug_investigated_for]-(D)\nWITH g.node_index AS gene_index, D.node_index AS disease_index,\n     CAST(COUNT { MATCH (g)-[:drug_protein]-() } AS DOUBLE) AS drug_g,\n     CAST(COUNT { MATCH (C)-[:drug_protein]-() } AS DOUBLE) AS target_C,\n     CAST(COUNT { MATCH (C)-[:indication|drug_investigated_for]-() } AS DOUBLE) AS ind_C,\n     CAST(COUNT { MATCH (D)-[:indication|drug_investigated_for]-() } AS DOUBLE) AS dind_D\n\n// 3) degree-weight each path and sum per pair\nWITH gene_index, disease_index,\n     sum( pow(drug_g * target_C * ind_C * dind_D, -0.4) ) AS dwpc_GCD\nRETURN gene_index, disease_index, dwpc_GCD\n",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_dwpc_GCD"
@@ -2334,7 +2311,7 @@
   "code": null,
   "cypher": "// dwpc_GGD for every candidate (gene, disease) pair\n// metapath g -PPI- m -assoc- D ; weight pow(deg*deg*deg*module, -0.4) ; LOO on g\n// The count(DISTINCT) module_size is used ONLY to pick training diseases.\n// The weight uses a scalar COUNT{} subquery (mod_raw) so the final sum() has\n// no nested aggregation.\n\n// 1) keep diseases with a real module (>= 20 protein seeds)\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\n\n// 2) expand the metapath from those diseases; per-node degrees via COUNT{} subqueries\nMATCH (g:protein)-[:protein_protein]-(m:protein)-[:disease_protein]-(D)\nWHERE m.node_index <> g.node_index\nWITH g.node_index AS gene_index, D.node_index AS disease_index,\n     CAST(COUNT { MATCH (g)-[:protein_protein]-() } AS DOUBLE) AS ppi_g,\n     CAST(COUNT { MATCH (m)-[:protein_protein]-() } AS DOUBLE) AS ppi_m,\n     CAST(COUNT { MATCH (m)-[:disease_protein]-() } AS DOUBLE) AS assoc_m,\n     CAST(COUNT { MATCH (D)-[:disease_protein]-() } AS DOUBLE) AS mod_raw,\n     CASE WHEN COUNT { MATCH (g)-[:disease_protein]-(D) } > 0 THEN 1 ELSE 0 END AS g_in_mod\n\n// 3) degree-weight each path (LOO drops g from the module) and sum per pair\nWITH gene_index, disease_index,\n     sum( pow(ppi_g * ppi_m * assoc_m * (mod_raw - g_in_mod), -0.4) ) AS dwpc_GGD\nRETURN gene_index, disease_index, dwpc_GGD",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_dwpc_GGD"
@@ -2346,7 +2323,7 @@
   "code": null,
   "cypher": "// dwpc_GPGD for every candidate (gene, disease) pair\n// metapath  g -in- P(pathway) -contains- m(gene) -assoc- D(disease)\n// weight    pow( path_g * path_P^2 * path_m * assoc_m * mod_D, -0.4 )\n//           P sits on two pathway_protein metaedges -> weighted twice\n// LOO       m <> g  (m=g would traverse g's own disease_protein edge = leak)\n//           AND module-size drops g  (mod_raw - g_in_mod)\n\n// 1) training diseases (>= 20 protein seeds) -- filter only\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\n\n// 2) shared-pathway metapath + per-node degrees via COUNT{} subqueries\nMATCH (g:protein)-[:pathway_protein]-(P:pathway)-[:pathway_protein]-(m:protein)-[:disease_protein]-(D)\nWHERE m.node_index <> g.node_index\nWITH g.node_index AS gene_index, D.node_index AS disease_index,\n     CAST(COUNT { MATCH (g)-[:pathway_protein]-() } AS DOUBLE) AS path_g,\n     CAST(COUNT { MATCH (P)-[:pathway_protein]-() } AS DOUBLE) AS path_P,\n     CAST(COUNT { MATCH (m)-[:pathway_protein]-() } AS DOUBLE) AS path_m,\n     CAST(COUNT { MATCH (m)-[:disease_protein]-() } AS DOUBLE) AS assoc_m,\n     CAST(COUNT { MATCH (D)-[:disease_protein]-() } AS DOUBLE) AS mod_raw,\n     CASE WHEN COUNT { MATCH (g)-[:disease_protein]-(D) } > 0 THEN 1 ELSE 0 END AS g_in_mod\n\n// 3) degree-weight each path (P twice; LOO on module) and sum per pair\nWITH gene_index, disease_index,\n     sum( pow(path_g * path_P * path_P * path_m * assoc_m * (mod_raw - g_in_mod), -0.4) ) AS dwpc_GPGD\nRETURN gene_index, disease_index, dwpc_GPGD",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_dwpc_GPGD"
@@ -2411,7 +2388,7 @@
   "code": null,
   "cypher": "// ppi neighbor-overlap features (guilt-by-association):\n//   ppi_common_neighbors = |N_PPI(g) \u2229 module(D)|\n//   ppi_adamic_adar      = \u03a3_{m in overlap} 1/log(deg_PPI(m))\n//   ppi_jaccard          = |overlap| / |N_PPI(g) \u222a module(D)|\n// LOO: m <> g, and module excludes g in the Jaccard union (module_size - g_in_mod).\n// PPI is stored BOTH directions in this Kuzu build (verified) -> undirected COUNT{} PPI\n//   degree is 2x true, so /2.0; WITH DISTINCT collapses the doubled (g,m) edge.\n//   disease_protein is single-stored -> no correction.\n\n// 1) training diseases (>= 20 seeds)\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\n\n// 2) g's PPI neighbors that are module genes of D (collapse the doubled PPI edge)\nMATCH (g:protein)-[:protein_protein]-(m:protein)-[:disease_protein]-(D)\nWHERE m.node_index <> g.node_index\nWITH DISTINCT g, m, D, module_size\n\n// 3) true PPI degree of each shared neighbor m\nWITH g, D, module_size, m,\n     (CAST(COUNT { MATCH (m)-[:protein_protein]-() } AS DOUBLE) / 2.0) AS deg_m\n\n// 4) aggregate over shared neighbors; carry per-(g,D) scalars as grouping keys\nWITH g.node_index AS gene_index, D.node_index AS disease_index, module_size,\n     (CAST(COUNT { MATCH (g)-[:protein_protein]-() } AS DOUBLE) / 2.0)               AS ppi_deg_g,\n     (CASE WHEN COUNT { MATCH (g)-[:disease_protein]-(D) } > 0 THEN 1 ELSE 0 END)    AS g_in_mod,\n     count(m)                                                                         AS ppi_common_neighbors,\n     sum(CASE WHEN deg_m > 1.0 THEN 1.0 / log(deg_m) ELSE 0.0 END)                    AS ppi_adamic_adar\n\n// 5) Jaccard from the union size (module excludes g via g_in_mod)\nWITH gene_index, disease_index, ppi_common_neighbors, ppi_adamic_adar,\n     (ppi_deg_g + (module_size - g_in_mod) - ppi_common_neighbors) AS union_size\nRETURN gene_index, disease_index,\n       ppi_common_neighbors,\n       ppi_adamic_adar,\n       CASE WHEN union_size > 0 THEN ppi_common_neighbors * 1.0 / union_size ELSE 0.0 END AS ppi_jaccard",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_guilt_by_association_1"
@@ -2423,7 +2400,7 @@
   "code": null,
   "cypher": "MATCH (bp:biological_process)\nWHERE bp.node_name CONTAINS \"inflamm\"\n   OR bp.node_name CONTAINS \"cytokine\"\n   OR bp.node_name CONTAINS \"interleukin\"\n   OR bp.node_name CONTAINS \"tumor necrosis factor\"\n   OR bp.node_name CONTAINS \"chemokine\"\n   OR bp.node_name CONTAINS \"NF-kappaB\"\n   OR bp.node_name CONTAINS \"toll-like receptor\"\n   OR bp.node_name CONTAINS \"interferon\"\nWITH bp\nMATCH (g:protein)-[:bioprocess_protein]-(bp)\nWITH g.node_index AS gene_index, count(*) AS n_hits\nRETURN gene_index, 1 AS has_inflammatory_go_annotation",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_has_inflammatory_go_annotation_1"
@@ -2435,7 +2412,7 @@
   "code": null,
   "cypher": "// per-disease module size (feature-quality context + the \u226520 training scope)\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D.node_index AS disease_index, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\nRETURN disease_index, module_size",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_module_size_1"
@@ -2447,7 +2424,7 @@
   "code": null,
   "cypher": null,
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_node_centrality_1"
@@ -2507,7 +2484,7 @@
   "code": null,
   "cypher": "// pathways that contain BOTH candidate g and a module gene of D (shared-pathway overlap)\nMATCH (D:disease)-[:disease_protein]-(seed:protein)\nWITH D, count(DISTINCT seed.node_index) AS module_size\nWHERE module_size >= 20\nMATCH (g:protein)-[:pathway_protein]-(P:pathway)-[:pathway_protein]-(m:protein)-[:disease_protein]-(D)\nWHERE m.node_index <> g.node_index\n// distinct bridging pathways\nWITH DISTINCT g, D, P                                   \nWITH g.node_index AS gene_index, D.node_index AS disease_index,\n     CAST(COUNT { MATCH (g)-[:pathway_protein]-() } AS DOUBLE) AS n_pathways_g,  \n     count(P) AS shared_pathway_count\nRETURN gene_index, disease_index,\n       shared_pathway_count,\n       CASE WHEN n_pathways_g > 0 THEN shared_pathway_count * 1.0 / n_pathways_g ELSE 0.0 END AS shared_pathway_frac",
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "ytvuniN8"
   ],
   "outputs": [
    "enriched_shared_pathway_count_1"
@@ -2941,21 +2918,6 @@
   "type": "python",
   "visual": null
  },
- "compute_tractability_axis": {
-  "code": "# AXIS 2 of the validation overhaul: are the model's top-ranked candidates ACTIONABLE?\n#\n# WHY THIS AXIS EXISTS SEPARATELY. Three different claims were being collapsed into one\n# \"drug-target\" label (TARGET_PRIORITIZER \u00a78.1):\n#     drug_protein  -> a molecule engages this protein        GENE level, direct assertion\n#     drug_disease  -> this disease has pharmacological attention   DISEASE level\n#     the join      -> this protein is the mechanism for this disease  PAIR level, INFERRED\n# The join is what carries the 66% Cartesian inflation. `drug_protein` alone carries NONE: it is a\n# direct assertion about a gene, needs no join, and covers 1,109 of 20,861 genes (5.3%). It has\n# never been used to evaluate the model -- only as a feature-lift diagnostic.\n#\n# TWO TRACTABILITY LABELS, deliberately kept apart because their confound profiles differ:\n#   demonstrated  a drug_protein edge exists            5.3% of genes   SHARP but 6x hub-confounded\n#                                                                       (Q1 1.8% -> Q5 10.8%)\n#   assessed      an OT tractability bucket is set      ~67% of genes   BLUNT but degree-flat (0.07)\n#\n# THE CONTROL THAT MAKES THIS MEANINGFUL. Demonstrated tractability rises 6x across interactome-\n# degree quintiles, and the model is known to favour hubs (\u00a77.2). So a naive \"the top-K is enriched\n# for drug targets\" result could be entirely hub bias. Every lift below is therefore reported twice:\n#   naive lift          = observed / (global base rate x K)\n#   degree-matched lift = observed / SUM over top-K genes of (tractable rate in that gene's quintile)\n# The second removes the hub confound by construction. If it sits at ~1.0 the enrichment was hubs.\n#\n# FALSIFIABLE PREDICTION, stated before running. The ligand-vs-receptor failure (\u00a78.7) says the\n# model over-ranks secreted ligands, which are poorly tractable, above membrane receptors, which are\n# highly tractable. So the degree-matched tractability lift at the head should be AT OR BELOW 1.0 --\n# a measured DEFICIT. If it comes back clearly above 1.0, the ligand/receptor problem is narrower\n# than the case study claims and \u00a78.7 needs softening.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nKS = [10, 20, 50, 100, 200]\n\nnid = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_name\", \"node_type\"], infer_with_pandas=False)\nnid[\"node_index\"] = nid.node_index.astype(int)\nnid[\"node_id\"] = nid.node_id.astype(str)\nG = nid[nid.node_type == \"gene/protein\"]\nD = nid[nid.node_type == \"disease\"]\ngname = dict(zip(G.node_index, G.node_name))\ndname = dict(zip(D.node_index, D.node_name))\ngmap = dict(zip(G.node_id, G.node_index))\n\n# ---- demonstrated tractability: a molecule engages this protein. No join, no inflation. ----\ndp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\ngc, tc = (\"x_id\", \"y_id\") if (dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ndemo_genes = set(dp[tc].astype(str).map(gmap).dropna().astype(int))\nprint(f\"genes with a demonstrated drug-target edge: {len(demo_genes):,} of {len(G):,} \"\n      f\"({len(demo_genes)/len(G):.1%})\")\n\ndrg = dataiku.Dataset(\"enriched_gene_druggability_v2\").get_dataframe()\ndrg[\"assessed\"] = ((drg.ot_sm_tractable == 1) | (drg.ot_ab_tractable == 1)).astype(int)\ndrg[\"demonstrated\"] = drg.gene_index.isin(demo_genes).astype(int)\nprint(f\"genes with an assessed tractability bucket : {int(drg.assessed.sum()):,} \"\n      f\"({drg.assessed.mean():.1%})\")\n\nsc = dataiku.Dataset(\"scored_champion\").get_dataframe(\n    columns=[\"disease_index\", \"gene_index\", \"is_target\", \"proba_1\", \"gene_ppi_degree\"])\nsc = sc.merge(drg[[\"gene_index\", \"assessed\", \"demonstrated\", \"druggability_class\"]],\n              on=\"gene_index\", how=\"left\")\nfor c in [\"assessed\", \"demonstrated\"]:\n    sc[c] = sc[c].fillna(0).astype(int)\n\n# degree quintile assigned ONCE over the gene universe, so it is comparable across diseases\ngd = sc.drop_duplicates(\"gene_index\")[[\"gene_index\", \"gene_ppi_degree\"]].copy()\ngd[\"dq\"] = pd.qcut(gd.gene_ppi_degree.rank(method=\"first\"), 5, labels=False)\nsc = sc.merge(gd[[\"gene_index\", \"dq\"]], on=\"gene_index\", how=\"left\")\nqrate = {c: sc.drop_duplicates(\"gene_index\").groupby(\"dq\")[c].mean().to_dict()\n         for c in [\"assessed\", \"demonstrated\"]}\nprint(\"\\n=== the hub confound this controls for (tractable share by degree quintile) ===\")\nfor c in [\"demonstrated\", \"assessed\"]:\n    print(f\"  {c:14s}\" + \"  \".join(f\"Q{q+1} {100*qrate[c][q]:.1f}%\" for q in sorted(qrate[c])))\n\nrows = []\nfor scope, sub_all in [(\"all candidates\", sc), (\"novel only\", sc[sc.is_target == 0])]:\n    for (di), g in sub_all.groupby(\"disease_index\"):\n        if len(g) < 500:\n            continue\n        g = g.sort_values(\"proba_1\", ascending=False)\n        rec = {\"disease_index\": di, \"disease\": dname.get(di), \"scope\": scope, \"n_cand\": len(g)}\n        for lab in [\"demonstrated\", \"assessed\"]:\n            base = g[lab].mean()\n            for K in KS:\n                top = g.head(K)\n                obs = int(top[lab].sum())\n                exp_naive = base * K\n                # degree-matched expectation: each gene contributes its own quintile's rate\n                exp_dm = float(top.dq.map(qrate[lab]).sum())\n                rec[f\"{lab}_obs{K}\"] = obs\n                rec[f\"{lab}_naive{K}\"] = obs / exp_naive if exp_naive > 0 else np.nan\n                rec[f\"{lab}_dm{K}\"] = obs / exp_dm if exp_dm > 0 else np.nan\n                rec[f\"{lab}_exp{K}\"] = exp_dm\n        # composition: what the head is made of\n        top50 = g.head(50)\n        rec[\"pct_secreted_top50\"] = 100 * (top50.druggability_class == \"secreted\").mean()\n        rec[\"pct_membrane_top50\"] = 100 * top50.druggability_class.astype(str).str.contains(\n            \"membrane\", case=False, na=False).mean()\n        rec[\"pct_secreted_all\"] = 100 * (g.druggability_class == \"secreted\").mean()\n        rec[\"pct_membrane_all\"] = 100 * g.druggability_class.astype(str).str.contains(\n            \"membrane\", case=False, na=False).mean()\n        rows.append(rec)\nout = pd.DataFrame(rows)\nprint(f\"\\nevaluated {out.disease_index.nunique()} diseases x 2 scopes\")\n\nfor scope in [\"all candidates\", \"novel only\"]:\n    s = out[out.scope == scope]\n    print(f\"\\n=== {scope.upper()} ===\")\n    print(f\"  {'label':14s}{'K':>5s}{'obs':>8s}{'exp(dm)':>9s}{'naive lift':>12s}{'DEGREE-MATCHED':>16s}\")\n    for lab in [\"demonstrated\", \"assessed\"]:\n        for K in KS:\n            o = int(s[f\"{lab}_obs{K}\"].sum()); e = s[f\"{lab}_exp{K}\"].sum()\n            print(f\"  {lab:14s}{K:>5d}{o:>8,}{e:>9,.0f}\"\n                  f\"{s[f'{lab}_naive{K}'].mean():>12.2f}{(o/e if e else np.nan):>16.2f}\")\n\nprint(\"\\n=== VERDICT on the stated prediction ===\")\nnov = out[out.scope == \"novel only\"]\ndm20 = int(nov.demonstrated_obs20.sum()) / nov.demonstrated_exp20.sum()\ndm50 = int(nov.demonstrated_obs50.sum()) / nov.demonstrated_exp50.sum()\nprint(f\"  degree-matched DEMONSTRATED tractability lift, novel head: \"\n      f\"top20 {dm20:.2f}x, top50 {dm50:.2f}x\")\nif dm20 <= 1.05:\n    print(\"  CONFIRMED -- at or below parity. The model does NOT preferentially rank actionable\")\n    print(\"  genes, consistent with the ligand-vs-receptor failure being real and general.\")\nelse:\n    print(\"  REFUTED -- the head IS enriched for actionable genes beyond hub effects, so the\")\n    print(\"  ligand-vs-receptor problem is narrower than \u00a78.7 claims and should be softened.\")\n\nprint(\"\\n=== composition of the top 50 vs the candidate pool (novel only) ===\")\nprint(f\"  secreted   top50 {nov.pct_secreted_top50.mean():.1f}%  vs pool {nov.pct_secreted_all.mean():.1f}%\")\nprint(f\"  membrane   top50 {nov.pct_membrane_top50.mean():.1f}%  vs pool {nov.pct_membrane_all.mean():.1f}%\")\nprint(\"  Secreted over-represented at the head while membrane is under-represented is the\")\nprint(\"  ligand-vs-receptor failure stated as a distribution rather than an anecdote.\")\n\ndataiku.Dataset(\"tractability_axis\").write_with_schema(out)\n\n\n",
-  "cypher": null,
-  "inputs": [
-   "drug_protein_edges",
-   "enriched_gene_druggability_v2",
-   "graph_nodes",
-   "scored_champion"
-  ],
-  "outputs": [
-   "tractability_axis"
-  ],
-  "type": "python",
-  "visual": null
- },
  "compute_validation_auc_by_disease": {
   "code": null,
   "cypher": null,
@@ -3022,7 +2984,7 @@
   "code": null,
   "cypher": null,
   "inputs": [
-   "DEMO_KG_LS.Lg8lbpl5"
+   "DEMO_KG_LS.UBUlwwxT"
   ],
   "outputs": [
    "ytvuniN8"
@@ -3182,19 +3144,6 @@
   ],
   "outputs": [
    "orthogonality_scatter"
-  ],
-  "type": "join",
-  "visual": null
- },
- "join_trust_for_personas": {
-  "code": null,
-  "cypher": null,
-  "inputs": [
-   "disease_pool_sizes",
-   "persona_candidates"
-  ],
-  "outputs": [
-   "dashboard_persona_trust"
   ],
   "type": "join",
   "visual": null

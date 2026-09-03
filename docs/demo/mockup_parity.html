@@ -14,6 +14,9 @@
 --rule:rgba(254,254,249,.16);--rule2:rgba(254,254,249,.08);--beige:#1E3D39;--ok-bg:#16301F;--ok:#78C295;
 --drift-bg:#33240F;--drift:#D9A366;--wrong-bg:#361818;--wrong:#E08585;--miss-bg:#1E3D39;--miss:#A6BDB8;
 --drop-bg:#132738;--drop:#7FB0DD;--chg-bg:#12312F;--chg:#3EDAB2;}
+.closed{border-left:3px solid var(--drift);background:var(--drift-bg);color:var(--ink);
+ padding:14px 16px;border-radius:0 6px 6px 0;display:flex;flex-direction:column;gap:9px;font-size:13.5px;line-height:1.6}
+.closed p{margin:0;max-width:82ch}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:Roboto,system-ui,sans-serif;font-size:15px;line-height:1.6}
 .wrap{max-width:1300px;margin:0 auto;padding:52px 26px 90px;display:flex;flex-direction:column;gap:32px}
@@ -49,7 +52,20 @@ td.card{font-weight:500;min-width:180px}
 <h1>Mockup Parity</h1>
 <p class="sm" style="font-size:16px">Not a component comparison — what each card <b>measures and shows</b>
 in <code>DASHBOARD_MOCKUP_V3.html</code> against what the webapp renders today. Three cards plot the
-wrong variable entirely, which no component-level check would have found.</p></header>
+wrong variable entirely, which no component-level check would have found.</p>
+<div class="closed">
+<p><b>Closed 2026-09-03. Read this as the record of a completed remediation, not as a live
+punch-list.</b> Every action below was carried out — the corrections are recorded in the
+<code>Corrections from the parity review</code> block at the top of
+<code>views/CalibrationView.vue</code> — and the &ldquo;What the webapp shows&rdquo; column now
+describes a state the app has moved past twice over.</p>
+<p><b>Card <i>names</i> have deliberately diverged and are no longer a parity dimension.</b> The card
+copy contract (<code>WEBAPP_DESIGN.md</code> §3.7) retitled 19 cards so that a title names its card
+rather than arguing it, split act 2&rsquo;s eligibility card in two, and moved methodology into a
+collapsed disclosure. A future check should compare this document against v3 on <b>what each card
+measures</b>, which still holds, and take card titles from
+<code>WEBAPP_DESIGN.md</code> §4&rsquo;s concordance table instead.</p>
+</div></header>
 <section><div class="stats">
 <div class="stat"><div class="n">8</div><div class="l">wrong content</div></div>
 <div class="stat"><div class="n">4</div><div class="l">drifted</div></div>

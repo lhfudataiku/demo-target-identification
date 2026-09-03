@@ -1,11 +1,12 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import { useRoute, useRouter, RouterLink } from 'vue-router'
-  import { MoveLeft, Plus } from 'lucide-vue-next'
+  import { BookOpen, MoveLeft, Plus } from 'lucide-vue-next'
   import { storeToRefs } from 'pinia'
   import { APP_NAME, APP_ICON } from '@/config'
   import { useAdminStore } from '@/stores/admin'
   import { useAppMenu } from '@/composables/useAppMenu'
+  import { useGlossaryStore } from '@/stores/glossary'
 
   defineOptions({ name: 'AppSidebar' })
 
@@ -13,6 +14,9 @@
   const router = useRouter()
   const { primaryMenuItems, secondaryMenuItems, tertiaryMenuItems, flowMenu } = useAppMenu()
   const { showAdministration } = storeToRefs(useAdminStore())
+  // Not a route: the glossary answers a question asked mid-card, so it overlays
+  // rather than navigating away. See stores/glossary.ts.
+  const glossary = useGlossaryStore()
 
   // 'flow' switches the sidebar to the wizard stepper drill-down.
   const isFlowLevel = computed(() => route.meta?.menuLevel === 'flow' && !!flowMenu.value.parentItem)
@@ -98,8 +102,19 @@
         </template>
       </nav>
 
-      <!-- Footer (tertiary: Settings, Admin) -->
+      <!-- Footer (glossary, then tertiary: Settings, Admin) -->
       <div class="flex flex-col gap-1 border-t border-sidebar-border p-3">
+        <button
+          type="button"
+          class="flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-left text-sm
+                 text-sidebar-foreground transition-colors hover:bg-sidebar-accent
+                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring/40"
+          :aria-expanded="glossary.isOpen"
+          @click="glossary.toggle()"
+        >
+          <BookOpen class="h-4 w-4 shrink-0" />
+          <span class="truncate">Glossary</span>
+        </button>
         <RouterLink
           v-for="item in tertiaryMenuItems"
           :key="item.name"

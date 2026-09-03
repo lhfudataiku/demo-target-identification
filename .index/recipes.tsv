@@ -1,16 +1,14 @@
 recipe	type	gate	class	auto_hint	source	inputs	outputs
 compute_dwpc_go_metapaths	python	MIN_MODULE 20	2	c2?	dss_recipes/compute_dwpc_go_metapaths.py	graph_edges,graph_nodes	enriched_dwpc_GBGD,enriched_dwpc_GFGD
-compute_enriched_disease_context_1	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_disease_context_1.cypher	DEMO_KG_LS.Lg8lbpl5	enriched_disease_context_1
-compute_enriched_dwpc_GCD	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_dwpc_GCD.cypher	DEMO_KG_LS.Lg8lbpl5	enriched_dwpc_GCD
-compute_enriched_dwpc_GGD	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_dwpc_GGD.cypher	DEMO_KG_LS.Lg8lbpl5	enriched_dwpc_GGD
-compute_enriched_dwpc_GPGD	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_dwpc_GPGD.cypher	DEMO_KG_LS.Lg8lbpl5	enriched_dwpc_GPGD
-compute_enriched_guilt_by_association_1	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_guilt_by_association_1.cypher	DEMO_KG_LS.Lg8lbpl5	enriched_guilt_by_association_1
-compute_enriched_module_size_1	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_module_size_1.cypher	DEMO_KG_LS.Lg8lbpl5	enriched_module_size_1
+compute_enriched_disease_context_1	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_disease_context_1.cypher	ytvuniN8	enriched_disease_context_1
+compute_enriched_dwpc_GCD	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_dwpc_GCD.cypher	ytvuniN8	enriched_dwpc_GCD
+compute_enriched_dwpc_GGD	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_dwpc_GGD.cypher	ytvuniN8	enriched_dwpc_GGD
+compute_enriched_dwpc_GPGD	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_dwpc_GPGD.cypher	ytvuniN8	enriched_dwpc_GPGD
+compute_enriched_guilt_by_association_1	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_guilt_by_association_1.cypher	ytvuniN8	enriched_guilt_by_association_1
+compute_enriched_module_size_1	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_module_size_1.cypher	ytvuniN8	enriched_module_size_1
 compute_enriched_prox_closest	python	MIN_SEEDS 5; POOL_MIN 20	1		dss_recipes/compute_enriched_prox_closest.py	graph_edges,graph_nodes	enriched_prox_closest
 compute_enriched_rwr_score_1	python	MIN_SEEDS 20	1		dss_recipes/compute_enriched_rwr_score_1.py	graph_edges,graph_nodes	enriched_rwr_score_1
-compute_enriched_shared_pathway_count_1	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_shared_pathway_count_1.cypher	DEMO_KG_LS.Lg8lbpl5	enriched_shared_pathway_count_1
-_models		-	-		DSS-only	-	-
-_variables		-	-		DSS-only	-	-
+compute_enriched_shared_pathway_count_1	CustomCode_visual-graph-execute-cypher	module_size >= 20	1		dss_recipes/cypher/compute_enriched_shared_pathway_count_1.cypher	ytvuniN8	enriched_shared_pathway_count_1
 compute_DEMO_KG_drug_disease_edges_copy	sync	-	-		DSS-only	DEMO_KG_LS.drug_disease_edges	drug_disease_edges
 compute_DEMO_KG_drug_protein_edges_copy	sync	-	-		DSS-only	DEMO_KG_LS.drug_protein_edges	drug_protein_edges
 compute_DEMO_KG_edge_metadata_copy	sync	-	-		DSS-only	DEMO_KG_LS.edge_metadata	edge_metadata
@@ -30,12 +28,12 @@ compute_drug_classified	shaker	-	-		DSS-only	drug_joined	drug_classified
 compute_drug_evidence_pairs	python	-	-		dss_recipes/compute_drug_evidence_pairs.py	drug_disease_edges,drug_protein_edges,graph_nodes	drug_evidence_pairs
 compute_drug_joined	join	-	-		DSS-only	enriched_gene_localization,ot_drug_mapped	drug_joined
 compute_drug_target_benchmark	python	-	-		dss_recipes/compute_drug_target_benchmark.py	drug_disease_edges,drug_protein_edges,graph_nodes,scored_champion	drug_target_benchmark
-compute_enriched_degree_controls_1	CustomCode_visual-graph-execute-cypher	-	-		dss_recipes/cypher/compute_enriched_degree_controls_1.cypher	DEMO_KG_LS.Lg8lbpl5	enriched_degree_controls_1
+compute_enriched_degree_controls_1	CustomCode_visual-graph-execute-cypher	-	-		dss_recipes/cypher/compute_enriched_degree_controls_1.cypher	ytvuniN8	enriched_degree_controls_1
 compute_enriched_gene_druggability_v2	topn	-	-		DSS-only	drug_classified	enriched_gene_druggability_v2
 compute_enriched_gene_safety_v2	topn	-	-		DSS-only	gene_safety_joined	enriched_gene_safety_v2
 compute_enriched_graph_features_1	join	-	-		DSS-only	enriched_degree_controls_1,enriched_disease_context_1,enriched_dwpc_GBGD,enriched_dwpc_GCD,enriched_dwpc_GFGD,enriched_dwpc_GGD,enriched_dwpc_GPGD,enriched_guilt_by_association_1,enriched_has_inflammatory_go_annotation_1,enriched_module_size_1,enriched_node_centrality_1,enriched_pair_features_index_1,enriched_ppi_cn_zscore,enriched_ppi_evidence_depth,enriched_prox_closest,enriched_rwr_score_1,enriched_shared_pathway_count_1,graph_edges	enriched_graph_features_1
-compute_enriched_inflammatory_go	CustomCode_visual-graph-execute-cypher	-	-		dss_recipes/cypher/compute_enriched_inflammatory_go.cypher	DEMO_KG_LS.Lg8lbpl5	enriched_has_inflammatory_go_annotation_1
-compute_enriched_node_centrality_1	CustomCode_visual-graph-graph-features	-	-		DSS-only	DEMO_KG_LS.Lg8lbpl5	enriched_node_centrality_1
+compute_enriched_inflammatory_go	CustomCode_visual-graph-execute-cypher	-	-		dss_recipes/cypher/compute_enriched_inflammatory_go.cypher	ytvuniN8	enriched_has_inflammatory_go_annotation_1
+compute_enriched_node_centrality_1	CustomCode_visual-graph-graph-features	-	-		DSS-only	ytvuniN8	enriched_node_centrality_1
 compute_enriched_pair_features_index_1	vstack	-	-		DSS-only	enriched_disease_context_1,enriched_dwpc_GBGD,enriched_dwpc_GCD,enriched_dwpc_GFGD,enriched_dwpc_GGD,enriched_dwpc_GPGD,enriched_guilt_by_association_1,enriched_ppi_cn_zscore,enriched_prox_closest,enriched_rwr_score_1,enriched_shared_pathway_count_1	enriched_pair_features_index_1
 compute_family_auc	shaker	-	-		DSS-only	family_auc_grouped	family_auc_by_family
 compute_family_panel	join	-	-		DSS-only	disease_family_id,validation_auc_ci	family_panel
@@ -67,12 +65,11 @@ compute_shap_driver_frequency	grouping	-	-		DSS-only	shap_drivers_long	shap_driv
 compute_shap_drivers_long	shaker	-	-		DSS-only	dashboard_candidates	shap_drivers_long
 compute_split_audit_2	python	-	-		dss_recipes/compute_split_audit_2.py	graph_nodes,psplit_test_set,psplit_train_set,psplit_validation_set	split_audit_2
 compute_top_shap_drivers_1	python	-	-		dss_recipes/compute_top_shap_drivers_1.py	persona2_scored	persona2_scored_shap
-compute_tractability_axis	python	-	-		dss_recipes/compute_tractability_axis.py	drug_protein_edges,enriched_gene_druggability_v2,graph_nodes,scored_champion	tractability_axis
 compute_validation_auc_by_disease	shaker	-	-		DSS-only	validation_set_scored_grouped	validation_auc_by_disease
 compute_validation_auc_ci	shaker	-	-		DSS-only	validation_auc_by_disease	validation_auc_ci
 compute_validation_set_scored_grouped	grouping	-	-		DSS-only	validation_set_scored_windows	validation_set_scored_grouped
 compute_validation_set_scored_windows	window	-	-		DSS-only	scored_champion	validation_set_scored_windows
-compute_ytvuniN8	merge_folder	-	-		DSS-only	DEMO_KG_LS.Lg8lbpl5	ytvuniN8
+compute_ytvuniN8	merge_folder	-	-		DSS-only	DEMO_KG_LS.UBUlwwxT	ytvuniN8
 count_candidates_per_disease	grouping	-	-		DSS-only	target_candidates_2	disease_pool_sizes
 decorate_target_candidates	join	-	-		DSS-only	enriched_gene_druggability_v2,enriched_gene_safety_v2,graph_nodes,top_candidates	top_annotated
 extract_hetionet_disease_slim	python	-	-		dss_recipes/extract_hetionet_disease_slim.py	-	hetionet_disease_slim
@@ -84,7 +81,6 @@ join_dashboard_annotations	join	-	-		DSS-only	disease_pool_sizes,drug_evidence_p
 join_disease_family_id	join	-	-		DSS-only	disease_family_id,enriched_graph_features_1	enriched_graph_features_1_family
 join_disease_name	join	-	-		DSS-only	graph_nodes,top_annotated	target_candidates_2
 join_orthogonality	join	-	-		DSS-only	drug_target_benchmark,validation_auc_by_disease	orthogonality_scatter
-join_trust_for_personas	join	-	-		DSS-only	disease_pool_sizes,persona_candidates	dashboard_persona_trust
 rank_per_disease	window	-	-		DSS-only	persona2_scored_shap	top_candidates
 score_persona_candidates	prediction_scoring	-	-		DSS-only	hJLGoYn4,validation_set_personas_2	persona2_scored
 score_psplit_validation_m7	prediction_scoring	-	-		DSS-only	hJLGoYn4,psplit_validation_set	scored_m7

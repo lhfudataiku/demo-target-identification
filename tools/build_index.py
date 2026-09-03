@@ -129,7 +129,29 @@ def load_manifest():
                           if path not in classified
                           and not any(path.startswith(prefix) for prefix in prefixes))
     if unclassified:
-        raise ValueError("tracked Markdown lacks a manifest role: %s" % ", ".join(unclassified))
+        # A bare list here stops the whole index build and says nothing about how
+        # to clear it, which is how one harness-generated document (a licence
+        # review, 2026-09-03) left `.index/` unbuildable for a day. The hard
+        # failure is deliberate -- nothing becomes claim surface silently -- so
+        # the fix is to make the failure actionable, not to soften it.
+        raise ValueError(
+            "tracked Markdown lacks a manifest role:\n"
+            + "".join("  %s\n" % path for path in unclassified)
+            + "\nEvery tracked .md must be classified in tools/index_manifest.json.\n"
+              "The deciding question is whether the document makes MEASURABLE claims\n"
+              "that could drift against a notebook assertion:\n\n"
+              "  yes -> add to current_claim_documents as\n"
+              "         {\"path\": \"...\", \"index\": \"heuristic\"}\n"
+              "  no  -> add the path to current_scan_exclusions.files\n"
+              "         (governance, operations records, reference, scope and\n"
+              "          setup documents all live here)\n\n"
+              "For a whole generated tree, add a trailing-slash prefix to\n"
+              "current_scan_exclusions.prefixes instead of listing each file.\n\n"
+              "Unsure? Classify it as a claim document, run this script, and read\n"
+              "what it contributed to .index/claims.tsv:\n"
+              "  awk -F'\\t' '$1==\"<path>\"' .index/claims.tsv\n"
+              "All-ORPHAN rows, or version strings and dates scraped as values,\n"
+              "mean it belongs in the exclusions.")
     required_indexes = {
         ".index/claims.tsv", ".index/historical_claims.tsv", ".index/decisions.tsv",
         ".index/decisions_history.tsv", ".index/models.tsv", ".index/features.tsv",

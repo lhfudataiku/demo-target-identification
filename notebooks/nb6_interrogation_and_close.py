@@ -22,25 +22,23 @@
 #           graph_nodes, drug_protein_edges, drug_disease_edges -- the drug-validated ground truth,
 #                                               rebuilt here so tractability_lift and safety_lift are
 #                                               COMPUTED (6.0), not read back from the flow
-#           tractability_axis, novel_discovery_eval, drug_target_benchmark, validation_auc_by_disease
+#           novel_discovery_eval, drug_target_benchmark, validation_auc_by_disease
 #                                               -- served or notebook-zone; recomputed and compared
+#   tractability_axis is NO LONGER READ: since 2026-09-03 it is recomputed by
+#   nb_assertions.derive.tractability_axis() from the four upstream datasets above, and the recipe
+#   and dataset it used to come from are retired.
 import math
 import dataiku
 import numpy as np
 import pandas as pd
 
 FAIL = []
-RESULTS = []
 
 
 def check(name, doc, live, tol=0.0, fmt="{:,}"):
     ok = (abs(doc - live) <= tol) if isinstance(doc, (int, float)) else (doc == live)
     if not ok:
         FAIL.append((name, doc, live))
-    # Recorded as well as printed. A scenario step's stdout is not reliably retrievable, so an
-    # assertion notebook whose only output is a log is itself an unguarded figure.
-    RESULTS.append({"check": name, "documented": str(doc), "live": str(live),
-                    "status": "PASS" if ok else "STALE"})
     print(f"CHK|{'PASS ' if ok else 'STALE'}|{name:52s} doc={fmt.format(doc):>12s} live={fmt.format(live):>12s}")
 
 
@@ -53,7 +51,13 @@ def check(name, doc, live, tol=0.0, fmt="{:,}"):
 # CROSSOVER, not the level: the degree control makes the result look worse at K=10 and better from
 # K=20-50 onward.
 # ============================================================================
-tx = dataiku.Dataset("tractability_axis").get_dataframe()
+# Recomputed from graph_nodes, drug_protein_edges, enriched_gene_druggability_v2 and
+# scored_champion -- all of which this script already reads -- instead of reading the retired
+# `tractability_axis` recipe output. verbose=True here and only here: the hub-confound table
+# and the verdict on the pre-stated prediction are the act-6 evidence, and the recipe that
+# used to print them is gone.
+from nb_assertions.derive import tractability_axis
+tx = tractability_axis(verbose=True)
 nv = tx[tx.scope == "novel only"]
 KS = [10, 20, 50, 100, 200]
 
@@ -429,9 +433,16 @@ else:
     print("All assertions PASS. The punch line is now guarded — pruning the flow is safe.")
 print("=" * 78)
 
-dataiku.Dataset("nb6_assertion_results").write_with_schema(pd.DataFrame(RESULTS))
-
+# This used to also write RESULTS to the `nb6_assertion_results` dataset, on the reasoning that "a
+# scenario step's stdout is not reliably retrievable, so an assertion notebook whose only output is a
+# log is itself an unguarded figure". Removed 2026-09-03 with that scaffold dataset already deleted:
+# `dku scenario run-log` returns the full step output (thousands of lines, untruncated -- the ~80-line
+# server-side cap is on `dku webapp logs`, not scenario logs), and nb6 was the only one of the seven
+# scripts that persisted anything, so the write bought inconsistency rather than durability.
+#
 # Fail the run loudly. Without this the scenario reports SUCCESS whenever the script merely finishes,
-# which is exactly the green-but-wrong signal this project keeps hitting.
+# which is exactly the green-but-wrong signal this project keeps hitting. nb_assertions/runner.py now
+# enforces the same contract for all seven scripts by inspecting FAIL after execution, so this raise
+# is belt-and-braces rather than the only guard.
 if FAIL:
-    raise SystemExit(f"{len(FAIL)} stale assertion(s) — see nb6_assertion_results")
+    raise SystemExit(f"{len(FAIL)} stale assertion(s) — see the CHK|STALE lines above")

@@ -157,6 +157,13 @@ def candidates(
         "funnel": funnel,
         "rows": rows,
         "returned": len(rows),
+        # `top_shap_drivers` is a rendered string of COLUMN names, and the table
+        # was showing them raw ("dwpc_GGD (+0.21)"). The detail drawer already
+        # resolves them, but only for the one selected gene. Fourteen entries,
+        # sent once per disease rather than per row -- and sourced here rather
+        # than restated in the frontend, because feature_glossary.py owns the
+        # model's feature wording (WEBAPP_DESIGN.md 3.7).
+        "feature_labels": dict(feature_glossary.LABEL),
     }
 
 

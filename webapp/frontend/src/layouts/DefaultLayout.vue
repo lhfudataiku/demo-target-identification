@@ -2,6 +2,7 @@
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import VisualGraphExplorerCard from '@/components/graph/VisualGraphExplorerCard.vue'
 import VisualGraphExplorerDialog from '@/components/graph/VisualGraphExplorerDialog.vue'
+import ActGlossaryDrawer from '@/components/act/ActGlossaryDrawer.vue'
 
 defineOptions({ name: 'AppDefaultLayout' })
 
@@ -35,5 +36,6 @@ LIMIT 1`
     </aside>
 
     <VisualGraphExplorerDialog />
+    <ActGlossaryDrawer />
   </div>
 </template>

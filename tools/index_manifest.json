@@ -25,15 +25,17 @@
   ],
   "current_scan_exclusions": {
     "prefixes": ["archive/", "harness/", ".claude/", ".codex/", ".index/",
-                 "docs/graph/wiki/"],
+                 "docs/graph/wiki/", "docs/prioritizer/wiki/"],
     "files": [
       "README.md", "AGENTS.md", "CLAUDE.md", "docs/README.md", "docs/demo/DOC_RESTRUCTURE_PLAN.md",
       "docs/demo/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md",
       "docs/decisions/DECISION_REGISTER.md", "docs/decisions/adrs/ADR-001-project-boundary.md",
       "docs/decisions/adrs/ADR-002-candidate-and-evaluation-boundary.md",
+      "docs/graph/DATA_SOURCE_LICENSE_REVIEW.md",
       "docs/operations/BUILD_GOVERNANCE.md",
       "docs/operations/PHASE_0_BASELINE_2026-08-28.md", "docs/appendix/README.md",
-      "docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md", "docs/platform/DSS_CHEATSHEET.md",
+      "docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md",
+      "docs/operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md", "docs/platform/DSS_CHEATSHEET.md",
       "docs/reference/DISCOVERY_LANDSCAPE.md", "docs/reference/RESEARCH_NOTE.md",
       "harness/README.md", "notebooks/README.md", "webapp/AGENTS.md", "webapp/CLAUDE.md",
       "webapp/DEPLOYMENT.md", "webapp/README.md"

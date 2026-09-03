@@ -71,9 +71,9 @@ The integration target inspected on 2026-09-02 is:
 |---|---|
 | DSS project | `DEMO_TARGET_IDENTIFICATION` |
 | Target Prioritizer standard webapp | `OlmPX9a` |
-| Visual Graph Explorer webapp | `wBcApLN` |
+| Visual Graph Explorer webapp | `wBcApLN`, named *Graph Explorer* (renamed from *graph search* 2026-09-03) |
 | Visual Graph plug-in | `visual-graph` 1.4.0 |
-| Published graph folder | `graph` (`ytvuniN8`) |
+| Published graph folder | `graph` (`ytvuniN8`), merged from `DEMO_KG_LS.published_kg_ls-Mp25kL` |
 
 The Explorer is a self-mounted Vue application with its own Flask backend. Plug-in version 1.4.0 has
 no supported query deep link or parent-window `postMessage` contract for loading and executing a
@@ -679,6 +679,10 @@ authorized Visual Graph Explorer. **Open in new tab** reached the configured
 non-owner permissions check remains an operational rehearsal item rather than a code or deployment
 failure. No graph, dataset, recipe or frozen reference was changed.
 
+> The `wBcApLN_graph-search` slug above is the **historical record of what Wave 7 verified on
+> 2026-09-02** and is correct as written. The Explorer was renamed on 2026-09-03; the current object
+> ID is `wBcApLN_graph-explorer`, per §9.
+
 ## 9. Configuration contract
 
 The implemented build-time settings are:
@@ -686,7 +690,7 @@ The implemented build-time settings are:
 ```text
 VITE_VISUAL_GRAPH_PROJECT_KEY=DEMO_TARGET_IDENTIFICATION
 VITE_VISUAL_GRAPH_WEBAPP_ID=wBcApLN
-VITE_VISUAL_GRAPH_OBJECT_ID=wBcApLN_graph-search
+VITE_VISUAL_GRAPH_OBJECT_ID=wBcApLN_graph-explorer
 VITE_DSS_ORIGIN=  # optional local-development override; production is same-origin
 ```
 
@@ -694,10 +698,17 @@ They belong in `webapp/app.env`, are exposed through `frontend/src/config.ts`, a
 single Vite bundle. They are not secrets.
 
 The two IDs serve different DSS surfaces. The live definition, status and log APIs identify the
-underlying webapp as `wBcApLN`. Browser navigation requires the object ID `wBcApLN_graph-search`, so
+underlying webapp as `wBcApLN`. Browser navigation requires the object ID `wBcApLN_graph-explorer`, so
 the canonical launch route is
-`/projects/DEMO_TARGET_IDENTIFICATION/webapps/wBcApLN_graph-search/view`. Both are explicit to prevent
+`/projects/DEMO_TARGET_IDENTIFICATION/webapps/wBcApLN_graph-explorer/view`. Both are explicit to prevent
 the navigation slug from being mistaken for the backend webapp identifier.
+
+**The object ID is not stable across a rename.** It is the webapp ID plus the current name slug, so
+renaming the Explorer in DSS invalidates it while the webapp ID stays put. On 2026-09-03 the webapp was
+renamed from *graph search* to **Graph Explorer**, moving the object ID from `wBcApLN_graph-search` to
+`wBcApLN_graph-explorer`. Since the value is baked into the Vite bundle at build time, the Act 1 and
+Act 4 cards continue to launch the stale slug until the frontend is rebuilt and redeployed. Treat any
+future Explorer rename as a required rebuild, not a configuration-only change.
 
 The graph snapshot ID must not be part of this contract. The Explorer remains responsible for listing
 the currently published graphs and their freshness.

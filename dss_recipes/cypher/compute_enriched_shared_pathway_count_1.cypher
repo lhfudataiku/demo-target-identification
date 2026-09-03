@@ -1,7 +1,7 @@
 // MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
 // this file is a copy for review and grep. The live query is in the DSS recipe.
 // recipe: compute_enriched_shared_pathway_count_1
-// inputs: DEMO_KG_LS.Lg8lbpl5
+// inputs: ytvuniN8
 // outputs: enriched_shared_pathway_count_1
 
 // pathways that contain BOTH candidate g and a module gene of D (shared-pathway overlap)

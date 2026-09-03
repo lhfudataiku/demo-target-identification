@@ -9,6 +9,14 @@
    * associated targets and one with 600 must not read the same, so every AUC renders
    * with its 95% interval, and terms flagged untrustworthy are shown but never
    * quoted as a score.
+   *
+   * COPY REVIEW 2026-09-03. This act's specific failure was vocabulary
+   * inherited without introduction: "top 50" appeared nine times and was
+   * defined zero times; "trustworthy" is a numeric threshold used as an English
+   * adjective; and "enrichment" carried a SECOND, differently-worded gloss from
+   * act 2's -- exactly the drift backend/feature_glossary.py exists to stop.
+   * Every such term is now an <ActTerm> reading utils/glossary.ts, so the two
+   * acts cannot describe one metric two ways again.
    */
   import { computed, onMounted, ref, watch } from 'vue'
   import { apiUrl } from '@/utils/api'
@@ -17,7 +25,8 @@
   import { EaSelect, EaEmpty } from '@/components/ui'
   import ActTabs from '@/components/act/ActTabs.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-  import ActSay from '@/components/act/ActSay.vue'
+  import ActTerm from '@/components/act/ActTerm.vue'
+  import ActInfo from '@/components/act/ActInfo.vue'
   import ActIntervals from '@/components/act/ActIntervals.vue'
   import ActMatrix from '@/components/act/ActMatrix.vue'
   import ActBar from '@/components/act/ActBar.vue'
@@ -154,9 +163,13 @@
     </p>
 
     <div class="grid grid-cols-12 gap-4">
-      <ActCard span="col-span-12" :icon="Network" title="Choose a family" :chips="[['live', 'live']]"
-               desc="Families are drawn from a curated medical ontology, not by an algorithm — and that choice lowered the score we report."
+      <ActCard span="col-span-12" :icon="Network" title="The family panel" :chips="[['live', 'live']]"
+               method-label="Why families, and why we split by them"
                :src="['family_panel']">
+        <template #desc>
+          Every term in the family scored by the same model — with the uncertainty each term
+          actually has.
+        </template>
         <div class="flex flex-wrap items-end gap-4">
           <label class="flex min-w-80 flex-col gap-1 text-sm">
             <span class="text-muted-foreground">Disease family</span>
@@ -165,16 +178,20 @@
                                  label: `${f.family_name} — ${f.n_terms} terms` }))" />
           </label>
           <div v-if="detail" class="flex gap-8">
-            <ActStat label="Terms" :value="detail.n_terms" />
-            <ActStat label="Macro AUC" :value="(detail.macro_auc ?? 0).toFixed(4)" />
+            <ActStat label="Terms" :value="detail.n_terms"
+                     info="Disease terms in this family, from the curated ontology. Indented terms in the table sit under the one above them." />
+            <ActStat t="auc-macro" label="Macro AUC" :value="(detail.macro_auc ?? 0).toFixed(4)" />
           </div>
         </div>
         <div v-if="detail" class="mt-4 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Term</TableHead><TableHead>Known targets</TableHead>
-                <TableHead>AUC</TableHead><TableHead>95% interval</TableHead><TableHead>Enrichment</TableHead>
+                <TableHead>Term<ActInfo text="One disease term from the curated ontology. Indented terms sit under the one above them." /></TableHead>
+                <TableHead>Known targets<ActInfo text="How many genes already carry a curated association with this term. It is the sample size behind every other number in the row." /></TableHead>
+                <TableHead>AUC<ActInfo text="The chance a known target for this term outranks a randomly picked non-target for it. 0.5 is a coin flip. Struck through where the term has too few known targets to quote it." /></TableHead>
+                <TableHead>95% interval<ActInfo text="The range the true AUC is likely to sit in, given how much data there was. A wide interval does not mean the estimate is wrong — it means it is unpinned." /></TableHead>
+                <TableHead>Enrichment<ActInfo text="How many of the top 50 are already-known targets, as a share of 50, divided by the share of known targets in this term's whole candidate pool. 20x means the head of the list is twenty times as dense in real targets as the pool it came from." /></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -196,52 +213,108 @@
             </TableBody>
           </Table>
         </div>
-        <p class="mt-3 text-[13px] leading-relaxed text-muted-foreground">
-          Train and test are split by <b class="text-foreground">family</b>, not at random. Random
-          splitting puts “diabetes” and “type 2 diabetes” on opposite sides — the same programme
-          wearing two labels — and inflates the score. This is also the concrete place a customer's
-          own judgment already enters the pipeline.
-        </p>
+        <template #note>
+          <b>Train and test are split by family, not at random.</b> Random splitting puts “diabetes”
+          and “type 2 diabetes” on opposite sides — the same programme wearing two labels — and
+          inflates the score.
+        </template>
+        <template #method>
+          <p><b class="text-foreground">Families come from a curated medical
+            <ActTerm t="ontology" />, not from an algorithm.</b> Clustering the diseases ourselves
+            would have produced tidier groups and a higher number; using somebody else's published
+            hierarchy lowered the score we report, and it is the concrete place a customer's own
+            judgment already enters the pipeline.</p>
+          <p class="mt-1.5">Splitting by family is the guard against
+            <ActTerm t="leakage" />: any two terms that are really the same programme land on the same
+            side of the split, so the model cannot score well by having memorised one of them. Act 2's
+            <i>By family</i> tab is this same grouping.</p>
+        </template>
       </ActCard>
 
-      <ActCard span="col-span-12" title="AUC, with the uncertainty it actually has"
-               :chips="[['live', 'live']]"
-               :desc="detail ? `${detail.n_terms} terms. ${untrustworthy} have intervals too wide to read as a score — shown, never quoted.` : undefined"
+      <ActCard span="col-span-12" title="AUC with confidence intervals"
+               :chips="[['live', 'live']]" method-label="Why an interval can exceed 1.0"
                :src="['family_panel']">
+        <template #desc>
+          <template v-if="detail">
+            {{ untrustworthy }} of {{ detail.n_terms }} terms have too few known targets to pin a
+            score down — shown, never quoted.
+          </template>
+          <template v-else>Every term's AUC, with the range it could actually be in.</template>
+        </template>
+
         <ActIntervals v-if="detail"
                       :rows="orderedTerms.map((t) => ({ label: t.disease_name, value: t.auc,
                              lo: t.lo95, hi: t.hi95, n: t.n_pos, muted: !t.trustworthy }))" />
-        <div v-if="detail && detail.terms.some((t) => t.hi95 > 1)"
-             class="mt-3 rounded-lg border-l-2 border-destructive bg-destructive/10 px-3.5 py-2.5 text-[13px] leading-relaxed">
-          <b>Some intervals run above 1.0 — higher than an AUC can reach.</b>
-          With only a handful of associated targets the estimate is not wrong, it is
-          <i>unpinned</i>. That single fact retires the metric for thin diseases better than any
-          threshold argument, which is why the card beside this one changes the measure.
-        </div>
         <EaEmpty v-else :icon="Network" title="No family selected"
                  description="Pick a disease family to see every term in it." />
+
+        <template #note>
+          <b>A struck-through score is shown, never quoted.</b> Greying it out would hide how much of
+          a family we cannot measure; deleting it would be worse. The card beside this one changes the
+          measure for exactly these terms.
+        </template>
+        <template #method>
+          <p><b class="text-foreground">Some intervals run above 1.0 — higher than an AUC can
+            reach.</b> With only a handful of known targets the estimate is not wrong, it is
+            <i>unpinned</i>. That single fact retires the metric for thin diseases better than any
+            threshold argument.</p>
+          <p class="mt-1.5"><b class="text-foreground">What “trustworthy” means here</b> is a
+            threshold, not a judgement: at least 30 known targets <i>and</i> an upper confidence bound
+            at or below 1.0. Measured 95% interval widths fall from 0.24 below 30 positives to 0.15 at
+            30–49 and 0.05 at 100+, so 30 is where the break actually is.</p>
+        </template>
       </ActCard>
 
       <ActCard span="col-span-12" :icon="Ruler" accent="var(--chart-4)"
-               title="For the thin diseases, change the metric" :chips="[['live', 'live']]"
-               desc="Enrichment at the head — observed hits over what chance would give. Red marks a term whose AUC is not trustworthy."
+               title="When AUC stops working" :chips="[['live', 'live']]"
+               method-label="How enrichment is computed"
                :src="['family_panel']">
+        <template #desc>
+          For terms with only a handful of known targets, quote
+          <ActTerm t="enrichment">enrichment</ActTerm> or
+          <ActTerm t="hits-at-k">hits in the top 20</ActTerm> — a count you can check by eye.
+        </template>
+
         <ActBar v-if="thin.length" :rows="thin" :row-height="22" />
         <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
           Every term in this family has enough associated targets to score.
         </p>
-        <ActSay class="mt-3">
-          For these, quote <b>hits in the top 20</b> or the rank of the best associated target — a count
-          you can verify by eye — not an AUC whose interval spans half the range.
-        </ActSay>
+        <div v-if="thin.length" class="mt-2 flex gap-4 font-mono text-[10.5px] text-muted-foreground">
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block size-2.5 rounded-sm" style="background:var(--chart-3)"></span>
+            AUC is trustworthy for this term
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="inline-block size-2.5 rounded-sm" style="background:var(--destructive)"></span>
+            AUC is not — read the enrichment instead
+          </span>
+        </div>
+
+        <template #note>
+          <b>The bars are enrichment; the colour is about AUC.</b> A red bar can still be a good
+          enrichment — it means only that the term's AUC is the number you should not quote.
+        </template>
+        <template #method>
+          <p>Take a term's <ActTerm t="top-50">top 50</ActTerm> ranked genes and count how many are
+            already-known targets, as a share of 50. Divide by the share of known targets in that
+            term's whole candidate pool. 20× means the head of the list is twenty times as dense in
+            real targets as the pool it was drawn from.</p>
+          <p class="mt-1.5">Unlike AUC it stays readable with very few known targets, because it is a
+            ratio of counts rather than an estimate with a standard error. This is the same definition
+            Act 2 uses — one wording, cited twice.</p>
+        </template>
       </ActCard>
 
       
 
-      <ActCard span="col-span-12 lg:col-span-7" :icon="GitCompare" accent="var(--chart-3)" title="How much do the subtypes overlap?"
-               :chips="[['live', 'live']]"
-               desc="Shared genes in each pair's top 50."
+      <ActCard span="col-span-12 lg:col-span-7" :icon="GitCompare" accent="var(--chart-3)"
+               title="Subtype overlap" :chips="[['live', 'live']]"
+               method-label="What the top 50 is"
                :src="['family_panel_overlap']">
+        <template #desc>
+          How many of each pair's <ActTerm t="top-50">top 50</ActTerm> genes are the
+          same<template v-if="commonShare !== null"> — {{ commonShare }} on average</template>.
+        </template>
         <ActTabs v-model="ovMode" class="mb-3"
                  :options="[{ value: 'all', label: 'All top-50 genes' },
                             { value: 'novel', label: 'Novel only' }]" />
@@ -253,13 +326,38 @@
         <ActMatrix v-if="overlapPairs.length" :labels="overlapLabels" :pairs="overlapPairs" />
         <EaEmpty v-else :icon="GitCompare" title="No overlap computed"
                  description="Pairwise top-50 overlap has not been computed for this family." />
+        <p v-if="overlapPairs.length" class="mt-2 font-mono text-[10.5px] text-muted-foreground">
+          each cell = shared genes out of 50 · higher is more similar
+        </p>
+
+        <template #note>
+          <b>Subtypes of one disease largely converge on one programme.</b> That is the expected
+          result, and the interesting cases are the pairs that do <i>not</i> — a clinician treats
+          those as different diseases, and so should the list.
+        </template>
+        <template #method>
+          <p><b class="text-foreground">Top 50.</b> Every gene the graph connects to a term is scored
+            and ranked; the top 50 is the head of that list — the shortlist a team would actually look
+            at. Nothing about 50 is special: it is a demo cut-off, and Act 4 lets you set your own.</p>
+          <p class="mt-1.5"><b class="text-foreground">Novel only</b> drops the genes that already
+            carry a curated association with the term, leaving what the model surfaced rather than
+            reproduced. Novel means we have not recorded a link — not that no link is known to
+            science.</p>
+        </template>
       </ActCard>
 
       
 
       <ActCard span="col-span-12 lg:col-span-6" :icon="Users" accent="var(--chart-2)"
-               title="The common programme, and what is subtype-specific"
-               :desc="commonShare !== null ? `Pairs in this family share ${commonShare} of their top 50 on average.` : undefined">
+               title="Shared vs. subtype-specific"
+               method-label="Why only the curated leaf terms">
+        <template #desc>
+          <template v-if="commonShare !== null">
+            Pairs share {{ commonShare }} of their top 50 — the family runs on a common core, with a
+            small distinct edge each.
+          </template>
+          <template v-else>The genes every subtype reaches, and the genes only one does.</template>
+        </template>
         <template v-if="detail?.programme?.leaves?.length">
           <!-- The shared core first: it is the answer the title promises. -->
           <div class="flex flex-col gap-1.5">
@@ -297,26 +395,34 @@
             </div>
           </div>
 
-          <ActSay class="mt-3">
-            <b>The curated leaf set only.</b> The other terms appear in the two cards above,
-            where a broad term's top 50 being largely a blend of the narrower ones is the point.
-            They are held out here because that set contains umbrella terms, whose "specific"
-            genes would be an artefact of aggregation. Leaf is a curation call, not a depth
-            rule — a term left out is not necessarily anyone's parent.
-          </ActSay>
         </template>
         <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
           No leaf subtypes configured for this family.
         </p>
+
+        <template #note>
+          <b>A gene in exactly one subtype's top 50 is the interesting column.</b> It is where the
+          model is claiming this subtype needs something the others do not — the claim a clinician
+          can falsify fastest.
+        </template>
+        <template #method>
+          <p><b class="text-foreground">The curated <ActTerm t="leaf-term">leaf</ActTerm> set
+            only.</b> The other terms appear in the two cards above, where a broad term's top 50 being
+            largely a blend of the narrower ones is the point. They are held out here because that set
+            contains umbrella terms, whose “specific” genes would be an artefact of aggregation.</p>
+          <p class="mt-1.5">Leaf is a curation call, not a depth rule — a term left out here is not
+            necessarily anyone's parent.</p>
+        </template>
       </ActCard>
 
       <ActCard span="col-span-12" :icon="Grid3x3" accent="var(--chart-3)"
-               title="Every gene, against every term it reaches"
-               :chips="[['live', 'live']]"
-               :desc="gridTotal
-                 ? `${gridTotal} genes across ${overlapLabels.length} terms. A filled cell means the gene is in that term's top 50; dot size and opacity encode the rank.`
-                 : undefined"
+               title="Gene coverage across the family"
+               :chips="[['live', 'live']]" method-label="How to read the grid"
                :src="['family_panel_top50']">
+        <template #desc>
+          A row of filled cells is a gene the whole family runs on; a single cell is one subtype's
+          own.
+        </template>
         <ActGeneGrid v-if="gridGenes.length" :genes="gridGenes" :columns="overlapLabels"
                      :shared-at="Math.min(3, overlapLabels.length)" />
         <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
@@ -326,12 +432,18 @@
            class="mt-2 font-mono text-[10.5px] text-muted-foreground">
           showing the {{ gridGenes.length }} most widely shared of {{ gridTotal }} genes
         </p>
-        <ActSay class="mt-3">
-          The card above says <b>which</b> genes are shared; this one says <b>where</b>. A row of
-          filled cells straight across is a gene the whole family runs on; a single filled cell is
-          a gene only one subtype reaches. Read the columns in ontology order — the broad terms sit
-          left of the narrow ones.
-        </ActSay>
+
+        <template #note>
+          The card above says <b>which</b> genes are shared; this one says <b>where</b>.
+        </template>
+        <template #method>
+          <p v-if="gridTotal">{{ gridTotal }} genes across {{ overlapLabels.length }} terms. A filled
+            cell means the gene is in that term's <ActTerm t="top-50">top 50</ActTerm>; dot size and
+            opacity encode the rank, so a large solid dot is near the head of that term's list.</p>
+          <p class="mt-1.5">Columns run in ontology order — the broad terms sit left of the narrow
+            ones — so a block of cells filling in from the left is a gene inherited from the parent
+            term rather than one the subtype found on its own.</p>
+        </template>
       </ActCard>
 
       </div>

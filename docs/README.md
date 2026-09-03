@@ -20,6 +20,7 @@ evidence and generated documents appear first; planning and historical material 
 | | |
 |---|---|
 | [`graph/GRAPH_BUILDING.md`](graph/GRAPH_BUILDING.md) | Input sources §2, graph schema §3, pipeline §4, graph webapp §6, final statistics §7 |
+| [`graph/DATA_SOURCE_LICENSE_REVIEW.md`](graph/DATA_SOURCE_LICENSE_REVIEW.md) | **Preliminary internal legal-review draft:** direct and nested source lineage, licence terms, commercial-use barriers, unresolved provenance and remediation priorities |
 
 ## Part 2 — the prioritizer (`DEMO_TARGET_IDENTIFICATION`)
 

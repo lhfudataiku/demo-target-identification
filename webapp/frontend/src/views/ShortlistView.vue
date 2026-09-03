@@ -20,6 +20,21 @@
    *    the dataset happens to carry, and names the one it cannot show;
    *  - a feature's percentile is ranked in the direction that feature counts,
    *    so the best possible hop distance does not draw an empty bar.
+   *
+   * COPY REVIEW 2026-09-03. This act was already the best-instrumented view in
+   * the app -- 18 ActInfo tooltips against zero everywhere else -- and its
+   * "Why this gene?" card is the pattern the other three acts were rebuilt
+   * against. Three things were still missing or misplaced:
+   *
+   *  - THE RANKING METHODOLOGY WAS NOWHERE. The act asks a client to judge an
+   *    ordering without ever saying what produced it. It is now the ranked
+   *    list's #method block, which is the highest-value single addition here.
+   *  - THE PERCENTILE EXPLANATION WAS ALWAYS OPEN, pushing the graph card below
+   *    the fold. Same text, now collapsed -- and the disclosure it uses is the
+   *    component every other act adopted.
+   *  - "MUST NOT APPEAR" was a build-spec heading rendered in destructive red
+   *    at a client. The reasoning is good and is kept; the label and the colour
+   *    are gone, and it reads as the design choice it is.
    */
   import { computed, nextTick, onMounted, ref, watch } from 'vue'
   import { apiUrl } from '@/utils/api'
@@ -28,6 +43,7 @@
   import { EaSelect, EaEmpty } from '@/components/ui'
   import ActTabs from '@/components/act/ActTabs.vue'
   import ActInfo from '@/components/act/ActInfo.vue'
+  import ActTerm from '@/components/act/ActTerm.vue'
   import VisualGraphExplorerCard from '@/components/graph/VisualGraphExplorerCard.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
   import { ListFilter, Microscope, Network } from 'lucide-vue-next'
@@ -43,7 +59,11 @@
     ot_sm_tractable: number; ot_ab_tractable: number
     has_safety_liability: number; approved_for_disease: number; investigational_for_disease: number
   }
-  interface Payload { disease_name: string; funnel: { step: string; n: number }[]; rows: Row[]; returned: number }
+  interface Payload {
+    disease_name: string; funnel: { step: string; n: number }[]; rows: Row[]; returned: number
+    /** column name -> the standalone wording, from backend/feature_glossary.py. */
+    feature_labels: Record<string, string>
+  }
 
   /** One model feature, placed against this disease's own pool.
       `percentile` is the share of the pool this candidate is STRONGER than,
@@ -199,17 +219,30 @@
      which formats the top 2 by |contribution| and keeps the sign. Parsed back
      apart here so the card can show the evidence route rather than the column
      name, and so a negative driver reads as one. A part that does not match the
-     shape is passed through verbatim rather than dropped. */
-  const drivers = computed(() => {
-    const raw = sel.value?.top_shap_drivers
+     shape is passed through verbatim rather than dropped.
+
+     ONE parser, two callers. The table used to render this string raw, so every
+     row showed column names while the drawer three inches below showed the same
+     two features in English. */
+  interface Driver { key: string; label: string | null; sign: string; value: string }
+
+  function parseDrivers(raw: string | null | undefined, label: (k: string) => string | null): Driver[] {
     if (!raw) return []
     return raw.split(/,\s*/).map((part) => {
       const m = part.match(/^(.*?)\s*\(([+-])([\d.]+)\)\s*$/)
-      if (!m) return { key: part, label: null as string | null, sign: '', value: '' }
+      if (!m) return { key: part, label: null, sign: '', value: '' }
       const key = m[1].trim()
-      return { key, label: labelFor(key), sign: m[2], value: m[3] }
+      return { key, label: label(key), sign: m[2], value: m[3] }
     })
-  })
+  }
+
+  const drivers = computed(() => parseDrivers(sel.value?.top_shap_drivers, labelFor))
+
+  /* The table's own lookup. It cannot use `labelFor`: that reads the DETAIL
+     payload, which exists only for the one selected gene, so every other row
+     would fall back to the column name. This reads the per-disease map. */
+  const rowDrivers = (r: Row) =>
+    parseDrivers(r.top_shap_drivers, (k) => data.value?.feature_labels[k] ?? null)
 
   /* The evidence route a feature measures. Sourced from the detail payload so
      the wording has exactly one definition (backend/feature_glossary.py) and
@@ -329,12 +362,24 @@
       <!-- The contract, stated before the list appears. -->
       <!-- Your thresholds, not ours. -->
       <!-- The ranked list. -->
-      <ActCard span="col-span-12" :icon="ListFilter"
-               :title="`The ranked list${current ? ' — ' + current.disease_name : ''}`"
-               :chips="[['live', 'live']]"
-               desc="Every control for this act lives here. Nothing is pre-cut — you set the cut-offs, and the funnel shows what each one costs."
+      <ActCard span="col-span-12" :icon="ListFilter" title="The ranked list"
+               :chips="[['live', 'live']]" method-label="How genes are ranked"
                :src="['dashboard_candidates']">
+        <template #desc>
+          <template v-if="data && current">
+            {{ data.rows.length.toLocaleString() }} genes scored for {{ current.disease_name }},
+            strongest evidence first. Nothing is pre-filtered — you set the cut-offs.
+          </template>
+          <template v-else>
+            One disease's candidates, strongest evidence first. Nothing is pre-filtered.
+          </template>
+        </template>
+
         <!-- population controls: these refetch, because they change what is scored -->
+        <p class="mb-2 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+          Population<ActInfo text="These controls change which candidates are in the list at all, so the funnel below them changes too." />
+          <span class="ml-1 normal-case tracking-normal opacity-70">· re-scores the list</span>
+        </p>
         <div class="flex flex-wrap items-end gap-4">
           <label class="flex min-w-64 flex-col gap-1 text-sm">
             <span class="text-muted-foreground">
@@ -382,6 +427,10 @@
         <hr class="my-4 border-border" />
 
         <!-- view controls: these filter what is already on screen -->
+        <p class="mb-2 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+          View<ActInfo text="These controls only narrow what is drawn on screen. The funnel above still reports the true population, so nothing here can hide how big the list really is." />
+          <span class="ml-1 normal-case tracking-normal opacity-70">· filters what is on screen</span>
+        </p>
         <div class="flex flex-wrap items-center gap-2">
           <input v-model="search" type="search" placeholder="Search gene…"
                  class="w-36 rounded-md border border-input bg-background px-2 py-1 text-sm" />
@@ -458,7 +507,17 @@
                   <span v-if="r.has_safety_liability"
                         class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-destructive">liability</span>
                 </TableCell>
-                <TableCell class="text-xs text-muted-foreground">{{ r.top_shap_drivers || '—' }}</TableCell>
+                <TableCell class="text-xs text-muted-foreground">
+                  <template v-if="rowDrivers(r).length">
+                    <span v-for="(d, i) in rowDrivers(r)" :key="d.key">
+                      <span v-if="i">, </span>{{ d.label ?? d.key }}<span
+                        v-if="d.value" class="ml-0.5 font-mono tabular-nums"
+                        :class="d.sign === '+' ? 'text-chart-3' : 'text-destructive'"
+                      >{{ d.sign }}{{ d.value }}</span>
+                    </span>
+                  </template>
+                  <template v-else>—</template>
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -490,18 +549,33 @@
         <EaEmpty v-if="!shown.length" :icon="ListFilter" title="Nothing matches"
                  description="Loosen a filter, or pick another disease." />
 
-        <div class="mt-3 rounded-lg border border-dashed border-destructive/50 px-3.5 py-2.5 text-[13px] leading-relaxed">
-          <p class="mb-1 font-mono text-[10px] uppercase tracking-wide text-destructive">Must not appear</p>
-          <b>The drug badges are not filterable, and that is deliberate.</b> Approved-for-disease and
-          in-trials are the ground truth the discovery result is measured against. A shortlist filtered
-          by them would be circular, so they are shown and never actionable.
-        </div>
+        <template #note>
+          <b>The drug badges are shown but cannot be filtered on, and that is deliberate.</b>
+          Approved-for-disease and in-trials are the ground truth the discovery result is measured
+          against — a shortlist filtered by them would be circular.
+        </template>
+        <template #method>
+          <p><b class="text-foreground">How genes are ranked.</b> Every gene the graph connects to this
+            disease enters the <ActTerm t="candidate-pool">candidate pool</ActTerm>. The
+            <ActTerm t="champion-model">champion model</ActTerm> scores each
+            <ActTerm t="gene-disease-pair">gene–disease pair</ActTerm> from the 14 graph-structure
+            features listed in Act 2, and the genes are sorted by that score
+            <b class="text-foreground">within this disease</b>.</p>
+          <p class="mt-1.5">The score is <ActTerm t="uncalibrated">uncalibrated</ActTerm> — it orders
+            candidates correctly but is not a probability, so 0.8 does not mean an 80% chance of being
+            a real target. <b class="text-foreground">The order carries the meaning, not the
+            number</b>, and a rank of 9 here is not comparable to a rank of 9 for another disease,
+            because the pools differ in both size and density.</p>
+          <p class="mt-1.5"><b class="text-foreground">Nothing is pre-filtered.</b> Every funnel count
+            above renders the rank cut-off it was measured at, so a number can never acquire two
+            values.</p>
+        </template>
       </ActCard>
 
       <ActCard id="why-this-gene" span="col-span-12 lg:col-span-6" :icon="Microscope"
                :title="sel ? `Why ${sel.gene_name}?` : 'Why this gene?'"
-               :chips="[['live', 'live']]"
-               desc="Each feature placed against this disease's own distribution, not a global one."
+               :chips="[['live', 'live']]" method-label="How the percentile is computed"
+               desc="Every model input for this gene, ranked inside this disease's own pool."
                :src="['dashboard_candidates']">
         <EaEmpty v-if="!sel" :icon="Microscope" title="Pick a row"
                  description="Click any candidate in the list above." />
@@ -578,7 +652,9 @@
             </h3>
             <p v-if="detailBusy" class="text-[13px] text-muted-foreground">Loading…</p>
             <div v-for="g in featureGroups" :key="g.kind" class="flex flex-col gap-1.5">
-              <span class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground/70">{{ g.kind }}</span>
+              <span class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground/70">
+                <ActTerm :t="`feature-${g.kind}`" plain>{{ g.kind }}</ActTerm>
+              </span>
               <div v-for="f in g.features" :key="f.key" class="flex flex-col gap-0.5">
                 <div class="flex items-baseline justify-between gap-3">
                   <span class="text-[12px] leading-snug">
@@ -598,59 +674,62 @@
             </div>
           </div>
 
-          <div class="rounded-lg border border-dashed border-border px-3.5 py-2.5 text-[11.5px] leading-relaxed text-muted-foreground">
-            <p><b class="text-foreground">How the percentile is computed.</b> For one gene and one
-              feature it is <code class="font-mono text-[10.5px]">100 × (candidates for this disease this
-              one is stronger than) ÷ (candidates with a non-null value)</code> — a rank <b>within this
-              disease's own pool</b>, never a global one. The same gene can sit at the 96th percentile
-              here and the 40th for another disease on an identical raw value.</p>
-            <p class="mt-1.5">Stronger means a <b class="text-foreground">higher</b> value everywhere
-              except hop distance, where it means a lower one. Ties never count toward the number, so a
-              feature most of the pool shares reads modestly rather than at the 100th percentile.</p>
-            <p v-if="detail?.missing_features?.length" class="mt-1.5">
-              <b class="text-foreground">Not shown:</b>
-              <code v-for="m in detail.missing_features" :key="m"
-                    class="mx-1 font-mono text-[10.5px]">{{ m }}</code>
-              — a model input that never reaches
-              <code class="font-mono text-[10.5px]">dashboard_candidates</code>, so the bars above are
-              {{ detail.features.length }} of the champion's
-              {{ detail.features.length + detail.missing_features.length }} features.
-            </p>
-          </div>
         </div>
+
+        <template #method>
+          <p><b class="text-foreground">How the percentile is computed.</b> For one gene and one
+            feature it is <code class="font-mono text-[10.5px]">100 × (candidates for this disease this
+            one is stronger than) ÷ (candidates with a non-null value)</code> — a rank <b>within this
+            disease's own pool</b>, never a global one. The same gene can sit at the 96th percentile
+            here and the 40th for another disease on an identical raw value.</p>
+          <p class="mt-1.5">Stronger means a <b class="text-foreground">higher</b> value everywhere
+            except hop distance, where it means a lower one. Ties never count toward the number, so a
+            feature most of the pool shares reads modestly rather than at the 100th percentile.</p>
+          <p v-if="detail?.missing_features?.length" class="mt-1.5">
+            <b class="text-foreground">Not shown:</b>
+            <code v-for="m in detail.missing_features" :key="m"
+                  class="mx-1 font-mono text-[10.5px]">{{ m }}</code>
+            — a model input that never reaches
+            <code class="font-mono text-[10.5px]">dashboard_candidates</code>, so the bars above are
+            {{ detail.features.length }} of the champion's
+            {{ detail.features.length + detail.missing_features.length }} features.
+          </p>
+        </template>
       </ActCard>
 
       <ActCard v-if="!sel" span="col-span-12 lg:col-span-6" :icon="Network"
-               title="Explore the evidence graph"
-               desc="Choose one of five default evidence queries to run in Visual Graph Explorer."
+               title="See the evidence on the graph"
+               desc="Five ready-made queries showing the routes behind a candidate's score."
                :chips="[['live', 'live']]" :src="['Kuzu folder (ytvuniN8)']">
         <EaEmpty :icon="Network" title="Pick a row"
                  description="The five queries are generated locally from the candidate you select." />
       </ActCard>
 
       <VisualGraphExplorerCard v-else span="col-span-12 lg:col-span-6"
-               title="Explore the evidence graph"
-               description="Choose one of five default evidence queries. The Explorer displays one query result at a time; results are not combined."
+               title="See the evidence on the graph"
+               :description="sel ? `Five ready-made queries showing the routes behind ${sel.gene_name}'s score.` : undefined"
                :context-title="explorerContextTitle"
                :starter-queries="explorerQueries"
                handoff="Create a new query in the Explorer, paste the copied Cypher, and run it. Running another default query replaces the current result."
-               :chips="[['live', 'live']]" :src="['Kuzu folder (ytvuniN8)']">
-        <div class="rounded-lg border border-dashed border-border px-3.5 py-2.5 text-[11.5px] leading-relaxed text-muted-foreground">
-          <p><b class="text-foreground">Four queries correspond to model features.</b> PPI interaction,
-            shared pathway, shared molecular function, and shared biological process are graph forms
-            of the model's path features. The drug query is additional context.</p>
-          <p class="mt-1.5"><b class="text-foreground">The drug route is not a model feature.</b> No
-            feature traverses a drug node, so nothing on that route fed the score. It is one of three
-            routes admitting a pair into the candidate pool, so it shaped the population that got
-            scored — <i>not a feature</i>, never <i>not used</i>.</p>
-          <p class="mt-1.5"><b class="text-foreground">Each query is independent.</b> Selecting a row
-            only prepares Cypher; it does not query the graph. Run one query at a time in the Explorer.
-            Publishing captures only the currently displayed result.</p>
-          <p class="mt-1.5">Traversal is <b class="text-foreground">undirected</b>, relationship variables
-            are bound and returned, and the engine's gene label is
+               :chips="[['live', 'live']]" :src="['Kuzu folder (ytvuniN8)']"
+               method-label="Query details">
+        <template #note>
+          <b>Four of the five queries are graph forms of model features</b> — protein interaction,
+          shared pathway, shared molecular function, shared biological process. The fifth is the drug
+          route: it helped admit this pair into the candidate pool, but
+          <b>no feature traverses a drug node</b>, so nothing on it fed the score.
+        </template>
+        <template #method>
+          <p><b class="text-foreground">Each query is independent.</b> Selecting a row only prepares
+            Cypher; it does not query the graph. Run one query at a time in the Explorer — publishing
+            captures only the currently displayed result.</p>
+          <p class="mt-1.5">Traversal is <b class="text-foreground">undirected</b>, relationship
+            variables are bound and returned, and the engine's gene label is
             <code class="font-mono text-[10.5px]">protein</code>. The two GO queries exclude terms with
-            degree above 200. Node indices are snapshot-specific and generated from the selected row.</p>
-        </div>
+            <ActTerm t="node">node</ActTerm> degree above 200, which is what stops a generic term such
+            as “protein binding” from returning the whole graph. Node indices are snapshot-specific
+            and generated from the selected row.</p>
+        </template>
       </VisualGraphExplorerCard>
     </div>
   </div>

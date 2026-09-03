@@ -7,7 +7,7 @@ webapp/backend/services/document_describer.py	webapp	ORPHAN (referenced by nothi
 webapp/backend/services/permission_broker.py	webapp	ORPHAN (referenced by nothing)	0	-
 webapp/frontend/tsconfig.json	webapp	ORPHAN (referenced by nothing)	0	-
 archive/decisions/TRIAGE.json	archive	ARCHIVED	2	archive/decisions/README.md,tools/build_index.py
-archive/webapp-v1/backend.py	archive	ARCHIVED	8	archive/flow-map-iterations/flow_map.html,docs/demo/FLOW_MAP.md,tools/recipe_classes.json,webapp/README.md
+archive/webapp-v1/backend.py	archive	ARCHIVED	7	archive/flow-map-iterations/flow_map.html,tools/recipe_classes.json,webapp/README.md,webapp/app.env
 docs/appendix/manifest.json	docs	LIVE (referenced)	4	docs/README.md,docs/appendix/README.md,docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md,tools/build_index.py
 docs/demo/model_recovery.json	docs	LIVE (referenced)	1	archive/DASHBOARD_BUILD_LOG.md
 docs/operations/build-governance/POLICY.json	docs	LIVE (referenced)	2	docs/operations/BUILD_GOVERNANCE.md,tools/build_governance.py
@@ -16,6 +16,11 @@ docs/operations/build-governance/machine-event.schema.json	docs	LIVE (referenced
 docs/operations/build-governance/pilot/phase5-breast-panel-accepted-baseline.json	docs	LIVE (referenced)	1	docs/operations/BUILD_GOVERNANCE.md
 docs/operations/build-governance/pilot/phase5-breast-panel-leaf-build-event.json	docs	LIVE (referenced)	1	docs/operations/BUILD_GOVERNANCE.md
 docs/operations/build-governance/review-packet.schema.json	docs	LIVE (referenced)	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
+docs/operations/graph-snapshot-switch-2026-09-03/graph-config-fingerprints.json	docs	LIVE (referenced)	1	docs/operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md
+docs/operations/graph-snapshot-switch-2026-09-03/signature-after-switch.json	docs	LIVE (referenced)	1	docs/operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md
+docs/operations/graph-snapshot-switch-2026-09-03/signature-before-switch.json	docs	LIVE (referenced)	1	docs/operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md
+docs/operations/graph-snapshot-switch-2026-09-03/signature-reference-two-hash.json	docs	LIVE (referenced)	1	docs/operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md
+docs/operations/graph-snapshot-switch-2026-09-03/signature.py	docs	LIVE (referenced)	1	docs/operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md
 docs/prioritizer/CLAIM_REGISTRY.json	docs	LIVE (referenced)	8	docs/README.md,docs/decisions/DECISION_REGISTER.md,docs/demo/WEBAPP_DESIGN.md,docs/prioritizer/TARGET_PRIORITIZER.md
 dss_lib/demo_identity.py	dss_lib	LIVE (referenced)	4	dss_recipes/compute_breast_panel.py,dss_recipes/compute_demo_panel_config.py,dss_recipes/compute_split_audit_2.py,tools/check_governed_values.py
 dss_recipes/attach_node_index.py	recipe-mirror	MIRROR (graph-build project)	0	-
@@ -45,14 +50,13 @@ dss_recipes/compute_known_drug_truth.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_lung_granularity_check.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_model_comparison.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_novel_discovery_eval.py	recipe-mirror	MIRROR	1	dss_recipes/compute_drug_evidence_pairs.py
-dss_recipes/compute_persona_candidates.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_persona_candidates.py	recipe-mirror	MIRROR	1	docs/demo/WEBAPP_DESIGN.md
 dss_recipes/compute_pool_reachability.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_ppi_cn_zscore.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_ppi_evidence_depth.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_split_audit_2.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_target_reachability.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_top_shap_drivers_1.py	recipe-mirror	MIRROR	1	webapp/frontend/src/views/ShortlistView.vue
-dss_recipes/compute_tractability_axis.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_tractability_lift.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_validation_auc_by_disease_2.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/cypher/compute_enriched_degree_controls_1.cypher	cypher-mirror	MIRROR	0	-
@@ -78,25 +82,31 @@ notebooks/nb2_splitting_and_pool.py	notebook	LIVE (tripwire)	1	docs/prioritizer/
 notebooks/nb3_validation_and_plots.py	notebook	LIVE (tripwire)	2	archive/DASHBOARD_BUILD_LOG.md,docs/prioritizer/CLAIM_REGISTRY.json
 notebooks/nb3b_hub_bias_meter.py	notebook	LIVE (tripwire)	1	docs/prioritizer/CLAIM_REGISTRY.json
 notebooks/nb4_results_three_axes.py	notebook	LIVE (tripwire)	1	docs/prioritizer/CLAIM_REGISTRY.json
-notebooks/nb5_data_exploration.py	notebook	LIVE (tripwire)	0	-
+notebooks/nb5_data_exploration.py	notebook	LIVE (tripwire)	1	tools/push_assertions.py
 notebooks/nb6_interrogation_and_close.py	notebook	LIVE (tripwire)	0	-
 notebooks/nb7_panel_selection.py	notebook	LIVE (tripwire)	1	docs/demo/panel_selection/README.md
 reference_baseline.json	root-script	LIVE (referenced)	4	archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md,docs/graph/GRAPH_BUILDING.md
 scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
+tools/build_flow_map.py	tool	LIVE	2	docs/demo/FLOW_MAP.md,tools/check_indexes.sh
 tools/build_governance.py	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
 tools/build_index.py	tool	LIVE	11	archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/decisions/README.md
-tools/build_recipe_index.py	tool	LIVE	32	README.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot
+tools/build_recipe_index.py	tool	LIVE	34	README.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot
 tools/capture_build_governance.py	tool	LIVE	1	docs/operations/BUILD_GOVERNANCE.md
 tools/check_claim_registry.py	tool	LIVE	3	docs/prioritizer/VALIDATION.md,tools/check_indexes.sh,tools/index_manifest.json
 tools/check_freshness.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
 tools/check_governed_values.py	tool	LIVE	3	docs/decisions/DECISION_REGISTER.md,tools/build_recipe_index.py,tools/check_indexes.sh
 tools/check_harness.py	tool	LIVE	2	harness/README.md,tools/check_indexes.sh
-tools/check_indexes.sh	tool	LIVE	10	.github/workflows/checks.yml,README.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot
+tools/check_indexes.sh	tool	LIVE	13	.github/workflows/checks.yml,README.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot
 tools/check_links.py	tool	LIVE	6	archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/operations/PHASE_0_BASELINE_2026-08-28.md
+tools/dataset_descriptions.json	tool	LIVE	3	.github/workflows/checks.yml,tools/check_indexes.sh,tools/push_descriptions.py
 tools/index_manifest.json	tool	LIVE	3	docs/README.md,docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md,tools/build_index.py
 tools/model_registry.json	tool	LIVE	8	archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md
-tools/pull_notebooks.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
+tools/nb_assertions/__init__.py	tool	LIVE	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
+tools/nb_assertions/derive.py	tool	LIVE	1	tools/push_assertions.py
+tools/nb_assertions/runner.py	tool	LIVE	5	archive/notebooks-dss-2026-09-03/README.md,harness/skills/target-id/references/number-update.md,notebooks/README.md,notebooks/nb6_interrogation_and_close.py
+tools/push_assertions.py	tool	LIVE	4	harness/skills/target-id/references/number-update.md,notebooks/README.md,tools/check_indexes.sh,tools/nb_assertions/derive.py
+tools/push_descriptions.py	tool	LIVE	2	tools/check_indexes.sh,tools/dataset_descriptions.json
 tools/recipe_classes.json	tool	LIVE	6	archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md,docs/prioritizer/PHASE3_PREREGISTRATION.md
 tools/sync_harness.py	tool	LIVE	7	AGENTS.md,CLAUDE.md,README.md,harness/README.md
 tools/tests/fixtures/build_governance/accepted-baseline.json	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
@@ -104,29 +114,29 @@ tools/tests/fixtures/build_governance/no-change-event.json	tool	LIVE	1	tools/tes
 tools/tests/test_build_governance.py	tool	LIVE	1	docs/operations/BUILD_GOVERNANCE.md
 tools/tests/test_check_harness.py	tool	LIVE	1	harness/README.md
 tools/tests/test_index_manifest.py	tool	LIVE	0	-
-webapp/backend/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
+webapp/backend/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
 webapp/backend/app.py	webapp	LIVE (referenced)	7	tools/recipe_classes.json,webapp/DEPLOYMENT.md,webapp/README.md,webapp/backend/routes/chat.py
 webapp/backend/config.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/app.env,webapp/dss_webapp/backend.py
 webapp/backend/dss_client.py	webapp	LIVE (referenced)	7	docs/demo/WEBAPP_DESIGN.md,harness/WEBAPP_OVERLAY.md,webapp/AGENTS.md,webapp/CLAUDE.md
-webapp/backend/feature_glossary.py	webapp	LIVE (referenced)	3	docs/demo/WEBAPP_DESIGN.md,webapp/backend/routes/calibration.py,webapp/frontend/src/views/ShortlistView.vue
-webapp/backend/routes/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
+webapp/backend/feature_glossary.py	webapp	LIVE (referenced)	10	docs/demo/WEBAPP_DESIGN.md,tools/check_indexes.sh,tools/dataset_descriptions.json,tools/push_descriptions.py
+webapp/backend/routes/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
 webapp/backend/routes/agents.py	webapp	LIVE (referenced)	1	webapp/frontend/src/types/agents.ts
-webapp/backend/routes/calibration.py	webapp	LIVE (referenced)	2	docs/prioritizer/CLAIM_REGISTRY.json,webapp/DEPLOYMENT.md
-webapp/backend/routes/candidates.py	webapp	LIVE (referenced)	1	webapp/DEPLOYMENT.md
+webapp/backend/routes/calibration.py	webapp	LIVE (referenced)	4	docs/demo/FLOW_MAP.md,docs/prioritizer/CLAIM_REGISTRY.json,tools/build_flow_map.py,webapp/DEPLOYMENT.md
+webapp/backend/routes/candidates.py	webapp	LIVE (referenced)	2	docs/demo/WEBAPP_DESIGN.md,webapp/DEPLOYMENT.md
 webapp/backend/routes/evidence.py	webapp	LIVE (referenced)	1	webapp/DEPLOYMENT.md
 webapp/backend/routes/example.py	webapp	LIVE (referenced)	2	webapp/README.md,webapp/backend/tools/registry.py
 webapp/backend/routes/families.py	webapp	LIVE (referenced)	2	docs/prioritizer/CLAIM_REGISTRY.json,webapp/DEPLOYMENT.md
 webapp/backend/routes/flow.py	webapp	LIVE (referenced)	1	webapp/frontend/src/types/flow.ts
 webapp/backend/routes/system.py	webapp	LIVE (referenced)	1	webapp/README.md
 webapp/backend/routes/wizard.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/frontend/src/types/wizard.ts,webapp/frontend/src/views/wizard/WizardFlowView.vue
-webapp/backend/services/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
+webapp/backend/services/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
 webapp/backend/services/dataset_cache.py	webapp	LIVE (referenced)	1	webapp/backend/routes/candidates.py
 webapp/backend/services/documents_service.py	webapp	LIVE (referenced)	1	webapp/README.md
 webapp/backend/services/memory_state.py	webapp	LIVE (referenced)	1	webapp/README.md
 webapp/backend/services/settings.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/backend/tools/registry.py,webapp/frontend/src/views/SettingsView.vue
-webapp/backend/tools/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
+webapp/backend/tools/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
 webapp/backend/tools/registry.py	webapp	LIVE (referenced)	5	docs/prioritizer/VALIDATION.md,tools/check_claim_registry.py,tools/check_indexes.sh,tools/index_manifest.json
-webapp/dss_webapp/backend.py	webapp	LIVE (referenced)	8	archive/flow-map-iterations/flow_map.html,docs/demo/FLOW_MAP.md,tools/recipe_classes.json,webapp/README.md
+webapp/dss_webapp/backend.py	webapp	LIVE (referenced)	7	archive/flow-map-iterations/flow_map.html,tools/recipe_classes.json,webapp/README.md,webapp/app.env
 webapp/dss_webapp/deploy.sh	webapp	LIVE (referenced)	7	docs/demo/WEBAPP_DESIGN.md,dss_lib/demo_identity.py,webapp/DEPLOYMENT.md,webapp/Makefile
 webapp/frontend/package-lock.json	webapp	LIVE (referenced)	1	webapp/Makefile
 webapp/frontend/package.json	webapp	LIVE (referenced)	2	webapp/Makefile,webapp/README.md
