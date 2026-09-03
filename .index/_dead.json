@@ -69,7 +69,6 @@
   ]
  },
  "shared_recipe_caution": {
-  "_note": "A dataset may go while its producing recipe must not, because the recipe has a second output that something reads.",
-  "pool_unreachable_targets": "unread, but `compute_pool_reachability` also produces `pool_reachability`, which nb2 reads. The dataset may go; the RECIPE MUST NOT."
+  "_note": "RESOLVED 2026-09-03, retained as the lesson. The hazard: a dataset may go while its producing recipe must not, because the recipe has a second output that something reads. The live example used to be `pool_unreachable_targets` -- unread, but produced by `compute_pool_reachability` alongside `pool_reachability`, which nb2 reads. That dataset has since been deleted and the recipe now has a single output, so the example is history. No recipe in the flow currently has this shape; `tools/build_flow_map.py` recomputes the check on every run rather than asserting a fixed example, so it cannot outlive the hazard again."
  }
 }

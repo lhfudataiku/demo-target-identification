@@ -25,7 +25,7 @@
   ],
   "current_scan_exclusions": {
     "prefixes": ["archive/", "harness/", ".claude/", ".codex/", ".index/",
-                 "docs/graph/wiki/"],
+                 "docs/graph/wiki/", "docs/prioritizer/wiki/"],
     "files": [
       "README.md", "AGENTS.md", "CLAUDE.md", "docs/README.md", "docs/demo/DOC_RESTRUCTURE_PLAN.md",
       "docs/demo/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md",

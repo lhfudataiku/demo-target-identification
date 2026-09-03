@@ -181,11 +181,34 @@ def build():
         L.append("> Every orphan here is a deliberate decision, not a finding. See")
         L.append("> `.index/_dead.json` `keep_do_not_prune` for why each one survives.")
         L.append("")
+    # Computed, not asserted. This section used to name `pool_unreachable_targets` /
+    # `compute_pool_reachability` as the live example; that dataset has since been deleted and the
+    # recipe now has one output, so the warning outlived the hazard. Derive it instead.
+    shared = []
+    for name, r in sorted(recipes.items()):
+        outs = r.get("outputs") or []
+        if len(outs) < 2:
+            continue
+        keep = [o for o in outs if o in reads or consumed.get(o)]
+        drop = [o for o in outs if o not in reads and not consumed.get(o)]
+        if keep and drop:
+            shared.append((name, keep, drop))
     L.append("### Shared-recipe caution")
     L.append("")
     L.append("A dataset may go while its producing recipe must not, when the recipe has a second output")
-    L.append("that something reads. `pool_unreachable_targets` is unread, but `compute_pool_reachability`")
-    L.append("also produces `pool_reachability`, which nb2 reads. The dataset may go; **the recipe must not**.")
+    L.append("that something reads. Deleting the recipe to remove the unread output would take the read")
+    L.append("one with it.")
+    L.append("")
+    if shared:
+        L.append("| recipe | unread output (may go) | output that is read (recipe must stay) |")
+        L.append("|---|---|---|")
+        for name, keep, drop in shared:
+            L.append("| `{}` | {} | {} |".format(
+                name, ", ".join("`%s`" % d for d in drop), ", ".join("`%s`" % k for k in keep)))
+    else:
+        L.append("**No recipe currently has this shape.** Every multi-output recipe in the flow has all")
+        L.append("of its outputs either read or consumed, so no recipe is load-bearing for a dataset that")
+        L.append("looks disposable.")
     L.append("")
 
     for z in sorted(zones, key=lambda x: x["name"]):

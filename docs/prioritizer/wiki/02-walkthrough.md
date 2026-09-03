@@ -1,5 +1,7 @@
 # Case Study
 
+<!-- Governed claims consumed here: TI-VAL-001 -->
+
 Early drug-discovery teams need to decide which genes or proteins are worth deeper investigation
 for a disease. The relevant evidence is spread across genetics, disease ontologies, pathways,
 protein interactions, phenotypes, and drug mechanisms. Even when that evidence is integrated in a

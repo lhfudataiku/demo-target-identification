@@ -1,4 +1,6 @@
 <div class="alert">
+
+<!-- Governed claims consumed here: TI-MOD-001 -->
 This is a demo-only project. Confirm the target DSS instance, access controls, shared-object
 permissions, code environments, and webapp dependencies before any deployment or rebuild.
 </div>

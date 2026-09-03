@@ -1,5 +1,7 @@
 <span id="version" style="color: grey; float: right">Version 1.0.0 draft</span><br/>
 
+<!-- Governed claims consumed here: TI-MOD-001 TI-VAL-001 -->
+
 <div class="alert">
 This is a demonstration project. It is not a clinical decision-support system and is not a
 production-ready target-nomination system.

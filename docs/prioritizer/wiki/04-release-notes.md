@@ -1,4 +1,6 @@
 <div class="alert">
+
+<!-- Governed claims consumed here: TI-MOD-001 TI-VAL-001 -->
 This is a demo-only release. It is not a statement of general availability or production support.
 </div>
 

@@ -42,8 +42,12 @@ so zones A1-A4 are read by named routes rather than by an unbuilt UI.
 ### Shared-recipe caution
 
 A dataset may go while its producing recipe must not, when the recipe has a second output
-that something reads. `pool_unreachable_targets` is unread, but `compute_pool_reachability`
-also produces `pool_reachability`, which nb2 reads. The dataset may go; **the recipe must not**.
+that something reads. Deleting the recipe to remove the unread output would take the read
+one with it.
+
+**No recipe currently has this shape.** Every multi-output recipe in the flow has all
+of its outputs either read or consumed, so no recipe is load-bearing for a dataset that
+looks disposable.
 
 ## 00 Imported from DEMO_KG_LS (synced)  (10 datasets, 13 recipes)
 
@@ -146,15 +150,11 @@ Foreign references in this zone (12), each feeding exactly one Sync or Merge rec
 | `top_candidates` | — | `rank_per_disease` | 1 | intermediate |
 | `validation_set_personas_2` | — | `filter_persona_diseases` | 1 | intermediate |
 
-## 90 Notebook — validation evidence  (7 datasets, 7 recipes)
+## 90 Validation evidence (asserted)  (3 datasets, 3 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `breast_panel_metrics` | nb4 | `compute_breast_panel` | 0 | notebook |
-| `family_auc_by_family` | nb3, **webapp:routes/calibration** | `compute_family_auc` | 0 | webapp |
-| `family_auc_grouped` | — | `group_family_auc` | 1 | intermediate |
-| `family_validation_ranked` | — | `window_family_rank` | 1 | intermediate |
-| `family_validation_scored` | — | `compute_family_validation_scored` | 1 | intermediate |
 | `pool_reachability` | nb2 | `compute_pool_reachability` | 0 | notebook |
 | `tractability_axis` | nb4, nb6 | `compute_tractability_axis` | 0 | notebook |
 
@@ -168,12 +168,16 @@ Foreign references in this zone (12), each feeding exactly one Sync or Merge rec
 | `graph_ppi_provenance` | **webapp:routes/evidence** | `compute_graph_ppi_provenance` | 0 | webapp |
 | `graph_relation_counts` | **webapp:routes/evidence** | `compute_graph_relation_counts` | 0 | webapp |
 
-## A2 Calibration (serving)  (12 datasets, 12 recipes)
+## A2 Calibration (serving)  (16 datasets, 16 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `disease_eligibility` | **webapp:routes/calibration** | `compute_disease_eligibility` | 0 | webapp |
 | `drug_target_benchmark` | nb3, nb6 | `compute_drug_target_benchmark` | 2 | notebook |
+| `family_auc_by_family` | nb3, **webapp:routes/calibration** | `compute_family_auc` | 0 | webapp |
+| `family_auc_grouped` | — | `group_family_auc` | 1 | intermediate |
+| `family_validation_ranked` | — | `window_family_rank` | 1 | intermediate |
+| `family_validation_scored` | — | `compute_family_validation_scored` | 1 | intermediate |
 | `hub_bias_meter` | **webapp:routes/calibration** | `compute_hub_bias_meter` | 0 | webapp |
 | `novel_discovery_eval` | nb4, nb6 | `compute_novel_discovery_eval` | 1 | notebook |
 | `orthogonality_scatter` | **webapp:routes/calibration** | `join_orthogonality` | 0 | webapp |
