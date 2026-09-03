@@ -13,5 +13,9 @@ python3 tools/check_governed_values.py
 # FLOW_MAP.md is generated from live DSS, so --check queries DSS. It is last among
 # the index checks because it is the only one that needs network access.
 python3 tools/build_flow_map.py --check
+# The DSS project library holds a generated copy of notebooks/*.py that the
+# validate_notebooks scenario executes. Catch repo/library drift here, because a
+# stale library copy means the scenario is asserting against code nobody reviewed.
+python3 tools/push_assertions.py --check
 python3 tools/check_harness.py
 python3 tools/check_links.py

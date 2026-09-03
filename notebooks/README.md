@@ -1,16 +1,30 @@
 # Assertion notebooks
 
 > **Lifecycle:** Evidence · **Audience:** reviewers re-deriving documented numbers · **Authority:** the
-> assertion map and execution order for the DSS-hosted notebooks · **Update when:** a notebook, guarded
-> claim or execution dependency changes · **Generated dependencies:** the live DSS notebooks and their
-> mirrored scripts · **Excludes:** modelling rationale and narrative interpretation.
+> assertion scripts themselves, plus their map and execution order · **Update when:** a script, guarded
+> claim or execution dependency changes · **Generated dependencies:** none — these files are the source
+> · **Excludes:** modelling rationale and narrative interpretation.
 
-Seven `.py` mirrors of the DSS-hosted Jupyter notebooks on the **`primekg_kg`** code env. The notebooks
-themselves live in `DEMO_TARGET_IDENTIFICATION` and are the ones to run; these files exist so a change
-is diffable in git.
+**These files are the source of truth, not a mirror.** They run on the **`primekg_kg`** code env.
+`tools/push_assertions.py --push` copies them into the DSS project library under
+`/python/nb_assertions/`, and the `validate_notebooks` scenario executes them there through
+`nb_assertions/runner.py` — one two-line step per script. `tools/check_indexes.sh` fails on any
+repo/library drift, and `.index/assertions.tsv` is parsed from these files, so the index describes
+exactly the code that runs.
 
 **They are assertion-first.** Every value the documentation quotes is compared against live data and
-printed `PASS` or `STALE`, so drift fails loudly instead of rotting silently.
+printed `PASS` or `STALE`, so drift fails loudly instead of rotting silently. The failure contract
+lives in the runner, not here: six of the seven scripts only *print* their stale count and return
+normally, so run bare they would report success over stale numbers. `runner.py` inspects each
+script's own `FAIL` list afterwards and raises. Do not "fix" that by editing the script tails — the
+index parses their assertion text and values.
+
+> **The direction reversed on 2026-09-03.** These were previously mirrors of DSS-hosted Jupyter
+> notebooks, and `tools/pull_notebooks.py` pulled DSS → repo. That is now deprecated and would destroy
+> the working copy: three DSS notebooks had drifted, and every dataset read only by the DSS side
+> (`pool_selection_bias`, `breast_panel_overlap`, `lung_granularity_check`, `safety_lift`,
+> `tractability_lift`) has since been deleted, while every dataset read only by these scripts still
+> exists. The DSS notebooks cannot run.
 
 ---
 

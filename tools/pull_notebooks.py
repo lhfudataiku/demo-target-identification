@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
-"""Mirror the DSS Jupyter notebooks into notebooks/*.py, or report how far they have drifted.
+"""Report drift between the DSS Jupyter notebooks and notebooks/*.py.
+
+**DEPRECATED FOR --pull AS OF 2026-09-03. The direction reversed.** `notebooks/*.py` is now the
+single source of truth: `tools/push_assertions.py` pushes it into the DSS project library, and the
+`validate_notebooks` scenario executes it from there. Use that tool, not this one, to move code.
+
+Pulling would now DESTROY the working copy. Measured on 2026-09-03: three DSS notebooks had drifted,
+and every dataset read only by the DSS side -- `pool_selection_bias`, `breast_panel_overlap`,
+`lung_granularity_check`, `safety_lift`, `tractability_lift` -- has since been deleted, while every
+dataset read only by the repository side still exists. The DSS notebooks cannot run. The report mode
+below is still useful as a record of that gap until the DSS notebooks are retired.
 
 WHY: `notebooks/*.py` are described as mirrors of the DSS notebooks, but nothing enforced it. On
 2026-08-25 all five had diverged **in both directions** — DSS had gained markdown-cell structure and

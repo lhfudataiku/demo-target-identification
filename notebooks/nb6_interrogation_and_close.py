@@ -30,17 +30,12 @@ import numpy as np
 import pandas as pd
 
 FAIL = []
-RESULTS = []
 
 
 def check(name, doc, live, tol=0.0, fmt="{:,}"):
     ok = (abs(doc - live) <= tol) if isinstance(doc, (int, float)) else (doc == live)
     if not ok:
         FAIL.append((name, doc, live))
-    # Recorded as well as printed. A scenario step's stdout is not reliably retrievable, so an
-    # assertion notebook whose only output is a log is itself an unguarded figure.
-    RESULTS.append({"check": name, "documented": str(doc), "live": str(live),
-                    "status": "PASS" if ok else "STALE"})
     print(f"CHK|{'PASS ' if ok else 'STALE'}|{name:52s} doc={fmt.format(doc):>12s} live={fmt.format(live):>12s}")
 
 
@@ -429,9 +424,16 @@ else:
     print("All assertions PASS. The punch line is now guarded — pruning the flow is safe.")
 print("=" * 78)
 
-dataiku.Dataset("nb6_assertion_results").write_with_schema(pd.DataFrame(RESULTS))
-
+# This used to also write RESULTS to the `nb6_assertion_results` dataset, on the reasoning that "a
+# scenario step's stdout is not reliably retrievable, so an assertion notebook whose only output is a
+# log is itself an unguarded figure". Removed 2026-09-03 with that scaffold dataset already deleted:
+# `dku scenario run-log` returns the full step output (thousands of lines, untruncated -- the ~80-line
+# server-side cap is on `dku webapp logs`, not scenario logs), and nb6 was the only one of the seven
+# scripts that persisted anything, so the write bought inconsistency rather than durability.
+#
 # Fail the run loudly. Without this the scenario reports SUCCESS whenever the script merely finishes,
-# which is exactly the green-but-wrong signal this project keeps hitting.
+# which is exactly the green-but-wrong signal this project keeps hitting. nb_assertions/runner.py now
+# enforces the same contract for all seven scripts by inspecting FAIL after execution, so this raise
+# is belt-and-braces rather than the only guard.
 if FAIL:
-    raise SystemExit(f"{len(FAIL)} stale assertion(s) — see nb6_assertion_results")
+    raise SystemExit(f"{len(FAIL)} stale assertion(s) — see the CHK|STALE lines above")
