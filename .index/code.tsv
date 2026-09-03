@@ -1,7 +1,6 @@
 path	kind	status	n_refs	referenced_by
 webapp/backend/routes/chat.py	webapp	ORPHAN (referenced by nothing)	0	-
 webapp/backend/routes/documents.py	webapp	ORPHAN (referenced by nothing)	0	-
-webapp/backend/routes/graph.py	webapp	ORPHAN (referenced by nothing)	0	-
 webapp/backend/services/chat_agent.py	webapp	ORPHAN (referenced by nothing)	0	-
 webapp/backend/services/db.py	webapp	ORPHAN (referenced by nothing)	0	-
 webapp/backend/services/document_describer.py	webapp	ORPHAN (referenced by nothing)	0	-

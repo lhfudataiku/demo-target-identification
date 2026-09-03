@@ -28,6 +28,7 @@
                  "docs/graph/wiki/"],
     "files": [
       "README.md", "AGENTS.md", "CLAUDE.md", "docs/README.md", "docs/demo/DOC_RESTRUCTURE_PLAN.md",
+      "docs/demo/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md",
       "docs/decisions/DECISION_REGISTER.md", "docs/decisions/adrs/ADR-001-project-boundary.md",
       "docs/decisions/adrs/ADR-002-candidate-and-evaluation-boundary.md",
       "docs/operations/BUILD_GOVERNANCE.md",

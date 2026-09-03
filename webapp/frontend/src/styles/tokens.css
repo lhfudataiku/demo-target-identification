@@ -77,8 +77,7 @@
      A closed set of 8, so an explicit map beats a colour cycle: the three GO
      namespaces share the beige "annotation" family, and the two entities the
      demo is actually about (protein, disease) get the brand's strongest accents.
-     Read by ActGraph via token() — vis-network paints to canvas and cannot use
-     Tailwind classes. */
+     Retained as the shared palette for graph visual integrations. */
   --graph-protein: #3EDAB2;           /* dkGreen — the subject */
   --graph-disease: #EDAB4F;           /* dkOrange */
   --graph-drug: #7092F2;              /* dkBlue */

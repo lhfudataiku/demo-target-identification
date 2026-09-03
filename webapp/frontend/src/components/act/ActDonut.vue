@@ -14,7 +14,7 @@
   import { PieChart } from 'echarts/charts'
   import { LegendComponent, TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
-  import type { EChartsOption } from 'echarts'
+  import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
 
   use([PieChart, LegendComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActDonut' })
@@ -36,8 +36,13 @@
     animationEasing: 'cubicOut',
     tooltip: {
       trigger: 'item',
-      formatter: (p: { name: string; value: number; percent: number }) =>
-        `${p.name}<br/><b>${p.value.toLocaleString()}</b> (${p.percent.toFixed(1)}%)`,
+      formatter: (params: TooltipComponentFormatterCallbackParams) => {
+        const entry = Array.isArray(params) ? params[0] : params
+        if (!entry) return ''
+        const value = typeof entry.value === 'number' ? entry.value.toLocaleString() : String(entry.value ?? '')
+        const percent = typeof entry.percent === 'number' ? entry.percent.toFixed(1) : ''
+        return `${entry.name}<br/><b>${value}</b> (${percent}%)`
+      },
     },
     legend: {
       type: 'scroll', orient: 'vertical', top: 'center', right: 0,

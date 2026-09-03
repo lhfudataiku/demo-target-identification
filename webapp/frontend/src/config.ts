@@ -11,6 +11,17 @@ export const APP_NAME: string = import.meta.env.VITE_APP_NAME ?? ''
  *  Swap `Blocks` for any other lucide-vue-next icon if you want a different mark. */
 export const APP_ICON: Component = Blocks
 
+/** Build-time identity of the Visual Graph Explorer webapp. */
+export const VISUAL_GRAPH_PROJECT_KEY: string =
+  import.meta.env.VITE_VISUAL_GRAPH_PROJECT_KEY?.trim() ?? ''
+export const VISUAL_GRAPH_WEBAPP_ID: string =
+  import.meta.env.VITE_VISUAL_GRAPH_WEBAPP_ID?.trim() ?? ''
+/** DSS navigation object ID (webapp ID plus its current slug). */
+export const VISUAL_GRAPH_OBJECT_ID: string =
+  import.meta.env.VITE_VISUAL_GRAPH_OBJECT_ID?.trim() ?? ''
+/** Optional DSS origin for local development; production defaults to same-origin. */
+export const DSS_ORIGIN: string = import.meta.env.VITE_DSS_ORIGIN?.trim() ?? ''
+
 // ── Optional building block flags ─────────────────────────────────────────────
 // Set ENABLE_* in app.env — one line per flag controls both backend and frontend.
 // Vite bakes them into the bundle at build time; they cannot change at runtime.

@@ -12,7 +12,11 @@
   import { BarChart } from 'echarts/charts'
   import { GridComponent, TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
-  import type { EChartsOption } from 'echarts'
+  import type {
+    DefaultLabelFormatterCallbackParams,
+    EChartsOption,
+    TooltipComponentFormatterCallbackParams,
+  } from 'echarts'
 
   use([BarChart, GridComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActBar' })
@@ -48,8 +52,9 @@
     grid: { left: 4, right: 56, top: 4, bottom: 4, containLabel: true },
     tooltip: {
       trigger: 'item',
-      formatter: (p: { dataIndex: number }) => {
-        const r = props.rows[p.dataIndex]
+      formatter: (params: TooltipComponentFormatterCallbackParams) => {
+        const entry = Array.isArray(params) ? params[0] : params
+        const r = entry && props.rows[entry.dataIndex]
         return r ? `<b>${r.label}</b><br/>${r.count.toLocaleString()}`
                    + (r.note ? `<br/>${r.note}` : '') : ''
       },
@@ -79,7 +84,8 @@
       barMaxWidth: 14,
       label: {
         show: true, position: 'right',
-        formatter: (p: { value: number }) => Number(p.value).toLocaleString(),
+        formatter: (params: DefaultLabelFormatterCallbackParams) =>
+          typeof params.value === 'number' ? params.value.toLocaleString() : String(params.value ?? ''),
         fontFamily: 'DM Mono, monospace', fontSize: 11,
       },
     }],

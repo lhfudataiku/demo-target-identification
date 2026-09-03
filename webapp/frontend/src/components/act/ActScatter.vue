@@ -6,7 +6,7 @@
   import { ScatterChart } from 'echarts/charts'
   import { GridComponent, TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
-  import type { EChartsOption } from 'echarts'
+  import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
 
   use([ScatterChart, GridComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActScatter' })
@@ -24,8 +24,13 @@
     grid: { left: 46, right: 14, top: 12, bottom: 36 },
     tooltip: {
       trigger: 'item',
-      formatter: (p: { value: number[] }) =>
-        `assoc ${p.value[0].toFixed(3)}<br/>drug ${p.value[1].toFixed(3)}`,
+      formatter: (params: TooltipComponentFormatterCallbackParams) => {
+        const entry = Array.isArray(params) ? params[0] : params
+        const value = Array.isArray(entry?.value) ? entry.value : []
+        const assoc = typeof value[0] === 'number' ? value[0].toFixed(3) : ''
+        const drug = typeof value[1] === 'number' ? value[1].toFixed(3) : ''
+        return `assoc ${assoc}<br/>drug ${drug}`
+      },
     },
     xAxis: {
       type: 'value', min: 0, max: 1, name: props.xLabel, nameLocation: 'middle', nameGap: 22,

@@ -147,6 +147,55 @@ dku library read /python/target_prioritizer/backend/routes/families.py \
 If a deployed file is ever *larger* than its local counterpart, someone edited the library
 directly and `make deploy` is about to overwrite it. Diff before deploying.
 
+### 4.1 Visual Graph Explorer release checks
+
+The Target Prioritizer opens the Visual Graph Explorer inside a lazy full-screen iframe. It does not
+send Cypher to the plug-in: the shared card prepares a visible query, attempts to copy it during the
+user action, and the user pastes and runs it in the Explorer. After deployment, check all of the
+following with an authorized user and, where possible, a representative non-owner:
+
+1. Act 1 exposes three deterministic starters and Act 4 exposes five independent bounded presets for
+   the selected disease and target gene.
+2. Opening either card uses one dialog shell, loads the Explorer for an authorized user, and preserves
+   the prepared query for explicit paste-and-run handoff.
+3. If the nested frame shows sign-in, access denied or cannot display the Explorer, **Open in new tab**
+   reaches the same Explorer URL. Treat this as a permissions or framing result to resolve with the
+   Explorer project owner, not as a failed Target Prioritizer query.
+4. Clipboard success is reported only when confirmed; otherwise the query remains selectable for manual
+   copy. Do not work around this with Explorer private APIs or iframe-DOM access.
+
+Check the deployed bundle contains the Visual Graph navigation object and the shared UI identifiers:
+
+```bash
+dku library read /python/target_prioritizer/frontend_dist/assets/index.js \
+  -P DEMO_TARGET_IDENTIFICATION | grep -E -c 'wBcApLN_graph-search|VisualGraphExplorer(Card|Dialog)'
+```
+
+The expected result is at least `1`. Then inspect the deployed FastAPI wiring: it must retain
+`/api/evidence` but must not import, register or advertise an `/api/graph/*` route.
+
+```bash
+dku library read /python/target_prioritizer/backend/app.py \
+  -P DEMO_TARGET_IDENTIFICATION | grep -E -n 'evidence_router|graph_router|/api/graph'
+```
+
+This should show `evidence_router` and no `graph_router` or `/api/graph` match. Confirm the runtime
+surface as well (the webapp logs must be healthy; a stale source file alone is not a registered route).
+
+**Prune retired library files deliberately.** `make deploy` overwrites and uploads files but does not
+delete files that were removed locally. After the Wave 6 cleanup is deployed and after the backend check
+above, remove this exact retired remote file explicitly:
+
+```bash
+dku library delete /python/target_prioritizer/backend/routes/graph.py \
+  -P DEMO_TARGET_IDENTIFICATION --yes
+dku library list --path /python/target_prioritizer/backend/routes \
+  -P DEMO_TARGET_IDENTIFICATION | grep -F graph.py
+```
+
+The final command must produce no match. Do not use a recursive delete for this cleanup, and do not
+delete the `routes/` directory: all remaining application routes live there.
+
 ### 5. Commit and push
 
 Separately, and for version control only. It updates nothing on DSS.
