@@ -99,7 +99,7 @@ tools/check_governed_values.py	tool	LIVE	3	docs/decisions/DECISION_REGISTER.md,t
 tools/check_harness.py	tool	LIVE	2	harness/README.md,tools/check_indexes.sh
 tools/check_indexes.sh	tool	LIVE	13	.github/workflows/checks.yml,README.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot
 tools/check_links.py	tool	LIVE	6	archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/operations/PHASE_0_BASELINE_2026-08-28.md
-tools/dataset_descriptions.json	tool	LIVE	2	tools/check_indexes.sh,tools/push_descriptions.py
+tools/dataset_descriptions.json	tool	LIVE	3	.github/workflows/checks.yml,tools/check_indexes.sh,tools/push_descriptions.py
 tools/index_manifest.json	tool	LIVE	3	docs/README.md,docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md,tools/build_index.py
 tools/model_registry.json	tool	LIVE	8	archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md
 tools/nb_assertions/__init__.py	tool	LIVE	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh

@@ -25,6 +25,12 @@ jobs:
       # Indexes current, claim registry valid, harness copies byte-identical to harness/ sources,
       # every relative link and file mention resolving. Reads the committed DSS snapshot; needs no
       # DSS credentials, no network and no third-party package.
+      #
+      # The script's three DSS-dependent checks (FLOW_MAP.md, the assertion library, dataset
+      # descriptions) skip themselves here, because `dku` is not on a runner and there are no
+      # credentials to reach DSS with. They print a SKIPPED line, so the gap is visible in the log
+      # rather than assumed -- and they must be run locally before merging a change to the flow,
+      # notebooks/*.py or tools/dataset_descriptions.json.
       - name: Indexes, harness parity and links
         run: ./tools/check_indexes.sh
 
