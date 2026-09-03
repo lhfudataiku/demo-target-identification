@@ -59,7 +59,11 @@
     ot_sm_tractable: number; ot_ab_tractable: number
     has_safety_liability: number; approved_for_disease: number; investigational_for_disease: number
   }
-  interface Payload { disease_name: string; funnel: { step: string; n: number }[]; rows: Row[]; returned: number }
+  interface Payload {
+    disease_name: string; funnel: { step: string; n: number }[]; rows: Row[]; returned: number
+    /** column name -> the standalone wording, from backend/feature_glossary.py. */
+    feature_labels: Record<string, string>
+  }
 
   /** One model feature, placed against this disease's own pool.
       `percentile` is the share of the pool this candidate is STRONGER than,
@@ -215,17 +219,30 @@
      which formats the top 2 by |contribution| and keeps the sign. Parsed back
      apart here so the card can show the evidence route rather than the column
      name, and so a negative driver reads as one. A part that does not match the
-     shape is passed through verbatim rather than dropped. */
-  const drivers = computed(() => {
-    const raw = sel.value?.top_shap_drivers
+     shape is passed through verbatim rather than dropped.
+
+     ONE parser, two callers. The table used to render this string raw, so every
+     row showed column names while the drawer three inches below showed the same
+     two features in English. */
+  interface Driver { key: string; label: string | null; sign: string; value: string }
+
+  function parseDrivers(raw: string | null | undefined, label: (k: string) => string | null): Driver[] {
     if (!raw) return []
     return raw.split(/,\s*/).map((part) => {
       const m = part.match(/^(.*?)\s*\(([+-])([\d.]+)\)\s*$/)
-      if (!m) return { key: part, label: null as string | null, sign: '', value: '' }
+      if (!m) return { key: part, label: null, sign: '', value: '' }
       const key = m[1].trim()
-      return { key, label: labelFor(key), sign: m[2], value: m[3] }
+      return { key, label: label(key), sign: m[2], value: m[3] }
     })
-  })
+  }
+
+  const drivers = computed(() => parseDrivers(sel.value?.top_shap_drivers, labelFor))
+
+  /* The table's own lookup. It cannot use `labelFor`: that reads the DETAIL
+     payload, which exists only for the one selected gene, so every other row
+     would fall back to the column name. This reads the per-disease map. */
+  const rowDrivers = (r: Row) =>
+    parseDrivers(r.top_shap_drivers, (k) => data.value?.feature_labels[k] ?? null)
 
   /* The evidence route a feature measures. Sourced from the detail payload so
      the wording has exactly one definition (backend/feature_glossary.py) and
@@ -490,7 +507,17 @@
                   <span v-if="r.has_safety_liability"
                         class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-destructive">liability</span>
                 </TableCell>
-                <TableCell class="text-xs text-muted-foreground">{{ r.top_shap_drivers || '—' }}</TableCell>
+                <TableCell class="text-xs text-muted-foreground">
+                  <template v-if="rowDrivers(r).length">
+                    <span v-for="(d, i) in rowDrivers(r)" :key="d.key">
+                      <span v-if="i">, </span>{{ d.label ?? d.key }}<span
+                        v-if="d.value" class="ml-0.5 font-mono tabular-nums"
+                        :class="d.sign === '+' ? 'text-chart-3' : 'text-destructive'"
+                      >{{ d.sign }}{{ d.value }}</span>
+                    </span>
+                  </template>
+                  <template v-else>—</template>
+                </TableCell>
               </TableRow>
             </TableBody>
           </Table>

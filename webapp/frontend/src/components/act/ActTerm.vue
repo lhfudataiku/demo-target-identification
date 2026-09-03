@@ -15,6 +15,7 @@
   import { computed } from 'vue'
   import ActInfo from './ActInfo.vue'
   import { GLOSSARY } from '@/utils/glossary'
+  import { useGlossaryStore } from '@/stores/glossary'
 
   defineOptions({ name: 'ActTerm' })
 
@@ -26,12 +27,24 @@
   }>()
 
   const entry = computed(() => GLOSSARY[props.t] ?? null)
+
+  // The tooltip answers the word where it stands; clicking opens the drawer at
+  // this entry, for the reader who wants the neighbouring terms too. A term
+  // with no glossary entry is inert text and gets no affordance.
+  const glossary = useGlossaryStore()
 </script>
 
 <template>
   <span class="whitespace-nowrap">
-    <span :class="entry && !plain
-            ? 'underline decoration-dotted decoration-muted-foreground/50 underline-offset-2'
-            : ''"><slot>{{ entry?.term ?? t }}</slot></span><ActInfo v-if="entry" :text="entry.def" />
+    <component
+      :is="entry ? 'button' : 'span'"
+      v-bind="entry ? { type: 'button', title: 'Open the glossary here' } : {}"
+      :class="entry
+        ? ['cursor-pointer bg-transparent p-0 text-left font-[inherit] text-[length:inherit] text-inherit',
+           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40',
+           plain ? '' : 'underline decoration-dotted decoration-muted-foreground/50 underline-offset-2']
+        : ''"
+      @click="entry && glossary.open(t)"
+    ><slot>{{ entry?.term ?? t }}</slot></component><ActInfo v-if="entry" :text="entry.def" />
   </span>
 </template>

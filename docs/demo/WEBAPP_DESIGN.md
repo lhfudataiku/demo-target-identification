@@ -155,23 +155,48 @@ mockup implements it as a `dataset · recipe` footer on every card.
 
 Sidebar order is act order. `menu: 'primary'`, `order` = act number.
 
-| act | route | view | data module | backing datasets |
-|---|---|---|---|---|
-| 1 | `/evidence-base` | `EvidenceBaseView` | `mock/graph-inventory.ts` | `graph_nodes`, `graph_edges`, `edge_metadata` |
-| 2 | `/calibration` | `CalibrationView` | `mock/calibration.ts` | `validation_auc_by_disease_2` **(filter `level='disease'`)**, `family_auc_by_family`, `split_audit_2`, `persona_candidates` |
-| 3 | `/therapeutic-area` | `AreaPanelView` | `mock/breast-panel.ts` | `breast_panel_metrics`, `breast_panel_overlap` |
-| 4 | `/shortlist` | `ShortlistView` | `mock/her2-candidates.ts` | `dashboard_candidates` (spine disease) |
-| 5 | `/interrogation` | `InterrogationView` | `mock/interrogation.ts` | `novel_discovery_eval`, `tractability_axis`, `drug_target_benchmark`, + §9 gaps |
-| 6 | `/limits` | `LimitsView` | `mock/limits.ts` | `tractability_lift`, `safety_lift`, `filter_three_axes`, `breast_panel_overlap` |
+Corrected 2026-09-03 against the shipped app. This table had drifted on every column: it named
+routes and views from the migration plan rather than the ones that were built, and its data column
+still described the mock-first phase §3.4 describes, which ended. **Acts 5 and 6 are talk track, not
+routes** — the router registers four primary routes, and copy that forward-references a fifth act is
+a defect (§3.7).
 
-Act 4 absorbs the existing hand-written webapp (`V2ZpfdV`, 1,086 lines): the disease picker, the
-three-clause filter with its live count, the class lanes and the detail drawer are all ported to Vue
-components rather than rewritten. Its `SECRETED` rule, its `TIPS` copy and its refusal to fetch
-`prediction` are **validated behaviour** — carry them across verbatim and re-read the comments before
-changing any of them. **One exception, found on the port:** the drawer's five-feature list is stale
-against the current champion and must NOT be carried across — see act 4 below.
+| act | route | view | backend route | backing datasets |
+|---|---|---|---|---|
+| 1 | `/evidence` | `EvidenceView` | `GET /api/evidence` | `graph_node_type_counts`, `graph_relation_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence` |
+| 2 | `/calibration` | `CalibrationView` | `GET /api/calibration` | `validation_auc_by_disease`, `family_auc_by_family`, `split_audit_2`, `disease_eligibility`, `shap_driver_frequency`, `persona_enrichment`, `enriched_dwpc_{GGD,GPGD,GCD}`, + the live champion saved model |
+| 3 | `/therapeutic-area` | `TherapeuticAreaView` | `GET /api/families`, `/api/families/{id}` | `family_panel_metrics`, `family_panel_overlap`, `family_panel_top50`, `family_panel_programme`, `persona_enrichment`, `demo_panel_config` |
+| 4 | `/shortlist` | `ShortlistView` | `GET /api/candidates{,/diseases,/gene}` | `dashboard_candidates` |
+
+Two non-act routes are registered as `menu: 'tertiary'` — `/settings` (`SettingsView`) and `/admin`
+(`AdminView`, gated on the Admin toggle). The **glossary is not a route**: it is an overlay
+(`stores/glossary.ts` + `ActGlossaryDrawer`, mounted once in `DefaultLayout` beside the Explorer
+dialog), triggered from the sidebar footer or by clicking any `ActTerm`. A route would have been
+fewer files and would have followed §3.5's build-itself convention, but a reader asking *"what was
+AUC again?"* is mid-card, and navigating away answers the question by losing their place.
+
+Three datasets this table used to name are **not** what the app reads, and the difference matters:
+`breast_panel_overlap` was retired on 2026-08-28 in favour of `family_panel_overlap`, which covers
+all three act 3 families from one table (`compute_persona_candidates.py` records the retirement);
+`persona_candidates` is the panel-selection dataset, while act 2 plots `persona_enrichment`; and
+`validation_auc_by_disease_2` with a `level` filter was superseded by the unsuffixed dataset plus a
+separate family table, which is why act 2's tab switches source rather than filtering one.
+
+Act 4 absorbed the earlier hand-written webapp (`V2ZpfdV`, 1,086 lines): the disease picker, the
+three-clause filter with its live count and the detail drawer were ported to Vue components rather
+than rewritten. Its `SECRETED` rule, its tooltip copy and its refusal to fetch `prediction` are
+**validated behaviour** — the refusal is enforced in `BULK_COLS`, not merely documented. The
+drawer's five-feature list was **not** carried across: it was stale against the champion, and the
+drawer now renders `feature_glossary.CHAMPION` so it cannot go stale again.
 
 ### 3.4 Mock first, then swap
+
+> **Completed 2026-09-03.** All four act views read live backend routes and every act mock module has
+> been deleted, as the rule below requires. What remains under `frontend/src/data/mock/` belongs to the
+> optional template blocks (tickets, business outcomes, ticket flow), not to an act. The section is
+> kept because the swap rule still governs any new view — and because the closing warning turned out
+> to be the section's most load-bearing sentence: two hard-coded figures did outlive the swap, in act
+> 2's own copy rather than in a mock module, and §6 now carries a guardrail for exactly that.
 
 Every view reads from a module in `frontend/src/data/mock/`, following the blueprint's own idiom
 (`data/mock/medical-info-tickets.ts`). Numbers are the verified ones, hard-coded.
@@ -248,9 +273,12 @@ deliberately **not** a DSS project variable: it is a property of who is standing
 screen, it must not change what a colleague sees, and it must not need a backend round trip thirty
 seconds before a demo. Default on — the person running it locally is usually rehearsing.
 
-**One glossary, two halves.** `utils/glossary.ts` holds the user-facing definition of every
-data-science and biology term, and `<ActTerm t="key">` renders any word with that definition attached
-via the existing `ActInfo` affordance. It exists for the reason `backend/feature_glossary.py` does,
+**One glossary, two halves.** `utils/glossary.ts` holds the user-facing definition of all 55
+data-science and biology terms, and `<ActTerm t="key">` renders any word with that definition attached
+via the existing `ActInfo` affordance. `ActStat` takes the same key as `t`, because a stat label is
+four words of monospace over a big number — the densest place in the app and the likeliest to be a
+term of art. Clicking any term opens the glossary drawer at its entry, so a reader who wants the
+neighbouring terms gets them without navigating away. It exists for the reason `backend/feature_glossary.py` does,
 and the drift it prevents had already happened: *enrichment* carried two differently-worded glosses,
 *novel* was defined in act 4 and used undefined in act 3, and *top 50* was used nine times in act 3
 and defined nowhere. The two files divide cleanly — **`feature_glossary.py` owns the model's

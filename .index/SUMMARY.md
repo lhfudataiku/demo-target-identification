@@ -39,24 +39,24 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:104` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:113` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:115` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
-| `docs/demo/WEBAPP_DESIGN.md:343` | 4 | 0.8623 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
-| `docs/demo/WEBAPP_DESIGN.md:343` | 4 | 0.1045 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
-| `docs/demo/WEBAPP_DESIGN.md:343` | 4 | 0.9962 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
-| `docs/demo/WEBAPP_DESIGN.md:345` | 4 | 19.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
-| `docs/demo/WEBAPP_DESIGN.md:345` | 4 | 28.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
-| `docs/demo/WEBAPP_DESIGN.md:345` | 4 | 59.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
-| `docs/demo/WEBAPP_DESIGN.md:381` | 4 | 0.9337 | \| The panel \| table \| 12 breast terms: pool, known targets, AUC, hits@50, enrichment, v |
-| `docs/demo/WEBAPP_DESIGN.md:381` | 4 | 0.8949 | \| The panel \| table \| 12 breast terms: pool, known targets, AUC, hits@50, enrichment, v |
-| `docs/demo/WEBAPP_DESIGN.md:400` | 4 | 12,272 | \| The ranked list \| virtualised table \| 12,272 rows, rank + percentile + score + SHAP d |
-| `docs/demo/WEBAPP_DESIGN.md:401` | 4 | 12,272 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
-| `docs/demo/WEBAPP_DESIGN.md:401` | 4 | 11,673 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
-| `docs/demo/WEBAPP_DESIGN.md:401` | 4 | 7,951 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
-| `docs/demo/WEBAPP_DESIGN.md:401` | 4 | 7,274 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
-| `docs/demo/WEBAPP_DESIGN.md:498` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
-| `docs/demo/WEBAPP_DESIGN.md:498` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
-| `docs/demo/WEBAPP_DESIGN.md:500` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
-| `docs/demo/WEBAPP_DESIGN.md:604` | 6 | 0.9776 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
-| `docs/demo/WEBAPP_DESIGN.md:604` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
+| `docs/demo/WEBAPP_DESIGN.md:371` | 4 | 0.8623 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
+| `docs/demo/WEBAPP_DESIGN.md:371` | 4 | 0.1045 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
+| `docs/demo/WEBAPP_DESIGN.md:371` | 4 | 0.9962 | \| The spread across 670 diseases \| histogram, 20 bins \| macro **0.8230**, median 0.8623 |
+| `docs/demo/WEBAPP_DESIGN.md:373` | 4 | 19.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
+| `docs/demo/WEBAPP_DESIGN.md:373` | 4 | 28.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
+| `docs/demo/WEBAPP_DESIGN.md:373` | 4 | 59.2 | \| **Usefulness is not uniform** \| box plot \| rank enrichment median **19.2×**, quartile |
+| `docs/demo/WEBAPP_DESIGN.md:409` | 4 | 0.9337 | \| The panel \| table \| 12 breast terms: pool, known targets, AUC, hits@50, enrichment, v |
+| `docs/demo/WEBAPP_DESIGN.md:409` | 4 | 0.8949 | \| The panel \| table \| 12 breast terms: pool, known targets, AUC, hits@50, enrichment, v |
+| `docs/demo/WEBAPP_DESIGN.md:428` | 4 | 12,272 | \| The ranked list \| virtualised table \| 12,272 rows, rank + percentile + score + SHAP d |
+| `docs/demo/WEBAPP_DESIGN.md:429` | 4 | 12,272 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
+| `docs/demo/WEBAPP_DESIGN.md:429` | 4 | 11,673 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
+| `docs/demo/WEBAPP_DESIGN.md:429` | 4 | 7,951 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
+| `docs/demo/WEBAPP_DESIGN.md:429` | 4 | 7,274 | \| The validated filter \| three checkboxes + live count \| **12,272 → novel 11,673 → trac |
+| `docs/demo/WEBAPP_DESIGN.md:526` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/WEBAPP_DESIGN.md:526` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/WEBAPP_DESIGN.md:528` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
+| `docs/demo/WEBAPP_DESIGN.md:632` | 6 | 0.9776 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
+| `docs/demo/WEBAPP_DESIGN.md:632` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
 | `docs/demo/panel_selection/README.md:75` | - | 0.350 | distance either way: Spearman −0.350 over the 148 shipped pairs. |
 | `docs/overview/PROJECT_CONTEXT.md:114` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
 | `docs/overview/PROJECT_CONTEXT.md:263` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |

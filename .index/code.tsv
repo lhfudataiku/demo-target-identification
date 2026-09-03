@@ -50,7 +50,7 @@ dss_recipes/compute_known_drug_truth.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_lung_granularity_check.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_model_comparison.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_novel_discovery_eval.py	recipe-mirror	MIRROR	1	dss_recipes/compute_drug_evidence_pairs.py
-dss_recipes/compute_persona_candidates.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_persona_candidates.py	recipe-mirror	MIRROR	1	docs/demo/WEBAPP_DESIGN.md
 dss_recipes/compute_pool_reachability.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_ppi_cn_zscore.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_ppi_evidence_depth.py	recipe-mirror	MIRROR	0	-
@@ -118,11 +118,11 @@ webapp/backend/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,w
 webapp/backend/app.py	webapp	LIVE (referenced)	7	tools/recipe_classes.json,webapp/DEPLOYMENT.md,webapp/README.md,webapp/backend/routes/chat.py
 webapp/backend/config.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/app.env,webapp/dss_webapp/backend.py
 webapp/backend/dss_client.py	webapp	LIVE (referenced)	7	docs/demo/WEBAPP_DESIGN.md,harness/WEBAPP_OVERLAY.md,webapp/AGENTS.md,webapp/CLAUDE.md
-webapp/backend/feature_glossary.py	webapp	LIVE (referenced)	9	docs/demo/WEBAPP_DESIGN.md,tools/check_indexes.sh,tools/dataset_descriptions.json,tools/push_descriptions.py
+webapp/backend/feature_glossary.py	webapp	LIVE (referenced)	10	docs/demo/WEBAPP_DESIGN.md,tools/check_indexes.sh,tools/dataset_descriptions.json,tools/push_descriptions.py
 webapp/backend/routes/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
 webapp/backend/routes/agents.py	webapp	LIVE (referenced)	1	webapp/frontend/src/types/agents.ts
 webapp/backend/routes/calibration.py	webapp	LIVE (referenced)	4	docs/demo/FLOW_MAP.md,docs/prioritizer/CLAIM_REGISTRY.json,tools/build_flow_map.py,webapp/DEPLOYMENT.md
-webapp/backend/routes/candidates.py	webapp	LIVE (referenced)	1	webapp/DEPLOYMENT.md
+webapp/backend/routes/candidates.py	webapp	LIVE (referenced)	2	docs/demo/WEBAPP_DESIGN.md,webapp/DEPLOYMENT.md
 webapp/backend/routes/evidence.py	webapp	LIVE (referenced)	1	webapp/DEPLOYMENT.md
 webapp/backend/routes/example.py	webapp	LIVE (referenced)	2	webapp/README.md,webapp/backend/tools/registry.py
 webapp/backend/routes/families.py	webapp	LIVE (referenced)	2	docs/prioritizer/CLAIM_REGISTRY.json,webapp/DEPLOYMENT.md

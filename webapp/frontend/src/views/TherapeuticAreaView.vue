@@ -178,8 +178,9 @@
                                  label: `${f.family_name} — ${f.n_terms} terms` }))" />
           </label>
           <div v-if="detail" class="flex gap-8">
-            <ActStat label="Terms" :value="detail.n_terms" />
-            <ActStat label="Macro AUC" :value="(detail.macro_auc ?? 0).toFixed(4)" />
+            <ActStat label="Terms" :value="detail.n_terms"
+                     info="Disease terms in this family, from the curated ontology. Indented terms in the table sit under the one above them." />
+            <ActStat t="auc-macro" label="Macro AUC" :value="(detail.macro_auc ?? 0).toFixed(4)" />
           </div>
         </div>
         <div v-if="detail" class="mt-4 overflow-x-auto">

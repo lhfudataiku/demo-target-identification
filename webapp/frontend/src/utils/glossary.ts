@@ -28,6 +28,18 @@ export interface GlossaryEntry {
   def: string
 }
 
+/** The three sections the drawer renders, in reading order. A term belongs to
+    exactly one: a reader looking something up is asking "is this about the
+    biology, the ranking, or the measurement", and a term in two places is a
+    term whose definition is about to diverge. */
+export type GlossaryGroup = 'graph' | 'ranking' | 'metrics'
+
+export const GROUP_LABEL: Record<GlossaryGroup, string> = {
+  graph: 'The graph, and the biology',
+  ranking: 'How the ranking is produced',
+  metrics: 'The measurements',
+}
+
 // ── The graph, and the biology ──────────────────────────────────────────────
 const GRAPH: Record<string, GlossaryEntry> = {
   'knowledge-graph': {
@@ -261,6 +273,15 @@ const METRICS: Record<string, GlossaryEntry> = {
 }
 
 export const GLOSSARY: Record<string, GlossaryEntry> = { ...GRAPH, ...RANKING, ...METRICS }
+
+/** Keys per group, in declaration order — which is reading order, not
+    alphabetical: `node` before `edge` before `PPI` teaches better than a
+    sort does. The drawer offers search for the alphabetical case. */
+export const GLOSSARY_GROUPS: { group: GlossaryGroup; keys: string[] }[] = [
+  { group: 'graph', keys: Object.keys(GRAPH) },
+  { group: 'ranking', keys: Object.keys(RANKING) },
+  { group: 'metrics', keys: Object.keys(METRICS) },
+]
 
 /** The definition for a key, or null when the key is unknown (never throws in
     front of an audience -- a missing entry renders as plain text). */

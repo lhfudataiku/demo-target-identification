@@ -303,8 +303,9 @@
             :height="320" />
 
           <div class="mt-2 flex gap-8">
-            <ActStat label="Pool" :value="data.union_rows.toLocaleString()" sub="gene–disease pairs" />
-            <ActStat :label="'Positive rate'" :value="data.pos_rate + '%'"
+            <ActStat t="candidate-pool" label="Pool" :value="data.union_rows.toLocaleString()"
+                     sub="gene–disease pairs" />
+            <ActStat t="positive-rate" label="Positive rate" :value="data.pos_rate + '%'"
                      sub="already-known targets — what precision must beat" />
           </div>
         </template>
@@ -396,9 +397,12 @@
             { value: 'disease', label: `By disease · ${data.n_diseases}` },
             { value: 'family', label: `By family · ${data.n_families}` }]" />
           <div class="flex gap-6">
-            <ActStat label="Macro AUC" :value="scopeMacro.toFixed(4)" sub="never pooled" />
-            <ActStat label="Median" :value="scopeMedian.toFixed(4)" />
-            <ActStat :label="scopeNoun" :value="scopeValues.length" />
+            <ActStat t="auc-macro" label="Macro AUC" :value="scopeMacro.toFixed(4)" sub="never pooled" />
+            <ActStat t="median" label="Median" :value="scopeMedian.toFixed(4)" />
+            <ActStat :label="scopeNoun" :value="scopeValues.length"
+                     :info="aucScope === 'disease'
+                       ? 'How many held-out diseases carry enough data to score. Each contributes one bar to the histogram.'
+                       : 'How many disease families the terms group into. Families are the unit the train/test split uses.'" />
           </div>
         </div>
         <ActHistogram v-if="data" :bins="aucHist" x-label="AUC" />

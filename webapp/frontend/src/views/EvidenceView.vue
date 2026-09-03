@@ -148,9 +148,12 @@
         </template>
 
         <div v-if="totals" class="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <ActStat label="Nodes" :value="fmt(totals.nodes)" :sub="`${totals.node_types} types`" />
-          <ActStat label="Edges" :value="fmt(totals.edges)" :sub="`${totals.relations} relations`" />
-          <ActStat label="Edges with provenance" :value="fmt(totals.edges_with_provenance)"
+          <ActStat t="node" label="Nodes" :value="fmt(totals.nodes)"
+                   :sub="`${totals.node_types} types`" />
+          <ActStat t="edge" label="Edges" :value="fmt(totals.edges)"
+                   :sub="`${totals.relations} relations`" />
+          <ActStat t="provenance" label="Edges with provenance"
+                   :value="fmt(totals.edges_with_provenance)"
                    sub="protein interactions naming their source" />
           <ActStat label="External sources" :value="externalSources ?? '—'"
                    :sub="totals.sources > (externalSources ?? 0)
