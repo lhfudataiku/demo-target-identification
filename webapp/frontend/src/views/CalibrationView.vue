@@ -14,20 +14,36 @@
    *  - Hub-bias, orthogonality and the drug-benchmark card belong to the Acts
    *    5-6 talk track and are not in the app.
    *  - Disclaimer cards live in the narrative, not here.
+   *
+   * COPY REVIEW 2026-09-03. This act carried eleven distinct statistical
+   * quantities and defined none of them. Three changes, all structural:
+   *
+   *  - THE ELIGIBILITY CARD IS NOW TWO CARDS. It held four ideas at one visual
+   *    weight -- the gate, the pair multiplication, route de-duplication, and
+   *    the split -- so a reader could not tell which was the point.
+   *  - THREE AUCs (per-disease, macro, pooled) appear in this act and were
+   *    never distinguished. They now have one shared definition each in
+   *    utils/glossary.ts and a #method block that puts them side by side.
+   *  - TWO HARDCODED LITERALS ARE GONE. `1.9%` in a subtitle and `0.9776` in a
+   *    note were typed into the template while their neighbours read live from
+   *    `data.champion`, so a retrain made the card contradict itself on screen
+   *    -- in the act whose whole argument is that the numbers are honest. The
+   *    accuracy figure is now derived as the all-negative baseline (1 - base
+   *    rate), which is the claim the sentence was actually making.
    */
   import { computed, onMounted, ref } from 'vue'
   import { apiUrl } from '@/utils/api'
   import ActCard from '@/components/act/ActCard.vue'
   import ActStat from '@/components/act/ActStat.vue'
-  import ActSay from '@/components/act/ActSay.vue'
   import ActBar from '@/components/act/ActBar.vue'
   import ActHistogram from '@/components/act/ActHistogram.vue'
   import ActBand from '@/components/act/ActBand.vue'
   import ActSankey from '@/components/act/ActSankey.vue'
   import ActBeeswarm from '@/components/act/ActBeeswarm.vue'
   import ActTabs from '@/components/act/ActTabs.vue'
+  import ActTerm from '@/components/act/ActTerm.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-  import { Split, Gauge, Crosshair, ListTree, Target } from 'lucide-vue-next'
+  import { Split, Gauge, Crosshair, ListTree, Target, Filter } from 'lucide-vue-next'
 
   defineOptions({ name: 'CalibrationView' })
 
@@ -57,6 +73,9 @@
   // scope regardless of the tab before, which made the switch look broken.
   const scopeValues = computed(() =>
     !data.value ? [] : aucScope.value === 'disease' ? data.value.auc_values : data.value.family_auc_values)
+  /** The stat tile said "Units", which means nothing to a reader and changes
+      meaning with the tab. It now says what the tab selected. */
+  const scopeNoun = computed(() => (aucScope.value === 'disease' ? 'Diseases' : 'Families'))
 
   const aucHist = computed(() => {
     const out = Array.from({ length: HIST_BINS }, (_, i) => ({
@@ -74,6 +93,14 @@
     const v = [...scopeValues.value].sort((a, b) => a - b)
     return v.length ? v[Math.floor(v.length / 2)] : 0
   })
+  /** Pooled minus macro, in points. The note claimed "roughly seven points"
+      from a literal; it is derivable, so it is derived. */
+  const pooledExcess = computed(() => {
+    const c = data.value?.champion
+    if (!c || !scopeValues.value.length) return null
+    return ((c.auc_pooled - scopeMacro.value) * 100).toFixed(1)
+  })
+
   // v3 colours drivers in two groups, with a legend — provenance against the rest.
   // Two scalars at one operating point, not a curve: what the model achieves
   // against what chance gives. Bars, as v3 draws it — a line would imply a
@@ -92,6 +119,12 @@
     const c = data.value?.champion
     return c && c.base_rate ? (c.precision / c.base_rate).toFixed(0) : null
   })
+  /** What a model that answers "no" to everything scores. Derived from the base
+      rate, which is exactly the argument the note is making. */
+  const trivialAccuracy = computed(() => {
+    const c = data.value?.champion
+    return c ? (100 * (1 - c.base_rate)).toFixed(1) : null
+  })
   const auprcRows = computed(() => {
     const c = data.value?.champion
     if (!c) return []
@@ -108,6 +141,48 @@
       label: d.label, count: d.count,
       colour: data.value!.drivers_kind[d.label] === 'provenance' ? 'var(--chart-2)' : 'var(--chart-3)',
     })))
+  /** Share of top-driver appearances that are provenance features — the finding
+      the driver card's subtitle states. */
+  const provenanceShare = computed(() => {
+    const rows = data.value?.drivers ?? []
+    const total = rows.reduce((a, d) => a + d.count, 0)
+    if (!total) return null
+    const prov = rows
+      .filter((d) => data.value!.drivers_kind[d.label] === 'provenance')
+      .reduce((a, d) => a + d.count, 0)
+    return Math.round((100 * prov) / total)
+  })
+
+  /* The Sankey's route labels arrived as feature codes -- "GGD · gene-gene",
+     "GPGD · via pathway", "GCD · via drug". Those are column names, and this is
+     the first plot a client sees in act 2. Renamed for display only; the
+     mapping is one-way and the payload is untouched. */
+  const ROUTE_NAMES: [RegExp, string][] = [
+    [/GPGD/i, 'via a shared pathway'],
+    [/GCD/i, 'via a shared drug'],
+    [/GGD/i, 'via an interacting gene'],
+  ]
+  const routeLabel = (raw: string) =>
+    ROUTE_NAMES.find(([re]) => re.test(raw))?.[1] ?? raw
+  const routes = computed(() =>
+    (data.value?.routes ?? []).map((r) => ({ ...r, name: routeLabel(r.label) })))
+
+  const personaSpread = computed(() => {
+    const v = [...(data.value?.personas ?? [])].map((p) => p.value).sort((a, b) => a - b)
+    if (!v.length) return null
+    return {
+      lo: v[0].toFixed(1),
+      hi: v[v.length - 1].toFixed(1),
+      median: v[Math.floor(v.length / 2)].toFixed(1),
+    }
+  })
+
+  const KINDS: [string, string][] = [
+    ['path', 'feature-path'],
+    ['proximity', 'feature-proximity'],
+    ['topology', 'feature-topology'],
+    ['provenance', 'feature-provenance'],
+  ]
 
   onMounted(async () => {
     try {
@@ -129,7 +204,8 @@
       <h1 class="font-serif text-3xl font-semibold tracking-tight">How faithfully does it reconstruct?</h1>
       <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
         Where the candidates come from, how they were split, and how reliably the already-validated
-        targets land near the top. The distribution leads and the summary follows.
+        targets land near the top. The distribution leads and the summary follows. Every metric on
+        this page carries its definition — hover any underlined term.
       </p>
     </header>
 
@@ -138,111 +214,151 @@
     </p>
 
     <div class="grid grid-cols-12 gap-4">
-      <!-- Two plots in one card, as v3's poolFlow draws it. -->
-      <ActCard span="col-span-12" :icon="Split" accent="var(--chart-3)"
-               title="Where the candidates come from" :chips="[['live', 'live']]"
-               desc="A disease has to clear a gate before any of its genes become candidates — then three graph routes admit the pairs."
-               :src="['disease_eligibility', 'enriched_dwpc_GGD', 'enriched_dwpc_GPGD', 'enriched_dwpc_GCD']">
+      <!-- ── The gate. Its own card: it is a claim about who is EXCLUDED, and
+           it was previously the top third of a card about something else. ── -->
+      <ActCard span="col-span-12 lg:col-span-5" :icon="Filter" accent="var(--chart-4)"
+               title="Which diseases qualify" :chips="[['live', 'live']]"
+               :src="['disease_eligibility']">
+        <template #desc>
+          <template v-if="data">
+            {{ data.eligibility.excluded.toLocaleString() }} of
+            {{ data.eligibility.total.toLocaleString() }} diseases never enter — they carry too few
+            curated <ActTerm t="association">associations</ActTerm> to learn from or be tested on.
+          </template>
+          <template v-else>The test a disease must pass before any of its genes are scored.</template>
+        </template>
+
         <template v-if="data">
           <p class="mb-1.5 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
-            Disease nodes · gate {{ data.eligibility.gate }}
+            Disease nodes · <ActTerm t="eligibility-gate">gate</ActTerm> {{ data.eligibility.gate }}
           </p>
           <ActBand :in-label="'eligible'" :in-value="data.eligibility.eligible"
                    :out-label="'excluded — too few curated associations'" :out-value="data.eligibility.excluded" />
+        </template>
 
-          <!-- The bridge. The band ends in DISEASES and the flow begins in PAIRS;
-               without the multiplication written down, the two halves read as
-               unrelated plots that happen to share a card. -->
-          <div class="mt-4 flex flex-wrap items-baseline gap-x-2 gap-y-1 rounded-md border border-dashed
-                      border-border bg-muted/30 px-3 py-2 font-mono text-[11px]">
-            <span class="text-primary-foreground">
-              <b>{{ data.eligibility.eligible.toLocaleString() }}</b> eligible diseases
-            </span>
-            <span class="text-muted-foreground">×</span>
-            <span class="text-primary-foreground">
-              <b>~{{ data.pairs_per_disease.toLocaleString() }}</b> genes the graph links to each
-            </span>
-            <span class="text-muted-foreground">=</span>
-            <span class="text-primary-foreground">
-              <b>{{ data.union_rows.toLocaleString() }}</b> gene–disease pairs
-            </span>
-            <span class="ml-auto text-muted-foreground">
-              the {{ data.eligibility.excluded.toLocaleString() }} excluded diseases contribute nothing
-            </span>
-          </div>
+        <template #note>
+          <b>The model has nothing to say about the excluded diseases<template v-if="data"> —
+          {{ data.eligibility.pct_excluded }}% of them</template>.</b>
+          Not “it scores them badly”: it never sees them. If a client's disease of interest is in
+          that group, the honest answer is that this pipeline does not cover it yet.
+        </template>
+        <template #presenter>
+          This is the number to volunteer, not to be asked for.
+        </template>
+      </ActCard>
 
-          <p class="mb-1.5 mt-3 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
-            How those pairs are admitted, de-duplicated and split
-          </p>
-          <!-- `duplicate admissions` is drawn, not just described: without it the
-               pool node takes 8.8M in and emits 6.75M, and 23% of the width
-               disappears at the node with nothing on screen to account for it.
-               Colours are deliberate, not a cycle -- --chart-2 is what survives
-               and --muted is what is dropped, in BOTH plots. -->
+      <!-- ── The pool. -->
+      <ActCard span="col-span-12 lg:col-span-7" :icon="Split" accent="var(--chart-3)"
+               title="How the candidate pool is built" :chips="[['live', 'live']]"
+               :src="['enriched_dwpc_GGD', 'enriched_dwpc_GPGD', 'enriched_dwpc_GCD']">
+        <template #desc>
+          Three graph routes admit
+          <ActTerm t="gene-disease-pair">gene–disease pairs</ActTerm>; overlaps are de-duplicated into
+          one <ActTerm t="candidate-pool">pool</ActTerm><template v-if="data"> of
+          {{ data.union_rows.toLocaleString() }}</template>, then split for training and testing.
+        </template>
+
+        <template v-if="data">
           <ActSankey
-            :nodes="[...data.routes.map((r) => ({ name: r.label })),
+            :nodes="[...routes.map((r) => ({ name: r.name })),
                      { name: 'candidate pool', color: '--chart-2' },
                      { name: 'duplicate admissions', color: '--muted' },
                      ...data.splits.map((sp) => ({ name: sp.split }))]"
             :links="[
-              ...data.routes.map((r) => ({ source: r.label, target: 'candidate pool', value: r.count })),
+              ...routes.map((r) => ({ source: r.name, target: 'candidate pool', value: r.count })),
               { source: 'candidate pool', target: 'duplicate admissions', value: data.duplicates_removed },
               ...data.splits.map((sp) => ({ source: 'candidate pool', target: sp.split, value: sp.rows }))]"
             :height="320" />
 
           <div class="mt-2 flex gap-8">
             <ActStat label="Pool" :value="data.union_rows.toLocaleString()" sub="gene–disease pairs" />
-            <ActStat label="Positive rate" :value="data.pos_rate + '%'" sub="what precision must beat" />
+            <ActStat :label="'Positive rate'" :value="data.pos_rate + '%'"
+                     sub="already-known targets — what precision must beat" />
           </div>
+        </template>
 
-          <ActSay class="mt-3">
-            <b>Why the routes sum to more than the pool.</b> They are not disjoint — one pair can be
-            admitted by two routes at once, so the three add to
+        <template #note>
+          <b>A pair is a gene considered for one disease, not a gene.</b> The same gene can sit at the
+          head of one disease's list and nowhere on another's, which is why nothing in this act is a
+          statement about a gene on its own.
+        </template>
+        <template #method>
+          <p v-if="data"><b class="text-foreground">Why the routes sum to more than the pool.</b> They
+            are not disjoint — one pair can be admitted by two routes at once, so the three add to
             {{ data.route_admissions.toLocaleString() }} admissions but only
-            <b>{{ data.union_rows.toLocaleString() }}</b> distinct pairs survive.
-            The {{ data.duplicates_removed.toLocaleString() }} difference is not a loss: it is the same
+            {{ data.union_rows.toLocaleString() }} distinct pairs survive. The
+            {{ data.duplicates_removed.toLocaleString() }} difference is not a loss: it is the same
             pair counted twice. The pool is exactly what the three splits partition, which is why the
-            split widths below add back to it.
-          </ActSay>
-          <ActSay class="mt-2">
-            <b>{{ data.eligibility.excluded.toLocaleString() }} of
-            {{ data.eligibility.total.toLocaleString() }} diseases — {{ data.eligibility.pct_excluded }}% —
-            never enter at all</b>, because they carry too few curated gene associations. The model has
-            nothing to learn from and nothing to be tested on for those. This is the number to volunteer,
-            not to be asked for.
-          </ActSay>
+            split widths add back to it.</p>
+          <p v-if="data" class="mt-1.5"><b class="text-foreground">Where the pool size comes from.</b>
+            {{ data.eligibility.eligible.toLocaleString() }} eligible diseases ×
+            ~{{ data.pairs_per_disease.toLocaleString() }} genes the graph links to each ≈
+            {{ data.union_rows.toLocaleString() }} pairs. The excluded diseases contribute nothing.</p>
+          <p class="mt-1.5"><b class="text-foreground">The three routes</b> are internally
+            <code class="font-mono text-[10.5px]">GGD</code> (gene–gene–disease),
+            <code class="font-mono text-[10.5px]">GPGD</code> (via pathway) and
+            <code class="font-mono text-[10.5px]">GCD</code> (via drug/compound). The drug route
+            admits pairs into the pool but no model feature traverses a drug node.</p>
         </template>
       </ActCard>
 
       <ActCard span="col-span-12 lg:col-span-5" :icon="Target" accent="var(--chart-1)"
-               title="Precision, against the base rate it has to beat" :chips="[['live', 'live']]"
-               desc="Accuracy is meaningless at a 1.9% positive rate — a model predicting “no” for everything scores 98%. Precision against the base rate is the honest comparison."
+               title="Precision vs. chance" :chips="[['live', 'live']]"
                :src="['split_audit_2']">
+        <template #desc>
+          <template v-if="data">
+            The model is right {{ (100 * data.champion.precision).toFixed(1) }}% of the time where
+            <ActTerm t="base-rate">chance alone</ActTerm> would be
+            {{ (100 * data.champion.base_rate).toFixed(2) }}% — about {{ precisionLift }}× better.
+          </template>
+          <template v-else>What the model achieves, against the base rate it has to beat.</template>
+        </template>
+
         <template v-if="data">
           <p class="mb-1 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
-            Precision · %
+            <ActTerm t="precision">Precision</ActTerm> · %
           </p>
           <ActBar :rows="precisionRows" :row-height="26" />
           <p class="mb-1 mt-4 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
-            Average precision · area under PR
+            <ActTerm t="auprc">Average precision</ActTerm> · area under PR
           </p>
           <ActBar :rows="auprcRows" :row-height="26" />
-          <ActSay class="mt-3">
-            Precision is <b>{{ (100 * data.champion.precision).toFixed(1) }}%</b> against a base rate of
-            <b>{{ (100 * data.champion.base_rate).toFixed(2) }}%</b> — about
-            <b>{{ precisionLift }}×</b> chance. The number to distrust is the
-            <b>{{ (100 * 0.9776).toFixed(1) }}%</b> accuracy: at this class balance it says nothing.
-          </ActSay>
-          <p class="mt-2 font-mono text-[10px] text-muted-foreground">
-            champion m7-f14 · metrics {{ data.champion.source }}
+          <p class="mt-3 font-mono text-[10px] text-muted-foreground">
+            <ActTerm t="champion-model">champion m7-f14</ActTerm> · metrics {{ data.champion.source }}
           </p>
+        </template>
+
+        <template #note>
+          <b>Accuracy is the number to distrust here.</b> At this
+          <ActTerm t="class-imbalance">class balance</ActTerm> a model that answers “no” to everything
+          is <template v-if="trivialAccuracy">{{ trivialAccuracy }}%</template><template v-else>about
+          98%</template> accurate and finds nothing at all.
+        </template>
+        <template #method>
+          <p><b class="text-foreground">Precision</b> — of the candidates the model calls positive, the
+            share that really are known targets. Measured at the threshold that maximises F1, with
+            <b class="text-foreground">recall</b><template v-if="data">
+            {{ (100 * data.champion.recall).toFixed(1) }}%</template> — the share of all known targets
+            it found.</p>
+          <p class="mt-1.5"><b class="text-foreground">Average precision</b> is the area under the
+            precision–recall curve: precision averaged over every possible cut-off, so it does not
+            depend on choosing one. A random ranker scores the base rate, which is what the second bar
+            draws.</p>
+          <p class="mt-1.5"><b class="text-foreground">Base rate</b> is the share of the validation
+            split that is already a known target. Every number on this card is stated against it,
+            because a metric that is not is not comparable to anything.</p>
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-7" :icon="Gauge" title="How well the ranking holds"
-               :chips="[['live', 'live']]"
-               desc="Every held-out unit, binned. Read it as reconstruction fidelity, not predictive power."
+      <ActCard span="col-span-12 lg:col-span-7" :icon="Gauge" title="AUC, disease by disease"
+               :chips="[['live', 'live']]" method-label="Three AUCs, and why they differ"
                :src="['validation_auc_by_disease', 'family_auc_by_family']">
+        <template #desc>
+          Each held-out disease gets its own <ActTerm t="auc-per-disease">AUC</ActTerm> — the result is
+          a distribution, not a single number<template v-if="data">; median
+          {{ scopeMedian.toFixed(3) }}</template>.
+        </template>
+
         <div v-if="data" class="mb-3 flex flex-wrap items-center justify-between gap-3">
           <ActTabs v-model="aucScope" :options="[
             { value: 'disease', label: `By disease · ${data.n_diseases}` },
@@ -250,34 +366,78 @@
           <div class="flex gap-6">
             <ActStat label="Macro AUC" :value="scopeMacro.toFixed(4)" sub="never pooled" />
             <ActStat label="Median" :value="scopeMedian.toFixed(4)" />
-            <ActStat label="Units" :value="scopeValues.length" />
+            <ActStat :label="scopeNoun" :value="scopeValues.length" />
           </div>
         </div>
         <ActHistogram v-if="data" :bins="aucHist" x-label="AUC" />
-        <ActSay class="mt-3">
-          <b>Macro, never pooled.</b> Pooling reads 0.8932 and overstates by roughly seven points,
-          because it lets large diseases carry small ones.
-        </ActSay>
+
+        <template #note>
+          <b>Reconstruction, not prediction.</b> This measures how faithfully the model rebuilds known
+          biology that was hidden from it. It is not evidence that it predicts biology nobody has
+          found yet — that claim would need prospective validation.
+        </template>
+        <template #method>
+          <p><b class="text-foreground">Per-disease AUC</b> — for one disease, the chance that a known
+            target scores higher than a randomly picked non-target for that same disease. 0.5 is a coin
+            flip. One number per disease; this histogram bins them.</p>
+          <p class="mt-1.5"><b class="text-foreground">Macro AUC</b> — the plain average of those
+            per-disease numbers. Every disease counts once, whether it has eight known targets or six
+            hundred. <b class="text-foreground">This is the number we report.</b></p>
+          <p class="mt-1.5"><b class="text-foreground">Pooled AUC</b> — one AUC over every pair at
+            once, ignoring which disease each belongs to. It reads
+            <template v-if="data">{{ data.champion.auc_pooled.toFixed(4) }}</template>
+            here<template v-if="pooledExcess">, about {{ pooledExcess }} points higher</template>,
+            because a few large diseases carry all the small ones. We compute it and never quote it.</p>
+          <p class="mt-1.5"><b class="text-foreground">Held out</b> means the model never saw these
+            rows while training. The <i>By family</i> tab groups them the way the split does — see
+            Act 3 for why the split is by family rather than at random.</p>
+        </template>
       </ActCard>
 
       <ActCard span="col-span-12 lg:col-span-5" :icon="Gauge" accent="var(--chart-4)"
-               title="Usefulness is not uniform — every disease, not just a summary"
-               :chips="[['live', 'live']]"
-               desc="Rank enrichment per disease. The box is the interquartile range; the line is the median."
+               title="Enrichment, disease by disease" :chips="[['live', 'live']]"
                :src="['persona_enrichment']">
+        <template #desc>
+          <template v-if="personaSpread">
+            The head of the list is a median {{ personaSpread.median }}× denser in real targets than
+            chance — but the spread runs {{ personaSpread.lo }}× to {{ personaSpread.hi }}×.
+          </template>
+          <template v-else>How much better than chance the top of each disease's list is.</template>
+        </template>
+
         <ActBeeswarm v-if="data" :points="data.personas"
                      :min="0" :max="Math.ceil(Math.max(...data.personas.map((p) => p.value)) / 10) * 10"
                      unit="rank enrichment" />
-        <ActSay class="mt-3">
-          A single number hides this. Some diseases enrich twenty-fold and some barely at all —
-          <b>which is which is more useful to you than the average.</b>
-        </ActSay>
+        <p class="mt-2 font-mono text-[10.5px] text-muted-foreground">
+          box = <ActTerm t="iqr">interquartile range</ActTerm> · line =
+          <ActTerm t="median" /> · one dot per disease
+        </p>
+
+        <template #note>
+          <b>A single number hides this.</b> Some diseases enrich twenty-fold and some barely at all —
+          which is which is more useful to you than the average.
+        </template>
+        <template #method>
+          <p><b class="text-foreground">How enrichment is computed.</b> Take a disease's
+            <ActTerm t="top-50">top 50</ActTerm> ranked genes and count how many are already-known
+            targets, as a share of 50. Divide by the share of known targets in that disease's whole
+            candidate pool.</p>
+          <p class="mt-1.5">20× means the top of the list is twenty times as dense in real targets as
+            the pool it was drawn from. Unlike AUC it stays readable for a disease with only a handful
+            of known targets, which is why Act 3 switches to it for the thin terms.</p>
+        </template>
       </ActCard>
 
       <ActCard span="col-span-12 lg:col-span-7" :icon="Crosshair" accent="var(--chart-2)"
-               title="What the model actually keys on" :chips="[['live', 'live']]"
-               desc="How often each feature is a top SHAP driver across every scored candidate."
+               title="What drives the score" :chips="[['live', 'live']]"
                :src="['shap_driver_frequency']">
+        <template #desc>
+          <ActTerm t="feature-provenance">Provenance features</ActTerm> — how many independent sources
+          back an interaction — dominate the model's per-prediction
+          explanations<template v-if="provenanceShare !== null">, at
+          {{ provenanceShare }}% of all top-driver appearances</template>.
+        </template>
+
         <ActBar v-if="data" :rows="driverRows" :row-height="17" />
         <div class="mt-2 flex gap-4 font-mono text-[10.5px] text-muted-foreground">
           <span class="flex items-center gap-1.5">
@@ -289,14 +449,43 @@
             path, proximity and topology
           </span>
         </div>
+
+        <template #note>
+          <b>The model leans hardest on how well-evidenced an interaction is</b>, not on what the
+          protein does. That is a real finding about this feature set, and it is the honest answer
+          when someone asks what the model has learned.
+        </template>
+        <template #method>
+          <p><b class="text-foreground">What SHAP is.</b> SHAP splits one prediction into a
+            contribution per input: how much each feature pushed this specific gene's score up or
+            down. It explains one decision, not the model in general.</p>
+          <p class="mt-1.5">This chart counts how often each feature lands in a candidate's top two
+            contributors, across every scored candidate — so it is a frequency, not an average
+            effect size. A feature that moves a few predictions enormously and the rest not at all
+            will read low here.</p>
+        </template>
       </ActCard>
 
       <ActCard span="col-span-12" :icon="ListTree" accent="var(--chart-5)"
-               title="What the 14 features actually are" :chips="[['live', 'live']]"
-               desc="Network topology, not biology. Provenance features are highlighted — they are what the model leans on most.">
+               title="The model's inputs" :chips="[['live', 'live']]">
+        <template #desc>
+          Fourteen <ActTerm t="feature">features</ActTerm>, all of them graph structure — no sequence,
+          no expression, no biology of the protein itself.
+        </template>
+
+        <div class="mb-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[10.5px] text-muted-foreground">
+          <span v-for="[label, key] in KINDS" :key="key">
+            <ActTerm :t="key" plain>{{ label }}</ActTerm>
+          </span>
+        </div>
+
         <Table v-if="data">
           <TableHeader>
-            <TableRow><TableHead>Feature</TableHead><TableHead>Kind</TableHead><TableHead>What it measures</TableHead></TableRow>
+            <TableRow>
+              <TableHead>Feature</TableHead>
+              <TableHead>Kind</TableHead>
+              <TableHead>What it measures</TableHead>
+            </TableRow>
           </TableHeader>
           <TableBody>
             <TableRow v-for="f in data.glossary" :key="f.feature">
@@ -311,13 +500,25 @@
             </TableRow>
           </TableBody>
         </Table>
+
+        <template #note>
+          <b>The model cannot see what a protein does.</b> Everything it reads is a property of how the
+          gene sits in the network — which is why a strong score is a hypothesis worth testing, not a
+          mechanism.
+        </template>
+        <template #method>
+          <p>The <code class="font-mono text-[10.5px]">dwpc_*</code> features are
+            <ActTerm t="dwpc">degree-weighted path counts</ActTerm>: routes reaching the disease are
+            counted, with routes through very well-connected nodes counted for less, so a popular hub
+            gene cannot score highly on connectivity alone.</p>
+          <p class="mt-1.5"><b class="text-foreground">This card has no src footer, deliberately.</b>
+            It is not a dataset number: it is the champion's declared input list, whose authority is
+            <code class="font-mono text-[10.5px]">.index/features.tsv</code>. The wording comes from
+            <code class="font-mono text-[10.5px]">backend/feature_glossary.py</code>, the one copy —
+            Act 4's candidate drawer renders the same strings, so the two acts cannot describe the
+            same model differently.</p>
+        </template>
       </ActCard>
-
-      
-
-      
-
-      
     </div>
   </div>
 </template>

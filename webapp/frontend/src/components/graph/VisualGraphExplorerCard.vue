@@ -26,6 +26,7 @@
     chips?: [string, string][]
     src?: string[]
     span?: string
+    methodLabel?: string
   }>(), { span: 'col-span-12' })
 
   const emit = defineEmits<{
@@ -89,7 +90,7 @@
 
 <template>
   <ActCard :span="span" :title="title" :desc="description" :icon="Network" :chips="chips" :src="src"
-           accent="var(--chart-2)">
+           accent="var(--chart-2)" :method-label="methodLabel ?? 'How this is computed'">
     <div class="flex flex-col gap-3">
       <div v-if="starterQueries?.length" role="group" aria-label="Available graph queries"
            class="flex flex-wrap gap-2">
@@ -137,5 +138,11 @@
 
       <slot />
     </div>
+
+    <!-- The card's footer slots belong to the caller, not to this wrapper:
+         act 1 and act 4 embed the same Explorer with different methodology. -->
+    <template v-if="$slots.note" #note><slot name="note" /></template>
+    <template v-if="$slots.method" #method><slot name="method" /></template>
+    <template v-if="$slots.presenter" #presenter><slot name="presenter" /></template>
   </ActCard>
 </template>

@@ -1559,56 +1559,6 @@
    "top_shap_drivers",
    "_rank"
   ],
-  "tractability_axis": [
-   "disease_index",
-   "disease",
-   "scope",
-   "n_cand",
-   "demonstrated_obs10",
-   "demonstrated_naive10",
-   "demonstrated_dm10",
-   "demonstrated_exp10",
-   "demonstrated_obs20",
-   "demonstrated_naive20",
-   "demonstrated_dm20",
-   "demonstrated_exp20",
-   "demonstrated_obs50",
-   "demonstrated_naive50",
-   "demonstrated_dm50",
-   "demonstrated_exp50",
-   "demonstrated_obs100",
-   "demonstrated_naive100",
-   "demonstrated_dm100",
-   "demonstrated_exp100",
-   "demonstrated_obs200",
-   "demonstrated_naive200",
-   "demonstrated_dm200",
-   "demonstrated_exp200",
-   "assessed_obs10",
-   "assessed_naive10",
-   "assessed_dm10",
-   "assessed_exp10",
-   "assessed_obs20",
-   "assessed_naive20",
-   "assessed_dm20",
-   "assessed_exp20",
-   "assessed_obs50",
-   "assessed_naive50",
-   "assessed_dm50",
-   "assessed_exp50",
-   "assessed_obs100",
-   "assessed_naive100",
-   "assessed_dm100",
-   "assessed_exp100",
-   "assessed_obs200",
-   "assessed_naive200",
-   "assessed_dm200",
-   "assessed_exp200",
-   "pct_secreted_top50",
-   "pct_membrane_top50",
-   "pct_secreted_all",
-   "pct_membrane_all"
-  ],
   "validation_auc_by_disease": [
    "disease_index",
    "target_rank_sum",
@@ -2964,21 +2914,6 @@
   ],
   "outputs": [
    "persona2_scored_shap"
-  ],
-  "type": "python",
-  "visual": null
- },
- "compute_tractability_axis": {
-  "code": "# AXIS 2 of the validation overhaul: are the model's top-ranked candidates ACTIONABLE?\n#\n# WHY THIS AXIS EXISTS SEPARATELY. Three different claims were being collapsed into one\n# \"drug-target\" label (TARGET_PRIORITIZER \u00a78.1):\n#     drug_protein  -> a molecule engages this protein        GENE level, direct assertion\n#     drug_disease  -> this disease has pharmacological attention   DISEASE level\n#     the join      -> this protein is the mechanism for this disease  PAIR level, INFERRED\n# The join is what carries the 66% Cartesian inflation. `drug_protein` alone carries NONE: it is a\n# direct assertion about a gene, needs no join, and covers 1,109 of 20,861 genes (5.3%). It has\n# never been used to evaluate the model -- only as a feature-lift diagnostic.\n#\n# TWO TRACTABILITY LABELS, deliberately kept apart because their confound profiles differ:\n#   demonstrated  a drug_protein edge exists            5.3% of genes   SHARP but 6x hub-confounded\n#                                                                       (Q1 1.8% -> Q5 10.8%)\n#   assessed      an OT tractability bucket is set      ~67% of genes   BLUNT but degree-flat (0.07)\n#\n# THE CONTROL THAT MAKES THIS MEANINGFUL. Demonstrated tractability rises 6x across interactome-\n# degree quintiles, and the model is known to favour hubs (\u00a77.2). So a naive \"the top-K is enriched\n# for drug targets\" result could be entirely hub bias. Every lift below is therefore reported twice:\n#   naive lift          = observed / (global base rate x K)\n#   degree-matched lift = observed / SUM over top-K genes of (tractable rate in that gene's quintile)\n# The second removes the hub confound by construction. If it sits at ~1.0 the enrichment was hubs.\n#\n# FALSIFIABLE PREDICTION, stated before running. The ligand-vs-receptor failure (\u00a78.7) says the\n# model over-ranks secreted ligands, which are poorly tractable, above membrane receptors, which are\n# highly tractable. So the degree-matched tractability lift at the head should be AT OR BELOW 1.0 --\n# a measured DEFICIT. If it comes back clearly above 1.0, the ligand/receptor problem is narrower\n# than the case study claims and \u00a78.7 needs softening.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nKS = [10, 20, 50, 100, 200]\n\nnid = dataiku.Dataset(\"graph_nodes\").get_dataframe(\n    columns=[\"node_index\", \"node_id\", \"node_name\", \"node_type\"], infer_with_pandas=False)\nnid[\"node_index\"] = nid.node_index.astype(int)\nnid[\"node_id\"] = nid.node_id.astype(str)\nG = nid[nid.node_type == \"gene/protein\"]\nD = nid[nid.node_type == \"disease\"]\ngname = dict(zip(G.node_index, G.node_name))\ndname = dict(zip(D.node_index, D.node_name))\ngmap = dict(zip(G.node_id, G.node_index))\n\n# ---- demonstrated tractability: a molecule engages this protein. No join, no inflation. ----\ndp = dataiku.Dataset(\"drug_protein_edges\").get_dataframe(infer_with_pandas=False)\ngc, tc = (\"x_id\", \"y_id\") if (dp.x_type == \"drug\").any() else (\"y_id\", \"x_id\")\ndemo_genes = set(dp[tc].astype(str).map(gmap).dropna().astype(int))\nprint(f\"genes with a demonstrated drug-target edge: {len(demo_genes):,} of {len(G):,} \"\n      f\"({len(demo_genes)/len(G):.1%})\")\n\ndrg = dataiku.Dataset(\"enriched_gene_druggability_v2\").get_dataframe()\ndrg[\"assessed\"] = ((drg.ot_sm_tractable == 1) | (drg.ot_ab_tractable == 1)).astype(int)\ndrg[\"demonstrated\"] = drg.gene_index.isin(demo_genes).astype(int)\nprint(f\"genes with an assessed tractability bucket : {int(drg.assessed.sum()):,} \"\n      f\"({drg.assessed.mean():.1%})\")\n\nsc = dataiku.Dataset(\"scored_champion\").get_dataframe(\n    columns=[\"disease_index\", \"gene_index\", \"is_target\", \"proba_1\", \"gene_ppi_degree\"])\nsc = sc.merge(drg[[\"gene_index\", \"assessed\", \"demonstrated\", \"druggability_class\"]],\n              on=\"gene_index\", how=\"left\")\nfor c in [\"assessed\", \"demonstrated\"]:\n    sc[c] = sc[c].fillna(0).astype(int)\n\n# degree quintile assigned ONCE over the gene universe, so it is comparable across diseases\ngd = sc.drop_duplicates(\"gene_index\")[[\"gene_index\", \"gene_ppi_degree\"]].copy()\ngd[\"dq\"] = pd.qcut(gd.gene_ppi_degree.rank(method=\"first\"), 5, labels=False)\nsc = sc.merge(gd[[\"gene_index\", \"dq\"]], on=\"gene_index\", how=\"left\")\nqrate = {c: sc.drop_duplicates(\"gene_index\").groupby(\"dq\")[c].mean().to_dict()\n         for c in [\"assessed\", \"demonstrated\"]}\nprint(\"\\n=== the hub confound this controls for (tractable share by degree quintile) ===\")\nfor c in [\"demonstrated\", \"assessed\"]:\n    print(f\"  {c:14s}\" + \"  \".join(f\"Q{q+1} {100*qrate[c][q]:.1f}%\" for q in sorted(qrate[c])))\n\nrows = []\nfor scope, sub_all in [(\"all candidates\", sc), (\"novel only\", sc[sc.is_target == 0])]:\n    for (di), g in sub_all.groupby(\"disease_index\"):\n        if len(g) < 500:\n            continue\n        g = g.sort_values(\"proba_1\", ascending=False)\n        rec = {\"disease_index\": di, \"disease\": dname.get(di), \"scope\": scope, \"n_cand\": len(g)}\n        for lab in [\"demonstrated\", \"assessed\"]:\n            base = g[lab].mean()\n            for K in KS:\n                top = g.head(K)\n                obs = int(top[lab].sum())\n                exp_naive = base * K\n                # degree-matched expectation: each gene contributes its own quintile's rate\n                exp_dm = float(top.dq.map(qrate[lab]).sum())\n                rec[f\"{lab}_obs{K}\"] = obs\n                rec[f\"{lab}_naive{K}\"] = obs / exp_naive if exp_naive > 0 else np.nan\n                rec[f\"{lab}_dm{K}\"] = obs / exp_dm if exp_dm > 0 else np.nan\n                rec[f\"{lab}_exp{K}\"] = exp_dm\n        # composition: what the head is made of\n        top50 = g.head(50)\n        rec[\"pct_secreted_top50\"] = 100 * (top50.druggability_class == \"secreted\").mean()\n        rec[\"pct_membrane_top50\"] = 100 * top50.druggability_class.astype(str).str.contains(\n            \"membrane\", case=False, na=False).mean()\n        rec[\"pct_secreted_all\"] = 100 * (g.druggability_class == \"secreted\").mean()\n        rec[\"pct_membrane_all\"] = 100 * g.druggability_class.astype(str).str.contains(\n            \"membrane\", case=False, na=False).mean()\n        rows.append(rec)\nout = pd.DataFrame(rows)\nprint(f\"\\nevaluated {out.disease_index.nunique()} diseases x 2 scopes\")\n\nfor scope in [\"all candidates\", \"novel only\"]:\n    s = out[out.scope == scope]\n    print(f\"\\n=== {scope.upper()} ===\")\n    print(f\"  {'label':14s}{'K':>5s}{'obs':>8s}{'exp(dm)':>9s}{'naive lift':>12s}{'DEGREE-MATCHED':>16s}\")\n    for lab in [\"demonstrated\", \"assessed\"]:\n        for K in KS:\n            o = int(s[f\"{lab}_obs{K}\"].sum()); e = s[f\"{lab}_exp{K}\"].sum()\n            print(f\"  {lab:14s}{K:>5d}{o:>8,}{e:>9,.0f}\"\n                  f\"{s[f'{lab}_naive{K}'].mean():>12.2f}{(o/e if e else np.nan):>16.2f}\")\n\nprint(\"\\n=== VERDICT on the stated prediction ===\")\nnov = out[out.scope == \"novel only\"]\ndm20 = int(nov.demonstrated_obs20.sum()) / nov.demonstrated_exp20.sum()\ndm50 = int(nov.demonstrated_obs50.sum()) / nov.demonstrated_exp50.sum()\nprint(f\"  degree-matched DEMONSTRATED tractability lift, novel head: \"\n      f\"top20 {dm20:.2f}x, top50 {dm50:.2f}x\")\nif dm20 <= 1.05:\n    print(\"  CONFIRMED -- at or below parity. The model does NOT preferentially rank actionable\")\n    print(\"  genes, consistent with the ligand-vs-receptor failure being real and general.\")\nelse:\n    print(\"  REFUTED -- the head IS enriched for actionable genes beyond hub effects, so the\")\n    print(\"  ligand-vs-receptor problem is narrower than \u00a78.7 claims and should be softened.\")\n\nprint(\"\\n=== composition of the top 50 vs the candidate pool (novel only) ===\")\nprint(f\"  secreted   top50 {nov.pct_secreted_top50.mean():.1f}%  vs pool {nov.pct_secreted_all.mean():.1f}%\")\nprint(f\"  membrane   top50 {nov.pct_membrane_top50.mean():.1f}%  vs pool {nov.pct_membrane_all.mean():.1f}%\")\nprint(\"  Secreted over-represented at the head while membrane is under-represented is the\")\nprint(\"  ligand-vs-receptor failure stated as a distribution rather than an anecdote.\")\n\ndataiku.Dataset(\"tractability_axis\").write_with_schema(out)\n\n\n",
-  "cypher": null,
-  "inputs": [
-   "drug_protein_edges",
-   "enriched_gene_druggability_v2",
-   "graph_nodes",
-   "scored_champion"
-  ],
-  "outputs": [
-   "tractability_axis"
   ],
   "type": "python",
   "visual": null

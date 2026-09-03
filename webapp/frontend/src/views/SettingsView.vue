@@ -12,12 +12,17 @@
   import { Loader2 } from 'lucide-vue-next'
   import { EaSelect } from '@/components/ui'
   import { useSettingsStore } from '@/stores/settings'
+  import { usePresenterStore } from '@/stores/presenter'
   import { ENABLE_CHATBOT } from '@/config'
   import { apiUrl } from '@/utils/api'
 
   defineOptions({ name: 'SettingsView' })
 
   const store = useSettingsStore()
+  // Per-browser, not a project variable: it is a property of who is standing in
+  // front of the screen, and it must not need a backend round trip thirty
+  // seconds before a demo. See stores/presenter.ts.
+  const presenter = usePresenterStore()
   const savingLlm = ref(false)
   const llmError = ref<string | null>(null)
 
@@ -110,6 +115,43 @@
              class="text-xs text-muted-foreground">
             No LLMs found. Add a model in your DSS project's LLM settings.
           </p>
+        </div>
+      </section>
+
+      <!-- ── Presenting: who the deck is being shown to ──────────────────── -->
+      <section class="border rounded-lg bg-white">
+        <div class="px-5 py-4 border-b">
+          <h2 class="text-base font-semibold">Presenting</h2>
+          <p class="text-xs text-muted-foreground mt-1">
+            Stored in this browser only — not in the DSS project, so it never changes what a
+            colleague sees.
+          </p>
+        </div>
+        <div class="px-5 py-4">
+          <div class="flex items-center justify-between py-1">
+            <div class="pr-6">
+              <p class="text-sm font-medium">Presenter notes</p>
+              <p class="text-xs text-muted-foreground">
+                Show the lines written for whoever is demoing — the caveat to volunteer, the number
+                not to quote. Turn this off before sharing your screen with a client.
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              :aria-checked="presenter.showNotes"
+              aria-label="Show presenter notes"
+              class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors
+                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+              :class="presenter.showNotes ? 'bg-primary' : 'bg-muted'"
+              @click="presenter.showNotes = !presenter.showNotes"
+            >
+              <span
+                class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+                :class="presenter.showNotes ? 'translate-x-4' : 'translate-x-0.5'"
+              />
+            </button>
+          </div>
         </div>
       </section>
 

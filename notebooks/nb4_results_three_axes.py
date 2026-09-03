@@ -130,7 +130,11 @@ check("8.3 curated>=0.8 lift@200", 5.23, round(_cl[200], 2), tol=0.02, fmt="{:.2
 del _nv2, _g2
 
 # ==== 8.4  tractability, naive vs degree-matched ====
-tx=dataiku.Dataset("tractability_axis").get_dataframe()
+# Recomputed, not read. The `tractability_axis` dataset was a recipe output, so asserting
+# against it proved the recipe still ran rather than that the number is right. nb6 calls the
+# same function with verbose=True and carries the diagnostics, so this call stays quiet.
+from nb_assertions.derive import tractability_axis
+tx=tractability_axis(verbose=False)
 nv=tx[tx.scope=="novel only"]
 print("TRACTHDR|K|obs|dm_exp|pooled_dm|pooled_naive|macro_dm|macro_naive")
 for K in [10,20,50,100,200]:

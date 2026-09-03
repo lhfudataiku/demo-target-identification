@@ -31,26 +31,6 @@ approved_novel_hits50	compute_breast_panel	-	-
 approved_novel_lift50	compute_breast_panel	-	-		
 approved_novel_total	compute_breast_panel	-	-		
 approved_to_find	compute_persona_candidates	-	-		
-assessed_dm10	compute_tractability_axis	-	-		
-assessed_dm100	compute_tractability_axis	-	-		
-assessed_dm20	compute_tractability_axis	-	-		
-assessed_dm200	compute_tractability_axis	-	-		
-assessed_dm50	compute_tractability_axis	-	-		
-assessed_exp10	compute_tractability_axis	-	-		
-assessed_exp100	compute_tractability_axis	-	-		
-assessed_exp20	compute_tractability_axis	-	-		
-assessed_exp200	compute_tractability_axis	-	-		
-assessed_exp50	compute_tractability_axis	-	-		
-assessed_naive10	compute_tractability_axis	-	-		
-assessed_naive100	compute_tractability_axis	-	-		
-assessed_naive20	compute_tractability_axis	-	-		
-assessed_naive200	compute_tractability_axis	-	-		
-assessed_naive50	compute_tractability_axis	-	-		
-assessed_obs10	compute_tractability_axis	-	-		
-assessed_obs100	compute_tractability_axis	-	-		
-assessed_obs20	compute_tractability_axis	-	-		
-assessed_obs200	compute_tractability_axis	-	-		
-assessed_obs50	compute_tractability_axis	-	-		
 auc	compute_breast_panel	-	-		
 auc_assoc_labels	compute_drug_target_benchmark	-	-		
 auc_disease	compute_validation_auc_by_disease	-	-		
@@ -79,26 +59,6 @@ count	compute_validation_set_scored_grouped	-	-
 count	group_family_auc	-	-		
 coverage_pct	compute_pool_reachability	-	-		
 degree	compute_enriched_node_centrality_1	-	-		
-demonstrated_dm10	compute_tractability_axis	-	-		
-demonstrated_dm100	compute_tractability_axis	-	-		
-demonstrated_dm20	compute_tractability_axis	-	-		
-demonstrated_dm200	compute_tractability_axis	-	-		
-demonstrated_dm50	compute_tractability_axis	-	-		
-demonstrated_exp10	compute_tractability_axis	-	-		
-demonstrated_exp100	compute_tractability_axis	-	-		
-demonstrated_exp20	compute_tractability_axis	-	-		
-demonstrated_exp200	compute_tractability_axis	-	-		
-demonstrated_exp50	compute_tractability_axis	-	-		
-demonstrated_naive10	compute_tractability_axis	-	-		
-demonstrated_naive100	compute_tractability_axis	-	-		
-demonstrated_naive20	compute_tractability_axis	-	-		
-demonstrated_naive200	compute_tractability_axis	-	-		
-demonstrated_naive50	compute_tractability_axis	-	-		
-demonstrated_obs10	compute_tractability_axis	-	-		
-demonstrated_obs100	compute_tractability_axis	-	-		
-demonstrated_obs20	compute_tractability_axis	-	-		
-demonstrated_obs200	compute_tractability_axis	-	-		
-demonstrated_obs50	compute_tractability_axis	-	-		
 depth_a	compute_family_panel_overlap	-	-		
 depth_b	compute_family_panel_overlap	-	-		
 depth_gap	compute_family_panel_overlap	-	-		
@@ -106,7 +66,6 @@ disease	compute_breast_panel	-	-
 disease	compute_filter_three_axes	-	-		
 disease	compute_novel_discovery_eval	-	-		
 disease	compute_pool_reachability	-	-		
-disease	compute_tractability_axis	-	-		
 disease_a	compute_family_panel_overlap	-	-		
 disease_b	compute_family_panel_overlap	-	-		
 disease_context	compute_enriched_disease_context_1	module_size >= 20	1		Settled 2026-08-21 from the newly mirrored Cypher. The gate filters the ANCHOR D only; D2 is matched fresh via (D)-[:disease_disease]-(D2) with NO module_size filter, so an existing (g,D) pair's disease_context cannot change. Was flagged unresolved before the mirror existed.
@@ -222,7 +181,6 @@ module_size	compute_persona_candidates	-	-
 n	compute_filter_three_axes	-	-		
 n_anchor_families	compute_split_audit_2	-	-		
 n_assoc_positives	compute_drug_target_benchmark	-	-		
-n_cand	compute_tractability_axis	-	-		
 n_criteria	compute_persona_candidates	-	-		
 n_curated	compute_pool_reachability	-	-		
 n_diseases	compute_split_audit_2	-	-		
@@ -265,11 +223,7 @@ overlap_train_test_keys	compute_split_audit_2	-	-
 overlap_train_val_keys	compute_split_audit_2	-	-		
 pagerank	compute_enriched_node_centrality_1	-	-		
 pair_kind	compute_family_panel_overlap	-	-		
-pct_membrane_all	compute_tractability_axis	-	-		
-pct_membrane_top50	compute_tractability_axis	-	-		
 pct_predicted_positive	compute_hub_bias_meter	-	-		
-pct_secreted_all	compute_tractability_axis	-	-		
-pct_secreted_top50	compute_tractability_axis	-	-		
 pool	compute_breast_panel	-	-		
 pool	compute_family_panel_top50	-	-		
 pool_size	compute_pool_reachability	-	-		
@@ -306,7 +260,6 @@ rwr_norm	compute_enriched_graph_features_1	-	-
 rwr_score	compute_enriched_rwr_score_1	MIN_SEEDS 20	1		MIN_SEEDS gate inside a per-disease loop; adjacency and degrees are global. Was UNVERSIONED until 2026-08-21 -- a gated recipe with no diff history.
 safety_flag	compute_enriched_gene_safety_v2	-	-		
 scope	compute_family_panel_programme	-	-		
-scope	compute_tractability_axis	-	-		
 score	join_disease_name	-	-		
 shared_genes	compute_family_panel_overlap	-	-		
 shared_pathway_count	compute_enriched_shared_pathway_count_1	module_size >= 20	1		n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.

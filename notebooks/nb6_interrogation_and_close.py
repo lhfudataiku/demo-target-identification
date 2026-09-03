@@ -22,8 +22,11 @@
 #           graph_nodes, drug_protein_edges, drug_disease_edges -- the drug-validated ground truth,
 #                                               rebuilt here so tractability_lift and safety_lift are
 #                                               COMPUTED (6.0), not read back from the flow
-#           tractability_axis, novel_discovery_eval, drug_target_benchmark, validation_auc_by_disease
+#           novel_discovery_eval, drug_target_benchmark, validation_auc_by_disease
 #                                               -- served or notebook-zone; recomputed and compared
+#   tractability_axis is NO LONGER READ: since 2026-09-03 it is recomputed by
+#   nb_assertions.derive.tractability_axis() from the four upstream datasets above, and the recipe
+#   and dataset it used to come from are retired.
 import math
 import dataiku
 import numpy as np
@@ -48,7 +51,13 @@ def check(name, doc, live, tol=0.0, fmt="{:,}"):
 # CROSSOVER, not the level: the degree control makes the result look worse at K=10 and better from
 # K=20-50 onward.
 # ============================================================================
-tx = dataiku.Dataset("tractability_axis").get_dataframe()
+# Recomputed from graph_nodes, drug_protein_edges, enriched_gene_druggability_v2 and
+# scored_champion -- all of which this script already reads -- instead of reading the retired
+# `tractability_axis` recipe output. verbose=True here and only here: the hub-confound table
+# and the verdict on the pre-stated prediction are the act-6 evidence, and the recipe that
+# used to print them is gone.
+from nb_assertions.derive import tractability_axis
+tx = tractability_axis(verbose=True)
 nv = tx[tx.scope == "novel only"]
 KS = [10, 20, 50, 100, 200]
 

@@ -65,7 +65,6 @@ compute_shap_driver_frequency	grouping	-	-		DSS-only	shap_drivers_long	shap_driv
 compute_shap_drivers_long	shaker	-	-		DSS-only	dashboard_candidates	shap_drivers_long
 compute_split_audit_2	python	-	-		dss_recipes/compute_split_audit_2.py	graph_nodes,psplit_test_set,psplit_train_set,psplit_validation_set	split_audit_2
 compute_top_shap_drivers_1	python	-	-		dss_recipes/compute_top_shap_drivers_1.py	persona2_scored	persona2_scored_shap
-compute_tractability_axis	python	-	-		dss_recipes/compute_tractability_axis.py	drug_protein_edges,enriched_gene_druggability_v2,graph_nodes,scored_champion	tractability_axis
 compute_validation_auc_by_disease	shaker	-	-		DSS-only	validation_set_scored_grouped	validation_auc_by_disease
 compute_validation_auc_ci	shaker	-	-		DSS-only	validation_auc_by_disease	validation_auc_ci
 compute_validation_set_scored_grouped	grouping	-	-		DSS-only	validation_set_scored_windows	validation_set_scored_grouped

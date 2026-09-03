@@ -242,10 +242,6 @@
    "short": "Which candidate pairs are reachable in the graph at all, and which are not.",
    "long": "Reachability is the ceiling on recall: a target no path reaches cannot be ranked, however good the model is."
   },
-  "tractability_axis": {
-   "short": "Tractability lift, naive against degree-matched, under both estimators.",
-   "long": "The degree-matched estimator is the honest one. Naive lift partly measures gene popularity, and the gap between the two is the act-6 punch line."
-  },
   "graph_nodes": {
    "short": "Node identity, type, name and source for the whole graph. 22 recipes read it -- the index-to-entity lookup almost everything joins on.",
    "long": ""

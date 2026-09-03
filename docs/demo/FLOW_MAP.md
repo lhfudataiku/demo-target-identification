@@ -13,7 +13,7 @@
 > python3 tools/build_flow_map.py
 > ```
 
-Live DSS: **92 datasets across 18 zones**, cross-referenced against the recipe graph (90 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
+Live DSS: **91 datasets across 17 zones**, cross-referenced against the recipe graph (89 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
 
 A dataset counts as **read** only when its name appears *quoted* in reader code. A bare
 mention is prose: `calibration.py` names the three DWPC feature datasets in a display
@@ -31,8 +31,8 @@ so zones A1-A4 are read by named routes rather than by an unbuilt UI.
 
 ## Summary
 
-- datasets: **92**
-- endpoints (read by a webapp route or a notebook): **43**
+- datasets: **91**
+- endpoints (read by a webapp route or a notebook): **42**
 - flow intermediates (consumed by a recipe, no direct reader): **48**
 - genuine orphans: **1** — `llm_hx`
 
@@ -73,7 +73,7 @@ Foreign references in this zone (5), each feeding exactly one Sync or Merge reci
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `drug_disease_edges` | nb6 | `compute_DEMO_KG_drug_disease_edges_copy` | 7 | notebook |
-| `drug_protein_edges` | nb6 | `compute_DEMO_KG_drug_protein_edges_copy` | 8 | notebook |
+| `drug_protein_edges` | nb6 | `compute_DEMO_KG_drug_protein_edges_copy` | 7 | notebook |
 | `raw_ot_druggability` | — | `compute_DEMO_KG_raw_ot_druggability_copy` | 1 | intermediate |
 | `raw_ot_known_drug` | nb4 | `compute_raw_ot_known_drug` | 1 | notebook |
 | `raw_ot_safety` | — | `compute_DEMO_KG_raw_ot_safety_copy` | 1 | intermediate |
@@ -94,7 +94,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 |---|---|---|--:|---|
 | `edge_metadata` | — | `compute_DEMO_KG_edge_metadata_copy` | 3 | intermediate |
 | `graph_edges` | nb5 | `compute_DEMO_KG_graph_edges_copy` | 8 | notebook |
-| `graph_nodes` | nb5, nb6 | `compute_DEMO_KG_graph_nodes_copy` | 22 | notebook |
+| `graph_nodes` | nb5, nb6 | `compute_DEMO_KG_graph_nodes_copy` | 21 | notebook |
 | `llm_hx` | — | — *(source)* | 0 | **ORPHAN** |
 
 ## 10 Features - graph traversal (Cypher)  (10 datasets, 10 recipes)
@@ -138,7 +138,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `drug_classified` | — | `compute_drug_classified` | 1 | intermediate |
 | `drug_evidence_pairs` | — | `compute_drug_evidence_pairs` | 1 | intermediate |
 | `drug_joined` | — | `compute_drug_joined` | 1 | intermediate |
-| `enriched_gene_druggability_v2` | nb6 | `compute_enriched_gene_druggability_v2` | 3 | notebook |
+| `enriched_gene_druggability_v2` | nb6 | `compute_enriched_gene_druggability_v2` | 2 | notebook |
 | `enriched_gene_localization` | — | `compute_gene_localization` | 1 | intermediate |
 | `enriched_gene_safety_v2` | nb6 | `compute_enriched_gene_safety_v2` | 1 | notebook |
 | `gene_crosswalk` | — | `compute_gene_crosswalk` | 3 | intermediate |
@@ -156,11 +156,12 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `psplit_train_set` | nb1 | `split_by_disease_key` | 2 | notebook |
 | `psplit_validation_set` | — | `split_by_disease_key` | 3 | intermediate |
 
-## 31 Train & score  (2 datasets, 3 recipes)
+## 31 Train & score  (3 datasets, 4 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
-| `scored_champion` | nb1, nb2, nb3, nb3b, nb4, nb6 | `sync_scored_champion` | 8 | notebook |
+| `breast_panel_metrics` | nb4 | `compute_breast_panel` | 0 | notebook |
+| `scored_champion` | nb1, nb2, nb3, nb3b, nb4, nb6 | `sync_scored_champion` | 7 | notebook |
 | `scored_m7` | — | `score_psplit_validation_m7` | 1 | intermediate |
 
 ## 40 Candidate ranking (shared by acts)  (11 datasets, 11 recipes)
@@ -178,14 +179,6 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `top_annotated` | — | `decorate_target_candidates` | 1 | intermediate |
 | `top_candidates` | — | `rank_per_disease` | 1 | intermediate |
 | `validation_set_personas_2` | — | `filter_persona_diseases` | 1 | intermediate |
-
-## 90 Validation evidence (asserted)  (3 datasets, 3 recipes)
-
-| dataset | read by | producing recipe | recipe consumers | flag |
-|---|---|---|--:|---|
-| `breast_panel_metrics` | nb4 | `compute_breast_panel` | 0 | notebook |
-| `pool_reachability` | nb2 | `compute_pool_reachability` | 0 | notebook |
-| `tractability_axis` | nb4, nb6 | `compute_tractability_axis` | 0 | notebook |
 
 ## A1 Evidence base (serving)  (5 datasets, 5 recipes)
 
@@ -229,12 +222,13 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `family_panel_programme` | nb7, **webapp:routes/families** | `compute_family_panel_programme` | 0 | webapp |
 | `family_panel_top50` | **webapp:routes/families** | `compute_family_panel_top50` | 2 | webapp |
 
-## A4 Shortlist (serving)  (2 datasets, 2 recipes)
+## A4 Shortlist (serving)  (3 datasets, 3 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `filter_three_axes` | nb4 | `compute_filter_three_axes` | 0 | notebook |
 | `known_drug_truth` | nb2, nb4 | `compute_known_drug_truth` | 2 | notebook |
+| `pool_reachability` | nb2 | `compute_pool_reachability` | 0 | notebook |
 
 ## Default  (0 datasets, 0 recipes)
 

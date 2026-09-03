@@ -48,6 +48,7 @@ def scripts():
 def payload():
     """remote basename -> local absolute path."""
     out = {"runner.py": os.path.join(ROOT, "tools", "nb_assertions", "runner.py"),
+           "derive.py": os.path.join(ROOT, "tools", "nb_assertions", "derive.py"),
            "__init__.py": os.path.join(ROOT, "tools", "nb_assertions", "__init__.py")}
     for f in scripts():
         out[f] = os.path.join(ROOT, "notebooks", f)

@@ -13,12 +13,9 @@
   "This file is hand-maintained. No tool generates or reads it. Re-verify before acting on it."
  ],
  "generated": "2026-09-03",
- "verified_against": "live DEMO_TARGET_IDENTIFICATION: 92 datasets, 90 recipes, 14 zones; recipe I/O graph via `dku recipe get`; code scan over webapp/backend/**/*.py and notebooks/*.py",
+ "verified_against": "live DEMO_TARGET_IDENTIFICATION: 91 datasets, 89 recipes, 17 zones; recipe I/O graph via `dku recipe get`; code scan over webapp/backend/**/*.py and notebooks/*.py",
  "dead": [],
  "recipes": [],
- "dead_detail": {
-  "_note": "Empty. The flow has no prune candidates: the only unreferenced dataset left is `llm_hx`, which is a deliberate KEEP (see keep_do_not_prune). Any future entry here needs the same two-part evidence: no recipe input AND no hit in a code scan over webapp/backend and notebooks."
- },
  "keep_do_not_prune": {
   "llm_hx": "HELD FOR PART 1. Consumed by the DEMO_KG_LS visual-graph (KG Explorer) webapp backend, which no scan of this project can see. Unreferenced here is expected, not evidence. Corroborated by archive/DASHBOARD_BUILD_LOG.md:2285.",
   "graph_node_type_counts": "webapp/backend/routes/evidence.py (Act 1) + compute_disease_eligibility",
@@ -31,10 +28,11 @@
   "shap_drivers_long": "compute_shap_driver_frequency -- live intermediate, not a leaf",
   "persona_enrichment": "webapp/backend/routes/families.py (Act 3) + routes/calibration.py + nb7 + compute_demo_panel_config",
   "family_panel": "notebooks/nb7_panel_selection.py + compute_demo_panel_config + compute_family_panel_metrics",
-  "validation_auc_ci": "compute_family_panel -- live intermediate, not a leaf"
+  "validation_auc_ci": "compute_family_panel -- live intermediate, not a leaf",
+  "breast_panel_metrics": "DO NOT MIGRATE OR PRUNE, despite being zone-90 notebook evidence like the other two. Three independent systems depend on it: it is the entire build-governance allowed_targets allowlist with three immutable pilot artifacts fingerprinting its recipe settings, schema, data and metrics; it backs governed claim TI-VAL-009, whose authority is nb4 section 8.10 '8.10 HER2+ AUC'; and compute_breast_panel is one of three IDENTITY_RECIPES under DEC-OPS-006, whose check fails if the dss_recipes/ mirror is missing."
  },
  "already_deleted": {
-  "_note": "Removed from live DSS. Retained so a future session does not re-flag them as findings. The top50_* and pairwise_* branches were superseded by the family_panel_* datasets in zone A3. `dashboard_persona_trust` and `join_trust_for_personas` were deleted 2026-09-03 with user approval as the release flow-freeze; both inputs of that join (persona_candidates, disease_pool_sizes) survived with other consumers, and zone A4 dropped from 3 datasets to 2.",
+  "_note": "Removed from live DSS. Retained so a future session does not re-flag them as findings. The top50_* and pairwise_* branches were superseded by the family_panel_* datasets in zone A3. `dashboard_persona_trust` and `join_trust_for_personas` were deleted 2026-09-03 with user approval as the release flow-freeze; both inputs of that join (persona_candidates, disease_pool_sizes) survived with other consumers, and zone A4 dropped from 3 datasets to 2. `tractability_axis` and `compute_tractability_axis` were deleted 2026-09-03 after their logic moved into tools/nb_assertions/derive.py: equality was verified first (same 1,336x48 shape, max absolute difference 2.8e-14) and the full assertion suite then passed with 150 checks and 0 stale. Zone 90 was dissolved in the same pass -- breast_panel_metrics went to 31 beside scored_champion, pool_reachability to A4 beside known_drug_truth. Folding both into 31 was measured and rejected: it created three zone cycles.",
   "datasets": [
    "dashboard_persona_trust",
    "disease_hierarchy_annotation",
@@ -49,7 +47,8 @@
    "top50_membership_b",
    "top50_pairs",
    "top50_slim_a",
-   "top50_slim_b"
+   "top50_slim_b",
+   "tractability_axis"
   ],
   "recipes": [
    "compute_disease_hierarchy_annotation",
@@ -59,6 +58,7 @@
    "compute_top50_pairs",
    "compute_top50_slim_a",
    "compute_top50_slim_b",
+   "compute_tractability_axis",
    "copy_top50_b",
    "group_family_gene",
    "join_trust_for_personas",
@@ -70,5 +70,8 @@
  },
  "shared_recipe_caution": {
   "_note": "RESOLVED 2026-09-03, retained as the lesson. The hazard: a dataset may go while its producing recipe must not, because the recipe has a second output that something reads. The live example used to be `pool_unreachable_targets` -- unread, but produced by `compute_pool_reachability` alongside `pool_reachability`, which nb2 reads. That dataset has since been deleted and the recipe now has a single output, so the example is history. No recipe in the flow currently has this shape; `tools/build_flow_map.py` recomputes the check on every run rather than asserting a fixed example, so it cannot outlive the hazard again."
+ },
+ "dead_detail": {
+  "_note": "Empty. The flow has no prune candidates: the only unreferenced dataset left is `llm_hx`, a deliberate KEEP. Any future entry needs the same two-part evidence: no recipe input AND no hit in a code scan over webapp/backend and notebooks."
  }
 }

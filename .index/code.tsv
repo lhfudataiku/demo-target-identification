@@ -57,7 +57,6 @@ dss_recipes/compute_ppi_evidence_depth.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_split_audit_2.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_target_reachability.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_top_shap_drivers_1.py	recipe-mirror	MIRROR	1	webapp/frontend/src/views/ShortlistView.vue
-dss_recipes/compute_tractability_axis.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_tractability_lift.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_validation_auc_by_disease_2.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/cypher/compute_enriched_degree_controls_1.cypher	cypher-mirror	MIRROR	0	-
@@ -98,14 +97,15 @@ tools/check_claim_registry.py	tool	LIVE	3	docs/prioritizer/VALIDATION.md,tools/c
 tools/check_freshness.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
 tools/check_governed_values.py	tool	LIVE	3	docs/decisions/DECISION_REGISTER.md,tools/build_recipe_index.py,tools/check_indexes.sh
 tools/check_harness.py	tool	LIVE	2	harness/README.md,tools/check_indexes.sh
-tools/check_indexes.sh	tool	LIVE	12	.github/workflows/checks.yml,README.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot
+tools/check_indexes.sh	tool	LIVE	13	.github/workflows/checks.yml,README.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot
 tools/check_links.py	tool	LIVE	6	archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/operations/PHASE_0_BASELINE_2026-08-28.md
 tools/dataset_descriptions.json	tool	LIVE	2	tools/check_indexes.sh,tools/push_descriptions.py
 tools/index_manifest.json	tool	LIVE	3	docs/README.md,docs/operations/PHASE_6_ACCEPTANCE_2026-08-31.md,tools/build_index.py
 tools/model_registry.json	tool	LIVE	8	archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md
 tools/nb_assertions/__init__.py	tool	LIVE	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
+tools/nb_assertions/derive.py	tool	LIVE	1	tools/push_assertions.py
 tools/nb_assertions/runner.py	tool	LIVE	5	archive/notebooks-dss-2026-09-03/README.md,harness/skills/target-id/references/number-update.md,notebooks/README.md,notebooks/nb6_interrogation_and_close.py
-tools/push_assertions.py	tool	LIVE	3	harness/skills/target-id/references/number-update.md,notebooks/README.md,tools/check_indexes.sh
+tools/push_assertions.py	tool	LIVE	4	harness/skills/target-id/references/number-update.md,notebooks/README.md,tools/check_indexes.sh,tools/nb_assertions/derive.py
 tools/push_descriptions.py	tool	LIVE	2	tools/check_indexes.sh,tools/dataset_descriptions.json
 tools/recipe_classes.json	tool	LIVE	6	archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md,docs/prioritizer/PHASE3_PREREGISTRATION.md
 tools/sync_harness.py	tool	LIVE	7	AGENTS.md,CLAUDE.md,README.md,harness/README.md
