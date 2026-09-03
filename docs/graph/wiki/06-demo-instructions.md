@@ -1,112 +1,115 @@
-# Demo Instructions
+# Demo Instructions — Knowledge Graph for Life Sciences Ontology
 
-> **Lifecycle:** Draft · **Audience:** data scientists preparing a technical demonstration ·
-> **Authority:** a preparation guide derived from the `Walkthrough` article; it does not replace the
-> canonical graph-build method · **Update when:** the graph editor, explorer, graph snapshot, or
-> project boundary changes.
+## Purpose
 
-This is a five-minute preparation read for demonstrating `DEMO_KG_LS`. It follows the progression
-of the `Walkthrough` talk track: frame the evidence problem, show how the graph is built, explore a
-scientific question, and close with the hand-off to target prioritization.
+Use this guide to prepare a short technical demonstration of `DEMO_KG_LS` for data scientists. The
+goal is not to explain every recipe or to claim that the graph makes a therapeutic decision. Show
+how Dataiku turns fragmented public biomedical evidence into an inspectable graph foundation for
+target discovery.
 
-The purpose of the demonstration is to show an inspectable, reusable biomedical evidence graph. It
-is **not** a target-ranking demonstration, and a connection in the graph is not a validation of a
-therapeutic target.
+Aim for four minutes, with one minute available for questions. Choose **one** persona before the
+demo:
 
-## Before the demonstration
+- **Diabetes:** investigate biological context around insulin signalling, inflammation, and
+  metabolic regulation.
+- **Breast cancer:** investigate the PI3K/AKT/mTOR axis and hormone-signalling context.
 
-- Open `DEMO_KG_LS`, with the Flow, **Life Sciences Graph Editor**, and **Life Sciences Graph
-  Explorer** ready. The editor and explorer serve distinct parts of the story.
-- Pick one question and stay with it. Good prepared routes are diabetes mellitus (insulin
-  signalling, inflammation, and metabolic regulation) or breast cancer (PI3K/AKT/mTOR, ESR1, and
-  drug context).
-- Confirm that the current published graph snapshot is available. Do not run recipes or rebuild the
-  graph during a demonstration.
-- Rehearse a compact evidence path: disease → gene/protein or phenotype → pathway or interaction →
-  drug mechanism or indication, where available.
+## The message to land
 
-The most effective demonstration has one coherent biological thread. Avoid trying to enumerate all
-sources, relations, or graph features.
+> We have taken disparate biomedical evidence, reconciled it into a governed graph with visible
+> provenance, and made it available for scientific exploration and downstream target
+> prioritization.
 
-## 1. Frame the problem
+The graph is evidence infrastructure. It helps a scientist formulate and challenge a hypothesis;
+it does not validate a target, establish causality, or recommend a therapy.
 
-Start with the working reality of target discovery: relevant evidence is spread across genetics,
-disease ontologies, phenotypes, functional biology, pathways, protein interactions, and drug data.
-Those sources have different identifiers and schemas. Repeated, ad hoc reconciliation obscures
-provenance and makes an evidence trail hard to reproduce or reuse.
+## Before the demo
 
-Position `DEMO_KG_LS` as the evidence-exploration layer. It builds a governed biomedical knowledge
-graph whose links can be inspected by scientists and whose outputs can be reused in analysis. The
-project makes it possible to ask, “What evidence exists around this disease and its biology?”
+Prepare these screens in advance:
 
-## 2. Show the biological-domain Flow
+1. The DSS flow, positioned so the biological-domain zones are visible.
+2. The Visual Graph experience, ready to search for the selected disease or a relevant gene.
+3. Optionally, the Part 2 target-prioritization project or webapp to show the hand-off from graph
+   evidence to explainable candidate ranking.
 
-Use the Flow to orient the audience around biological domains rather than individual recipes:
+Check that you are using the current deterministic-index graph snapshot. Do not rebuild the graph,
+run a scenario, or modify the frozen `KNOWLEDGE_GRAPH_PRIMEKG` reference as part of a demo.
 
-- gene and interactome;
-- disease and phenotypes;
-- function and pathways;
-- drugs and gene–disease evidence; and
-- graph build.
+## Four-minute run of show
 
-Explain the implementation pattern once: Python recipes retrieve and parse source-specific
-material; visual recipes harmonize identifiers and shape canonical edge tables. This keeps the
-grounding and table transformations most susceptible to silent data loss visible for review.
+### 0:00–0:35 — Frame the problem
 
-The Flow is the provenance view. It lets a data scientist trace how heterogeneous source data
-becomes graph nodes and typed relationships before it is materialized for use.
+Start with a scientist’s question, not an implementation diagram: *“For this disease, how do we
+bring together genetics, pathways, phenotypes, protein interactions, and drug evidence without
+losing where each claim came from?”*
 
-## 3. Use the Graph Editor to show iterative construction
+Explain that no one source answers this question. The graph provides the connective tissue and
+preserves relationships so the evidence can be explored in context.
 
-Open the **Life Sciences Graph Editor** after showing the Flow. Its role is to make graph
-construction iterative and interactive: a practitioner can configure the graph from the assembled
-node and edge tables, inspect and adjust the graph definition, then create a new snapshot as the
-graph evolves.
+### 0:35–1:20 — Show the governed flow
 
-Emphasize the practical benefit. Graph work need not end in a static export or require a separate
-graph-engineering cycle for every change. The editor provides a controlled loop: adjust the graph
-definition, materialize a snapshot, inspect the result, and refine it when the scientific or data
-question changes.
+Open the flow and point to the biological-domain zones:
 
-Connect this loop back to the platform. A published snapshot is available in the DSS Flow, where it
-can be navigated as a governed project asset and used as an input to downstream analysis. This is
-the transition from graph construction to reusable analytics: the snapshot is not only a visual
-artifact; it is a materialized graph asset that can support subsequent exploration and modelling.
+- Gene & interactome
+- Disease & phenotypes
+- Function & pathways
+- Drugs & gene-disease
+- Graph build
 
-Do not make the editor a long configuration tour. Show the iterative capability and the outcome—a
-published snapshot—then move to the scientist-facing experience.
+Use one source-to-graph example. MONDO provides the disease coordinate system and cross-reference
+hub; Open Targets contributes gene-disease and drug evidence; the graph build zone assembles the
+final node and edge surfaces. Emphasize the design choice: source-specific extraction occurs in
+Python, while harmonization and grounding are visible in Dataiku visual recipes because these are
+the stages where identifier mismatches can silently lose evidence.
 
-## 4. Use the Graph Explorer to answer a disease-centred question
+### 1:20–2:50 — Explore a scientific question
 
-Open the **Life Sciences Graph Explorer** and state the question aloud. For example: “What evidence
-connects breast-cancer biology to PI3K/AKT/mTOR signalling, relevant phenotypes, and existing drug
-context?”
+Open the Visual Graph experience. Search for the chosen disease, then expand a small, purposeful
+set of connected entities. Narrate the relationship types rather than treating graph proximity as
+proof:
 
-Start from the disease and navigate deliberately:
+- for diabetes, connect disease context to genes, pathways, phenotypes, and any relevant drug
+  evidence;
+- for breast cancer, connect the disease to PI3K/AKT/mTOR or hormone-signalling context, then
+  inspect related gene and pathway relationships.
 
-1. Inspect connected genes or proteins.
-2. Follow one or two meaningful links into pathways or protein interactions.
-3. Add phenotype evidence where it clarifies the disease context.
-4. Inspect drug-mechanism or indication evidence when it is available, including its source context.
+Point out that node labels and edge types are not anonymous graph primitives. A node has a
+source-native identifier, type, name, and source; edge provenance is retained in a dedicated
+metadata surface. This is why a scientist can ask where a relationship came from rather than
+accepting a black-box connection.
 
-The explorer is the efficient graph-browser phase: it lets users navigate by node and relation and
-group the visible network by entity type or source. It can also be powered by an LLM for
-natural-language graph queries, giving a scientist an alternative to manually formulating every
-navigation step. Treat LLM-assisted results as a way to explore and interrogate the graph; verify
-the resulting evidence and provenance in the graph before drawing a conclusion.
+### 2:50–3:35 — Explain the hand-off
 
-Narrate each hop as supporting context, not a recommendation. A connected gene is a lead for
-investigation, not automatically a validated target. If a relationship is absent, describe that as a
-coverage limitation rather than a negative scientific conclusion.
+Show or describe the boundary with `DEMO_TARGET_IDENTIFICATION`. Part 1 owns graph construction and
+exploration. Part 2 consumes the defined shared objects, calculates graph-derived features, and
+ranks disease × gene candidates with explanations. Keeping the projects separate lets modelling
+iterate without changing the graph foundation.
 
-## 5. Close with the project boundary
+Be precise: the graph is not the ranking model, and the graph explorer is not a clinical tool.
 
-End by distinguishing evidence exploration from candidate prioritization. `DEMO_KG_LS` answers,
-“What evidence exists around this disease and its biology?” When the question becomes, “Which
-candidate targets should we investigate first?”, move to `DEMO_TARGET_IDENTIFICATION`.
+### 3:35–4:00 — Close honestly
 
-The downstream project uses the shared graph and synchronized evidence to create disease–gene
-features, validate an XGBoost model, rank candidate targets, and present explainable supporting
-evidence. In short: the editor enables iterative graph creation; the explorer makes the resulting
-snapshot useful to scientists; the downstream project prioritizes candidates using that reusable
-foundation.
+Close with the value and the limitation:
+
+> “This gives scientists a governed, inspectable evidence map and a reusable foundation for target
+> prioritization. It identifies questions worth investigating; experimental and domain review still
+> decide what is true and what advances.”
+
+## Technical questions to be ready for
+
+- **How is identity controlled?** The node identity is the tuple of identifier, type, name, and
+  source; the graph index is deterministic and 1-based.
+- **Why not use the assembled graph for hierarchies?** It is undirected. Consumers that need
+  parent-to-child direction use the retained raw hierarchy tables.
+- **How is drug evidence represented?** Approved indication and investigational evidence are
+  distinct relations; they must not be collapsed.
+- **How reproducible is the graph?** The structure is accepted against the frozen reference, but
+  several public sources resolve to live releases. A release that must reproduce byte-for-byte
+  needs deliberate source snapshots.
+
+## Avoid these claims
+
+- “The graph discovered a drug target.”
+- “A connection proves a biological mechanism or causal relationship.”
+- “Investigational evidence means the drug is approved.”
+- “The graph replaces experimental validation or scientific review.”

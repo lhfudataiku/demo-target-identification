@@ -60,6 +60,17 @@
     ...r, colour: /grouped/i.test(r.label) ? 'var(--muted-foreground)' : 'var(--chart-2)',
   })))
 
+  /** EXTERNAL sources only. `totals.sources` counts rows in
+      graph_node_source_counts, which is 7: the six published vocabularies plus
+      `MONDO_grouped`, a grouping we derived. Rendering 7 under a subtitle that
+      says six is the contradiction the presenter note existed to manage, so the
+      tile now counts what it claims to count. Same /grouped/i test the bar
+      colouring already uses. */
+  const externalSources = computed(() => {
+    const rows = data.value?.node_sources ?? []
+    return rows.length ? rows.filter((r) => !/grouped/i.test(r.label)).length : null
+  })
+
   /** Share of PPI edges asserted by more than one interactome — the finding the
       provenance card's subtitle states, derived rather than typed. */
   const corroboratedPct = computed(() => {
@@ -71,12 +82,15 @@
   })
 
   /** The largest evidence type, named in the subtitle so the card says which
-      kind of evidence the model's label is actually made of. */
+      kind of evidence the model's label is actually made of. The dataset stores
+      these as column values (`genetic_association`), which must not reach a
+      client's screen as typed. */
+  const humanise = (s: string) => s.replace(/_/g, ' ').replace(/\+/g, ' + ')
   const topEvidence = computed(() => {
     const rows = [...(data.value?.label_evidence ?? [])].sort((a, b) => b.count - a.count)
     if (!rows.length) return null
     const total = rows.reduce((a, r) => a + r.count, 0)
-    return { label: rows[0].label, pct: Math.round((100 * rows[0].count) / total) }
+    return { label: humanise(rows[0].label), pct: Math.round((100 * rows[0].count) / total) }
   })
 
   // The six external vocabularies, in one line each. A client reads bare
@@ -135,7 +149,10 @@
           <ActStat label="Edges" :value="fmt(totals.edges)" :sub="`${totals.relations} relations`" />
           <ActStat label="Edges with provenance" :value="fmt(totals.edges_with_provenance)"
                    sub="protein interactions naming their source" />
-          <ActStat label="External sources" :value="fmt(totals.sources)" />
+          <ActStat label="External sources" :value="externalSources ?? '—'"
+                   :sub="totals.sources > (externalSources ?? 0)
+                     ? `plus ${totals.sources - (externalSources ?? 0)} grouping we derived`
+                     : undefined" />
         </div>
         <p v-else class="py-4 text-center text-sm text-muted-foreground">Loading…</p>
 
@@ -234,9 +251,9 @@
                :icon="GitBranch" accent="var(--chart-3)"
                :chips="[['live', 'live']]" :src="['graph_ppi_provenance']">
         <template #desc>
-          <template v-if="corroboratedPct !== null">{{ corroboratedPct }}% of</template>
-          <template v-else>Most</template>
-          protein–protein interactions here are asserted by more than one independent database.
+          Every protein–protein interaction names the database that asserted
+          it<template v-if="corroboratedPct !== null">, and {{ corroboratedPct }}% are corroborated by
+          two or more</template>.
         </template>
         <ActBar v-if="data" :rows="ppiRows" />
         <div class="mt-2 flex gap-4 font-mono text-[10.5px] text-muted-foreground">
@@ -257,9 +274,9 @@
                :chips="[['live', 'live']]" :src="['graph_label_evidence']">
         <template #desc>
           Every gene–disease <ActTerm t="association" /> carries an
-          <ActTerm t="evidence-type" /><template v-if="topEvidence">, and
-          {{ topEvidence.pct }}% of them are “{{ topEvidence.label }}”</template> — and they are not
-          equally strong.
+          <ActTerm t="evidence-type" />, and they are not equally
+          strong<template v-if="topEvidence"> — {{ topEvidence.pct }}% of them are
+          “{{ topEvidence.label }}”</template>.
         </template>
         <ActDonut v-if="data" :rows="data.label_evidence" />
         <template #note>

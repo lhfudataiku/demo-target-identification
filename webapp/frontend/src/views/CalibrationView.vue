@@ -54,7 +54,7 @@
     routes: { label: string; count: number; source: string }[]
     route_admissions: number; duplicates_removed: number; pairs_per_disease: number
     union_rows: number; pos_rate: number; n_families: number
-    glossary: { feature: string; kind: string; what: string }[]
+    glossary: { feature: string; kind: string; label: string; what: string }[]
     drivers: { label: string; count: number }[]
     drivers_kind: Record<string, string>
     auc_values: number[]; family_auc_values: number[]
@@ -141,16 +141,33 @@
       label: d.label, count: d.count,
       colour: data.value!.drivers_kind[d.label] === 'provenance' ? 'var(--chart-2)' : 'var(--chart-3)',
     })))
-  /** Share of top-driver appearances that are provenance features — the finding
-      the driver card's subtitle states. */
-  const provenanceShare = computed(() => {
+  /** Provenance's share of top-driver appearances, AND how many features earn
+      it. Both numbers, because the share alone invites the wrong claim: at 38%
+      provenance is not the largest KIND (path is, collectively), so the finding
+      is the disproportion -- 2 features of 14 taking 38% of the slots -- not
+      dominance. Stating the count keeps the subtitle from overclaiming. */
+  const provenance = computed(() => {
     const rows = data.value?.drivers ?? []
     const total = rows.reduce((a, d) => a + d.count, 0)
     if (!total) return null
-    const prov = rows
-      .filter((d) => data.value!.drivers_kind[d.label] === 'provenance')
-      .reduce((a, d) => a + d.count, 0)
-    return Math.round((100 * prov) / total)
+    const prov = rows.filter((d) => data.value!.drivers_kind[d.label] === 'provenance')
+    return {
+      pct: Math.round((100 * prov.reduce((a, d) => a + d.count, 0)) / total),
+      n: prov.length,
+      total: rows.length,
+    }
+  })
+  /** The single most frequent top driver, named the way a reader can check.
+      `drivers[].label` is the raw column (`ppi_evidence_depth`); the payload's
+      glossary carries the standalone wording for exactly this position, from
+      backend/feature_glossary.py. Falls back to the column name rather than
+      rendering nothing. */
+  const topDriver = computed(() => {
+    const rows = [...(data.value?.drivers ?? [])].sort((a, b) => b.count - a.count)
+    const top = rows[0]
+    if (!top) return null
+    const g = data.value?.glossary.find((f) => f.feature === top.label)
+    return { ...top, name: g?.label ?? top.label }
   })
 
   /* The Sankey's route labels arrived as feature codes -- "GGD · gene-gene",
@@ -167,13 +184,23 @@
   const routes = computed(() =>
     (data.value?.routes ?? []).map((r) => ({ ...r, name: routeLabel(r.label) })))
 
+  /** Median and the middle half. NOT min-max: the minimum is 0.0x -- a disease
+      with no known target in its top 50 -- and "the spread runs 0.0x to 59.2x"
+      reads as a broken card rather than as the point. The quartiles are also
+      what the documented claim quotes. */
   const personaSpread = computed(() => {
     const v = [...(data.value?.personas ?? [])].map((p) => p.value).sort((a, b) => a - b)
     if (!v.length) return null
+    const at = (q: number) => v[Math.min(v.length - 1, Math.floor(q * v.length))]
+    // Even counts average the two middle values, so this agrees with the
+    // documented median rather than sitting 0.1 above it.
+    const mid = v.length % 2 ? v[(v.length - 1) / 2]
+                             : (v[v.length / 2 - 1] + v[v.length / 2]) / 2
     return {
-      lo: v[0].toFixed(1),
-      hi: v[v.length - 1].toFixed(1),
-      median: v[Math.floor(v.length / 2)].toFixed(1),
+      median: mid.toFixed(1),
+      q1: at(0.25).toFixed(0),
+      q3: at(0.75).toFixed(0),
+      max: v[v.length - 1].toFixed(0),
     }
   })
 
@@ -237,8 +264,8 @@
         </template>
 
         <template #note>
-          <b>The model has nothing to say about the excluded diseases<template v-if="data"> —
-          {{ data.eligibility.pct_excluded }}% of them</template>.</b>
+          <b>The model has nothing to say about those<template v-if="data">
+          {{ data.eligibility.pct_excluded }}% of all disease nodes</template>.</b>
           Not “it scores them badly”: it never sees them. If a client's disease of interest is in
           that group, the honest answer is that this pipeline does not cover it yet.
         </template>
@@ -400,7 +427,8 @@
         <template #desc>
           <template v-if="personaSpread">
             The head of the list is a median {{ personaSpread.median }}× denser in real targets than
-            chance — but the spread runs {{ personaSpread.lo }}× to {{ personaSpread.hi }}×.
+            chance — but the middle half alone runs {{ personaSpread.q1 }}× to
+            {{ personaSpread.q3 }}×, and some diseases barely enrich at all.
           </template>
           <template v-else>How much better than chance the top of each disease's list is.</template>
         </template>
@@ -432,10 +460,11 @@
                title="What drives the score" :chips="[['live', 'live']]"
                :src="['shap_driver_frequency']">
         <template #desc>
-          <ActTerm t="feature-provenance">Provenance features</ActTerm> — how many independent sources
-          back an interaction — dominate the model's per-prediction
-          explanations<template v-if="provenanceShare !== null">, at
-          {{ provenanceShare }}% of all top-driver appearances</template>.
+          <template v-if="provenance">Just {{ provenance.n }} of the {{ provenance.total }} features
+            are <ActTerm t="feature-provenance">provenance</ActTerm> — how many independent sources
+            back an interaction — and they take {{ provenance.pct }}% of all top-driver slots.
+          </template>
+          <template v-else>How often each feature is among the two that moved a candidate most.</template>
         </template>
 
         <ActBar v-if="data" :rows="driverRows" :row-height="17" />
@@ -451,9 +480,10 @@
         </div>
 
         <template #note>
-          <b>The model leans hardest on how well-evidenced an interaction is</b>, not on what the
-          protein does. That is a real finding about this feature set, and it is the honest answer
-          when someone asks what the model has learned.
+          <b>The strongest single driver is how well-evidenced an interaction is<template
+            v-if="topDriver"> — {{ topDriver.name }}</template></b>, not anything about what the
+          protein does. Read that as a finding about this feature set rather than about biology: it is
+          the honest answer when someone asks what the model has learned.
         </template>
         <template #method>
           <p><b class="text-foreground">What SHAP is.</b> SHAP splits one prediction into a
@@ -463,6 +493,10 @@
             contributors, across every scored candidate — so it is a frequency, not an average
             effect size. A feature that moves a few predictions enormously and the rest not at all
             will read low here.</p>
+          <p class="mt-1.5"><b class="text-foreground">Provenance is not the largest kind, and the
+            card does not say it is.</b> Collectively the four path features take a larger share than
+            the two provenance ones. The claim is the disproportion: two features earning a share that
+            fourteen split evenly would give to roughly two.</p>
         </template>
       </ActCard>
 
