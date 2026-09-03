@@ -197,12 +197,19 @@ graph project can change freely.
 boundary.** Each of the 12 foreign dataset references now feeds **exactly one Sync recipe** and
 nothing else; every downstream recipe reads the local copy of the same name. That makes the import
 surface auditable in one place and stops a rename in the graph project breaking 26 recipes at once.
-**The Kuzu folder is the exception — it is read directly by the 10 Cypher recipes**, because folder
-sync is not a supported DSS pattern.
+
+**The Kuzu folder was the exception, and is being brought into the same pattern.** A folder cannot be
+Sync'd, but it can be merged: `compute_ytvuniN8` is a Merge-Folder recipe that copies
+`DEMO_KG_LS.published_kg_ls-Mp25kL` into the local managed folder **`graph` (`ytvuniN8`)**. As of
+2026-09-03 the Graph Explorer webapp already reads the local `graph` folder, while the **10 Cypher
+feature recipes still read `DEMO_KG_LS.enriched_index_freezed-6bRVGs` directly across the boundary**.
+Switching those 10 to the local folder is approved and pending verification (Phase C); until then two
+Kuzu read paths coexist and this table records both.
 
 | Shared object | Local consumers | Why the modelling project needs it |
 |---|--:|---|
-| `enriched_index_freezed` *(Kuzu folder)* | 10 | the materialized graph — every Cypher feature recipe reads it. **Not synced; read across the boundary** |
+| `published_kg_ls` *(Kuzu folder)* | 1 | the current materialized graph — merged into the local `graph` folder by `compute_ytvuniN8`, which the Graph Explorer webapp reads |
+| `enriched_index_freezed` *(Kuzu folder)* | 10 | **legacy path, pending Phase C.** The 10 Cypher feature recipes still read this snapshot across the boundary; not synced |
 | `graph_nodes` | 26 | node identity, types, names; the index→entity lookup |
 | `drug_disease_edges` | 11 | therapeutic-axis ground truth — `indication` and `drug_investigated_for` |
 | `drug_protein_edges` | 11 | tractability-axis ground truth — the only uninflated drug label |

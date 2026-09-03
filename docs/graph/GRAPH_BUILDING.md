@@ -208,7 +208,7 @@ are resolved once, in assembly.
 | Function | ontology + gene annotation | protein + hierarchy | `go_protein_edges`, `go_hierarchy_edges` |
 | Phenotypes | ontology + annotations + gene links | overlap resolution + deduplication | 3 phenotype edge tables |
 | Assembly | 4 recipes (§4.4) | — | `kg`, `graph_nodes`, `graph_edges`, `edge_metadata` |
-| Graph build | Kuzu build recipe | — | Kuzu folder `enriched_index_freezed-6bRVGs` |
+| Graph build | Kuzu build recipe `build-graph-Mp25kL` | — | Kuzu folder `published_kg_ls-Mp25kL` (predecessor: `build-graph-6bRVGs` → `enriched_index_freezed-6bRVGs`, still present) |
 
 ### 4.3 Harmonization logic — the scientific content
 
@@ -306,7 +306,7 @@ Which source is the system of record for each node and edge type, and how it gro
 ## 6. The graph-building webapp
 
 The assembled node and edge tables are materialized into a **Kuzu** graph database by a plugin
-recipe, written to the managed folder `enriched_index_freezed-6bRVGs`. An interactive explorer
+recipe, written to the managed folder `published_kg_ls-Mp25kL`. An interactive explorer
 webapp reads the same tables and renders the graph for exploration; it runs as a local process
 rather than in a container.
 
@@ -319,12 +319,24 @@ Schema mapping: node id = `node_index`, label = `node_name`, grouping by `node_t
 - **Every relation needs its own edge group with an explicit relation filter.** A missing filter
   drops that relation without an error — this happened twice.
 
-The Kuzu folder is the **primary shared deliverable** to the modelling project: all of its Cypher
-feature recipes read it (PROJECT_CONTEXT §4.3).
+The Kuzu folder is the **primary shared deliverable** to the modelling project. It is consumed two
+ways as of 2026-09-03: `published_kg_ls-Mp25kL` is merged into the modelling project's local `graph`
+folder and read by the Graph Explorer webapp, while the 10 Cypher feature recipes still read
+`enriched_index_freezed-6bRVGs` directly. Consolidating both onto the local folder is approved and
+pending verification (PROJECT_CONTEXT §4.3).
 
-> ⚠ **Two Kuzu snapshots exist.** `enriched_index_freezed-6bRVGs` is current, built on the
-> deterministic index. An older `enriched_clean-gFdnaU` remains and should be retired so there is no
-> ambiguity about which graph the features were derived from.
+> ⚠ **Two Kuzu snapshots exist, and they are not interchangeable.**
+> `published_kg_ls-Mp25kL` (`build-graph-Mp25kL`, 2026-09-03) is current and carries the saved queries
+> that back the webapp demo narratives. `enriched_index_freezed-6bRVGs` (`build-graph-6bRVGs`,
+> 2026-08-14) is the snapshot **every published feature number was derived from** and must survive
+> until the Cypher recipes are switched and their outputs verified equal.
+>
+> Both build recipes read the same `graph_nodes` and `graph_edges`; only `vg_saved_config_ds` differs.
+> They are nonetheless not byte-equal — `db.kz` is 87.6 MB against 88.7 MB, and `configuration.json`
+> 27.5 KB against 29.9 KB — so equality of Cypher results is a hypothesis to test, not an assumption.
+>
+> The older `enriched_clean-gFdnaU` named in earlier revisions of this section **has since been
+> deleted**; the graph project now holds these two Kuzu folders and no third.
 
 ## 7. Final graph statistics
 

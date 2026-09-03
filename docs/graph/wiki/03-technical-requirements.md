@@ -38,7 +38,8 @@ the target DSS environment rather than assuming the source-project environment i
 ## Plug-ins and Webapp
 
 The POC uses the Visual Graph plug-in to materialize and interactively explore the graph. The
-current Kuzu folder is `enriched_index_freezed-6bRVGs`; the explorer webapp reads the assembled
+current Kuzu folder is `published_kg_ls-Mp25kL`, with `enriched_index_freezed-6bRVGs` retained as the
+snapshot the published feature numbers were derived from; the explorer webapp reads the assembled
 graph tables and runs as a local process rather than in a container.
 
 Verify that the Visual Graph plug-in and its graph runtime are installed and supported in the

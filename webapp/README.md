@@ -440,9 +440,15 @@ at application level as the lazy full-screen shell. The dialog's URL is built fr
 same-origin; local development needs `VITE_DSS_ORIGIN` set to the relevant DSS host.
 
 The two Explorer identifiers intentionally differ. `wBcApLN` identifies the underlying webapp for DSS
-status and log operations; `wBcApLN_graph-search` is the browser-navigation object used in
-`/projects/DEMO_TARGET_IDENTIFICATION/webapps/wBcApLN_graph-search/view`. Do not replace one with the
+status and log operations; `wBcApLN_graph-explorer` is the browser-navigation object used in
+`/projects/DEMO_TARGET_IDENTIFICATION/webapps/wBcApLN_graph-explorer/view`. Do not replace one with the
 other or add a graph snapshot ID to the configuration.
+
+The object ID carries the webapp's current name slug, so **renaming the Explorer in DSS changes it**.
+The webapp was renamed to *Graph Explorer* on 2026-09-03 and its object ID moved from
+`wBcApLN_graph-search` to `wBcApLN_graph-explorer`; the webapp ID `wBcApLN` did not change. Because
+`VITE_VISUAL_GRAPH_OBJECT_ID` is baked into the Vite bundle at build time, a rename is only live after
+a rebuild and redeploy — the Act 1 and Act 4 graph cards keep pointing at the old slug until then.
 
 The handoff is deliberately explicit. The Target Prioritizer prepares visible Cypher and attempts to
 copy it during the user's **Open full Explorer** action; the user then pastes and runs it in the Explorer.

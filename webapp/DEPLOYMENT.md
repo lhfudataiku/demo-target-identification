@@ -168,7 +168,7 @@ Check the deployed bundle contains the Visual Graph navigation object and the sh
 
 ```bash
 dku library read /python/target_prioritizer/frontend_dist/assets/index.js \
-  -P DEMO_TARGET_IDENTIFICATION | grep -E -c 'wBcApLN_graph-search|VisualGraphExplorer(Card|Dialog)'
+  -P DEMO_TARGET_IDENTIFICATION | grep -E -c 'wBcApLN_graph-explorer|VisualGraphExplorer(Card|Dialog)'
 ```
 
 The expected result is at least `1`. Then inspect the deployed FastAPI wiring: it must retain
