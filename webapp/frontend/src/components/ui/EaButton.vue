@@ -35,11 +35,13 @@
     variant?: ButtonVariants['variant']
     size?: ButtonVariants['size']
     class?: HTMLAttributes['class']
+    /** Renders a real anchor instead of a button. `target`/`rel` fall through as attributes. */
+    href?: string
   }>()
 </script>
 
 <template>
-  <button :class="cn(buttonVariants({ variant, size }), props.class)">
+  <component :is="href ? 'a' : 'button'" :href="href" :class="cn(buttonVariants({ variant, size }), props.class)">
     <slot />
-  </button>
+  </component>
 </template>

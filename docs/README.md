@@ -64,7 +64,7 @@ evidence and generated documents appear first; planning and historical material 
 
 | | |
 |---|---|
-| [`demo/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md`](demo/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md) | **Approved 2026-09-02:** consolidate Acts 1 and 4 on one shared Visual Graph Explorer card and full-screen shell, migrate both acts, then remove the custom graph execution and rendering paths after acceptance |
+| [`demo/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md`](demo/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md) | **Approved 2026-09-02:** consolidate Acts 1 and 4 on one shared Visual Graph Explorer card, migrate both acts, then remove the custom graph execution and rendering paths after acceptance. **Amended 2026-09-30:** the card links to the Explorer in a new tab; the full-screen shell is retired |
 | [`demo/DOC_RESTRUCTURE_PLAN.md`](demo/DOC_RESTRUCTURE_PLAN.md) | **Approved 2026-08-28:** repository-wide documentation, decision, build-governance and cross-harness context restructure. Not an implementation record or current project authority |
 
 ## Historical material
