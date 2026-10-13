@@ -710,7 +710,7 @@
                :description="sel ? `Five ready-made queries showing the routes behind ${sel.gene_name}'s score.` : undefined"
                :context-title="explorerContextTitle"
                :starter-queries="explorerQueries"
-               handoff="Create a new query in the Explorer, paste the copied Cypher, and run it. Running another default query replaces the current result."
+               handoff="Running another default query replaces the current result."
                :chips="[['live', 'live']]" :src="['Kuzu folder (ytvuniN8)']"
                method-label="Query details">
         <template #note>

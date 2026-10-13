@@ -1,6 +1,6 @@
 _figno = 1
 # ==== nb3_validation_and_plots ====
-# Validation, with the plots — backs sections 6.4 and 7. Produces the per-family AUC figures and the association-vs-therapeutic orthogonality scatter.**Assertion-first.** Every documented value is checked against live data and reported `PASS` or `STALE`. A stale document fails loudly here instead of rotting silently.Code env: `primekg_kg`.
+# Validation, with the plots — backs sections 6.4 and 7. Produces the per-family AUC figures and the association-vs-therapeutic orthogonality scatter.**Assertion-first.** Every documented value is checked against live data and reported `PASS` or `STALE`. A stale document fails loudly here instead of rotting silently.Code env: `demo_kg-drug-discovery`.
 
 import dataiku, numpy as np, pandas as pd, math
 import matplotlib; matplotlib.use("Agg")

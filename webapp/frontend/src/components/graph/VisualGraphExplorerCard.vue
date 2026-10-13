@@ -3,9 +3,7 @@
   import { Check, Copy, ExternalLink, Network } from 'lucide-vue-next'
   import ActCard from '@/components/act/ActCard.vue'
   import { EaButton } from '@/components/ui'
-  import type { ExplorerLaunchContext } from '@/stores/visualGraphExplorer'
-  import { useVisualGraphExplorerStore } from '@/stores/visualGraphExplorer'
-  import { copyVisualGraphCypher } from '@/utils/visualGraphExplorer'
+  import { copyVisualGraphCypher, visualGraphExplorerUrl } from '@/utils/visualGraphExplorer'
 
   defineOptions({ name: 'VisualGraphExplorerCard' })
 
@@ -21,7 +19,8 @@
     description?: string
     contextTitle?: string
     cypher?: string
-    handoff?: ExplorerLaunchContext['handoff']
+    /** Act-specific note shown under the shared run-it-yourself steps. */
+    handoff?: string
     starterQueries?: VisualGraphExplorerStarter[]
     chips?: [string, string][]
     src?: string[]
@@ -31,10 +30,10 @@
 
   const emit = defineEmits<{
     selectQuery: [starter: VisualGraphExplorerStarter | null]
-    open: [context: ExplorerLaunchContext]
   }>()
 
-  const explorer = useVisualGraphExplorerStore()
+  // Built once from build-time config; null when this environment has no Explorer to link to.
+  const explorerUrl = visualGraphExplorerUrl()
   const selectedStarterId = ref<string | null>(null)
   const copied = ref(false)
   const copyFailed = ref(false)
@@ -64,21 +63,6 @@
   function selectStarter(starter: VisualGraphExplorerStarter) {
     selectedStarterId.value = starter.id
     emit('selectQuery', starter)
-  }
-
-  async function openExplorer() {
-    // Clipboard access begins within this click handler so browsers retain the user gesture.
-    const copyStatus = !hasQuery.value
-      ? 'idle'
-      : (await copyVisualGraphCypher(preparedCypher.value)) ? 'copied' : 'failed'
-    const context: ExplorerLaunchContext = {
-      title: props.contextTitle ?? props.title,
-      cypher: preparedCypher.value,
-      handoff: props.handoff,
-      copyStatus,
-    }
-    explorer.open(context)
-    emit('open', context)
   }
 
   async function copyOnly() {
@@ -122,17 +106,34 @@
              class="max-h-44 overflow-auto p-2.5 font-mono text-[10.5px] leading-relaxed text-foreground outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40">{{ preparedCypher }}</pre>
       </div>
 
+      <div v-if="hasQuery" class="text-[11.5px] leading-relaxed text-muted-foreground">
+        <p class="font-mono text-[10px] uppercase tracking-[0.08em]">Run it in the Explorer</p>
+        <ol class="mt-1 list-decimal space-y-0.5 pl-4">
+          <li>Copy the query above with <b class="text-foreground">Copy query</b>.</li>
+          <li>Open the Explorer with <b class="text-foreground">Open full Explorer</b>. It opens in a new tab.</li>
+          <li>In the Explorer, create a new query, paste it and run it.</li>
+        </ol>
+        <p v-if="handoff" class="mt-1.5">{{ handoff }}</p>
+      </div>
+
       <div class="flex flex-wrap items-center gap-2">
-        <EaButton size="sm" @click="openExplorer">
-          <ExternalLink class="size-3.5" /> Open full Explorer
-        </EaButton>
         <EaButton v-if="hasQuery" variant="outline" size="sm" @click="copyOnly">
           <Check v-if="copied" class="size-3.5" />
           <Copy v-else class="size-3.5" />
           {{ copied ? 'Copied' : 'Copy query' }}
         </EaButton>
+        <EaButton v-if="explorerUrl" size="sm" :href="explorerUrl" target="_blank" rel="noopener noreferrer">
+          <ExternalLink class="size-3.5" /> Open full Explorer
+          <span class="sr-only">(opens in a new tab)</span>
+        </EaButton>
+        <EaButton v-else size="sm" disabled>
+          <ExternalLink class="size-3.5" /> Open full Explorer
+        </EaButton>
         <span v-if="copyFailed" role="status" class="text-xs text-destructive">
-          Copy was not available. The full Explorer shows the selectable query.
+          Copy was not available. Select the query above and copy it manually.
+        </span>
+        <span v-if="!explorerUrl" role="status" class="text-xs text-muted-foreground">
+          The Explorer link is not configured for this environment.
         </span>
       </div>
 

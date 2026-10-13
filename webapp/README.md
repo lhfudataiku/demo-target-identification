@@ -434,10 +434,11 @@ want a different one).
 ## Target Prioritizer Visual Graph Explorer integration
 
 This application uses the Visual Graph Explorer as the single interactive graph surface for both Act 1
-and Act 4. `VisualGraphExplorerCard` is the shared card and `VisualGraphExplorerDialog` is mounted once
-at application level as the lazy full-screen shell. The dialog's URL is built from the four
-`VITE_VISUAL_GRAPH_*` / `VITE_DSS_ORIGIN` settings above. In the deployed DSS webapp the origin is
-same-origin; local development needs `VITE_DSS_ORIGIN` set to the relevant DSS host.
+and Act 4. `VisualGraphExplorerCard` is the shared card; its **Open full Explorer** control is a plain
+link (`target="_blank"`) to the Explorer, so the Explorer always opens in its own browser tab and never
+inside this app. The link's URL is built from the four `VITE_VISUAL_GRAPH_*` / `VITE_DSS_ORIGIN` settings
+above. In the deployed DSS webapp the origin is same-origin; local development needs `VITE_DSS_ORIGIN`
+set to the relevant DSS host. With no URL the card shows the control disabled, with a note saying so.
 
 The two Explorer identifiers intentionally differ. `wBcApLN` identifies the underlying webapp for DSS
 status and log operations; `wBcApLN_graph-explorer` is the browser-navigation object used in
@@ -450,11 +451,11 @@ The webapp was renamed to *Graph Explorer* on 2026-09-03 and its object ID moved
 `VITE_VISUAL_GRAPH_OBJECT_ID` is baked into the Vite bundle at build time, a rename is only live after
 a rebuild and redeploy — the Act 1 and Act 4 graph cards keep pointing at the old slug until then.
 
-The handoff is deliberately explicit. The Target Prioritizer prepares visible Cypher and attempts to
-copy it during the user's **Open full Explorer** action; the user then pastes and runs it in the Explorer.
-If clipboard access or nested framing is unavailable, the query remains selectable and **Open in new tab**
-is the supported fallback. Do not call a Visual Graph plug-in endpoint, modify the Explorer iframe DOM or
-claim an unconfirmed clipboard copy.
+The handoff is deliberately explicit and manual. The card shows the prepared Cypher with three numbered
+steps: copy the query with **Copy query**, open the Explorer, then create a new query there, paste and
+run it. Opening the link does not touch the clipboard. If clipboard access is unavailable the query stays
+selectable and the card says so. Do not call a Visual Graph plug-in endpoint, embed the Explorer in an
+iframe or claim an unconfirmed clipboard copy.
 
 Act 1 offers three deterministic starters. Act 4 offers five independent bounded presets for the current
 disease and target gene. The Target Prioritizer has no `/api/graph/*` endpoint and does not execute

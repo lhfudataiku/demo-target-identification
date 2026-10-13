@@ -125,12 +125,13 @@ deploy command; and a design system already themed to the Dataiku brand.
 
 ### 3.1.1 Graph exploration — one shared handoff, not a second graph product
 
-Acts 1 and 4 use the same `VisualGraphExplorerCard` and one application-level
-`VisualGraphExplorerDialog` shell. The card prepares context-specific Cypher but does not execute it;
-the lazy dialog opens the Visual Graph Explorer only when the user asks. The card and dialog provide an
-explicit copy-and-paste handoff: the query is shown, copying is attempted only during a user action, and
-the user pastes and runs it in the Explorer. There is no supported query deep link, private plug-in API
-call, or iframe-DOM integration.
+Acts 1 and 4 use the same `VisualGraphExplorerCard`. The card prepares context-specific Cypher but does
+not execute it, and its **Open full Explorer** control is a plain link that opens the Visual Graph
+Explorer in a new browser tab; nothing is embedded in this app. The card provides an explicit
+copy-and-paste handoff: the query is shown with three numbered steps (copy it with **Copy query**, open the
+Explorer, create a new query there, paste and run), copying happens only when the user presses **Copy
+query**, and opening the link never touches the clipboard. There is no supported query deep link, private
+plug-in API call, or iframe-DOM integration.
 
 Act 1 supplies three deterministic starter queries. Act 4 supplies five independently bounded presets
 for the selected disease and target gene: interaction, pathway, molecular function, biological process
@@ -471,8 +472,8 @@ nothing on it fed the score, but it is one of three routes admitting a pair into
 contraindication was never built.
 
 **The on-graph shot.** The Visual Graph Explorer is the interactive surface, not a Target Prioritizer
-query recipe or canvas. The shared card exposes the generated query and opens a single full-screen shell;
-the user pastes and runs it in the Explorer. Traversal is **undirected**, relationship variables are bound
+query recipe or canvas. The shared card exposes the generated query and links to the Explorer in a new
+tab; the user copies, pastes and runs it there. Traversal is **undirected**, relationship variables are bound
 and returned, and the graph label for genes is `protein`. Node indices are snapshot-specific, so the Act 4
 presets are generated from the selected live candidate row rather than copied from documentation.
 

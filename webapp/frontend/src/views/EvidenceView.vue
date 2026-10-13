@@ -183,7 +183,7 @@
         title="Explore the graph yourself"
         description="Three ready-made questions showing how a disease reaches proteins, pathways and drug context."
         :starter-queries="ACT1_EXPLORER_QUERIES"
-        handoff="Create a new query in the Explorer, paste the copied Cypher, and run it. For an open-ended question, use the Explorer's query generator. Running another query replaces the current result."
+        handoff="For an open-ended question, use the Explorer's query generator. Running another query replaces the current result."
         :chips="[['live', 'live']]"
         :src="['Kuzu folder (ytvuniN8)']"
         method-label="How this works"

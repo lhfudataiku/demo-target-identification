@@ -11,6 +11,25 @@
 the phased rollout below. Live DSS configuration changes, deployment, commit and push remain separate
 actions requiring their own approval.
 
+**Amendment — 2026-09-30: the in-app shell is retired.** The full-screen iframe shell was hard to read
+in use, so the card now links to the Explorer instead of embedding it. Repository change only; nothing
+is deployed by this amendment. The rest of this document is left as the record of what was approved and
+built on 2026-09-02, and the following are superseded:
+
+- **§6.1 and §6.2.** **Open full Explorer** is a plain link (`target="_blank"`) that opens the
+  Explorer in a new tab. `VisualGraphExplorerDialog`, its Pinia store, the iframe, the loading and
+  retry states, focus handling and the persistent shell actions are removed. The card keeps **Copy
+  query**.
+- **§6.3.** The Target Prioritizer no longer copies during the open action. The card shows the query
+  with three numbered steps (copy it, open the Explorer, create a new query there, paste and run); the
+  user copies it. The rule that an unconfirmed clipboard copy is never reported as copied still holds.
+- **§10, "Explorer shell".** The shell criteria no longer apply. **Open in new tab** stops being a
+  fallback and becomes the only path. Replace them with: the link opens the Explorer URL in a new tab,
+  and no overlay or iframe mounts in the Target Prioritizer.
+
+The architecture in §5 is otherwise unchanged: the Target Prioritizer has no graph route, executes no
+Cypher and renders no graph.
+
 ## 1. Decision summary
 
 Act 1 and Act 4 will use **one shared graph-exploration implementation** backed by the Visual Graph

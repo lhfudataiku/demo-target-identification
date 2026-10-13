@@ -60,7 +60,7 @@ targeting a different project:
 ```
 LIB_NS=target_prioritizer          APP_PREFIX=TARGET_PRIORITIZER
 PROJECT_KEY=DEMO_TARGET_IDENTIFICATION
-WEBAPP_ID=OlmPX9a                  ENV_NAME=primekg_kg
+WEBAPP_ID=OlmPX9a                  ENV_NAME=demo_kg-drug-discovery
 ```
 
 **Do not change `BACKEND_PORT`.** `frontend/vite.config.ts` hardcodes the `/api` proxy to
@@ -149,26 +149,26 @@ directly and `make deploy` is about to overwrite it. Diff before deploying.
 
 ### 4.1 Visual Graph Explorer release checks
 
-The Target Prioritizer opens the Visual Graph Explorer inside a lazy full-screen iframe. It does not
-send Cypher to the plug-in: the shared card prepares a visible query, attempts to copy it during the
-user action, and the user pastes and runs it in the Explorer. After deployment, check all of the
+The Target Prioritizer links to the Visual Graph Explorer, which opens in a new browser tab. It does not
+send Cypher to the plug-in: the shared card shows a visible query with copy-and-paste steps, and the user
+copies it, opens the Explorer, then pastes and runs it there. After deployment, check all of the
 following with an authorized user and, where possible, a representative non-owner:
 
 1. Act 1 exposes three deterministic starters and Act 4 exposes five independent bounded presets for
    the selected disease and target gene.
-2. Opening either card uses one dialog shell, loads the Explorer for an authorized user, and preserves
-   the prepared query for explicit paste-and-run handoff.
-3. If the nested frame shows sign-in, access denied or cannot display the Explorer, **Open in new tab**
-   reaches the same Explorer URL. Treat this as a permissions or framing result to resolve with the
+2. **Open full Explorer** on either card is a real link: it opens the Explorer in a new tab, and no
+   overlay or iframe appears in the Target Prioritizer. Hovering it shows the Explorer URL, and the link
+   target matches `VITE_VISUAL_GRAPH_OBJECT_ID`.
+3. If the new tab shows sign-in or access denied, treat it as a permissions result to resolve with the
    Explorer project owner, not as a failed Target Prioritizer query.
 4. Clipboard success is reported only when confirmed; otherwise the query remains selectable for manual
    copy. Do not work around this with Explorer private APIs or iframe-DOM access.
 
-Check the deployed bundle contains the Visual Graph navigation object and the shared UI identifiers:
+Check the deployed bundle contains the Visual Graph navigation object and the shared UI identifier:
 
 ```bash
 dku library read /python/target_prioritizer/frontend_dist/assets/index.js \
-  -P DEMO_TARGET_IDENTIFICATION | grep -E -c 'wBcApLN_graph-explorer|VisualGraphExplorer(Card|Dialog)'
+  -P DEMO_TARGET_IDENTIFICATION | grep -E -c 'wBcApLN_graph-explorer|VisualGraphExplorerCard'
 ```
 
 The expected result is at least `1`. Then inspect the deployed FastAPI wiring: it must retain

@@ -6,9 +6,8 @@
  * files and would have followed the sidebar convention, but it answers the
  * question by taking them off the card they were reading. The drawer overlays.
  *
- * Mirrors stores/visualGraphExplorer.ts, which is the app's existing pattern for
- * a globally-reachable overlay: a store here, one component mounted once in
- * DefaultLayout, and any number of triggers.
+ * The pattern for a globally-reachable overlay: a store here, one component
+ * mounted once in DefaultLayout, and any number of triggers.
  */
 import { defineStore } from 'pinia'
 import { ref } from 'vue'

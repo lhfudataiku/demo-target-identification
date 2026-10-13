@@ -41,19 +41,6 @@ export function visualGraphExplorerUrl(
   return `${origin}/projects/${encodeURIComponent(projectKey)}/webapps/${encodeURIComponent(objectId)}/view`
 }
 
-export function isVisualGraphExplorerConfigured(): boolean {
-  return visualGraphExplorerUrl() !== null
-}
-
-/** Open only a constructed URL and report whether the browser created a tab. */
-export function openVisualGraphExplorer(url: string): boolean {
-  if (typeof window === 'undefined') return false
-  const opened = window.open(url, '_blank')
-  if (!opened) return false
-  opened.opener = null
-  return true
-}
-
 /** Clipboard access is best-effort in DSS iframes; never report an unconfirmed copy. */
 export async function copyVisualGraphCypher(cypher: string): Promise<boolean> {
   if (typeof navigator === 'undefined' || !navigator.clipboard?.writeText) return false
