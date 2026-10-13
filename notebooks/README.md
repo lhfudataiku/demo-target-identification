@@ -5,7 +5,7 @@
 > claim or execution dependency changes · **Generated dependencies:** none — these files are the source
 > · **Excludes:** modelling rationale and narrative interpretation.
 
-**These files are the source of truth, not a mirror.** They run on the **`primekg_kg`** code env.
+**These files are the source of truth, not a mirror.** They run on the **`demo_kg-drug-discovery`** code env (Python 3.13), the project default.
 `tools/push_assertions.py --push` copies them into the DSS project library under
 `/python/nb_assertions/`, and the `validate_notebooks` scenario executes them there through
 `nb_assertions/runner.py` — one two-line step per script. `tools/check_indexes.sh` fails on any

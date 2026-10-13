@@ -60,7 +60,7 @@ targeting a different project:
 ```
 LIB_NS=target_prioritizer          APP_PREFIX=TARGET_PRIORITIZER
 PROJECT_KEY=DEMO_TARGET_IDENTIFICATION
-WEBAPP_ID=OlmPX9a                  ENV_NAME=primekg_kg
+WEBAPP_ID=OlmPX9a                  ENV_NAME=demo_kg-drug-discovery
 ```
 
 **Do not change `BACKEND_PORT`.** `frontend/vite.config.ts` hardcodes the `/api` proxy to
