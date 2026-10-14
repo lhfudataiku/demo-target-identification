@@ -5,7 +5,7 @@
 > **Lifecycle:** Canonical · **Audience:** webapp implementers and technical reviewers · **Authority:**
 > Vue/FastAPI architecture, routes, state, interaction and data contracts · **Update when:** an app
 > contract, route, interaction or backing-data contract changes · **Generated dependencies:**
-> [`FLOW_MAP.md`](FLOW_MAP.md) for live flow lineage, the notebook assertions cited in §9 and
+> [`FLOW_MAP.md`](../operations/FLOW_MAP.md) for live flow lineage, the notebook assertions cited in §9 and
 > [`../prioritizer/CLAIM_REGISTRY.json`](../prioritizer/CLAIM_REGISTRY.json) for governed consumers ·
 > **Excludes:** hand-authored DSS-flow inventories, native-dashboard evaluation and build chronology.
 > Detailed analytical rationale lives in [`../prioritizer/VALIDATION.md`](../prioritizer/VALIDATION.md);
@@ -24,11 +24,12 @@ platform company demonstrating machinery, not a drug-discovery vendor proposing 
 `bs-blueprint` template. **Four acts in the app; acts 5 and 6 are a spoken talk track**, because they
 are about the platform rather than the biology.
 
-**Status.** Mockup iteration 3 — [`DASHBOARD_MOCKUP_V3.html`](DASHBOARD_MOCKUP_V3.html) is the current
-artefact. Earlier iterations are historical material in
+**Status.** Built: all four acts are live views in [`../../webapp/`](../../webapp/), and the app is the
+current artefact. The three mockup iterations it was derived from, including the mockup-to-app parity
+check, are historical material in
 [`../../archive/dashboard-mockup-iterations/`](../../archive/dashboard-mockup-iterations/).
 
-**Where the rest lives.** [`FLOW_MAP.md`](FLOW_MAP.md) is the generated flow authority. Historical
+**Where the rest lives.** [`FLOW_MAP.md`](../operations/FLOW_MAP.md) is the generated flow authority. Historical
 native-dashboard evaluation is in [`../../archive/NATIVE_DASHBOARD_EVALUATION.md`](../../archive/NATIVE_DASHBOARD_EVALUATION.md),
 and build chronology remains in [`../../archive/DASHBOARD_BUILD_LOG.md`](../../archive/DASHBOARD_BUILD_LOG.md).
 
@@ -771,7 +772,7 @@ warning flag; never optimise against it.
 
 ## 10. Flow lineage
 
-[`FLOW_MAP.md`](FLOW_MAP.md) is the generated authority for zones, datasets, producers and consumers.
+[`FLOW_MAP.md`](../operations/FLOW_MAP.md) is the generated authority for zones, datasets, producers and consumers.
 Read it before pruning or changing a backing contract; do not duplicate it here. In particular, use its
 notebook-provenance and zone-membership rules rather than reference counts to judge whether a serving
 dataset is safe to remove.

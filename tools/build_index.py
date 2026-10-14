@@ -117,8 +117,7 @@ def load_manifest():
     historical, hseen = [], set()
     for path in manifest["historical_claim_documents"]:
         if (not isinstance(path, str) or path not in tracked_md or path in hseen
-                or not (path.startswith("archive/") or path in {
-                    "docs/appendix/README.md", "docs/operations/PHASE_0_BASELINE_2026-08-28.md"})):
+                or not path.startswith("archive/")):
             raise ValueError("invalid historical claim document: %r" % path)
         hseen.add(path)
         historical.append(path)

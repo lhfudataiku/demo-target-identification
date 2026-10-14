@@ -7,4 +7,4 @@
 
 `flow_map.html` is preserved byte-for-byte from its former active location. It mixed hand-authored
 inventory and presentation, including inconsistent dataset counters, so it is no longer a current
-authority. Use [`../../docs/demo/FLOW_MAP.md`](../../docs/demo/FLOW_MAP.md) for the generated flow map.
+authority. Use [`../../docs/operations/FLOW_MAP.md`](../../docs/operations/FLOW_MAP.md) for the generated flow map.

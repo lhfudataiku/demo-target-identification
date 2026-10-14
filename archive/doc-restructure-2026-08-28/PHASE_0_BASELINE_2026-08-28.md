@@ -6,7 +6,7 @@
 
 ## Approval and scope
 
-[`DOC_RESTRUCTURE_PLAN.md`](../demo/DOC_RESTRUCTURE_PLAN.md) is **approved as of 2026-08-28**. This record establishes the Phase 0 baseline only. It authorises neither DSS work nor graph recomputation, build execution, deployment, staging, commit, or push.
+[`DOC_RESTRUCTURE_PLAN.md`](DOC_RESTRUCTURE_PLAN.md) is **approved as of 2026-08-28**. This record establishes the Phase 0 baseline only. It authorises neither DSS work nor graph recomputation, build execution, deployment, staging, commit, or push.
 
 The approval retains the following implementation choices. The plan states recommended defaults, but Phase 0 has not selected an implementation beyond them:
 

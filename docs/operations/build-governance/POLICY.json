@@ -35,16 +35,14 @@
   "denied_recipes": ["compute_kg"],
   "contract_consumers": {
     "recipe:compute_breast_panel": [
-      "docs/demo/FLOW_MAP.md",
       "docs/demo/WEBAPP_DESIGN.md",
+      "docs/operations/FLOW_MAP.md",
       "dss_recipes/compute_breast_panel.py"
     ],
     "schema:breast_panel_metrics": [
-      "docs/demo/DASHBOARD_MOCKUP_V3.html",
       "docs/demo/WEBAPP_DESIGN.md"
     ],
     "schema:breast_panel_overlap": [
-      "docs/demo/DASHBOARD_MOCKUP_V3.html",
       "docs/demo/WEBAPP_DESIGN.md"
     ]
   }

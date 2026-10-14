@@ -222,7 +222,7 @@ Explorer webapp and all 10 Cypher feature recipes now read that local folder, so
 reference — all 13 — passes through exactly one Sync or Merge recipe**, and nothing reads a Kuzu
 folder across the boundary. The equivalence of the old and new snapshots was verified before the
 switch, over 18,510,084 rows, and is recorded in GRAPH_BUILDING §6 and
-[`../operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md`](../operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md).
+[`GRAPH_SNAPSHOT_SWITCH_2026-09-03.md`](../../archive/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md) (archived).
 
 | Shared object | Local consumers | Why the modelling project needs it |
 |---|--:|---|

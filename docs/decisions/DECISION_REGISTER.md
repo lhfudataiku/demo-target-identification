@@ -96,7 +96,7 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Status:** accepted
 - **Decision:** Organize validation and serving zones by the question they answer, not by the DSS tool used.
 - **Rationale:** Question-oriented zones support the objection-led demo and make evidence ownership visible.
-- **Evidence:** [`FLOW_MAP.md`](../demo/FLOW_MAP.md), [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md)
+- **Evidence:** [`FLOW_MAP.md`](../operations/FLOW_MAP.md), [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md)
 - **Consequences:** Tool changes do not require conceptual zone renames; generated topology remains the flow authority.
 - **Supersedes:** tool-oriented zone naming
 - **Superseded by:** —
@@ -356,7 +356,7 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Status:** accepted
 - **Decision:** Classify governed DSS builds deterministically against an explicitly accepted baseline; keep no-change and refresh-only events machine-readable, and request targeted review only for claim, contract or incident deltas.
 - **Rationale:** Sending every routine dataset or recipe operation through an agent repeats unchanged context, burns tokens and recreates documentation drift without adding review value.
-- **Evidence:** [`BUILD_GOVERNANCE.md`](../operations/BUILD_GOVERNANCE.md), [`DOC_RESTRUCTURE_PLAN.md` §8](../demo/DOC_RESTRUCTURE_PLAN.md)
+- **Evidence:** [`BUILD_GOVERNANCE.md`](../operations/BUILD_GOVERNANCE.md), [`DOC_RESTRUCTURE_PLAN.md` §8](../../archive/doc-restructure-2026-08-28/DOC_RESTRUCTURE_PLAN.md)
 - **Consequences:** Build events never write prose directly; live execution uses explicit target and evidence contracts, and scenario creation or a pilot build remains separately authorized.
 - **Supersedes:** per-operation agent review and turn-by-turn Markdown build logging
 - **Superseded by:** —

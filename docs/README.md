@@ -38,20 +38,18 @@ evidence and generated documents appear first; planning and historical material 
 |---|---|
 | [`demo/DEMO_NARRATIVE.md`](demo/DEMO_NARRATIVE.md) | The demo as **four acts on screen and two in a talk track**, in the order a sceptical scientist asks: what can the model see → how far can it be trusted → does it hold across my area → show me the list. **Derive the app from this, not the reverse** |
 | [`demo/WEBAPP_DESIGN.md`](demo/WEBAPP_DESIGN.md) | The technical companion to the narrative: Vue/FastAPI architecture, routes, interactions and data contracts. `FLOW_MAP.md` remains the generated flow authority |
-| [`demo/FLOW_MAP.md`](demo/FLOW_MAP.md) | Every dataset by zone, its producing recipe and its consuming act or notebook — generated from live DSS. **Read before pruning anything**: a reference check alone flags the whole serving layer |
 | [`demo/panel_selection.html`](demo/panel_selection.html) | **Which families and diseases the demo carries.** Measured 2026-08-27 over all 670 validation diseases: subtype structure exists only in oncology, so Act 3 is breast + uterine and therapeutic-area breadth comes from Act 4's singletons. Every candidate tested by looking up where the field's validated targets actually rank. **Read before repointing the persona filter.** Supporting tables in [`demo/panel_selection/`](demo/panel_selection/), all asserted by `nb7` |
-| [`demo/DASHBOARD_MOCKUP_V3.html`](demo/DASHBOARD_MOCKUP_V3.html) | **Current mockup.** Four interactive acts. The Sankey opens on the whole ontology and shows the 95.7% the seed gate excludes; panel and ontology tree merged; full ranked list with search, tractability and class filters |
 | [`demo/BREAST_SURGEON_BRIEFING.md`](demo/BREAST_SURGEON_BRIEFING.md) | Clinician-facing validation set for the breast panel, including the defects a surgeon finds immediately |
 
-## Platform and reference
+## Platform, operations and reference
 
 | | |
 |---|---|
 | [`platform/DSS_CHEATSHEET.md`](platform/DSS_CHEATSHEET.md) | DSS behaviours and CLI patterns. **Read §1 before trusting any output** — those failures produce plausible results rather than errors |
 | [`operations/BUILD_GOVERNANCE.md`](operations/BUILD_GOVERNANCE.md) | Deterministic Part 2 build-event, accepted-baseline and targeted-review contract; read before designing or operating the approved DSS pilot |
+| [`operations/FLOW_MAP.md`](operations/FLOW_MAP.md) | Every dataset by zone, its producing recipe and its consuming act or notebook — generated from live DSS. **Read before pruning anything**: a reference check alone flags the whole serving layer |
 | [`reference/RESEARCH_NOTE.md`](reference/RESEARCH_NOTE.md) | Evidence base behind the modelling choices. **Unvalidated corpus — verify before client-facing use** |
 | [`reference/DISCOVERY_LANDSCAPE.md`](reference/DISCOVERY_LANDSCAPE.md) | The wider discovery chain (stages 1–6). A **separate framework** from the target-identification work above |
-| [`appendix/`](appendix/) | Frozen snapshot CSVs backing the ablation-ladder sections. **`m3-f12`-era** — not the current champion |
 
 ## Decisions
 
@@ -64,14 +62,13 @@ evidence and generated documents appear first; planning and historical material 
 
 | | |
 |---|---|
-| [`demo/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md`](demo/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md) | **Approved 2026-09-02:** consolidate Acts 1 and 4 on one shared Visual Graph Explorer card, migrate both acts, then remove the custom graph execution and rendering paths after acceptance. **Amended 2026-09-30:** the card links to the Explorer in a new tab; the full-screen shell is retired |
-| [`demo/DOC_RESTRUCTURE_PLAN.md`](demo/DOC_RESTRUCTURE_PLAN.md) | **Approved 2026-08-28:** repository-wide documentation, decision, build-governance and cross-harness context restructure. Not an implementation record or current project authority |
+| [`demo/BLUEPRINT_ALIGNMENT_PLAN.md`](demo/BLUEPRINT_ALIGNMENT_PLAN.md) | **Proposed 2026-10-14, not approved:** realign the webapp with the team's current `bs-blueprint` framework (the kit's theme, primitives and icons, the framework's app shell and DSS deploy model), in phases ratcheted by `npm run check`. Current behaviour stays governed by `demo/WEBAPP_DESIGN.md` until each phase lands |
 
 ## Historical material
 
 | | |
 |---|---|
-| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, mockup iterations 1–2 and the retired hand-authored flow view. Do not load by default; use only for an explicit history investigation |
+| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, the three dashboard mockups and their app-parity check, the retired hand-authored flow view, completed plans (the documentation restructure with its phase records, the Visual Graph Explorer integration scope), the 2026-09-03 graph-snapshot switch record, the `m3-f12`-era appendix snapshots and breast-annotation exports, and the unpublished DSS wiki drafts. Do not load by default; use only for an explicit history investigation |
 | [`../archive/decisions/`](../archive/decisions/) | Immutable retired decision chronology and its five-way triage; query `.index/decisions_history.tsv` before opening it |
 
 ## Not in this directory

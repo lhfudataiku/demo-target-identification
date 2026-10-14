@@ -34,12 +34,10 @@ def main():
             directories.add(directory)
             directory = os.path.dirname(directory)
 
-    # These two dated records name the former root DECISIONS.md as the object being migrated. Allow
-    # only that historical filename; all their other file mentions still receive normal stale checks.
-    ALLOWED_HISTORICAL_MENTIONS = {
-        ("docs/demo/DOC_RESTRUCTURE_PLAN.md", "DECISIONS.md"),
-        ("docs/operations/PHASE_0_BASELINE_2026-08-28.md", "DECISIONS.md"),
-    }
+    # Kept empty: the two dated records that needed an exemption (the former root DECISIONS.md) were
+    # archived on 2026-10-14, and archive files skip the mention check. Add a (file, mention) pair
+    # here only for a current document that must name a retired file.
+    ALLOWED_HISTORICAL_MENTIONS = set()
     current_md = [f for f in md if not f.startswith("archive/")]
     archive_md = [f for f in md if f.startswith("archive/")]
     bad_links, archive_bad_links, bad_mentions = [], [], []

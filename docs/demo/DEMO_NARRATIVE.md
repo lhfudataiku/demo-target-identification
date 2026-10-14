@@ -5,7 +5,7 @@
 > **Lifecycle:** Canonical · **Audience:** research scientists, computational biologists and the
 > data-platform team supporting them · **Authority:** business story, act order, audience voice and stable
 > interpretation · **Update when:** the demo claim, audience or act order changes · **Generated
-> dependencies:** notebook assertions; [`FLOW_MAP.md`](FLOW_MAP.md) for live flow lineage · **Excludes:**
+> dependencies:** notebook assertions; [`FLOW_MAP.md`](../operations/FLOW_MAP.md) for live flow lineage · **Excludes:**
 > API design, DSS topology and build procedure.
 
 **Who we are in this room.** An AI platform company. We are not a drug-discovery vendor, we are not
