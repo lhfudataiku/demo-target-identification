@@ -1,9 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-/* Vue Flow required base styles (node handles, edges, minimap, controls). */
-@import '@vue-flow/core/dist/style.css';
-
 /* Design tokens (CSS variables for colors, sidebar, radius, charts, dark
    mode). This is the app's own visual identity — see styles/tokens.css. */
 @import './styles/tokens.css';

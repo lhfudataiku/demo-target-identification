@@ -17,14 +17,6 @@ export interface LlmOption {
 
 export interface AppSettings {
   llm_id: string | null
-  // ── Documents block ────────────────────────────────────────────────────────
-  /** Cached DSS managed-folder id (set by the backend on first upload). */
-  documents_folder_id?: string | null
-  // ── Chatbot block ──────────────────────────────────────────────────────────
-  /** Per-tool policy: "allow" runs immediately, "prompt" asks for approval. */
-  tool_permissions?: Record<string, string>
-  /** Skip all approval prompts (master override). */
-  accept_all_mode?: boolean
 }
 
 export const useSettingsStore = defineStore('settings', () => {

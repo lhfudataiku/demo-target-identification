@@ -9,11 +9,8 @@ import SettingsView from '@/views/SettingsView.vue'
 import AdminView from '@/views/AdminView.vue'
 import { useAdminStore } from '@/stores/admin'
 import { embeddedBasePath } from '@/utils/embeddedBase'
-import { enabledFeatureRoutes } from './features'
 
-// ── Always-on core routes ───────────────────────────────────────────────────
-// Optional blocks (wizard, charts, assistant, documents, flow) live in
-// router/features.ts and are only registered when their ENABLE_* flag is on.
+// ── The four acts ───────────────────────────────────────────────────────────
 const coreRoutes: RouteRecordRaw[] = [
   {
     path: 'evidence',
@@ -75,10 +72,9 @@ const routes: RouteRecordRaw[] = [
         meta: { hiddenInMenu: true },
       },
       ...coreRoutes,
-      ...enabledFeatureRoutes(),
       ...adminRoutes,
       ...footerRoutes,
-      // Unknown / disabled-block URLs fall through to a valid page.
+      // Unknown URLs fall through to a valid page.
       {
         path: ':pathMatch(.*)*',
         name: 'notFound',
@@ -101,8 +97,8 @@ const router = createRouter({
   routes,
 })
 
-// First registered primary route, lowest `order` first (default: dataset).
-// Used by the home redirect so it never targets a disabled block.
+// First registered primary route, lowest `order` first (fallback: evidence).
+// Used by the home and unknown-URL redirects.
 function firstEnabledRoute(): string {
   const primary = router
     .getRoutes()

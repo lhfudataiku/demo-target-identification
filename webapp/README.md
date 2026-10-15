@@ -39,8 +39,8 @@ make dev                          # → open http://localhost:5173
 `app.env` is the single source of truth for the app's identity and DSS target — that's
 the whole setup, no code edits. `make dev` installs deps on first run and **blocks
 (exits non-zero) until those six values are set**, listing any that are missing. The
-frontend hot-reloads on save; the backend reloads on Python file saves. No DSS
-connection needed for the Wizard, Charts, and Flow views.
+frontend hot-reloads on save; the backend reloads on Python file saves. Every act reads
+live DSS datasets, so export DSS credentials first (see `DEPLOYMENT.md`).
 
 > **Setting up with an AI coding agent?** Don't let it guess the identity/target values.
 > The agent should discover the real options and ask you to confirm: derive `LIB_NS` /
@@ -167,7 +167,7 @@ my-app/
 │   ├── dss_client.py    ← The dual-mode connector: dataiku.api_client() in DSS, dataikuapi locally
 │   ├── routes/
 │   │   ├── system.py    ← /api/system/health, /llms, /settings (GET + PUT)
-│   │   └── example.py   ← /api/example/datasets, /preview  ← replace with your routes
+│   │   └── evidence.py, calibration.py, families.py, candidates.py ← one route file per act
 │   └── services/
 │       └── settings.py  ← App settings persisted to DSS project variables
 │
@@ -193,14 +193,14 @@ my-app/
         ├── components/ui/   ← Local Ea* primitives (EaButton, EaSelect, EaEmpty…)
         ├── components/layout/AppSidebar.vue ← Local sidebar, built from route metadata
         ├── composables/useAppMenu.ts ← Turns route metadata into sidebar menu items
-        ├── router/features.ts ← Optional-block routes, registered only when ENABLE_* is on
         ├── layouts/
         │   └── DefaultLayout.vue  ← Sidebar + <router-view /> shell
         ├── stores/
         │   ├── settings.ts  ← LLM selection and other settings, synced to DSS via /api
 
         └── views/
-            ├── ExampleView.vue   ← Dataset picker + row preview: the full FE↔BE↔DSS demo
+            ├── EvidenceView.vue, CalibrationView.vue, TherapeuticAreaView.vue,
+            │   ShortlistView.vue ← the four acts
             └── SettingsView.vue  ← LLM picker backed by /api/system/settings
 ```
 
@@ -234,8 +234,7 @@ dependency to track or update.
 
 The `meta` object is all `AppSidebar` (`components/layout/AppSidebar.vue`, via the
 `useAppMenu` composable) needs. The sidebar item appears automatically. Settings always lives
-at the bottom (`menu: 'tertiary'`). Optional blocks declare their routes in
-`router/features.ts` and are only registered when their `ENABLE_*` flag is on.
+at the bottom (`menu: 'tertiary'`).
 
 **State** is managed with **Pinia** (Vue's official state library, simpler than Redux).
 One store ships with the blueprint:
@@ -286,8 +285,8 @@ identical to in-DSS. `dataikuapi` stays for the control-plane. See **Architectur
 **Routes vs services** — routes handle HTTP (parse params, return JSON, raise HTTP errors).
 Services contain the actual logic and Dataiku API calls. The `system.py` route calls
 `project.list_llms(...)` to find available LLMs; `settings.py` uses
-`project.get_variables()` / `project.set_variables()` to persist settings. The `example.py`
-route calls `dataiku.Dataset(name).get_dataframe(limit=n)` in DSS to fetch rows.
+`project.get_variables()` / `project.set_variables()` to persist settings. The act routes read
+their datasets through `services/dataset_cache.py`.
 
 ---
 
@@ -538,199 +537,9 @@ across all users of the webapp).
 
 ---
 
-## Optional building blocks
-
-The blueprint ships five optional, independently toggled features. All five are **on by default** so a new teammate sees the full catalogue of what's available on first boot. Turn off the ones you don't need by setting `ENABLE_*=0` in `app.env` (one line per flag) and restarting `make dev`.
-
-The three **self-contained** blocks (Wizard, Charts, Flow) render with zero configuration — no DSS, no LLM. The two **DSS-dependent** blocks (Documents, Chatbot) need a Managed Folder or LLM and will show a "needs configuration" empty state until wired up.
-
-### Wizard
-
-A 3-step guided creation form that validates each step before proceeding, then POSTs a single payload. Demonstrates the multi-step input pattern: collect → validate → review → submit.
-
-Each step is its own child route (`/wizard/basics`, `/wizard/details`, `/wizard/review`). The routes are tagged `meta.menuLevel: 'flow'`, which makes the app sidebar switch to its flow-level view: a vertical stepper with one circle per step, a hollow (disabled) circle for steps you can't reach yet, and a "Back" link to the app-level nav. Step disabling is driven by per-route `meta.state` callbacks reading the wizard Pinia store.
-
-**What it adds:** a "New element" sidebar CTA, `POST /api/wizard/submit`. No persistence — replace the result logic in `backend/routes/wizard.py` with a real DSS write (project variables, dataset append, managed folder) when you're ready.
-
-**Enable:**
-```bash
-ENABLE_WIZARD=1   # in app.env
-```
-
-**Verify locally:**
-1. `make dev` → click "New element" → sidebar switches to the vertical stepper; Details and Review circles are hollow.
-2. Fill in Name and Category → Next button enables, the remaining circles fill and become clickable.
-3. Step 2 (Notes) is optional — Next always enabled.
-4. Review step → click Create → success card shows the returned id.
-
-**Graduation options:** the routed-steps structure already scales to longer or branching wizards — add a child route per step and (if needed) a `meta.state` callback to gate it.
-
----
-
-### Charts
-
-An ECharts dashboard (KPI sparklines, donut, gauge, bar/line charts) fed by **frontend mock
-data** (`src/data/mock/`). It's a **frontend-only** block — there is no backend route — so it
-demonstrates the chart-component pattern without needing a DSS connection.
-
-**What it adds:** a "Charts" sidebar entry and the dashboard components in
-`components/dashboard/*.vue`. Replace the mock data with a real DSS dataset read (add a backend
-route like the other blocks and fetch via `apiUrl()`).
-
-**Enable:**
-```bash
-ENABLE_CHARTS=1   # in app.env (frontend build flag only — read by Vite, not the backend)
-```
-
-**Verify locally:**
-1. `make dev` → "Charts" appears in the sidebar.
-2. The dashboard renders (KPIs, donut, gauge, timelines) from mock data.
-3. Resize the window — charts autoresize.
-
-**Using the chart components:** each component builds an ECharts `option` typed as
-`EChartsOption` and registers its pieces with `use([…])`. Colors come from the chart design
-tokens (`var(--chart-1..5)`), so they follow dark/light mode automatically.
-
----
-
-### Flow
-
-A Vue Flow node/edge graph rendered from a backend endpoint. Demonstrates how to turn domain data (pipeline stages, dataset dependencies, recipe graphs) into an interactive, pannable, zoomable node graph.
-
-**What it adds:** a "Flow" sidebar entry, `GET /api/flow/sample` (4-node pipeline graph). Node positions are baked into the backend response — no layout library required for the hello-world.
-
-**Enable:**
-```bash
-ENABLE_FLOW=1   # in app.env
-```
-
-**Verify locally:**
-1. `make dev` → "Flow" appears in the sidebar.
-2. A 4-node pipeline graph renders (Raw Data → Process → Enrich → Output).
-3. Pan and zoom work; the canvas fits the graph on load.
-
-**Graduation options:** for auto-layout of large graphs, add `@dagrejs/dagre` (npm) and compute node positions on the frontend — keep the backend response position-free in that case.
-
----
-
-### Documents
-
-Lets users upload files (PDF, images, text, audio/video) to a DSS Managed Folder, with metadata stored in SQLite. An optional LLM auto-describe feature (`ENABLE_DESCRIBE`) produces a 1–3 sentence summary of each file using the configured LLM.
-
-**What it adds:** a "Documents" sidebar entry, six backend endpoints (`/api/documents`), a DSS Managed Folder (auto-created on first upload), the shared SQLite + persistence layer.
-
-**Enable:**
-```bash
-# In app.env
-ENABLE_DOCUMENTS=1
-
-# Optional: LLM auto-describe (requires langchain-core + pymupdf in the code env)
-ENABLE_DESCRIBE=1
-```
-
-**Verify locally:**
-1. `make dev` → "Documents" appears in the sidebar.
-2. Upload a file → it appears in the list.
-3. Download link returns the original bytes.
-
-**Folder auto-creation:** the backend looks up or creates a DSS Managed Folder named `<APP_PREFIX> Documents` on first upload, then caches its id in the app-settings project variable. If auto-creation fails (no writable connection on your local dev instance), create the folder manually in the DSS UI and set `documents_folder_id` in Settings.
-
----
-
-### Chatbot (agent + tool-call approval)
-
-An LLM agent that streams responses via SSE and can call tools. Mutating tools require the user's approval before execution — the agent suspends, the UI shows Allow/Deny buttons, the user decides, the agent resumes.
-
-**What it adds:** an "Assistant" sidebar entry, conversation management (CRUD), the SSE message streaming endpoint, the permission broker, a tool registry (5 starter tools — 4 read-only + 1 mutating demo), conversation history in SQLite, and a "Tool permissions" section in Settings.
-
-**Enable:**
-```bash
-ENABLE_CHATBOT=1   # in app.env
-```
-
-**Verify locally:**
-1. `make dev` → "Assistant" appears in the sidebar.
-2. Pick an LLM in Settings.
-3. Type a message → tokens stream in.
-4. Ask "list my datasets" → `list_datasets` runs automatically (policy: allow).
-5. Ask to "make a note: hello" → `create_scratch_note` shows Allow/Deny buttons.
-6. Click Allow → the agent resumes and completes its response.
-
-**Starter tools shipped:**
-| Tool | Policy | Purpose |
-|---|---|---|
-| `list_datasets` | allow | Lists all datasets in the project; demonstrates dual-mode DSS access |
-| `inspect_dataset` | allow | Returns schema (column names + types) for a named dataset |
-| `sample_data` | allow | Returns up to N rows from a dataset as a markdown table |
-| `search_knowledge_base` | allow | Semantic search across all knowledge banks in the project |
-| `create_scratch_note` | prompt | **Mutating demo** — writes to DSS project variables; demonstrates the full approval flow |
-
-When `ENABLE_DOCUMENTS=1` is also set, two additional tools (`list_documents`, `read_document`) are added automatically.
-
-**Both on together:** the agent gains `list_documents`/`read_document` tools and its system prompt includes a summary of uploaded documents, so it can answer questions about uploaded files.
-
----
-
-### Flag reference
-
-Each `ENABLE_*` flag in `app.env` controls **both** the backend route and the frontend sidebar
-entry. Vite reads these flags directly at build time via `envPrefix: ['VITE_', 'ENABLE_']`
-in `vite.config.ts` — no separate `VITE_ENABLE_*` line needed.
-
-| Key | Purpose |
-|---|---|
-| `ENABLE_WIZARD` | Register Wizard route (`POST /api/wizard/submit`) + show sidebar entry |
-| `ENABLE_CHARTS` | Register the Charts route + sidebar entry (frontend-only; mock data, no backend route) |
-| `ENABLE_FLOW` | Register Flow route (`GET /api/flow/sample`) + show sidebar entry |
-| `ENABLE_DOCUMENTS` | Register Documents routes + enable folder/SQLite + show sidebar entry |
-| `ENABLE_CHATBOT` | Register Chatbot routes + agent loop + show sidebar entry |
-| `ENABLE_DESCRIBE` | LLM auto-describe on upload (backend-only sub-option of Documents) |
-
----
-
 ## Architecture decisions & trade-offs
 
 This blueprint makes several non-obvious choices. They are **deliberate**, documented here so your team can debate them, extend from them, or replace them when your app outgrows the starter constraints. Each entry follows the pattern: **Decision → Why → Trade-off → When to revisit.**
-
----
-
-### SQLite for persistence
-
-**Decision:** chat conversations, messages, and document metadata live in an embedded SQLite database. The live file location depends on context:
-
-| Context | Path |
-|---|---|
-| Local dev | `<repo>/.run/state.db` |
-| DSS (live) | `get_workload_local_folder_path() / state.db` — a per-webapp directory on the DSS instance disk (e.g. `/data/dataiku/run/webapps/<ID>/workload-local/`). Persists across backend restarts as long as the webapp is not fully redeployed. |
-
-**Why:** SQLite gives real transactional semantics, indexes, foreign keys, and a clean data-access layer (`services/memory_state.py`). Alternatives were considered and explicitly rejected:
-- *Project variables* — the single JSON blob per key has a size limit and lacks querying. Fine for a handful of settings, not for conversation history.
-- *Managed-folder JSON* — loses transactional guarantees and becomes a concurrency hazard under concurrent requests.
-- *External SQL connection* — no extra infra needed, especially valuable for a starter that should work on any DSS instance.
-
-**Trade-off:** this is a **single-writer** design. SQLite does not support multiple concurrent writers. DSS webapp backends run single-process by default (`autoStartBackend` in the webapp definition), so this is safe as-is.
-
-**When to revisit:**
-- Your app needs more than one backend process (load balancing, zero-downtime deploys).
-- You need true ACID guarantees across multiple concurrent users modifying shared data.
-
-The upgrade path: swap `get_conn()` for a connection pool backed by a DSS SQL connection (Postgres, Snowflake, etc.). The service layer (`memory_state.py`, `documents_service.py`) is the only thing that changes — the routes and the agent loop are unaffected.
-
----
-
-### Tool-call approval, not user RBAC
-
-**Decision:** the chatbot uses a *tool-call approval* model (the agent asks before mutating; the user approves or denies inline) rather than user-level role-based access control.
-
-**Why:** the tool-call approval model solves the most immediate safety concern for an agentic starter — giving users visibility and control over what the agent does — without requiring any user authentication infrastructure. Who can *open* the webapp is controlled by DSS (project permissions). Everyone who can open it shares the same capability level.
-
-**What this is not:** this is not authorization. There is no concept of "admin vs. read-only user," no per-user data isolation, no audit log of who approved what.
-
-**When to revisit:** when your app needs real per-user authorization (multi-tenant data, admin-only configuration changes, audit trails), build it by:
-1. Resolving the DSS user with `dataiku.api_client().get_auth_info()` (see `services/current_user.py` for the pattern).
-2. Mapping the user or their DSS group to a role (stored in project variables or a dedicated dataset).
-3. Injecting a role check as a FastAPI dependency on routes that need it.
-None of this infrastructure is absent by accident — it was left out to keep the starter focused.
 
 ---
 
@@ -740,7 +549,7 @@ None of this infrastructure is absent by accident — it was left out to keep th
 
 **Why:** the frontend is served from inside a DSS webapp iframe at a sub-path (e.g. `https://my-dss.company.com/web-apps-backends/PROJECT/WEBAPP_ID/`). DSS's project-library serving does not reliably handle the chunk manifest that Vite's default code-splitting produces — requests for dynamically-imported chunks 404. A single bundle avoids this entirely.
 
-**Trade-off:** the bundle cannot be lazy-loaded. All views — including disabled blocks — are bundled. It also means `import()` lazy routes cannot be used; all route components must be statically imported. With all five optional blocks enabled (the default), the JS bundle is approximately 1 MB minified / 350 KB gzipped, which includes echarts (~600 KB) and @vue-flow/core. If you don't use Charts or Flow and want to fully reclaim that weight, remove the npm packages (`npm remove echarts vue-echarts @vue-flow/core`) in addition to setting the flags to 0 — disabling the block via env flags alone hides the UI but does not shrink the bundle.
+**Trade-off:** the bundle cannot be lazy-loaded. It also means `import()` lazy routes cannot be used; all route components must be statically imported. The JS bundle is approximately 950 KB minified / 320 KB gzipped, most of it echarts, which the act charts use.
 
 **When to revisit:** if the app grows to where the initial load time is noticeably slow (> 2–3 s on a reasonable connection), the right fix is to change the DSS library serving strategy (host the frontend externally or use a DSS API node with proper static-file handling) rather than fighting Vite's code-splitting within the current constraints.
 

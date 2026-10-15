@@ -1,16 +1,18 @@
 # bs-blueprint alignment plan
 
 > **Lifecycle:** Decision · **Audience:** webapp implementers and technical reviewers · **Authority:**
-> the proposed scope, migration sequence, acceptance criteria and open decisions for realigning the
+> the agreed scope, migration sequence, acceptance criteria and decisions for realigning the
 > Target Prioritizer webapp with the team's current `bs-blueprint` framework · **Update when:** a
 > decision in §8 is taken, the scope changes, or a phase is accepted · **Generated dependencies:** none
 > · **Excludes:** current deployed webapp behavior, which remains governed by
 > [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md), [`../../webapp/README.md`](../../webapp/README.md) and
 > [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented and verified.
 
-**Status: PROPOSED — 2026-10-14. Not approved.** Nothing in this plan has been applied to the repository.
-The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Commit, push, DSS
-deployment and any live DSS change remain separate actions, each requiring its own approval.
+**Status: IN PROGRESS — Phase 0 implemented 2026-10-15, not yet committed.** All four decisions in §8 were
+taken on the recommendations, and the direction is recorded as
+[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 1–8 have not started. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
+a phase, commit, push, DSS deployment and any live DSS change remain separate actions, each requiring
+its own approval.
 
 ## 1. Summary
 
@@ -78,7 +80,8 @@ The app is deliberately themed to the Dataiku **brand** palette ([`../../webapp/
 "Design system"): mint `#3EDAB2` primary, a dark-green sidebar, off-white background, and Spectral /
 Roboto / DM Mono fonts. The kit carries the DSS **product** theme: indigo `#3445cb` primary, white
 background, and Source Sans Pro. Removing `tokens.css` (Phase 3) therefore changes the look of every
-act, not just its details. This is the point of the alignment, but it is a visible decision (§8, D1).
+act, not just its details. This is the point of the alignment; D1 (§8) accepts the product theme
+throughout, with no brand-palette override.
 
 ### 4.2 The chart colours change meaning
 
@@ -95,8 +98,10 @@ differently:
 
 Some series carry meaning through their colour. For example, Act 2 colours provenance drivers
 `--chart-2` and other drivers `--chart-3`. The kit's slots 4 and 5 are pale on white. Each chart needs
-a deliberate slot choice and a visual check (§8, D2). The framework's rule is that charts read
-colours through `useThemeColors()`, not through `'var(--chart-n)'` strings.
+a deliberate slot choice and a visual check. D2 (§8) keeps the meanings fixed: Phase 3 starts by
+writing one table that maps each meaning-bearing series (for example "provenance driver", "model",
+"baseline") to a kit slot, and every chart reads its colour from that table. The framework's rule is
+that charts read colours through `useThemeColors()`, not through `'var(--chart-n)'` strings.
 
 ### 4.3 The deployment model changes
 
@@ -146,11 +151,23 @@ primitives" and "use Lucide components". Phase 1 must:
 - Rollback for every phase is reverting its commits. Phase 2 also needs a redeploy of the previous
   build.
 
-### Phase 0 — prune the disabled template blocks *(needs D3)*
+### Phase 0 — prune the disabled template blocks *(D3)*
 
 Delete the wizard, charts, tickets, flow, documents and chatbot blocks: their views, components,
 stores, mock data, backend routes and `ENABLE_*` flags. **Accept:** the four acts, Settings and Admin
 behave as before, and the typecheck passes. This removes 12 of the 27 Lucide files before migration starts.
+
+> **Implemented 2026-10-15, awaiting commit approval.** Beyond the six blocks, the phase also removed
+> two pieces of unrouted template scaffolding (the Agents registry and the Example dataset preview,
+> with their always-on `/api/agents` and `/api/example` routes), the chatbot's tool-permission section
+> in Settings, and the packages only the blocks used (`@vue-flow/core`, `marked`, `sse-starlette`,
+> `python-multipart`, `langchain-core`, `pymupdf`). The documents that this phase made wrong were
+> corrected in the same change, ahead of Phase 8: the webapp README, the harness webapp overlay, and
+> [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) §3.4 and §8. Verified locally: typecheck and build pass, the
+> backend registers only the act, settings and system routes, every act renders live data, and an old
+> block URL falls through to Act 1. Two leftovers are deliberately out of scope: the Settings LLM
+> picker, which no feature uses any more, and the Admin page, whose toggle now controls an empty
+> section. Phase 6 (shell) decides both.
 
 ### Phase 1 — adopt
 
@@ -160,16 +177,28 @@ commit `eslint-suppressions.json` and `bs-blueprint.baseline.json`. **Accept:** 
 harness check in `tools/check_indexes.sh` passes, and the app looks unchanged, because `tokens.css`
 still overrides the kit.
 
-### Phase 2 — deployment model *(needs D4; the only live step)*
+### Phase 2 — deployment model *(D4; the only live step)*
 
-Apply §4.3. **Accept:** a test deploy loads every act inside DSS, every API call resolves, a
-hard refresh on each act works, and the checks in [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) §4 and §4.1
-still pass.
+Apply §4.3, then deploy in two steps (D4): first to a separate test webapp, then, once that is
+accepted, to the live `DEMO_TARGET_IDENTIFICATION` webapp. The test deploy must not share anything
+with the live app:
 
-### Phase 3 — tokens *(needs D1, D2)*
+- **A distinct `LIB_NS` and `APP_PREFIX`.** `deploy.sh` uploads to `python/<LIB_NS>/` in the project
+  library, and the live webapp imports from there. Reusing the live namespace would replace the live
+  app's code during the "test".
+- **No write-back into the committed `app.env`.** When `deploy.sh` creates a webapp it writes the new
+  id over `WEBAPP_ID` in `app.env`. Run the test deploy from an uncommitted override (a local `.env`,
+  or the script's environment variables), and check that `app.env` is unchanged afterwards.
 
-Delete `styles/tokens.css` and the `@theme inline` bridge. Map app-only tokens to kit tokens, and move
-charts to `useThemeColors()` with the slot choices from D2. **Accept:** before/after screenshots of
+**Accept:** the test webapp loads every act inside DSS, every API call resolves, a hard refresh on each
+act works, and the checks in [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) §4 and §4.1 pass
+against the test namespace. The live deploy then repeats those checks, and the test webapp and its
+library folder are removed afterwards, with approval.
+
+### Phase 3 — tokens *(D1, D2)*
+
+Delete `styles/tokens.css` and the `@theme inline` bridge. Map app-only tokens to kit tokens. Write the
+series-to-slot table (§4.2), review it, then move charts to `useThemeColors()` through that table. **Accept:** before/after screenshots of
 every act are reviewed, and no chart series changes meaning without that being noted.
 
 ### Phase 4 — icons
@@ -211,9 +240,9 @@ the old stack as current.
 | [`../../harness/WEBAPP_OVERLAY.md`](../../harness/WEBAPP_OVERLAY.md) | "Route by task", "Load-bearing rules" | Remove `Ea*`, Lucide and `tokens.css` guidance; point at `npm run check`; regenerate the copies with `tools/sync_harness.py --write` |
 | [`../README.md`](../README.md) | Planning | Move this plan to its approved, implemented or retired state |
 
-[`../decisions/DECISION_REGISTER.md`](../decisions/DECISION_REGISTER.md): adopting the team framework, and
-with it the product theme instead of the brand palette, may meet the register's durable-decision
-admission rule once D1 is taken. Check that rule before adding an entry.
+[`../decisions/DECISION_REGISTER.md`](../decisions/DECISION_REGISTER.md): `DEC-DEMO-003` records the
+direction (adopt the framework and its product theme). When Phase 8 lands, update its evidence to point
+at the rewritten [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) sections.
 
 ## 7. Risks
 
@@ -225,11 +254,13 @@ admission rule once D1 is taken. Check that rule before adding an entry.
 | The framework changes underneath us | Pinned commit; update only with `npx bs-blueprint sync` plus `npm run check` |
 | Bundle size grows with the inlined fonts | Measured in §3; acceptable for an internal demo, and checked again after Phase 7 |
 
-## 8. Open decisions
+## 8. Decisions
 
-| ID | Decision | Options | Recommendation |
-|---|---|---|---|
-| D1 | Visual identity | (a) the kit's product theme throughout; (b) keep the brand palette as a deliberate override | (a). An override is exactly the drift the framework flags, and it would keep the app looking different from the team's other webapps |
-| D2 | Chart colours | (a) the kit's slots as they fall; (b) fixed meanings mapped to chosen kit slots | (b). Several acts encode meaning in colour |
-| D3 | Template optional blocks | (a) delete them in Phase 0; (b) keep them disabled | (a). [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) §8 already enables none, and they hold 12 of the 27 icon files |
-| D4 | Phase 2 test target | (a) the live `DEMO_TARGET_IDENTIFICATION` webapp; (b) a separate test webapp | (b), then (a) once accepted |
+All four were taken on 2026-10-14, each on the recommended option.
+
+| ID | Decision | Options considered | Taken | Why |
+|---|---|---|---|---|
+| D1 | Visual identity | (a) the kit's product theme throughout; (b) keep the brand palette as a deliberate override | **(a)** | An override is exactly the drift the framework flags, and it would keep the app looking different from the team's other webapps |
+| D2 | Chart colours | (a) the kit's slots as they fall; (b) fixed meanings mapped to chosen kit slots | **(b)** | Several acts encode meaning in colour |
+| D3 | Template optional blocks | (a) delete them in Phase 0; (b) keep them disabled | **(a)** | [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) §8 already enables none, and they hold 12 of the 27 icon files |
+| D4 | Phase 2 deploy target | (a) the live `DEMO_TARGET_IDENTIFICATION` webapp; (b) a separate test webapp | **(b), then (a)** | Phase 2 is the only step that can break the deployed demo; the test deploy is isolated as Phase 2 describes |

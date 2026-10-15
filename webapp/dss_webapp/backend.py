@@ -24,19 +24,5 @@ os.environ["APP_PREFIX"] = APP_PREFIX
 os.environ[f"{APP_PREFIX}_DSS_MODE"] = "1"
 os.environ.setdefault(f"{APP_PREFIX}_CORS_ORIGINS", "*")
 
-# LIB_NS is needed by the optional SQLite persistence layer to derive its
-# snapshot path (python/<LIB_NS>/state.db) in the DSS project library.
-os.environ["LIB_NS"] = LIB_NS
-
-# Optional building block flags — set to "1" to enable.
-# (deploy.sh injects the real values from app.env into the generated
-# inline python; these setdefault calls are a fallback for direct entry.)
-os.environ.setdefault("ENABLE_WIZARD", "0")
-os.environ.setdefault("ENABLE_CHARTS", "0")
-os.environ.setdefault("ENABLE_FLOW", "0")
-os.environ.setdefault("ENABLE_DOCUMENTS", "0")
-os.environ.setdefault("ENABLE_CHATBOT", "0")
-os.environ.setdefault("ENABLE_DESCRIBE", "0")
-
 # `app` is injected as a global by DSS before this code runs.
 importlib.import_module(f"{LIB_NS}.backend.app").configure(app)  # type: ignore[name-defined]  # noqa: F821

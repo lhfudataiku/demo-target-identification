@@ -62,7 +62,7 @@ evidence and generated documents appear first; planning and historical material 
 
 | | |
 |---|---|
-| [`demo/BLUEPRINT_ALIGNMENT_PLAN.md`](demo/BLUEPRINT_ALIGNMENT_PLAN.md) | **Proposed 2026-10-14, not approved:** realign the webapp with the team's current `bs-blueprint` framework (the kit's theme, primitives and icons, the framework's app shell and DSS deploy model), in phases ratcheted by `npm run check`. Current behaviour stays governed by `demo/WEBAPP_DESIGN.md` until each phase lands |
+| [`demo/BLUEPRINT_ALIGNMENT_PLAN.md`](demo/BLUEPRINT_ALIGNMENT_PLAN.md) | **In progress (`DEC-DEMO-003`); Phase 0 implemented 2026-10-15:** realign the webapp with the team's current `bs-blueprint` framework (the kit's theme, primitives and icons, the framework's app shell and DSS deploy model), in phases ratcheted by `npm run check`. Current behaviour stays governed by `demo/WEBAPP_DESIGN.md` until each phase lands |
 
 ## Historical material
 

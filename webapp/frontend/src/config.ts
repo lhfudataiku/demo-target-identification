@@ -21,12 +21,3 @@ export const VISUAL_GRAPH_OBJECT_ID: string =
   import.meta.env.VITE_VISUAL_GRAPH_OBJECT_ID?.trim() ?? ''
 /** Optional DSS origin for local development; production defaults to same-origin. */
 export const DSS_ORIGIN: string = import.meta.env.VITE_DSS_ORIGIN?.trim() ?? ''
-
-// ── Optional building block flags ─────────────────────────────────────────────
-// Set ENABLE_* in app.env — one line per flag controls both backend and frontend.
-// Vite bakes them into the bundle at build time; they cannot change at runtime.
-export const ENABLE_DOCUMENTS: boolean = import.meta.env.ENABLE_DOCUMENTS === '1'
-export const ENABLE_CHATBOT: boolean   = import.meta.env.ENABLE_CHATBOT === '1'
-export const ENABLE_WIZARD: boolean    = import.meta.env.ENABLE_WIZARD === '1'
-export const ENABLE_CHARTS: boolean    = import.meta.env.ENABLE_CHARTS === '1'
-export const ENABLE_FLOW: boolean      = import.meta.env.ENABLE_FLOW === '1'

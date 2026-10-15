@@ -194,8 +194,8 @@ drawer now renders `feature_glossary.CHAMPION` so it cannot go stale again.
 ### 3.4 Mock first, then swap
 
 > **Completed 2026-09-03.** All four act views read live backend routes and every act mock module has
-> been deleted, as the rule below requires. What remains under `frontend/src/data/mock/` belongs to the
-> optional template blocks (tickets, business outcomes, ticket flow), not to an act. The section is
+> been deleted, as the rule below requires. The mock modules that remained belonged to the template's
+> optional blocks, and were removed with those blocks on 2026-10-15. The section is
 > kept because the swap rule still governs any new view — and because the closing warning turned out
 > to be the section's most load-bearing sentence: two hard-coded figures did outlive the swap, in act
 > 2's own copy rather than in a mock module, and §6 now carries a guardrail for exactly that.
@@ -653,9 +653,11 @@ the pivot matters more than it looks.
 - **No login, no user management, no persistence.** This is a demo surface over read-only flow output.
 - **No writes to DSS.** The one exception worth considering later is act 3's clinician review form
   (`breast_shortlist`), and it is out of scope until someone asks.
-- **No LLM anything.** The blueprint ships a chat block; leave `ENABLE_CHATBOT=0`. A chatbot over a
-  ranked gene list is the kind of thing that makes a careful audience stop trusting the careful parts.
-- Blocks to enable: none of the blueprint's five. All six acts are new views.
+- **No LLM anything.** A chatbot over a ranked gene list is the kind of thing that makes a careful
+  audience stop trusting the careful parts. The template's chat block, like its other optional blocks
+  (wizard, charts, flow, documents), was never enabled and was deleted on 2026-10-15, together with the
+  `ENABLE_*` flags ([`BLUEPRINT_ALIGNMENT_PLAN.md`](BLUEPRINT_ALIGNMENT_PLAN.md), Phase 0). Every routed
+  view is an act, Settings or Admin.
 
 ---
 

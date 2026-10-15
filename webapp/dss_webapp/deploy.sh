@@ -41,12 +41,6 @@ VITE_APP_NAME="${VITE_APP_NAME:-}"
 
 # Display name used when creating the project or webapp (falls back to project key).
 APP_DISPLAY_NAME="${VITE_APP_NAME:-$PROJECT}"
-ENABLE_WIZARD="${ENABLE_WIZARD:-0}"
-ENABLE_CHARTS="${ENABLE_CHARTS:-0}"
-ENABLE_FLOW="${ENABLE_FLOW:-0}"
-ENABLE_DOCUMENTS="${ENABLE_DOCUMENTS:-0}"
-ENABLE_CHATBOT="${ENABLE_CHATBOT:-0}"
-ENABLE_DESCRIBE="${ENABLE_DESCRIBE:-0}"
 
 # ── Pre-flight ─────────────────────────────────────────────────────────────
 if [ -n "$PROFILE" ]; then
@@ -60,7 +54,7 @@ if [ ! -d "$FRONTEND_DIST" ]; then
     exit 1
 fi
 
-# ── Ensure code env has the packages the enabled blocks need ──────────────────
+# ── Ensure code env has the packages the app needs ────────────────────────────
 # Adds only what's missing — never removes packages the operator added manually.
 # Rebuilds the env (blocking) only when the spec changes, so normal deploys
 # that touch only code are not slowed by an env rebuild.
@@ -70,13 +64,6 @@ REQUIRED="fastapi>=0.100.0
 uvicorn[standard]>=0.20.0
 uvicorn-worker
 gunicorn"
-[ "$ENABLE_CHATBOT"   = "1" ] && REQUIRED="$REQUIRED
-langchain-core>=0.3.0
-sse-starlette>=1.6.0"
-[ "$ENABLE_DOCUMENTS" = "1" ] && REQUIRED="$REQUIRED
-python-multipart>=0.0.7"
-[ "$ENABLE_DESCRIBE"  = "1" ] && REQUIRED="$REQUIRED
-pymupdf>=1.24.0"
 
 if ! _current_json="$(dku code-env get "$ENV_NAME" -o json 2>/dev/null)"; then
     echo "  Code env '$ENV_NAME' not found — creating it with required packages"
@@ -206,12 +193,6 @@ os.environ['APP_PREFIX'] = '${APP_PREFIX}'
 os.environ['${APP_PREFIX}_DSS_MODE'] = '1'
 os.environ.setdefault('${APP_PREFIX}_CORS_ORIGINS', '*')
 os.environ['LIB_NS'] = '${LIB_NS}'
-os.environ['ENABLE_WIZARD'] = '${ENABLE_WIZARD}'
-os.environ['ENABLE_CHARTS'] = '${ENABLE_CHARTS}'
-os.environ['ENABLE_FLOW'] = '${ENABLE_FLOW}'
-os.environ['ENABLE_DOCUMENTS'] = '${ENABLE_DOCUMENTS}'
-os.environ['ENABLE_CHATBOT'] = '${ENABLE_CHATBOT}'
-os.environ['ENABLE_DESCRIBE'] = '${ENABLE_DESCRIBE}'
 importlib.import_module('${LIB_NS}.backend.app').configure(app)
 "
 

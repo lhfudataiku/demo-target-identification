@@ -18,18 +18,14 @@ the task.
   `get_project()` / `get_dataiku()` rather than environment branches or ad-hoc clients.
 - Deployment or embedding: read `DEPLOYMENT.md` and the README's **DSS integration** and
   **non-obvious bits** sections. Deployment is a live DSS mutation and requires explicit user intent.
-- Optional blocks, persistence, or chatbot work: read the matching README section and closest code.
 
 ## Load-bearing rules
 
 - Preserve the iframe contract: `apiUrl()`, router base from `window.location.pathname`, Vite
   `base: './'`, single-bundle output, Vue dedupe, and the vendored design tokens.
-- Keep disabled feature blocks zero-cost: guarded imports, no unintended SQLite file, backend route,
-  or sidebar entry. SQLite is single-writer; do not add multiple Uvicorn workers.
 - Use `dku` only for read-only discovery during development. Do not mutate a DSS project merely to
   develop or inspect this app.
-- DSS libraries are text-only: use Lucide components rather than binary assets. Keep feature flags in
-  sync across backend and frontend.
+- DSS libraries are text-only: use Lucide components rather than binary assets.
 
 ## Finish proportionately
 

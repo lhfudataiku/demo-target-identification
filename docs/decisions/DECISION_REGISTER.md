@@ -400,3 +400,16 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Supersedes:** —
 - **Superseded by:** —
 - **Historical sources:** —
+
+## DEC-DEMO-003 — The webapp adopts the team framework and its product theme
+
+- **Date:** 2026-10-14
+- **Domain:** demo
+- **Status:** accepted
+- **Decision:** Realign the Target Prioritizer webapp with the team's current `bs-blueprint` framework through its own tooling (`adopt`, then `npm run check` as a ratchet), taking the `@dataiku/ea-ui-kit` product theme, kit primitives, DSS icons, the framework's app shell and its DSS deploy model. No brand-palette override is kept. Chart series that carry meaning keep it through an explicit series-to-slot mapping.
+- **Rationale:** The app was seeded from an early copy of the framework and kept that copy's local palette, primitives and icon set while the framework moved to the engineering team's kit, so it no longer looks like the team's other webapps. Keeping the brand palette as an override was the alternative; it is exactly the drift the framework's checks flag, and it would make every future framework update a manual merge.
+- **Evidence:** [`BLUEPRINT_ALIGNMENT_PLAN.md`](../demo/BLUEPRINT_ALIGNMENT_PLAN.md) §3 (trial-run baseline), §4 (consequences) and §8 (decisions D1–D4).
+- **Consequences:** The app's look changes from the brand palette (mint primary, Spectral/Roboto) to the product theme (indigo primary, Source Sans Pro). Deployment drops the iframe, and act URLs move behind a hash. Webapp agent instructions must carry the framework's managed rules block through the harness. The plan's phases, not this entry, govern implementation; act content, claims and data contracts are unaffected (`DEC-DEMO-002` still holds).
+- **Supersedes:** the brand-palette theming described in `webapp/DEPLOYMENT.md` "Design system"
+- **Superseded by:** —
+- **Historical sources:** —

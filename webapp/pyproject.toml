@@ -5,15 +5,8 @@ requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.100.0",
     "uvicorn[standard]>=0.20.0",
-    "sse-starlette>=1.6.0",
     "pandas>=2.0.0",
     "dataiku-api-client>=14.4.0",
-    # ── Optional building block deps ─────────────────────────────────────────
-    # All imports are lazy (inside handlers / behind feature flags) so these
-    # packages are never loaded when the corresponding block is disabled.
-    "python-multipart>=0.0.7",   # DOCUMENTS: multipart file upload
-    "langchain-core>=0.3.0",     # CHATBOT + DESCRIBE: LLM agent loop and LangChain message types
-    "pymupdf>=1.24.0",           # DESCRIBE sub-option: PDF rasterisation for LLM describe
 ]
 
 # Dev tooling — installed by `uv sync` alongside the app deps, never deployed.

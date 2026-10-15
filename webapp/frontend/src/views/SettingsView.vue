@@ -13,8 +13,6 @@
   import { EaSelect } from '@/components/ui'
   import { useSettingsStore } from '@/stores/settings'
   import { usePresenterStore } from '@/stores/presenter'
-  import { ENABLE_CHATBOT } from '@/config'
-  import { apiUrl } from '@/utils/api'
 
   defineOptions({ name: 'SettingsView' })
 
@@ -26,32 +24,8 @@
   const savingLlm = ref(false)
   const llmError = ref<string | null>(null)
 
-  // ── Tool permissions (CHATBOT block) ──────────────────────────────────────
-  interface ToolInfo { name: string; description: string; policy: string }
-  const toolList = ref<ToolInfo[]>([])
-  const acceptAll = computed(() => store.settings.accept_all_mode ?? false)
-
-  async function loadTools() {
-    if (!ENABLE_CHATBOT) return
-    try {
-      const res = await fetch(apiUrl('/api/chat/tools'))
-      if (res.ok) toolList.value = (await res.json()) as ToolInfo[]
-    } catch { /* non-fatal */ }
-  }
-
-  async function setToolPolicy(toolName: string, policy: string) {
-    const current: Record<string, string> = { ...(store.settings.tool_permissions ?? {}) }
-    current[toolName] = policy
-    await store.updateSettings({ tool_permissions: current })
-  }
-
-  async function toggleAcceptAll() {
-    await store.updateSettings({ accept_all_mode: !acceptAll.value })
-  }
-
   onMounted(async () => {
     await store.ensureLoaded()
-    await loadTools()
   })
 
   const llmOptions = computed(() =>
@@ -151,57 +125,6 @@
                 :class="presenter.showNotes ? 'translate-x-4' : 'translate-x-0.5'"
               />
             </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ── Chatbot: tool permissions ──────────────────────────────────── -->
-      <section v-if="ENABLE_CHATBOT" class="border rounded-lg bg-white">
-        <div class="px-5 py-4 border-b">
-          <h2 class="text-base font-semibold">Tool permissions</h2>
-          <p class="text-xs text-muted-foreground mt-1">
-            Control which agent tools require your approval before running.
-            <strong>Allow</strong>: run automatically. <strong>Prompt</strong>: ask you first.
-          </p>
-        </div>
-        <div class="px-5 py-4 space-y-3">
-          <!-- Accept-all master switch -->
-          <div class="flex items-center justify-between py-1">
-            <div>
-              <p class="text-sm font-medium">Accept all (no prompts)</p>
-              <p class="text-xs text-muted-foreground">Skip approval for every tool. Use with care.</p>
-            </div>
-            <button
-              class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none"
-              :class="acceptAll ? 'bg-primary' : 'bg-muted'"
-              @click="toggleAcceptAll"
-            >
-              <span
-                class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
-                :class="acceptAll ? 'translate-x-4' : 'translate-x-0.5'"
-              />
-            </button>
-          </div>
-          <hr class="border-border" />
-          <!-- Per-tool policy -->
-          <div
-            v-for="tool in toolList"
-            :key="tool.name"
-            class="flex items-center justify-between py-1"
-          >
-            <div>
-              <p class="text-sm font-mono font-medium">{{ tool.name }}</p>
-              <p class="text-xs text-muted-foreground">{{ tool.description }}</p>
-            </div>
-            <select
-              :value="(store.settings.tool_permissions ?? {})[tool.name] ?? tool.policy"
-              class="text-xs border rounded px-2 py-1 bg-background"
-              :disabled="acceptAll"
-              @change="setToolPolicy(tool.name, ($event.target as HTMLSelectElement).value)"
-            >
-              <option value="allow">Allow</option>
-              <option value="prompt">Prompt</option>
-            </select>
           </div>
         </div>
       </section>

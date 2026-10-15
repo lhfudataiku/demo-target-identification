@@ -10,11 +10,6 @@ export default defineConfig({
   // iframe embedding where the app is served from a non-root path.
   base: './',
 
-  // Expose ENABLE_* flags to the frontend (alongside the default VITE_* prefix).
-  // This means one line per flag in app.env controls both backend and frontend —
-  // no separate VITE_ENABLE_* duplicates needed.
-  envPrefix: ['VITE_', 'ENABLE_'],
-
   server: {
     host: '127.0.0.1',
     port: 5173,
