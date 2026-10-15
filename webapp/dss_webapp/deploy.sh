@@ -54,18 +54,6 @@ if [ ! -d "$FRONTEND_DIST" ]; then
     exit 1
 fi
 
-# The frontend now builds with @dataiku/vite-plugin-dku-webapp, which reduces
-# dist/index.html to body markup. This script still deploys the iframe model
-# (html.html + js.js load the backend's index.html), which would show a blank
-# page. Refuse until Phase 2 of docs/demo/BLUEPRINT_ALIGNMENT_PLAN.md moves the
-# deploy to the plugin model, then remove this guard.
-if [ -f "$FRONTEND_DIST/dss-main.js" ]; then
-    echo "✗ This build targets the dkuWebapp deploy model, but deploy.sh still uses"
-    echo "  the iframe model and would publish a blank app. Deploys are paused until"
-    echo "  Phase 2 of docs/demo/BLUEPRINT_ALIGNMENT_PLAN.md lands."
-    exit 1
-fi
-
 # ── Ensure code env has the packages the app needs ────────────────────────────
 # Adds only what's missing — never removes packages the operator added manually.
 # Rebuilds the env (blocking) only when the spec changes, so normal deploys
@@ -128,7 +116,9 @@ if [ -z "$WEBAPP_ID" ]; then
     [ -n "$WEBAPP_ID" ] || { echo "✗ Could not parse new webapp id from:"; echo "$create_out"; exit 1; }
     echo "  ✓ Created webapp id=$WEBAPP_ID"
     # Persist so the next deploy reuses it (portable Python, works on macOS + Linux).
-    if [ -f "$REPO/app.env" ]; then
+    # WRITE_BACK_WEBAPP_ID=0 skips this, so a throwaway deploy (a test webapp in its
+    # own LIB_NS) never overwrites the committed app.env.
+    if [ "${WRITE_BACK_WEBAPP_ID:-1}" = "1" ] && [ -f "$REPO/app.env" ]; then
         python3 - "$REPO/app.env" "$WEBAPP_ID" <<'PY'
 import re, sys
 path, new_id = sys.argv[1], sys.argv[2]
@@ -140,37 +130,15 @@ PY
     fi
 fi
 
-# ── Helper: recursively upload a local directory to the project library ────
-upload_dir() {
+# ── Helper: mirror a local directory into the project library ─────────────
+# --delete removes remote files that no longer exist locally (retired routes,
+# old assets), so the library always matches the source and dist/ exactly.
+sync_dir() {
     local src="$1"
-    local lib_root="$2"
-    local total=0
-
-    dku library mkdir "python/$lib_root" -P "$PROJECT" >/dev/null 2>&1 || true
-
-    # Create directory structure first
-    while IFS= read -r -d '' d; do
-        rel="${d#"$src"}"
-        rel="${rel#/}"
-        [ -z "$rel" ] && continue
-        case "$rel" in
-            *__pycache__* | .*) continue ;;
-        esac
-        dku library mkdir "python/$lib_root/$rel" -P "$PROJECT" >/dev/null 2>&1 || true
-    done < <(find "$src" -type d -print0)
-
-    # Upload files
-    while IFS= read -r -d '' f; do
-        rel="${f#"$src/"}"
-        case "$rel" in
-            *__pycache__* | *.pyc | .*) continue ;;
-        esac
-        dku library write "python/$lib_root/$rel" -c "@$f" -P "$PROJECT" >/dev/null
-        total=$((total + 1))
-        printf '\r  %d files' "$total"
-    done < <(find "$src" -type f -print0)
-
-    printf '\r  %d files uploaded\n' "$total"
+    local remote="$2"
+    local out
+    out="$(dku library sync "$src" "$remote" -P "$PROJECT" --delete -e '.*' 2>&1)" || { echo "$out"; return 1; }
+    printf '  %s uploaded, %s deleted\n' "$(echo "$out" | grep -c '^Uploaded')" "$(echo "$out" | grep -c '^Deleted')"
 }
 
 # ── 1. Ensure package root __init__.py exists ──────────────────────────────
@@ -182,12 +150,12 @@ dku library write "python/$LIB_NS/__init__.py" -c "@$tmp_init" -P "$PROJECT" >/d
 rm -f "$tmp_init"
 
 # ── 2. Push backend ────────────────────────────────────────────────────────
-echo "→ Uploading backend → python/$LIB_NS/backend/"
-upload_dir "$BACKEND_SRC" "$LIB_NS/backend"
+echo "→ Syncing backend → python/$LIB_NS/backend/"
+sync_dir "$BACKEND_SRC" "/python/$LIB_NS/backend"
 
 # ── 3. Push frontend dist ─────────────────────────────────────────────────
-echo "→ Uploading frontend dist → python/$LIB_NS/frontend_dist/"
-upload_dir "$FRONTEND_DIST" "$LIB_NS/frontend_dist"
+echo "→ Syncing frontend dist → python/$LIB_NS/frontend_dist/"
+sync_dir "$FRONTEND_DIST" "/python/$LIB_NS/frontend_dist"
 
 # ── 4. Update webapp definition ───────────────────────────────────────────
 echo "→ Patching webapp definition..."
@@ -208,7 +176,7 @@ os.environ['LIB_NS'] = '${LIB_NS}'
 importlib.import_module('${LIB_NS}.backend.app').configure(app)
 "
 
-WEBAPP_DIR="$WEBAPP_DIR" CURRENT="$tmp_current" UPDATED="$tmp_updated" \
+WEBAPP_DIR="$WEBAPP_DIR" FRONTEND_DIST="$FRONTEND_DIST" CURRENT="$tmp_current" UPDATED="$tmp_updated" \
 GENERATED_BACKEND_PY="$GENERATED_BACKEND_PY" ENV_NAME="$ENV_NAME" \
 python3 <<'PY'
 import json, os
@@ -217,10 +185,14 @@ with open(os.environ["CURRENT"]) as f:
     defn = json.load(f)
 
 webapp_dir = os.environ["WEBAPP_DIR"]
+frontend_dist = os.environ["FRONTEND_DIST"]
 params = defn.setdefault("params", {})
-params["html"]   = open(f"{webapp_dir}/html.html").read()
+# Built with @dataiku/vite-plugin-dku-webapp: dist/index.html is the body markup
+# (script and link tags stripped) and dist/dss-main.js re-creates them through
+# dataiku.getWebAppBackendUrl() once DSS has injected its client. No iframe.
+params["html"]   = open(f"{frontend_dist}/index.html").read()
 params["css"]    = open(f"{webapp_dir}/css.css").read()
-params["js"]     = open(f"{webapp_dir}/js.js").read()
+params["js"]     = open(f"{frontend_dist}/dss-main.js").read()
 params["python"] = os.environ["GENERATED_BACKEND_PY"]
 
 params["backendEnabled"]   = True

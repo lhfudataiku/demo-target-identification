@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
 import { Database, Gauge, ListFilter, Network, Settings, Shield } from 'lucide-vue-next'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import ShortlistView from '@/views/ShortlistView.vue'
@@ -8,7 +8,6 @@ import CalibrationView from '@/views/CalibrationView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import AdminView from '@/views/AdminView.vue'
 import { useAdminStore } from '@/stores/admin'
-import { embeddedBasePath } from '@/utils/embeddedBase'
 
 // ── The four acts ───────────────────────────────────────────────────────────
 const coreRoutes: RouteRecordRaw[] = [
@@ -85,15 +84,9 @@ const routes: RouteRecordRaw[] = [
   },
 ]
 
-// When embedded in DSS, the SPA lives at a non-root path (the webapp backend
-// URL). Capture the base before Vue Router takes over the pathname.
-let baseUrl = '/'
-if (window.self !== window.top) {
-  baseUrl = embeddedBasePath()
-}
-
+// DSS owns the page URL, so routes live after the hash (`…/webapps/view#/shortlist`).
 const router = createRouter({
-  history: createWebHistory(baseUrl),
+  history: createWebHashHistory(),
   routes,
 })
 

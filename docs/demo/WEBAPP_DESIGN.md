@@ -229,7 +229,7 @@ From the blueprint's agent instructions (`AGENTS` at its repo root); violating t
   `text-[#…]`. Chart series use `--chart-1..5`.
 - **Let the sidebar build itself.** Add an act by adding a route with `meta: { title, icon, menu:
   'primary', order }`. Never hand-build a menu array.
-- **`apiUrl()` for every call.** A bare `fetch('/api/…')` breaks inside the DSS iframe.
+- **`apiUrl()` for every call.** A bare `fetch('/api/…')` does not reach the backend inside DSS.
 - **`Ea*` primitives first** (`EaSelect`, `EaButton`, `EaEmpty`, the `table/` and `scroll-area/` sets)
   before custom markup. Icons from `lucide-vue-next`.
 - **No binary assets.** DSS libraries are text-only — no `.png`, no logo files.

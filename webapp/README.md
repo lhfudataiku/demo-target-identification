@@ -91,7 +91,7 @@ deploys reuse the same webapp. Open the webapp in DSS — it should show your ap
 
 A DSS webapp is a small website that lives **inside a DSS project** and has direct access
 to that project's datasets, models, LLMs, and variables. Users open it from the DSS
-interface; it appears in an embedded frame (an `<iframe>`).
+interface, which renders the webapp's HTML and JavaScript inside the project page.
 
 ### Two halves
 
@@ -127,20 +127,16 @@ IN DSS (after make deploy)
 ─────────────────────────────────────────────────────────
   Browser                     DSS server
   ┌─────────────────────────────────────────────────────┐
-  │  DSS UI                                             │
-  │  ┌─────────────────────────────────────────────┐   │
-  │  │ webapp iframe                               │   │
-  │  │  ┌─────────────────────────────────────┐   │   │
-  │  │  │  Vue SPA         served by FastAPI  │   │   │
-  │  │  │  /api/... ──────────────────────►   │   │   │
-  │  │  │              FastAPI               │   │   │
-  │  │  │              + dataiku Python API  │   │   │
-  │  │  └─────────────────────────────────────┘   │   │
-  │  └─────────────────────────────────────────────┘   │
+  │  DSS UI renders the webapp's html + js parameters   │
+  │  ┌─────────────────────────────────────────────┐    │
+  │  │  dss-main.js ── loads assets/index.js|css ──┼──► FastAPI /assets
+  │  │  Vue SPA (#/evidence, #/shortlist, …)       │    │
+  │  │  apiUrl('/api/…') ──────────────────────────┼──► FastAPI /api
+  │  └─────────────────────────────────────────────┘    │   + dataiku Python API
   └─────────────────────────────────────────────────────┘
-  One FastAPI process serves the built frontend files
-  AND answers /api calls. The dataiku module is
-  available and talks to the surrounding DSS project.
+  FastAPI serves the built bundle from /assets AND answers
+  /api calls. dataiku.getWebAppBackendUrl() (injected by
+  DSS) turns both paths into the backend's real URL.
 ```
 
 The key insight: **the exact same Python code** handles both modes. `dss_client.get_project()`
@@ -172,10 +168,8 @@ my-app/
 │       └── settings.py  ← App settings persisted to DSS project variables
 │
 ├── dss_webapp/          ← The thin DSS glue layer (not application logic)
-│   ├── deploy.sh        ← Uploads backend + built frontend to DSS, patches webapp definition
+│   ├── deploy.sh        ← Mirrors backend + built frontend to DSS, patches webapp definition
 │   ├── backend.py       ← DSS-injected entry point: sets env vars, calls configure(app)
-│   ├── html.html        ← Minimal HTML div that the webapp definition shows
-│   ├── js.js            ← Creates a full-page iframe pointing at the FastAPI backend
 │   └── css.css          ← body { margin: 0 } — hides the outer page chrome
 │
 └── frontend/            ← TypeScript/Vue. Runs in the user's browser.
@@ -188,7 +182,7 @@ my-app/
         ├── styles/tokens.css ← Dataiku design tokens (colors, sidebar, radius, dark mode)
         ├── style.css        ← Tailwind setup + bridges tokens.css into Tailwind utilities
         ├── config.ts        ← App name + icon — the two things to change when you copy this
-        ├── utils/api.ts     ← apiUrl(): the iframe path-prefix fix (see below)
+        ├── utils/api.ts     ← re-exports apiUrl() from bs-blueprint (see below)
         ├── router/index.ts  ← All pages live here; sidebar builds itself from route metadata
         ├── components/ui/   ← Local Ea* primitives (EaButton, EaSelect, EaEmpty…)
         ├── components/layout/AppSidebar.vue ← Local sidebar, built from route metadata
@@ -308,7 +302,8 @@ app settings (selected LLM, etc.) so they survive webapp restarts.
 
 ```
 1. cd frontend && npm run build
-     → Compiles Vue/TS → static HTML/JS/CSS in frontend/dist/
+     → Compiles Vue/TS → frontend/dist/: assets/index.js|css, plus dss-main.js and a
+       body-only index.html emitted by @dataiku/vite-plugin-dku-webapp
 
 2. dku project create --if-not-exists
      → Creates the DSS project if it doesn't exist yet (idempotent).
@@ -316,17 +311,18 @@ app settings (selected LLM, etc.) so they survive webapp restarts.
 3. dku webapp create  (only when WEBAPP_ID is empty in app.env)
      → Creates a new STANDARD webapp; writes the generated ID back to app.env.
 
-4. dku library mkdir + write  (for every file in backend/ and frontend/dist/)
-     → Uploads to python/<LIB_NS>/backend/ and python/<LIB_NS>/frontend_dist/
+4. dku library sync --delete  (backend/ and frontend/dist/)
+     → Mirrors to python/<LIB_NS>/backend/ and python/<LIB_NS>/frontend_dist/,
+       deleting remote files that no longer exist locally
 
 5. dku webapp get-definition → patch JSON → dku webapp set-definition
-     → Sets backendFramework=FASTAPI, code env, and the html/js/css glue code
+     → Sets backendFramework=FASTAPI, the code env, html = dist/index.html,
+       js = dist/dss-main.js, css = dss_webapp/css.css
 
 6. dku webapp stop + start
      → DSS imports <LIB_NS>.backend.app and calls configure(app) on its FastAPI instance
-     → deploy.sh then polls `dku webapp status` until the backend reports running.
-       If it doesn't come up within ~45 s, the script exits non-zero and prints the
-       recent backend logs inline (from `dku webapp logs`) — no need to open the DSS UI.
+     → `dku webapp start` blocks until the backend is up or has crashed; on a crash it
+       prints the reason and log tail and the script exits non-zero.
 ```
 
 ---
@@ -335,29 +331,16 @@ app settings (selected LLM, etc.) so they survive webapp restarts.
 
 These are the parts that look like magic until you know why they exist. Don't remove them.
 
-**`apiUrl()` and the router `baseUrl` — the iframe sub-path problem**
+**`apiUrl()` and hash routes — the frontend and backend live on different URLs**
 
-When DSS shows the webapp, the browser's URL looks like:
-```
-https://my-dss.company.com/web-apps-backends/MY_PROJECT/WEBAPP_ID/
-```
-The SPA is loaded inside an `<iframe>` at that path. If the frontend does a bare
-`fetch('/api/datasets')`, the browser resolves it against the origin root:
-```
-https://my-dss.company.com/api/datasets   ← wrong! hits DSS, not your FastAPI
-```
-It needs to be:
-```
-https://my-dss.company.com/web-apps-backends/MY_PROJECT/WEBAPP_ID/api/datasets
-```
+DSS renders the webapp's page itself, but the FastAPI backend that answers `/api/...` lives at
+its own URL (`…/web-apps-backends/<PROJECT>/<WEBAPP_ID>/`). A bare `fetch('/api/x')` would hit
+DSS, not FastAPI. `apiUrl()` — re-exported from bs-blueprint in `utils/api.ts` — asks the
+DSS-injected `dataiku.getWebAppBackendUrl()` for the real URL. Locally there is no `dataiku`
+global, so it returns `/api/x` unchanged and Vite's proxy routes it to FastAPI.
 
-`apiUrl()` in `utils/api.ts` solves this by capturing `window.location.pathname` at
-startup — before Vue Router starts changing it — and prepending it to every API call.
-The same logic applies to the router: it sets its `base` to the current pathname when
-embedded, so that internal navigation stays under the iframe path.
-
-In local dev (no iframe), `apiUrl('/api/x')` returns `/api/x` unchanged, and Vite's
-proxy routes it to FastAPI. No special handling needed.
+DSS also owns the page URL, so the router uses `createWebHashHistory()`: act URLs are
+`…#/evidence`, `…#/shortlist`, and a refresh keeps you on the act.
 
 **`base: './'` and the single-bundle output — serving assets from a sub-path**
 
@@ -533,7 +516,6 @@ across all users of the webapp).
 | **Project library** | The `python/` directory inside a DSS project that's on `sys.path` for everything in that project; `make deploy` uploads the backend here |
 | **Project variables** | Key-value store per DSS project, readable and writable from Python at runtime; used here to persist app settings |
 | **Managed folder** | DSS object for storing arbitrary files (PDFs, images, etc.) inside a project; use instead of the local filesystem (which isn't writable in DSS) |
-| **iframe** | HTML element that embeds one website inside another; DSS shows webapps this way |
 
 ---
 
@@ -547,9 +529,9 @@ This blueprint makes several non-obvious choices. They are **deliberate**, docum
 
 **Decision:** `vite.config.ts` forces a single JavaScript output file (`assets/index.js`) and uses `base: './'` for relative asset paths.
 
-**Why:** the frontend is served from inside a DSS webapp iframe at a sub-path (e.g. `https://my-dss.company.com/web-apps-backends/PROJECT/WEBAPP_ID/`). DSS's project-library serving does not reliably handle the chunk manifest that Vite's default code-splitting produces — requests for dynamically-imported chunks 404. A single bundle avoids this entirely.
+**Why:** the bundle is served by the FastAPI backend at a sub-path (e.g. `https://my-dss.company.com/web-apps-backends/PROJECT/WEBAPP_ID/assets/`). DSS's project-library serving does not reliably handle the chunk manifest that Vite's default code-splitting produces — requests for dynamically-imported chunks 404. A single bundle avoids this entirely.
 
-**Trade-off:** the bundle cannot be lazy-loaded. It also means `import()` lazy routes cannot be used; all route components must be statically imported. The JS bundle is approximately 950 KB minified / 320 KB gzipped, most of it echarts, which the act charts use.
+**Trade-off:** the bundle cannot be lazy-loaded. It also means `import()` lazy routes cannot be used; all route components must be statically imported. The JS bundle is approximately 990 KB minified / 330 KB gzipped, most of it echarts, which the act charts use.
 
 **When to revisit:** if the app grows to where the initial load time is noticeably slow (> 2–3 s on a reasonable connection), the right fix is to change the DSS library serving strategy (host the frontend externally or use a DSS API node with proper static-file handling) rather than fighting Vite's code-splitting within the current constraints.
 

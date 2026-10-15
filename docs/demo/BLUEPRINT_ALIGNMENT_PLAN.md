@@ -8,10 +8,9 @@
 > [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md), [`../../webapp/README.md`](../../webapp/README.md) and
 > [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented and verified.
 
-**Status: IN PROGRESS — Phase 0 committed 2026-10-15; Phase 1 implemented 2026-10-15, not yet committed.** All four decisions in §8 were
+**Status: IN PROGRESS — Phases 0–1 committed 2026-10-15; Phase 2 deployed live 2026-10-15, not yet committed.** All four decisions in §8 were
 taken on the recommendations, and the direction is recorded as
-[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 2–8 have not started. **Deploys are paused
-from Phase 1 until Phase 2 lands** (see Phase 1). The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
+[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 3–8 have not started. The deploy pause that Phase 1 introduced ended with Phase 2. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
 a phase, commit, push, DSS deployment and any live DSS change remain separate actions, each requiring
 its own approval.
 
@@ -179,7 +178,7 @@ commit `eslint-suppressions.json` and `bs-blueprint.baseline.json`. **Accept:** 
 harness check in `tools/check_indexes.sh` passes, and the app looks unchanged, because `tokens.css`
 still overrides the kit.
 
-> **Implemented 2026-10-15, awaiting commit approval.** `npm run check` prints `check: ok` (0
+> **Implemented and committed 2026-10-15.** `npm run check` prints `check: ok` (0
 > blocking, 7 baselined); the typecheck and build pass. What differed from the plan:
 >
 > - **Deploys are paused until Phase 2.** `dkuWebapp()` runs on every build and always reduces
@@ -217,6 +216,24 @@ with the live app:
 act works, and the checks in [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) §4 and §4.1 pass
 against the test namespace. The live deploy then repeats those checks, and the test webapp and its
 library folder are removed afterwards, with approval.
+
+> **Deployed live 2026-10-15, awaiting commit approval.** `deploy.sh` now follows the framework's
+> starter: it mirrors `backend/` and `frontend/dist/` with `dku library sync --delete` and sets the
+> webapp's html and js from the build. A new `WRITE_BACK_WEBAPP_ID=0` switch keeps a throwaway
+> deploy from rewriting `app.env`. The router uses hash history, `apiUrl` comes from the framework,
+> and `embeddedBase.ts`, `html.html` and `js.js` are deleted. The backend already served `/assets`
+> and needed no change.
+>
+> - **Test deploy:** webapp `t75Qsqw` in library folder `target_prioritizer_bp_test`; the shared code
+>   env needed no change and `app.env` stayed byte-identical. Accepted by the user in the browser.
+> - **Live deploy:** `OlmPX9a`, run by the user (the agent's permission rules blocked it). The
+>   mirror deleted the 14 library files Phase 0 had retired, exactly as a dry run predicted.
+>   Definition, logs and library verified from DSS.
+> - **Test webapp removed 2026-10-15** by the user: the webapp in the DSS UI (`dku` has no webapp
+>   delete), and its library folder with `dku library delete --recursive` (19 files). The project's
+>   webapps are back to the live Target Prioritizer and the Graph Explorer.
+> - The webapp README and `webapp/DEPLOYMENT.md` were corrected in the same change, ahead of
+>   Phase 8, because they described the retired iframe model.
 
 ### Phase 3 — tokens *(D1, D2)*
 

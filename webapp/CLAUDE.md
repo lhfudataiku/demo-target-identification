@@ -25,8 +25,6 @@ the task.
 
 - Keep the DSS build contract: Vite `base: './'`, single-bundle output, Vue dedupe, and the
   `dkuWebapp()`, `optimizeDeps` and `assetsInlineLimit` wiring in `vite.config.ts`.
-- Deploys are paused until the plan's Phase 2: `deploy.sh` refuses a plugin build. Do not remove that
-  guard outside Phase 2.
 - Use `dku` only for read-only discovery during development. Do not mutate a DSS project merely to
   develop or inspect this app.
 - DSS libraries are text-only: icons are `@dataiku/vue-icons` components, never binary assets.
