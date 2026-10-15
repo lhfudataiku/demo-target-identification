@@ -1,22 +1,21 @@
 # bs-blueprint alignment plan
 
-> **Lifecycle:** Decision · **Audience:** webapp implementers and technical reviewers · **Authority:**
+> **Lifecycle:** Historical · **Audience:** webapp implementers and technical reviewers · **Authority:**
 > the agreed scope, migration sequence, acceptance criteria and decisions for realigning the
 > Target Prioritizer webapp with the team's current `bs-blueprint` framework · **Update when:** a
 > decision in §8 is taken, the scope changes, or a phase is accepted · **Generated dependencies:** none
 > · **Excludes:** current deployed webapp behavior, which remains governed by
-> [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md), [`../../webapp/README.md`](../../webapp/README.md) and
-> [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented and verified.
+> [`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md), [`../../webapp/README.md`](../webapp/README.md) and
+> [`../../webapp/DEPLOYMENT.md`](../webapp/DEPLOYMENT.md) until each phase is implemented and verified.
 
-**Status: IN PROGRESS — Phases 0–6 committed and deployed 2026-10-15; Phase 7 implemented locally, not yet committed or deployed.** All four decisions in §8 were
-taken on the recommendations, and the direction is recorded as
-[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phase 8 has not started. The deploy pause that Phase 1 introduced ended with Phase 2. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
-a phase, commit, push, DSS deployment and any live DSS change remain separate actions, each requiring
-its own approval.
+**Status: IMPLEMENTED — 2026-10-15. Retired to `archive/`.** All eight phases were committed and
+deployed on 2026-10-15; the direction is recorded as `DEC-DEMO-003` in the decision register. The
+current authority for the app's stack, rules and colour table is `WEBAPP_DESIGN.md` §3; this file is
+the dated record of how the migration was done.
 
 ## 1. Summary
 
-The webapp was seeded from `bs-blueprint` with `make copy` ([`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) §3.1).
+The webapp was seeded from `bs-blueprint` with `make copy` ([`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) §3.1).
 At that time the template carried its own primitives (`EaButton`, `EaSelect`, …), its own palette
 (`styles/tokens.css`) and `lucide-vue-next` icons. The framework has since moved on. It now sits on the
 engineering team's `@dataiku/ea-ui-kit`, `@dataiku/vue-icons` and a DSS Vite plugin, and it ships a
@@ -43,9 +42,9 @@ live in that repository's `docs/` folder. After adoption, the recipes are also c
 **Non-goals**
 
 - No change to any act's content, claims, copy contract, backend routes or data contracts
-  ([`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) §3.3, §3.7, §6).
+  ([`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) §3.3, §3.7, §6).
 - No change to the Visual Graph Explorer handoff
-  ([`../../archive/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md`](../../archive/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md), now implemented and current in [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) §3.1.1).
+  ([`../../archive/VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md`](VISUAL_GRAPH_EXPLORER_INTEGRATION_SCOPE.md), now implemented and current in [`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) §3.1.1).
 - No dark mode. `useThemeMode('light')` keeps the app light; a theme switch is a later, separate change.
 - No new features, and no DSS flow changes.
 
@@ -76,7 +75,7 @@ documents, chat). All of those blocks are disabled in `webapp/app.env`.
 
 ### 4.1 The visual identity changes
 
-The app is deliberately themed to the Dataiku **brand** palette ([`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md),
+The app is deliberately themed to the Dataiku **brand** palette ([`../../webapp/DEPLOYMENT.md`](../webapp/DEPLOYMENT.md),
 "Design system"): mint `#3EDAB2` primary, a dark-green sidebar, off-white background, and Spectral /
 Roboto / DM Mono fonts. The kit carries the DSS **product** theme: indigo `#3445cb` primary, white
 background, and Source Sans Pro. Removing `tokens.css` (Phase 3) therefore changes the look of every
@@ -113,7 +112,7 @@ become the built `dist/index.html` and `dist/dss-main.js`, which load the bundle
 - `dss_webapp/deploy.sh` and `backend/app.py` take the framework starter's versions of the two
   relevant parts. As a side benefit, the starter's deploy uses `dku library sync --delete`, which
   removes retired library files that we currently delete by hand
-  ([`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) §4).
+  ([`../../webapp/DEPLOYMENT.md`](../webapp/DEPLOYMENT.md) §4).
 - The router moves to `createWebHashHistory()`. Act URLs change from `/shortlist` to `#/shortlist`,
   so any saved link breaks.
 - `utils/api.ts` re-exports `apiUrl` from the framework, and `utils/embeddedBase.ts` is deleted.
@@ -123,7 +122,7 @@ become the built `dist/index.html` and `dist/dss-main.js`, which load the bundle
 
 `adopt` writes a managed rules block into `webapp/AGENTS.md` and a Claude Code hook into
 `webapp/.claude/settings.json`. `webapp/AGENTS.md` and `webapp/CLAUDE.md` are generated from
-[`../../harness/WEBAPP_OVERLAY.md`](../../harness/WEBAPP_OVERLAY.md) by `tools/sync_harness.py`, so the
+[`../../harness/WEBAPP_OVERLAY.md`](../harness/WEBAPP_OVERLAY.md) by `tools/sync_harness.py`, so the
 next harness sync would silently delete the block. The overlay also still says "use local `Ea*`
 primitives" and "use Lucide components". Phase 1 must:
 
@@ -164,7 +163,7 @@ behave as before, and the typecheck passes. This removes 12 of the 27 Lucide fil
 > in Settings, and the packages only the blocks used (`@vue-flow/core`, `marked`, `sse-starlette`,
 > `python-multipart`, `langchain-core`, `pymupdf`). The documents that this phase made wrong were
 > corrected in the same change, ahead of Phase 8: the webapp README, the harness webapp overlay, and
-> [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) §3.4 and §8. Verified locally: typecheck and build pass, the
+> [`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) §3.4 and §8. Verified locally: typecheck and build pass, the
 > backend registers only the act, settings and system routes, every act renders live data, and an old
 > block URL falls through to Act 1. Two leftovers are deliberately out of scope: the Settings LLM
 > picker, which no feature uses any more, and the Admin page, whose toggle now controls an empty
@@ -213,7 +212,7 @@ with the live app:
   or the script's environment variables), and check that `app.env` is unchanged afterwards.
 
 **Accept:** the test webapp loads every act inside DSS, every API call resolves, a hard refresh on each
-act works, and the checks in [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) §4 and §4.1 pass
+act works, and the checks in [`../../webapp/DEPLOYMENT.md`](../webapp/DEPLOYMENT.md) §4 and §4.1 pass
 against the test namespace. The live deploy then repeats those checks, and the test webapp and its
 library folder are removed afterwards, with approval.
 
@@ -275,7 +274,7 @@ framework's `themeColor()`, because ECharts cannot parse the kit's space-separat
 >   `'var(--muted-foreground)'`, which ECharts cannot resolve, and named the DM Mono font; both now
 >   resolve properly.
 > - The Explorer card's accent and all eleven act-card accents now default to the kit primary.
-> - DEPLOYMENT.md "Design system", the webapp README and [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) §3.5
+> - DEPLOYMENT.md "Design system", the webapp README and [`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) §3.5
 >   were corrected in the same change, ahead of Phase 8.
 
 ### Phase 4 — icons
@@ -370,7 +369,7 @@ Work through the remaining restricted and unknown classes until `eslint-suppress
 `bs-blueprint.baseline.json` are empty, then delete them. Classes the app keeps on purpose (such as
 Vue Flow's) are declared in `eslint.config.js`. **Accept:** `check: ok` with no baseline files.
 
-> **Implemented 2026-10-15, awaiting commit approval.** All 129 lint findings fixed; both baseline
+> **Implemented, committed and deployed 2026-10-15.** All 129 lint findings fixed; both baseline
 > files pruned to empty and deleted, as the framework's guide prescribes. `npm run check` passes
 > with no suppressions.
 >
@@ -396,19 +395,26 @@ Vue Flow's) are declared in `eslint.config.js`. **Accept:** `check: ok` with no 
 Apply §6, regenerate the indexes and run `./tools/check_indexes.sh`. **Accept:** no document describes
 the old stack as current.
 
+> **Implemented 2026-10-15.** Most §6 edits landed in the phase that made each document wrong. The
+> close-out rewrote the webapp README's opening as this app's own guide (adding the GitHub Packages
+> prerequisite and the DSS-credential step), brought `WEBAPP_DESIGN.md` §3.1, §3.5 and §3.6 up to the
+> built state — §3.5 now holds the series-to-colour table and the dense-chart exception, so code
+> comments and `webapp/DEPLOYMENT.md` point there rather than here — pointed `DEC-DEMO-003` at them,
+> fixed a stale `vite.config.ts` comment from Phase 1, and retired this plan to `archive/`.
+
 ## 6. Documentation impact
 
 | Document | Sections | Change |
 |---|---|---|
-| [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) | header "What the demo surface is"; §3.1; §3.5; §3.6; §8 | Stack and seeding (adopted framework, not `make copy`); conventions (kit primitives, DSS icons, `useThemeColors()`, `npm run check`); build/deploy; drop the references to the template's optional blocks once Phase 0 lands |
-| [`../../webapp/README.md`](../../webapp/README.md) | title and intro; frontend, DSS integration and non-obvious-bits sections; "Optional building blocks"; "Single-bundle Vite output" | It still presents itself as the generic starter; rewrite it as this app's README on the framework, and remove the optional blocks |
-| [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) | header (iframe); "Where things live on DSS"; §4 verification; "Design system"; library pruning | New deploy model, kit theme replacing the brand palette, and `sync --delete` replacing manual pruning |
-| [`../../harness/WEBAPP_OVERLAY.md`](../../harness/WEBAPP_OVERLAY.md) | "Route by task", "Load-bearing rules" | Remove `Ea*`, Lucide and `tokens.css` guidance; point at `npm run check`; regenerate the copies with `tools/sync_harness.py --write` |
-| [`../README.md`](../README.md) | Planning | Move this plan to its approved, implemented or retired state |
+| [`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) | header "What the demo surface is"; §3.1; §3.5; §3.6; §8 | Stack and seeding (adopted framework, not `make copy`); conventions (kit primitives, DSS icons, `useThemeColors()`, `npm run check`); build/deploy; drop the references to the template's optional blocks once Phase 0 lands |
+| [`../../webapp/README.md`](../webapp/README.md) | title and intro; frontend, DSS integration and non-obvious-bits sections; "Optional building blocks"; "Single-bundle Vite output" | It still presents itself as the generic starter; rewrite it as this app's README on the framework, and remove the optional blocks |
+| [`../../webapp/DEPLOYMENT.md`](../webapp/DEPLOYMENT.md) | header (iframe); "Where things live on DSS"; §4 verification; "Design system"; library pruning | New deploy model, kit theme replacing the brand palette, and `sync --delete` replacing manual pruning |
+| [`../../harness/WEBAPP_OVERLAY.md`](../harness/WEBAPP_OVERLAY.md) | "Route by task", "Load-bearing rules" | Remove `Ea*`, Lucide and `tokens.css` guidance; point at `npm run check`; regenerate the copies with `tools/sync_harness.py --write` |
+| [`../README.md`](../docs/README.md) | Planning | Move this plan to its approved, implemented or retired state |
 
-[`../decisions/DECISION_REGISTER.md`](../decisions/DECISION_REGISTER.md): `DEC-DEMO-003` records the
+[`../decisions/DECISION_REGISTER.md`](../docs/decisions/DECISION_REGISTER.md): `DEC-DEMO-003` records the
 direction (adopt the framework and its product theme). When Phase 8 lands, update its evidence to point
-at the rewritten [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) sections.
+at the rewritten [`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) sections.
 
 ## 7. Risks
 
@@ -428,5 +434,5 @@ All four were taken on 2026-10-14, each on the recommended option.
 |---|---|---|---|---|
 | D1 | Visual identity | (a) the kit's product theme throughout; (b) keep the brand palette as a deliberate override | **(a)** | An override is exactly the drift the framework flags, and it would keep the app looking different from the team's other webapps |
 | D2 | Chart colours | (a) the kit's slots as they fall; (b) fixed meanings mapped to chosen kit slots | **(b)** | Several acts encode meaning in colour |
-| D3 | Template optional blocks | (a) delete them in Phase 0; (b) keep them disabled | **(a)** | [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) §8 already enables none, and they hold 12 of the 27 icon files |
+| D3 | Template optional blocks | (a) delete them in Phase 0; (b) keep them disabled | **(a)** | [`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) §8 already enables none, and they hold 12 of the 27 icon files |
 | D4 | Phase 2 deploy target | (a) the live `DEMO_TARGET_IDENTIFICATION` webapp; (b) a separate test webapp | **(b), then (a)** | Phase 2 is the only step that can break the deployed demo; the test deploy is isolated as Phase 2 describes |

@@ -225,8 +225,8 @@ bs-blueprint) lists the tokens and rules, and `npm run check` enforces them.
 **Chart colours carry meaning**, so a view names the meaning and
 `frontend/src/utils/seriesColours.ts` picks the kit token: `measured` (the model's result),
 `contrast` (what it is compared with), `highlight` (the exception to look at), `approved`,
-`trial`, `baseline` and `negative`. The table was approved in Phase 3 of
-[`BLUEPRINT_ALIGNMENT_PLAN.md`](../docs/demo/BLUEPRINT_ALIGNMENT_PLAN.md); change it there first.
+`trial`, `baseline` and `negative`. The table is documented in
+[`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) §3.5; change it there first.
 
 Two rules that are easy to break: ECharts draws on a canvas and cannot read CSS variables or the
 kit's space-separated `hsl()` values, so canvas colours always go through `seriesColor()` or

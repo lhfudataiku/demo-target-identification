@@ -60,15 +60,14 @@ evidence and generated documents appear first; planning and historical material 
 
 ## Planning
 
-| | |
-|---|---|
-| [`demo/BLUEPRINT_ALIGNMENT_PLAN.md`](demo/BLUEPRINT_ALIGNMENT_PLAN.md) | **In progress (`DEC-DEMO-003`); Phases 0–6 deployed, Phase 7 implemented 2026-10-15:** realign the webapp with the team's current `bs-blueprint` framework (the kit's theme, primitives and icons, the framework's app shell and DSS deploy model), in phases ratcheted by `npm run check`. Current behaviour stays governed by `demo/WEBAPP_DESIGN.md` until each phase lands |
+No plan is open. Completed plans move to [`../archive/`](../archive/): the most recent is the webapp's
+bs-blueprint alignment, implemented 2026-10-15 (`DEC-DEMO-003`).
 
 ## Historical material
 
 | | |
 |---|---|
-| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, the three dashboard mockups and their app-parity check, the retired hand-authored flow view, completed plans (the documentation restructure with its phase records, the Visual Graph Explorer integration scope), the 2026-09-03 graph-snapshot switch record, the `m3-f12`-era appendix snapshots and breast-annotation exports, and the unpublished DSS wiki drafts. Do not load by default; use only for an explicit history investigation |
+| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, the three dashboard mockups and their app-parity check, the retired hand-authored flow view, completed plans (the documentation restructure with its phase records, the Visual Graph Explorer integration scope, the bs-blueprint alignment), the 2026-09-03 graph-snapshot switch record, the `m3-f12`-era appendix snapshots and breast-annotation exports, and the unpublished DSS wiki drafts. Do not load by default; use only for an explicit history investigation |
 | [`../archive/decisions/`](../archive/decisions/) | Immutable retired decision chronology and its five-way triage; query `.index/decisions_history.tsv` before opening it |
 
 ## Not in this directory

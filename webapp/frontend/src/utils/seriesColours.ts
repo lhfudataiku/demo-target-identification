@@ -2,8 +2,8 @@
 //
 // Colours carry meaning across acts — the model's own result is always the same
 // hue, the exception to look at is always another — so a view names the MEANING
-// and this table picks the kit token. The table is the one approved in
-// docs/demo/BLUEPRINT_ALIGNMENT_PLAN.md (Phase 3); change it there first.
+// and this table picks the kit token. The table is documented in
+// docs/demo/WEBAPP_DESIGN.md §3.5; change it there first.
 import { themeColor, type ThemeColorName } from 'bs-blueprint'
 
 export const SERIES = {

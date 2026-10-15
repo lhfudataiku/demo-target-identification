@@ -20,8 +20,8 @@ targets a disease's field has already validated — and the test is a scientist'
 disease they know. It is not a discovery claim, and the app must not read as one. We are an AI
 platform company demonstrating machinery, not a drug-discovery vendor proposing a research direction.
 
-**What the demo surface is.** A single Vue SPA deployed as a DSS STANDARD webapp, built from the
-`bs-blueprint` template. **Four acts in the app; acts 5 and 6 are a spoken talk track**, because they
+**What the demo surface is.** A single Vue SPA deployed as a DSS STANDARD webapp, built on the team's
+`bs-blueprint` framework. **Four acts in the app; acts 5 and 6 are a spoken talk track**, because they
 are about the platform rather than the biology.
 
 **Status.** Built: all four acts are live views in [`../../webapp/`](../../webapp/), and the app is the
@@ -115,10 +115,17 @@ top-15 table.
 
 ### 3.1 The stack
 
-Copied from `~/Documents/GitHub/bs-blueprint` via `make copy DEST=…`. Vue 3 + Vite + Tailwind 4 +
-ECharts + Pinia + vue-router, with a FastAPI backend and `dss_webapp/deploy.sh`, which builds the bundle,
-uploads `backend/` and `frontend_dist/` into the project library under `python/<LIB_NS>/`, and patches a
-STANDARD webapp definition to serve it.
+Vue 3 + Vite + Tailwind 4 + ECharts + Pinia + vue-router on the team's
+[bs-blueprint](https://github.com/dataiku/bs-blueprint) framework, pinned to a commit in
+`frontend/package.json`: the `@dataiku/ea-ui-kit` theme and components, the `@dataiku/vue-icons` set,
+and bs-blueprint's app shell (`AppLayout`, `PageHeader`) and composites. A FastAPI backend serves the
+act data and the built bundle. `dss_webapp/deploy.sh` mirrors `backend/` and `frontend_dist/` into the
+project library under `python/<LIB_NS>/` and sets the STANDARD webapp's html and js from the build
+(`@dataiku/vite-plugin-dku-webapp`), so DSS renders the app directly, with no iframe.
+
+The app was seeded from an early copy of the framework's template and realigned with the current
+framework on 2026-10-15 (`DEC-DEMO-003`; the phase-by-phase record is
+[`../../archive/BLUEPRINT_ALIGNMENT_PLAN.md`](../../archive/BLUEPRINT_ALIGNMENT_PLAN.md)).
 
 **What we get for free that the native route could not give us:** routed acts with a sidebar that builds
 itself from route `meta`; real prose beside real charts; display-only columns; row-level drill; a single
@@ -222,12 +229,32 @@ swaps to live data, its mock module is deleted, not commented out.
 
 ### 3.5 Conventions that are not negotiable
 
-From the blueprint's agent instructions (`AGENTS` at its repo root); violating them means the app stops looking like a Dataiku product.
+From bs-blueprint's rules (the managed block in `webapp/AGENTS.md`, enforced by `npm run check`, which
+must print `check: ok` with no suppressions); violating them means the app stops looking like a Dataiku
+product.
 
 - **Never hardcode colors.** Tailwind utilities over the kit theme's tokens — `bg-background`,
   `text-muted-foreground`, `border-border`, `bg-primary`, `text-destructive`. No hex, no `text-[#…]`.
-  A chart series names its meaning (`measured`, `contrast`, `highlight`, …) and takes its colour from
-  `frontend/src/utils/seriesColours.ts`; it never picks a `--chart-N` slot directly.
+  A chart series names its meaning and takes its colour from `frontend/src/utils/seriesColours.ts`,
+  which holds exactly this table; it never picks a `--chart-N` slot directly. Change the table here
+  first, then the module.
+
+  | Meaning | Where it appears | Kit token |
+  |---|---|---|
+  | `measured` — the model or pipeline result | precision, AUPRC, corroborated interactions, candidate pool, node types, AUC histogram, personas, eligible band | `chart-2` (teal) |
+  | `contrast` — the series compared against it | other drivers, relations, shared terms, trustworthy intervals, overlap matrix, positive SHAP, score bar | `chart-3` (navy) |
+  | `highlight` — the exception to look at | single-source interactions, genes distinct to one term | `chart-1` (orange) |
+  | `approved`, `trial` | Act 4 drug badges | `success`, `warning` |
+  | `baseline` — base rate or chance | base rate, grouped sources, duplicate admissions | `muted-foreground` |
+  | `negative` — untrustworthy or negative | failed-trust interval, negative SHAP | `destructive` |
+  | categories with no fixed meaning | Sankey routes and splits, label-evidence donut | `chart-1…5` in order |
+
+  Canvas charts resolve colours through `seriesColor()` or `resolveColour()`, because ECharts cannot
+  read CSS variables or the kit's space-separated `hsl()` values.
+- **Type and spacing on the scale.** No arbitrary values (`text-[13px]`, `w-[86px]`): use the kit's
+  type steps and Tailwind's numeric spacing. The one exception is chart-internal labels in the two
+  dense HTML charts (gene coverage grid, subtype overlap matrix), sized in their component's scoped
+  CSS and declared in `frontend/eslint.config.js`, as canvas charts size theirs in chart options.
 - **Let the sidebar build itself.** Add an act by adding a route with `meta: { title, icon, menu:
   'primary', order }`. Never hand-build a menu array.
 - **`apiUrl()` for every call.** A bare `fetch('/api/…')` does not reach the backend inside DSS.
@@ -243,13 +270,17 @@ From the blueprint's agent instructions (`AGENTS` at its repo root); violating t
 ### 3.6 Build and deploy
 
 ```bash
-make copy DEST=~/Documents/GitHub/target-prioritizer-app   # seed from the blueprint
-make dev                                                    # vite + backend, local
-make deploy                                                 # build, upload libs, patch the webapp
+eval "$(dku auth export-env)"   # DSS credentials for the local backend
+make dev                         # vite + backend, local
+make deploy                      # build, mirror the library, set the webapp definition
 ```
 
-`PROJECT_KEY=DEMO_TARGET_IDENTIFICATION` in `app.env`, plus `LIB_NS` / `APP_PREFIX` /
-`VITE_APP_NAME`. First deploy creates the webapp and writes its id back to `app.env`.
+`app.env` holds the identity (`PROJECT_KEY=DEMO_TARGET_IDENTIFICATION`, `LIB_NS`, `APP_PREFIX`,
+`VITE_APP_NAME`, `WEBAPP_ID`). The procedure, including verification, is
+[`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md). To take a newer framework release, bump the
+pinned `bs-blueprint` commit or tag in `frontend/package.json`, run `npm install` and
+`npx bs-blueprint sync` (from `frontend/`), then `python3 tools/sync_harness.py --write` so the updated
+rules block reaches `webapp/CLAUDE.md` as well, then `npm run check`.
 
 ### 3.7 The card copy contract
 
@@ -658,7 +689,7 @@ the pivot matters more than it looks.
 - **No LLM anything.** A chatbot over a ranked gene list is the kind of thing that makes a careful
   audience stop trusting the careful parts. The template's chat block, like its other optional blocks
   (wizard, charts, flow, documents), was never enabled and was deleted on 2026-10-15, together with the
-  `ENABLE_*` flags ([`BLUEPRINT_ALIGNMENT_PLAN.md`](BLUEPRINT_ALIGNMENT_PLAN.md), Phase 0). Every routed
+  `ENABLE_*` flags ([`BLUEPRINT_ALIGNMENT_PLAN.md`](../../archive/BLUEPRINT_ALIGNMENT_PLAN.md), Phase 0). Every routed
   view is an act or Settings.
 
 ---

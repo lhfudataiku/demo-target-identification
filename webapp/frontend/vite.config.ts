@@ -7,9 +7,8 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   // dkuWebapp() (build only) emits dist/dss-main.js, the DSS webapp JS entry that
   // loads the bundle through dataiku.getWebAppBackendUrl(), and reduces
-  // dist/index.html to body markup. The iframe deploy in dss_webapp/ cannot serve
-  // that build, so deploy.sh refuses it until it moves to the plugin model
-  // (docs/demo/BLUEPRINT_ALIGNMENT_PLAN.md, Phase 2).
+  // dist/index.html to body markup. dss_webapp/deploy.sh uses both as the
+  // webapp's js and html parameters (see webapp/DEPLOYMENT.md).
   plugins: [vue(), tailwindcss(), dkuWebapp()],
 
   // base: './' makes all built asset paths relative — required for the DSS

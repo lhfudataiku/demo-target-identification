@@ -4,6 +4,6 @@ import { designConfig } from 'bs-blueprint/eslint'
 export default [
   { ignores: ['node_modules/**', 'dist/**'] },
   // Chart-internal label classes, sized in their component's scoped <style>
-  // (see BLUEPRINT_ALIGNMENT_PLAN.md, Phase 7).
+  // (see docs/demo/WEBAPP_DESIGN.md §3.5).
   ...designConfig({ entryPoint: 'src/style.css', ignore: ['^matrix-tick$', '^grid-tick$', '^grid-gene$'] }),
 ]

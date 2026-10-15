@@ -1,16 +1,19 @@
-# Blueprint — Dataiku DSS Webapp Starter
+# Target Prioritizer webapp
 
-> **Lifecycle:** Canonical · **Audience:** contributors configuring or extending the webapp ·
-> **Authority:** architecture, setup, feature-block and local-development reference · **Update when:**
-> those contracts or supported workflows change · **Generated dependencies:** current frontend,
-> backend and configuration structure · **Excludes:** project analytical claims and deployment history.
+> **Lifecycle:** Canonical · **Audience:** contributors running or extending the webapp ·
+> **Authority:** architecture, setup and local-development reference · **Update when:** those
+> contracts or supported workflows change · **Generated dependencies:** current frontend, backend
+> and configuration structure · **Excludes:** project analytical claims, deployment procedure
+> (`DEPLOYMENT.md`) and deployment history.
 
-A copy-to-start template for building on-brand webapps on Dataiku DSS.
-If you know Python and data but have never shipped a web frontend, this gets you there:
-the plumbing — local dev, DSS deployment, sidebar, settings, data access — is already wired up.
-You fill in your domain logic.
+The demo surface for Part 2: four acts that walk a scientist from the evidence base to a ranked list
+of candidate targets (see `../docs/demo/WEBAPP_DESIGN.md` for what each act claims and why). It is a
+Vue single-page app with a FastAPI backend, deployed as a DSS webapp in `DEMO_TARGET_IDENTIFICATION`,
+and built on the team's webapp framework, [bs-blueprint](https://github.com/dataiku/bs-blueprint).
 
-**Stack:** Vue 3 (frontend) · FastAPI (backend) · Tailwind + the team's design system (`@dataiku/ea-ui-kit` and `bs-blueprint`) · `uv` / `npm` (package managers).
+**Stack:** Vue 3 (frontend) · FastAPI (backend) · Tailwind + the team's design system
+(`@dataiku/ea-ui-kit` and `bs-blueprint`, pinned in `frontend/package.json`) · ECharts ·
+`uv` / `npm` (package managers).
 
 ---
 
@@ -21,33 +24,40 @@ You fill in your domain logic.
 | Tool | What it is | Install |
 |------|-----------|---------|
 | [`uv`](https://docs.astral.sh/uv/) | Python package manager (replaces `pip`/`venv`) | `curl -Lsf https://astral.sh/uv/install.sh \| sh` |
-| [`Node.js`](https://nodejs.org/) | JavaScript runtime; ships with `npm`, the frontend package manager | [nodejs.org](https://nodejs.org/) or `brew install node` |
-| `dku` CLI | Dataiku command-line tool for deploying | Install globally so it's on your PATH, then authenticate with `dku auth` |
-| `~/.dataiku/config.json` | Your local DSS credentials | |
+| [`Node.js`](https://nodejs.org/) `^20.19`, `^22.13` or `>=24` | JavaScript runtime; ships with `npm` | [nodejs.org](https://nodejs.org/) or `brew install node` |
+| GitHub Packages access | The kit and icons (`@dataiku/*`) are private npm packages | Once per machine, see below |
+| `dku` CLI | Dataiku command-line tool, used for credentials and deploying | Install globally so it's on your PATH, then `dku auth login` |
 
-### Get started
-
-Clone the repo, set the app identity in `app.env`, start the app:
+**GitHub Packages, once per machine.** npm needs the `@dataiku` scope and a token with the
+`read:packages` scope in `~/.npmrc`. With the GitHub CLI:
 
 ```bash
-git clone git@github.com:dataiku/bs-blueprint.git my-app
-cd my-app
-# edit app.env: LIB_NS, APP_PREFIX, VITE_APP_NAME, ENV_NAME, DKU_INSTANCE, PROJECT_KEY
-make dev                          # → open http://localhost:5173
+gh auth refresh -s read:packages
 ```
 
-`app.env` is the single source of truth for the app's identity and DSS target — that's
-the whole setup, no code edits. `make dev` installs deps on first run and **blocks
-(exits non-zero) until those six values are set**, listing any that are missing. The
-frontend hot-reloads on save; the backend reloads on Python file saves. Every act reads
-live DSS datasets, so export DSS credentials first (see `DEPLOYMENT.md`).
+```bash
+printf '%s\n' '@dataiku:registry=https://npm.pkg.github.com' "//npm.pkg.github.com/:_authToken=$(gh auth token)" >> ~/.npmrc && chmod 600 ~/.npmrc
+```
 
-> **Setting up with an AI coding agent?** Don't let it guess the identity/target values.
-> The agent should discover the real options and ask you to confirm: derive `LIB_NS` /
-> `APP_PREFIX` / `VITE_APP_NAME` from an app name you give it, list your DSS instances
-> (`dku auth list`) for `DKU_INSTANCE`, and run `dku project list` to pick
-> `PROJECT_KEY`. It writes them to `app.env` only after you confirm, then runs `make dev`.
-> (See `AGENTS.md` for the exact agent instructions.)
+`npm view @dataiku/ea-ui-kit version` should then print a version. The token follows your `gh`
+login: after a new `gh auth login`, replace that line.
+
+### Run it locally
+
+`app.env` is already filled in for `DEMO_TARGET_IDENTIFICATION` and committed. Every act reads live
+DSS datasets, so the backend needs DSS credentials in its environment:
+
+```bash
+eval "$(dku auth export-env)"
+```
+
+```bash
+make dev
+```
+
+Then open <http://localhost:5173>. `make dev` installs dependencies on first run; the frontend
+hot-reloads on save and the backend reloads on Python file saves. Without the credentials every
+act shows an HTTP 502 (see `DEPLOYMENT.md`, "Known traps").
 
 ```bash
 make stop     # kill both servers
@@ -56,32 +66,14 @@ make logs     # tail the log files in .run/logs/
 make deps     # force-reinstall both Python and Node deps
 ```
 
+Before declaring frontend work done, run `npm run check` from `frontend/`: it runs bs-blueprint's
+doctor, the design lint and the typecheck, and must print `check: ok`.
+
 ### Deploy to DSS
 
-Two one-time steps, then one command:
-
-**One-time setup:**
-
-1. The wizard sets `PROJECT_KEY` and `ENV_NAME` for you; to change them later, edit `app.env`:
-   ```bash
-   PROJECT_KEY=MY_PROJECT   # your DSS project key (uppercase, created automatically if missing)
-   ENV_NAME=my-code-env     # a Python ≥3.11 code env on the DSS instance
-   ```
-   Leave `WEBAPP_ID=` empty — `make deploy` will create the webapp and write its ID back.
-
-2. Make sure the code env is already created on DSS (DSS UI → Administration → Code envs),
-   with at least `fastapi` and `uvicorn` installed.
-
-**Deploy:**
-
-```bash
-make deploy
-```
-
-This builds the frontend, creates the DSS project and webapp if they don't exist yet,
-uploads all code to the project library, patches the webapp definition, and restarts the
-backend. The new webapp's ID is written back to `app.env` automatically so subsequent
-deploys reuse the same webapp. Open the webapp in DSS — it should show your app.
+`make deploy` builds the frontend, mirrors the code into the project library and updates webapp
+`OlmPX9a`. It is a live change to the demo: read `DEPLOYMENT.md` first, which also covers verifying
+that a deploy landed.
 
 ---
 
@@ -95,7 +87,7 @@ interface, which renders the webapp's HTML and JavaScript inside the project pag
 
 ### Two halves
 
-Every webapp in this template has two parts that run in different places:
+This webapp, like every DSS webapp of its kind, has two parts that run in different places:
 
 - **Frontend** — the HTML/CSS/JavaScript that runs in the **user's browser**. This is
   what the user sees and clicks. It can't read DSS data directly — it has to ask the backend.
@@ -149,7 +141,7 @@ detects which mode it's in and connects to DSS accordingly.
 ### Repository layout
 
 ```
-my-app/
+webapp/
 │
 ├── app.env              ← Single source of truth: app name, project key, webapp ID,
 │                          code env, ports. Edit here before deploying. Never commit .env.
@@ -266,7 +258,7 @@ in-DSS.
 
 **Local dev installs `dataiku-internal-client` for real row previews.** The public
 `dataiku-api-client` lists datasets and reads schemas, but its streaming reader differs from the
-in-DSS one, so dataset *row* previews degrade to schema-only locally. The blueprint pulls in the
+in-DSS one, so dataset *row* previews degrade to schema-only locally. This app pulls in the
 real internal `dataiku` (`dataiku-internal-client`, a required dev dependency) so `get_dataiku()`
 in `dss_client.py` can run `dataiku.Dataset(...).get_dataframe()` against the remote instance —
 identical to in-DSS. `dataikuapi` stays for the control-plane. See **Architecture decisions →
@@ -375,10 +367,9 @@ still: create a code env with Python 3.11+ and set it in `app.env` as `ENV_NAME`
 
 ## Configuration and renaming
 
-All per-project settings live in `app.env`, which is checked into git. The identity
-and DSS-target keys (`LIB_NS`, `APP_PREFIX`, `VITE_APP_NAME`, `ENV_NAME`, `PROJECT_KEY`,
-`DKU_INSTANCE`) ship **empty** — fill them in, and `make dev` refuses to start until
-they are set.
+All per-project settings live in `app.env`, which is checked into git and already set for this
+app. `make dev` refuses to start if any of the identity and DSS-target keys (`LIB_NS`,
+`APP_PREFIX`, `VITE_APP_NAME`, `ENV_NAME`, `PROJECT_KEY`, `DKU_INSTANCE`) is empty.
 
 | Key | Used by | Purpose |
 |-----|---------|---------|
@@ -506,7 +497,7 @@ Cypher, join graph results or render a graph/table canvas; those responsibilitie
 
 ## Architecture decisions & trade-offs
 
-This blueprint makes several non-obvious choices. They are **deliberate**, documented here so your team can debate them, extend from them, or replace them when your app outgrows the starter constraints. Each entry follows the pattern: **Decision → Why → Trade-off → When to revisit.**
+This app makes several non-obvious choices. They are **deliberate**, documented here so your team can debate them, extend from them, or replace them when your app outgrows the starter constraints. Each entry follows the pattern: **Decision → Why → Trade-off → When to revisit.**
 
 ---
 
@@ -542,7 +533,7 @@ This blueprint makes several non-obvious choices. They are **deliberate**, docum
 
 **Trade-off:** the URL is **instance-specific and hardcoded** for our team, and unversioned — a DSS upgrade changes the tarball, so refresh the lock with `uv lock --upgrade-package dataiku-internal-client`. It's dev-only: inside DSS the runtime provides `dataiku`, and dev-group deps aren't shipped in the deployable wheel. Because there is no row-reading fallback, local dev **requires** `uv sync` (and DSS connectivity) — a stale checkout that skipped it will `ImportError` on `dataiku` rather than silently degrading. That's a deliberate trade for one simple code path.
 
-**When to revisit:** when the blueprint must target **multiple instances**, derive the URL from the configured instance (`~/.dataiku/config.json` / `DKU_INSTANCE`) instead of hardcoding it; or, if the team standardizes on locally-installed kits, point at the kit instead.
+**When to revisit:** when the app must target **multiple instances**, derive the URL from the configured instance (`~/.dataiku/config.json` / `DKU_INSTANCE`) instead of hardcoding it; or, if the team standardizes on locally-installed kits, point at the kit instead.
 
 ---
 
