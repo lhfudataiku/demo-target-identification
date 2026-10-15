@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
-  import { Check, Copy, ExternalLink, Network } from 'lucide-vue-next'
+  import { ArrowExternalLink, Checkmark, Copy, Flow } from '@dataiku/vue-icons'
   import ActCard from '@/components/act/ActCard.vue'
   import { EaButton } from '@/components/ui'
   import { copyVisualGraphCypher, visualGraphExplorerUrl } from '@/utils/visualGraphExplorer'
@@ -73,7 +73,7 @@
 </script>
 
 <template>
-  <ActCard :span="span" :title="title" :desc="description" :icon="Network" :chips="chips" :src="src"
+  <ActCard :span="span" :title="title" :desc="description" :icon="Flow" :chips="chips" :src="src"
            :method-label="methodLabel ?? 'How this is computed'">
     <div class="flex flex-col gap-3">
       <div v-if="starterQueries?.length" role="group" aria-label="Available graph queries"
@@ -118,16 +118,16 @@
 
       <div class="flex flex-wrap items-center gap-2">
         <EaButton v-if="hasQuery" variant="outline" size="sm" @click="copyOnly">
-          <Check v-if="copied" class="size-3.5" />
+          <Checkmark v-if="copied" class="size-3.5" />
           <Copy v-else class="size-3.5" />
           {{ copied ? 'Copied' : 'Copy query' }}
         </EaButton>
         <EaButton v-if="explorerUrl" size="sm" :href="explorerUrl" target="_blank" rel="noopener noreferrer">
-          <ExternalLink class="size-3.5" /> Open full Explorer
+          <ArrowExternalLink class="size-3.5" /> Open full Explorer
           <span class="sr-only">(opens in a new tab)</span>
         </EaButton>
         <EaButton v-else size="sm" disabled>
-          <ExternalLink class="size-3.5" /> Open full Explorer
+          <ArrowExternalLink class="size-3.5" /> Open full Explorer
         </EaButton>
         <span v-if="copyFailed" role="status" class="text-xs text-destructive">
           Copy was not available. Select the query above and copy it manually.

@@ -224,7 +224,7 @@ dependency to track or update.
   path: 'my-feature',
   name: 'myFeature',
   component: MyView,
-  meta: { title: 'My Feature', icon: DatabaseIcon, menu: 'primary', order: 2 },
+  meta: { title: 'My Feature', icon: Dataset, menu: 'primary', order: 2 },
 }
 ```
 
@@ -458,10 +458,10 @@ Cypher, join graph results or render a graph/table canvas; those responsibilitie
      path: 'my-feature',
      name: 'myFeature',
      component: MyView,
-     meta: { title: 'My Feature', icon: DatabaseIcon, menu: 'primary', order: 2 },
+     meta: { title: 'My Feature', icon: Dataset, menu: 'primary', order: 2 },
    }
    ```
-   Import your icon from `lucide-vue-next`. `menu: 'primary'` puts it in the main
+   Import your icon from `@dataiku/vue-icons` (the DSS icon set). `menu: 'primary'` puts it in the main
    navigation; `menu: 'tertiary'` puts it in the footer (like Settings).
    See [The frontend, explained](#the-frontend-explained) for how the router drives the sidebar.
 

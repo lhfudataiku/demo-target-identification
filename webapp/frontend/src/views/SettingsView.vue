@@ -9,7 +9,7 @@
    * "standard" variables, so they survive webapp restarts.
    */
   import { onMounted, computed, ref } from 'vue'
-  import { Loader2 } from 'lucide-vue-next'
+  import { Spinner } from '@dataiku/vue-icons'
   import { EaSelect } from '@/components/ui'
   import { useSettingsStore } from '@/stores/settings'
   import { usePresenterStore } from '@/stores/presenter'
@@ -74,7 +74,7 @@
               :disabled="store.isLoading || savingLlm"
               @update:model-value="onLlmChange"
             />
-            <Loader2
+            <Spinner
               v-if="store.isLoading || savingLlm"
               class="w-4 h-4 animate-spin text-muted-foreground shrink-0"
             />

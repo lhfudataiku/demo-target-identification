@@ -7,9 +7,6 @@
   "src/components/act/ActCard.vue": {
     "better-tailwindcss/no-restricted-classes": {
       "count": 9
-    },
-    "no-restricted-imports": {
-      "count": 2
     }
   },
   "src/components/act/ActGeneGrid.vue": {
@@ -20,9 +17,6 @@
   "src/components/act/ActGlossaryDrawer.vue": {
     "better-tailwindcss/no-restricted-classes": {
       "count": 10
-    },
-    "no-restricted-imports": {
-      "count": 1
     }
   },
   "src/components/act/ActInfo.vue": {
@@ -60,29 +54,16 @@
       "count": 9
     },
     "no-restricted-imports": {
-      "count": 2
+      "count": 1
     }
   },
   "src/components/layout/AppSidebar.vue": {
     "better-tailwindcss/no-restricted-classes": {
       "count": 1
-    },
-    "no-restricted-imports": {
-      "count": 1
-    }
-  },
-  "src/config.ts": {
-    "no-restricted-imports": {
-      "count": 1
     }
   },
   "src/layouts/DefaultLayout.vue": {
     "better-tailwindcss/no-restricted-classes": {
-      "count": 1
-    }
-  },
-  "src/router/index.ts": {
-    "no-restricted-imports": {
       "count": 1
     }
   },
@@ -96,15 +77,12 @@
       "count": 18
     },
     "no-restricted-imports": {
-      "count": 2
+      "count": 1
     }
   },
   "src/views/EvidenceView.vue": {
     "better-tailwindcss/no-restricted-classes": {
       "count": 4
-    },
-    "no-restricted-imports": {
-      "count": 1
     }
   },
   "src/views/SettingsView.vue": {
@@ -112,7 +90,7 @@
       "count": 3
     },
     "no-restricted-imports": {
-      "count": 2
+      "count": 1
     }
   },
   "src/views/ShortlistView.vue": {
@@ -120,7 +98,7 @@
       "count": 40
     },
     "no-restricted-imports": {
-      "count": 3
+      "count": 2
     }
   },
   "src/views/TherapeuticAreaView.vue": {
@@ -128,7 +106,7 @@
       "count": 17
     },
     "no-restricted-imports": {
-      "count": 3
+      "count": 2
     }
   }
 }

@@ -12,7 +12,7 @@
    * the two would start to disagree.
    */
   import { computed, nextTick, ref, watch } from 'vue'
-  import { BookOpen, Search, X } from 'lucide-vue-next'
+  import { Book, Search, X } from '@dataiku/vue-icons'
   import { GLOSSARY, GLOSSARY_GROUPS, GROUP_LABEL } from '@/utils/glossary'
   import { useGlossaryStore } from '@/stores/glossary'
 
@@ -68,7 +68,7 @@
         <header class="flex flex-none items-start justify-between gap-3 border-b border-border px-5 py-4">
           <div class="flex items-start gap-3">
             <span class="mt-0.5 grid size-8 flex-none place-items-center rounded-lg bg-primary/20 text-primary">
-              <BookOpen class="size-4" />
+              <Book class="size-4" />
             </span>
             <div class="flex flex-col gap-0.5">
               <h2 class="text-[17px] font-semibold leading-snug tracking-tight">Glossary</h2>

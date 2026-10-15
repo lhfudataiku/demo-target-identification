@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
-import { Database, Gauge, ListFilter, Network, Settings, Shield } from 'lucide-vue-next'
+import { Dataset, Flow, Gear, ListNumbered, Odometer, ShieldCheck } from '@dataiku/vue-icons'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import ShortlistView from '@/views/ShortlistView.vue'
 import EvidenceView from '@/views/EvidenceView.vue'
@@ -15,25 +15,25 @@ const coreRoutes: RouteRecordRaw[] = [
     path: 'evidence',
     name: 'evidence',
     component: EvidenceView,
-    meta: { title: 'The evidence base', icon: Database, menu: 'primary', order: 1 },
+    meta: { title: 'The evidence base', icon: Dataset, menu: 'primary', order: 1 },
   },
   {
     path: 'calibration',
     name: 'calibration',
     component: CalibrationView,
-    meta: { title: 'Calibration', icon: Gauge, menu: 'primary', order: 2 },
+    meta: { title: 'Calibration', icon: Odometer, menu: 'primary', order: 2 },
   },
   {
     path: 'therapeutic-area',
     name: 'therapeutic-area',
     component: TherapeuticAreaView,
-    meta: { title: 'The therapeutic area', icon: Network, menu: 'primary', order: 3 },
+    meta: { title: 'The therapeutic area', icon: Flow, menu: 'primary', order: 3 },
   },
   {
     path: 'shortlist',
     name: 'shortlist',
     component: ShortlistView,
-    meta: { title: 'The list', icon: ListFilter, menu: 'primary', order: 4 },
+    meta: { title: 'The list', icon: ListNumbered, menu: 'primary', order: 4 },
   },
 ]
 
@@ -48,13 +48,13 @@ const footerRoutes: RouteRecordRaw[] = [
     path: 'settings',
     name: 'settings',
     component: SettingsView,
-    meta: { title: 'Settings', icon: Settings, menu: 'tertiary', order: 1 },
+    meta: { title: 'Settings', icon: Gear, menu: 'tertiary', order: 1 },
   },
   {
     path: 'admin',
     name: 'admin',
     component: AdminView,
-    meta: { title: 'Admin', icon: Shield, menu: 'tertiary', order: 2 },
+    meta: { title: 'Admin', icon: ShieldCheck, menu: 'tertiary', order: 2 },
   },
 ]
 

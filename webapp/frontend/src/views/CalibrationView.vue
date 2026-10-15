@@ -43,7 +43,7 @@
   import ActTabs from '@/components/act/ActTabs.vue'
   import ActTerm from '@/components/act/ActTerm.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-  import { Split, Gauge, Crosshair, ListTree, Target, Filter } from 'lucide-vue-next'
+  import { ArrowSplit, ChartHorizontalBar, Filter, ListBulleted, Odometer, Target } from '@dataiku/vue-icons'
   import { seriesVar } from '@/utils/seriesColours'
 
   defineOptions({ name: 'CalibrationView' })
@@ -281,7 +281,7 @@
       </ActCard>
 
       <!-- ── The pool. -->
-      <ActCard span="col-span-12 lg:col-span-7" :icon="Split"
+      <ActCard span="col-span-12 lg:col-span-7" :icon="ArrowSplit"
                title="How the candidate pool is built" :chips="[['live', 'live']]"
                :src="['enriched_dwpc_GGD', 'enriched_dwpc_GPGD', 'enriched_dwpc_GCD']">
         <template #desc>
@@ -384,7 +384,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-7" :icon="Gauge" title="AUC, disease by disease"
+      <ActCard span="col-span-12 lg:col-span-7" :icon="Odometer" title="AUC, disease by disease"
                :chips="[['live', 'live']]" method-label="Three AUCs, and why they differ"
                :src="['validation_auc_by_disease', 'family_auc_by_family']">
         <template #desc>
@@ -431,7 +431,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-5" :icon="Gauge"
+      <ActCard span="col-span-12 lg:col-span-5" :icon="Odometer"
                title="Enrichment, disease by disease" :chips="[['live', 'live']]"
                :src="['persona_enrichment']">
         <template #desc>
@@ -466,7 +466,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-7" :icon="Crosshair"
+      <ActCard span="col-span-12 lg:col-span-7" :icon="ChartHorizontalBar"
                title="What drives the score" :chips="[['live', 'live']]"
                :src="['shap_driver_frequency']">
         <template #desc>
@@ -510,7 +510,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12" :icon="ListTree"
+      <ActCard span="col-span-12" :icon="ListBulleted"
                title="The model's inputs" :chips="[['live', 'live']]">
         <template #desc>
           Fourteen <ActTerm t="feature">features</ActTerm>, all of them graph structure — no sequence,

@@ -8,9 +8,9 @@
 > [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md), [`../../webapp/README.md`](../../webapp/README.md) and
 > [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented and verified.
 
-**Status: IN PROGRESS — Phases 0–2 committed and deployed 2026-10-15; Phase 3 implemented locally, not yet committed or deployed.** All four decisions in §8 were
+**Status: IN PROGRESS — Phases 0–3 committed and deployed 2026-10-15; Phase 4 implemented locally, not yet committed or deployed.** All four decisions in §8 were
 taken on the recommendations, and the direction is recorded as
-[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 4–8 have not started. The deploy pause that Phase 1 introduced ended with Phase 2. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
+[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 5–8 have not started. The deploy pause that Phase 1 introduced ended with Phase 2. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
 a phase, commit, push, DSS deployment and any live DSS change remain separate actions, each requiring
 its own approval.
 
@@ -260,7 +260,7 @@ Two further decisions, taken with it: card accent stripes, which were decorative
 and code and number text uses the system monospace). Canvas charts resolve every colour through the
 framework's `themeColor()`, because ECharts cannot parse the kit's space-separated `hsl()` values.
 
-> **Implemented 2026-10-15, awaiting commit approval.** `styles/tokens.css` and the `@theme inline`
+> **Implemented, committed and deployed 2026-10-15.** `styles/tokens.css` and the `@theme inline`
 > bridge are deleted, the Google Fonts link is gone, and every chart reads the table above; the
 > doctor's app-palette finding closed on its own. Verified locally on all four acts against the
 > table. What surfaced on the way:
@@ -283,6 +283,32 @@ framework's `themeColor()`, because ECharts cannot parse the kit's space-separat
 Switch the remaining Lucide imports to `@dataiku/vue-icons`, using the framework's rename table, and
 choose the hand-picked glyphs, recording each choice in the commit message. Uninstall `lucide-vue-next`.
 **Accept:** the doctor no longer reports icon drift.
+
+> **Implemented 2026-10-15, awaiting commit approval.** Twelve files moved to `@dataiku/vue-icons`:
+> 10 glyphs kept their name, 9 took the framework's renames (for example `Database` → `Dataset`,
+> `Network` → `Flow`, `Loader2` → `Spinner`), and the 14 with no counterpart took these picks,
+> agreed with the user:
+>
+> | Lucide | Where | DSS icon |
+> |---|---|---|
+> | `BookOpen` | Glossary | `Book` |
+> | `Gauge` | Act 2 sidebar item, "AUC, disease by disease" | `Odometer` |
+> | `ListFilter` | Act 4 sidebar item, "The ranked list" | `ListNumbered` |
+> | `Split` | "How the candidate pool is built" | `ArrowSplit` |
+> | `Crosshair` | "What drives the score" | `ChartHorizontalBar` |
+> | `ListTree` | "The model's inputs" | `ListBulleted` |
+> | `GitBranch` | "How things connect" | `MergeBranch` |
+> | `GitCompare` | "Subtype overlap" | `JoinInner` |
+> | `Grid3x3` | "Gene coverage across the family" | `ChartHeatmap` |
+> | `Ruler` | "When AUC stops working" | `WarningOutline` |
+> | `Users` | "Shared vs. subtype-specific" | `UserGroup` |
+> | `Presentation` | presenter-note line on every card | `Comment` |
+> | `MoveLeft` | sidebar back link | `ArrowLeft` |
+> | `LucideIcon` (type) | `ActCard`'s icon prop | Vue's `Component` |
+>
+> `lucide-vue-next` is uninstalled, and so is the direct `tw-animate-css` dependency, which the kit
+> already declares and imports itself; both doctor findings (icons, forbidden dependencies) closed.
+> Verified locally: every sidebar item and act card renders its icon, and the console is clean.
 
 ### Phase 5 — primitives
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import { useRoute, useRouter, RouterLink } from 'vue-router'
-  import { BookOpen, MoveLeft, Plus } from 'lucide-vue-next'
+  import { ArrowLeft, Book, Plus } from '@dataiku/vue-icons'
   import { storeToRefs } from 'pinia'
   import { APP_NAME, APP_ICON } from '@/config'
   import { useAdminStore } from '@/stores/admin'
@@ -112,7 +112,7 @@
           :aria-expanded="glossary.isOpen"
           @click="glossary.toggle()"
         >
-          <BookOpen class="h-4 w-4 shrink-0" />
+          <Book class="h-4 w-4 shrink-0" />
           <span class="truncate">Glossary</span>
         </button>
         <RouterLink
@@ -136,7 +136,7 @@
         :to="{ name: 'home' }"
         class="mb-3 flex items-center gap-2 rounded-md px-3 py-2 text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       >
-        <MoveLeft class="h-4 w-4 shrink-0" />
+        <ArrowLeft class="h-4 w-4 shrink-0" />
         <span>Back</span>
       </RouterLink>
 

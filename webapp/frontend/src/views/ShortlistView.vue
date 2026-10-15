@@ -46,7 +46,7 @@
   import ActTerm from '@/components/act/ActTerm.vue'
   import VisualGraphExplorerCard from '@/components/graph/VisualGraphExplorerCard.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-  import { ListFilter, Microscope, Network } from 'lucide-vue-next'
+  import { Flow, ListNumbered, Microscope } from '@dataiku/vue-icons'
   import { seriesVar } from '@/utils/seriesColours'
 
   defineOptions({ name: 'ShortlistView' })
@@ -363,7 +363,7 @@
       <!-- The contract, stated before the list appears. -->
       <!-- Your thresholds, not ours. -->
       <!-- The ranked list. -->
-      <ActCard span="col-span-12" :icon="ListFilter" title="The ranked list"
+      <ActCard span="col-span-12" :icon="ListNumbered" title="The ranked list"
                :chips="[['live', 'live']]" method-label="How genes are ranked"
                :src="['dashboard_candidates']">
         <template #desc>
@@ -547,7 +547,7 @@
                     :disabled="page === pageCount" @click="page = pageCount">Last »</button>
           </div>
         </div>
-        <EaEmpty v-if="!shown.length" :icon="ListFilter" title="Nothing matches"
+        <EaEmpty v-if="!shown.length" :icon="ListNumbered" title="Nothing matches"
                  description="Loosen a filter, or pick another disease." />
 
         <template #note>
@@ -698,11 +698,11 @@
         </template>
       </ActCard>
 
-      <ActCard v-if="!sel" span="col-span-12 lg:col-span-6" :icon="Network"
+      <ActCard v-if="!sel" span="col-span-12 lg:col-span-6" :icon="Flow"
                title="See the evidence on the graph"
                desc="Five ready-made queries showing the routes behind a candidate's score."
                :chips="[['live', 'live']]" :src="['Kuzu folder (ytvuniN8)']">
-        <EaEmpty :icon="Network" title="Pick a row"
+        <EaEmpty :icon="Flow" title="Pick a row"
                  description="The five queries are generated locally from the candidate you select." />
       </ActCard>
 

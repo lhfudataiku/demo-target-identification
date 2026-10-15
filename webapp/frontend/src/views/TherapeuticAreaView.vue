@@ -31,7 +31,7 @@
   import ActMatrix from '@/components/act/ActMatrix.vue'
   import ActBar from '@/components/act/ActBar.vue'
   import ActGeneGrid from '@/components/act/ActGeneGrid.vue'
-  import { Network, GitCompare, Ruler, Users, Grid3x3 } from 'lucide-vue-next'
+  import { ChartHeatmap, Flow, JoinInner, UserGroup, WarningOutline } from '@dataiku/vue-icons'
   import { seriesVar } from '@/utils/seriesColours'
 
   defineOptions({ name: 'TherapeuticAreaView' })
@@ -164,7 +164,7 @@
     </p>
 
     <div class="grid grid-cols-12 gap-4">
-      <ActCard span="col-span-12" :icon="Network" title="The family panel" :chips="[['live', 'live']]"
+      <ActCard span="col-span-12" :icon="Flow" title="The family panel" :chips="[['live', 'live']]"
                method-label="Why families, and why we split by them"
                :src="['family_panel']">
         <template #desc>
@@ -246,7 +246,7 @@
         <ActIntervals v-if="detail"
                       :rows="orderedTerms.map((t) => ({ label: t.disease_name, value: t.auc,
                              lo: t.lo95, hi: t.hi95, n: t.n_pos, muted: !t.trustworthy }))" />
-        <EaEmpty v-else :icon="Network" title="No family selected"
+        <EaEmpty v-else :icon="Flow" title="No family selected"
                  description="Pick a disease family to see every term in it." />
 
         <template #note>
@@ -266,7 +266,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12" :icon="Ruler"
+      <ActCard span="col-span-12" :icon="WarningOutline"
                title="When AUC stops working" :chips="[['live', 'live']]"
                method-label="How enrichment is computed"
                :src="['family_panel']">
@@ -308,7 +308,7 @@
 
       
 
-      <ActCard span="col-span-12 lg:col-span-7" :icon="GitCompare"
+      <ActCard span="col-span-12 lg:col-span-7" :icon="JoinInner"
                title="Subtype overlap" :chips="[['live', 'live']]"
                method-label="What the top 50 is"
                :src="['family_panel_overlap']">
@@ -325,7 +325,7 @@
           carry ranked candidates — the rest are not scored into a top-50 list, so they cannot appear.
         </p>
         <ActMatrix v-if="overlapPairs.length" :labels="overlapLabels" :pairs="overlapPairs" />
-        <EaEmpty v-else :icon="GitCompare" title="No overlap computed"
+        <EaEmpty v-else :icon="JoinInner" title="No overlap computed"
                  description="Pairwise top-50 overlap has not been computed for this family." />
         <p v-if="overlapPairs.length" class="mt-2 font-mono text-[10.5px] text-muted-foreground">
           each cell = shared genes out of 50 · higher is more similar
@@ -349,7 +349,7 @@
 
       
 
-      <ActCard span="col-span-12 lg:col-span-6" :icon="Users"
+      <ActCard span="col-span-12 lg:col-span-6" :icon="UserGroup"
                title="Shared vs. subtype-specific"
                method-label="Why only the curated leaf terms">
         <template #desc>
@@ -416,7 +416,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12" :icon="Grid3x3"
+      <ActCard span="col-span-12" :icon="ChartHeatmap"
                title="Gene coverage across the family"
                :chips="[['live', 'live']]" method-label="How to read the grid"
                :src="['family_panel_top50']">

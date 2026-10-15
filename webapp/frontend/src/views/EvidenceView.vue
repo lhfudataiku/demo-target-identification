@@ -34,7 +34,7 @@
   import ActInfo from '@/components/act/ActInfo.vue'
   import VisualGraphExplorerCard from '@/components/graph/VisualGraphExplorerCard.vue'
   import { ACT1_EXPLORER_QUERIES } from '@/utils/a1ExplorerQueries'
-  import { Database, GitBranch, Layers, FileText } from 'lucide-vue-next'
+  import { Dataset, FileText, MergeBranch, Stacked } from '@dataiku/vue-icons'
   import { seriesVar } from '@/utils/seriesColours'
 
   defineOptions({ name: 'EvidenceView' })
@@ -140,7 +140,7 @@
     </p>
 
     <div class="grid grid-cols-12 gap-4">
-      <ActCard span="col-span-12" title="The knowledge graph" :icon="Database"
+      <ActCard span="col-span-12" title="The knowledge graph" :icon="Dataset"
                :chips="[['live', 'live']]"
                :src="['graph_node_type_counts', 'graph_relation_counts', 'graph_ppi_provenance']">
         <template #desc>
@@ -205,7 +205,7 @@
         </template>
       </VisualGraphExplorerCard>
 
-      <ActCard span="col-span-12 lg:col-span-5" title="What's in the graph" :icon="Layers"
+      <ActCard span="col-span-12 lg:col-span-5" title="What's in the graph" :icon="Stacked"
                :chips="[['live', 'live']]" :src="['graph_node_type_counts']">
         <template #desc>
           Eight kinds of biological entity — genes, diseases, drugs, pathways and more.
@@ -217,7 +217,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-7" title="How things connect" :icon="GitBranch"
+      <ActCard span="col-span-12 lg:col-span-7" title="How things connect" :icon="MergeBranch"
                :chips="[['live', 'live']]" :src="['graph_relation_counts']">
         <template #desc>
           Eighteen <ActTerm t="relation">relationship types</ActTerm> — which protein interacts with
@@ -237,7 +237,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-5" title="Where the data came from" :icon="Database"
+      <ActCard span="col-span-12 lg:col-span-5" title="Where the data came from" :icon="Dataset"
                :chips="[['live', 'live']]" :src="['graph_node_source_counts']">
         <template #desc>
           Six public reference <ActTerm t="ontology">vocabularies</ActTerm>. The grey bar is our own
@@ -255,7 +255,7 @@
       </ActCard>
 
       <ActCard span="col-span-12 lg:col-span-7" title="Provenance on every edge"
-               :icon="GitBranch"
+               :icon="MergeBranch"
                :chips="[['live', 'live']]" :src="['graph_ppi_provenance']">
         <template #desc>
           Every protein–protein interaction names the database that asserted

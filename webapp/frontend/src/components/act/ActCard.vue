@@ -30,10 +30,9 @@
    * It is hidden by the presenter-notes switch (stores/presenter.ts), which is
    * the whole reason one app can serve both audiences.
    */
-  import { computed, ref, useSlots } from 'vue'
-  import { ChevronRight, Presentation } from 'lucide-vue-next'
-  import type { LucideIcon } from 'lucide-vue-next'
-  import { usePresenterStore } from '@/stores/presenter'
+  import { computed, ref, useSlots, type Component } from 'vue'
+  import { ChevronRight, Comment } from '@dataiku/vue-icons'
+    import { usePresenterStore } from '@/stores/presenter'
 
   defineOptions({ name: 'ActCard' })
 
@@ -47,7 +46,7 @@
       span?: string
       /** Source dataset names, rendered as a provenance footer */
       src?: string[]
-      icon?: LucideIcon
+      icon?: Component
       /** Any CSS colour; defaults to the brand accent. */
       accent?: string
       /** Label on the collapsed methodology disclosure. */
@@ -142,7 +141,7 @@
            class="flex items-start gap-2 border-t bg-secondary/60 px-5 py-2.5 text-[12.5px]
                   leading-relaxed"
            :style="edgeStyle">
-        <Presentation class="mt-0.5 size-3.5 flex-none text-muted-foreground" />
+        <Comment class="mt-0.5 size-3.5 flex-none text-muted-foreground" />
         <div><slot name="presenter" /></div>
       </div>
 

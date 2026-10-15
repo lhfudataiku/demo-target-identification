@@ -12,7 +12,7 @@
     SelectItemText,
     SelectItemIndicator,
   } from 'reka-ui'
-  import { Check, ChevronDown } from 'lucide-vue-next'
+  import { Checkmark, ChevronDown } from '@dataiku/vue-icons'
 
   // Drop-in for the former truenorth EaSelect: a styled custom dropdown (not a
   // native <select>) built on reka-ui's headless Select. Same props/events.
@@ -65,7 +65,7 @@
             class="relative flex cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-3 text-sm text-foreground outline-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground data-[state=checked]:font-medium data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
           >
             <SelectItemIndicator class="absolute left-2 inline-flex items-center">
-              <Check class="h-4 w-4" />
+              <Checkmark class="h-4 w-4" />
             </SelectItemIndicator>
             <SelectItemText>{{ option.label }}</SelectItemText>
           </SelectItem>
