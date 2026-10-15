@@ -27,17 +27,12 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from .routes.agents import router as agents_router
 from .routes.candidates import router as candidates_router
 from .routes.evidence import router as evidence_router
 from .routes.calibration import router as calibration_router
 from .routes.families import router as families_router
-from .routes.example import router as example_router
 from .routes.system import router as system_router
 
-# Optional block routers are imported lazily inside configure() so that a
-# disabled block never imports langchain / pymupdf (which may be absent from
-# the code env when the block is off).
 
 logger = logging.getLogger(__name__)
 
@@ -91,40 +86,10 @@ def configure(app: FastAPI) -> None:
     )
 
     app.include_router(system_router)
-    app.include_router(example_router)
     app.include_router(candidates_router)
     app.include_router(evidence_router)
     app.include_router(families_router)
     app.include_router(calibration_router)
-    # Agents card-grid blueprint — always on; the sidebar's Administration
-    # section toggle (frontend) controls its visibility at runtime.
-    app.include_router(agents_router)
-
-    # ── Optional building blocks ───────────────────────────────────────────────
-    # Each block is activated by an env flag (set in app.env).
-    # The router import lives inside the guard so the block's heavy dependencies
-    # (langchain-core, pymupdf, python-multipart) are never imported when the
-    # block is disabled — safe to run even if the package is not installed.
-
-    if config.ENABLE_DOCUMENTS:
-        from .routes.documents import router as documents_router  # noqa: PLC0415
-        app.include_router(documents_router)
-        logger.info("Documents block enabled")
-
-    if config.ENABLE_CHATBOT:
-        from .routes.chat import router as chat_router  # noqa: PLC0415
-        app.include_router(chat_router)
-        logger.info("Chatbot block enabled")
-
-    if config.ENABLE_WIZARD:
-        from .routes.wizard import router as wizard_router  # noqa: PLC0415
-        app.include_router(wizard_router)
-        logger.info("Wizard block enabled")
-
-    if config.ENABLE_FLOW:
-        from .routes.flow import router as flow_router  # noqa: PLC0415
-        app.include_router(flow_router)
-        logger.info("Flow block enabled")
 
     # ── Per-user impersonation (opt-in) ───────────────────────────────────────
     # Uncomment to enforce row-level DSS permissions in every request.

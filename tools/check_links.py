@@ -34,12 +34,14 @@ def main():
             directories.add(directory)
             directory = os.path.dirname(directory)
 
-    # These two dated records name the former root DECISIONS.md as the object being migrated. Allow
-    # only that historical filename; all their other file mentions still receive normal stale checks.
-    ALLOWED_HISTORICAL_MENTIONS = {
-        ("docs/demo/DOC_RESTRUCTURE_PLAN.md", "DECISIONS.md"),
-        ("docs/operations/PHASE_0_BASELINE_2026-08-28.md", "DECISIONS.md"),
-    }
+    # Kept empty: the two dated records that needed an exemption (the former root DECISIONS.md) were
+    # archived on 2026-10-14, and archive files skip the mention check. Add a (file, mention) pair
+    # here only for a current document that must name a retired file.
+    ALLOWED_HISTORICAL_MENTIONS = set()
+    # Written and rewritten by `npx bs-blueprint sync`, so they cannot be corrected here. Their prose
+    # names files in the bs-blueprint repository and design tokens such as `rounded.md`, so only their
+    # mention check is skipped; their links are still checked like any other current document.
+    MANAGED_EXTERNAL = {"webapp/frontend/DESIGN.md", "webapp/frontend/docs/design-migration.md"}
     current_md = [f for f in md if not f.startswith("archive/")]
     archive_md = [f for f in md if f.startswith("archive/")]
     bad_links, archive_bad_links, bad_mentions = [], [], []
@@ -75,7 +77,7 @@ def main():
                             archive_bad_links.append((f, i, target))
                     else:
                         bad_links.append((f, i, target))
-            if f.startswith("archive/"):
+            if f.startswith("archive/") or f in MANAGED_EXTERNAL:
                 continue
             # A bare .md mention is stale if (a) its basename matches no file, or (b) it carries a
             # PATH that does not resolve. (b) was added after the 2026-08-21 reorganisation left

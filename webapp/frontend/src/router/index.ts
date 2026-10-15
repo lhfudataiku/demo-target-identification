@@ -1,50 +1,39 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
-import { Database, Gauge, ListFilter, Network, Settings, Shield } from 'lucide-vue-next'
+import { createRouter, createWebHashHistory, type RouteRecordRaw } from 'vue-router'
+import { Dataset, Flow, Gear, ListNumbered, Odometer } from '@dataiku/vue-icons'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import ShortlistView from '@/views/ShortlistView.vue'
 import EvidenceView from '@/views/EvidenceView.vue'
 import TherapeuticAreaView from '@/views/TherapeuticAreaView.vue'
 import CalibrationView from '@/views/CalibrationView.vue'
 import SettingsView from '@/views/SettingsView.vue'
-import AdminView from '@/views/AdminView.vue'
-import { useAdminStore } from '@/stores/admin'
-import { embeddedBasePath } from '@/utils/embeddedBase'
-import { enabledFeatureRoutes } from './features'
 
-// ── Always-on core routes ───────────────────────────────────────────────────
-// Optional blocks (wizard, charts, assistant, documents, flow) live in
-// router/features.ts and are only registered when their ENABLE_* flag is on.
+// ── The four acts ───────────────────────────────────────────────────────────
 const coreRoutes: RouteRecordRaw[] = [
   {
     path: 'evidence',
     name: 'evidence',
     component: EvidenceView,
-    meta: { title: 'The evidence base', icon: Database, menu: 'primary', order: 1 },
+    meta: { title: 'The evidence base', icon: Dataset, menu: 'primary', order: 1 },
   },
   {
     path: 'calibration',
     name: 'calibration',
     component: CalibrationView,
-    meta: { title: 'Calibration', icon: Gauge, menu: 'primary', order: 2 },
+    meta: { title: 'Calibration', icon: Odometer, menu: 'primary', order: 2 },
   },
   {
     path: 'therapeutic-area',
     name: 'therapeutic-area',
     component: TherapeuticAreaView,
-    meta: { title: 'The therapeutic area', icon: Network, menu: 'primary', order: 3 },
+    meta: { title: 'The therapeutic area', icon: Flow, menu: 'primary', order: 3 },
   },
   {
     path: 'shortlist',
     name: 'shortlist',
     component: ShortlistView,
-    meta: { title: 'The list', icon: ListFilter, menu: 'primary', order: 4 },
+    meta: { title: 'The list', icon: ListNumbered, menu: 'primary', order: 4 },
   },
 ]
-
-// Administration section — visible only when the Admin toggle is on.
-// Template scaffolding (Agents registry demo) removed — this app is the demo
-// deck, and a stray admin page in the sidebar is noise in front of an audience.
-const adminRoutes: RouteRecordRaw[] = []
 
 // Footer (tertiary) routes.
 const footerRoutes: RouteRecordRaw[] = [
@@ -52,13 +41,7 @@ const footerRoutes: RouteRecordRaw[] = [
     path: 'settings',
     name: 'settings',
     component: SettingsView,
-    meta: { title: 'Settings', icon: Settings, menu: 'tertiary', order: 1 },
-  },
-  {
-    path: 'admin',
-    name: 'admin',
-    component: AdminView,
-    meta: { title: 'Admin', icon: Shield, menu: 'tertiary', order: 2 },
+    meta: { title: 'Settings', icon: Gear, menu: 'tertiary', order: 1 },
   },
 ]
 
@@ -75,10 +58,8 @@ const routes: RouteRecordRaw[] = [
         meta: { hiddenInMenu: true },
       },
       ...coreRoutes,
-      ...enabledFeatureRoutes(),
-      ...adminRoutes,
       ...footerRoutes,
-      // Unknown / disabled-block URLs fall through to a valid page.
+      // Unknown URLs fall through to a valid page.
       {
         path: ':pathMatch(.*)*',
         name: 'notFound',
@@ -89,20 +70,14 @@ const routes: RouteRecordRaw[] = [
   },
 ]
 
-// When embedded in DSS, the SPA lives at a non-root path (the webapp backend
-// URL). Capture the base before Vue Router takes over the pathname.
-let baseUrl = '/'
-if (window.self !== window.top) {
-  baseUrl = embeddedBasePath()
-}
-
+// DSS owns the page URL, so routes live after the hash (`…/webapps/view#/shortlist`).
 const router = createRouter({
-  history: createWebHistory(baseUrl),
+  history: createWebHashHistory(),
   routes,
 })
 
-// First registered primary route, lowest `order` first (default: dataset).
-// Used by the home redirect so it never targets a disabled block.
+// First registered primary route, lowest `order` first (fallback: evidence).
+// Used by the home and unknown-URL redirects.
 function firstEnabledRoute(): string {
   const primary = router
     .getRoutes()
@@ -110,12 +85,5 @@ function firstEnabledRoute(): string {
     .sort((a, b) => ((a.meta?.order as number) ?? 0) - ((b.meta?.order as number) ?? 0))
   return (primary[0]?.name as string) ?? 'evidence'
 }
-
-// Block direct navigation to Administration pages when the toggle is off.
-router.beforeEach((to) => {
-  if (to.meta?.requiresAdmin && !useAdminStore().showAdministration) {
-    return { name: firstEnabledRoute() }
-  }
-})
 
 export default router

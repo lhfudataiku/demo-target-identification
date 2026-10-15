@@ -40,13 +40,15 @@
   import { apiUrl } from '@/utils/api'
   import { buildA4ExplorerQueries } from '@/utils/a4ExplorerQueries'
   import ActCard from '@/components/act/ActCard.vue'
-  import { EaSelect, EaEmpty } from '@/components/ui'
+  import { EmptyState, SelectField } from 'bs-blueprint'
   import ActTabs from '@/components/act/ActTabs.vue'
   import ActInfo from '@/components/act/ActInfo.vue'
   import ActTerm from '@/components/act/ActTerm.vue'
   import VisualGraphExplorerCard from '@/components/graph/VisualGraphExplorerCard.vue'
-  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-  import { ListFilter, Microscope, Network } from 'lucide-vue-next'
+  import { Button, Checkbox, Input, NativeSelect, NativeSelectOption, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@dataiku/ea-ui-kit'
+  import { Flow, ListNumbered, Microscope } from '@dataiku/vue-icons'
+  import { seriesVar } from '@/utils/seriesColours'
+  import { PageHeader } from 'bs-blueprint'
 
   defineOptions({ name: 'ShortlistView' })
 
@@ -83,7 +85,7 @@
 
   const diseases = ref<Disease[]>([])
   const selected = ref<number | undefined>()
-  // EaSelect models strings; disease_index is numeric.
+  // SelectField models strings; disease_index is numeric.
   const selectedStr = computed<string | undefined>({
     get: () => (selected.value === undefined ? undefined : String(selected.value)),
     set: (v) => { selected.value = v === undefined ? undefined : Number(v) },
@@ -96,6 +98,12 @@
   const tractableOnly = ref(false)
   const excludeSecreted = ref(false)
   const maxRank = ref(200)
+  // The kit's Input emits strings. Keep the last valid rank while the box is
+  // empty or mid-edit, rather than querying with max_rank=''.
+  function setMaxRank(v: string | number) {
+    const n = Number(v)
+    if (v !== '' && Number.isFinite(n) && n >= 1) maxRank.value = n
+  }
 
   // The table's own controls, as v3 has them. These filter the rows already
   // loaded rather than refetching: the funnel above describes the population,
@@ -341,12 +349,12 @@
 </script>
 
 <template>
+  <div class="flex h-full flex-col">
+    <PageHeader title="Act 4 of 4 · The list" />
+    <div class="min-h-0 flex-1 overflow-auto">
   <div class="flex flex-col gap-6 p-6">
     <header class="flex flex-col gap-1.5 border-b border-border pb-5">
-      <p class="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-        Act 4 of 4 · The list
-      </p>
-      <h1 class="font-serif text-3xl font-semibold tracking-tight">Does this look right to you?</h1>
+      <h2 class="text-3xl font-semibold tracking-tight">Does this look right to you?</h2>
       <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
         One disease, all the way down — and the act this demo exists for. Open a disease you know and
         judge the top of the list yourself; the scientist is the instrument. Then take the controls:
@@ -362,7 +370,7 @@
       <!-- The contract, stated before the list appears. -->
       <!-- Your thresholds, not ours. -->
       <!-- The ranked list. -->
-      <ActCard span="col-span-12" :icon="ListFilter" title="The ranked list"
+      <ActCard span="col-span-12" :icon="ListNumbered" title="The ranked list"
                :chips="[['live', 'live']]" method-label="How genes are ranked"
                :src="['dashboard_candidates']">
         <template #desc>
@@ -376,7 +384,7 @@
         </template>
 
         <!-- population controls: these refetch, because they change what is scored -->
-        <p class="mb-2 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+        <p class="mb-2 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
           Population<ActInfo text="These controls change which candidates are in the list at all, so the funnel below them changes too." />
           <span class="ml-1 normal-case tracking-normal opacity-70">· re-scores the list</span>
         </p>
@@ -386,20 +394,20 @@
               Disease
               <ActInfo text="One of the 13 diseases scored into a ranked candidate list." />
             </span>
-            <EaSelect v-model="selectedStr" placeholder="— Select a disease —"
+            <SelectField v-model="selectedStr" placeholder="— Select a disease —"
                       :options="diseases.map((d) => ({ value: String(d.disease_index),
                                  label: `${d.disease_name} (${d.n_candidates.toLocaleString()})` }))" />
           </label>
           <label class="flex items-center gap-2 text-sm">
-            <input v-model="novelOnly" type="checkbox" class="size-4 accent-primary" /> Novel only
+            <Checkbox v-model="novelOnly" /> Novel only
             <ActInfo text="Drops genes already annotated as targets for this disease, so what remains is what the model surfaced rather than reproduced." />
           </label>
           <label class="flex items-center gap-2 text-sm">
-            <input v-model="tractableOnly" type="checkbox" class="size-4 accent-primary" /> Tractable
+            <Checkbox v-model="tractableOnly" /> Tractable
             <ActInfo text="Open Targets judges the protein reachable by a small molecule or an antibody." />
           </label>
           <label class="flex items-center gap-2 text-sm">
-            <input v-model="excludeSecreted" type="checkbox" class="size-4 accent-primary" /> Not secreted
+            <Checkbox v-model="excludeSecreted" /> Not secreted
             <ActInfo text="Excludes proteins released between cells. Harder to drug than ones sitting on a membrane." />
           </label>
           <label class="flex flex-col gap-1 text-sm">
@@ -407,8 +415,8 @@
               Rank ≤
               <ActInfo text="How far down the ranked list to go. Every count below carries this cut-off, so a number can never mean two things." />
             </span>
-            <input v-model.number="maxRank" type="number" min="1" max="5000"
-                   class="w-24 rounded-md border border-input bg-background px-2 py-1.5" />
+            <Input :model-value="maxRank" type="number" min="1" max="5000" class="w-24"
+                   @update:model-value="setMaxRank" />
           </label>
         </div>
 
@@ -416,7 +424,7 @@
           <template v-for="(f, i) in data.funnel" :key="f.step">
             <span class="rounded-md px-2.5 py-1 font-mono text-xs"
                   :class="i === data.funnel.length - 1
-                    ? 'bg-primary/25 font-medium text-primary-foreground'
+                    ? 'bg-primary/25 font-medium text-primary'
                     : 'bg-secondary text-muted-foreground'">
               {{ f.step }} · {{ f.n.toLocaleString() }}
             </span>
@@ -427,39 +435,38 @@
         <hr class="my-4 border-border" />
 
         <!-- view controls: these filter what is already on screen -->
-        <p class="mb-2 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+        <p class="mb-2 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
           View<ActInfo text="These controls only narrow what is drawn on screen. The funnel above still reports the true population, so nothing here can hide how big the list really is." />
           <span class="ml-1 normal-case tracking-normal opacity-70">· filters what is on screen</span>
         </p>
         <div class="flex flex-wrap items-center gap-2">
-          <input v-model="search" type="search" placeholder="Search gene…"
-                 class="w-36 rounded-md border border-input bg-background px-2 py-1 text-sm" />
+          <Input v-model="search" type="search" placeholder="Search gene…" class="h-8 w-36" />
           <ActTabs :model-value="novelOnly ? 'novel' : 'all'"
                    :options="[{ value: 'all', label: 'All' }, { value: 'novel', label: 'Novel only' }]"
                    @update:model-value="(v) => (novelOnly = v === 'novel')" />
           <span class="flex items-center">
-            <select v-model="tract" class="rounded-md border border-input bg-background px-2 py-1 text-sm">
-              <option value="">Any tractability</option>
-              <option value="sm">Small-molecule</option>
-              <option value="ab">Antibody</option>
-              <option value="either">Either</option>
-            </select>
+            <NativeSelect v-model="tract" class="h-8">
+              <NativeSelectOption value="">Any tractability</NativeSelectOption>
+              <NativeSelectOption value="sm">Small-molecule</NativeSelectOption>
+              <NativeSelectOption value="ab">Antibody</NativeSelectOption>
+              <NativeSelectOption value="either">Either</NativeSelectOption>
+            </NativeSelect>
             <ActInfo text="Small-molecule: a drug-like pocket. Antibody: reachable from outside the cell. Either: at least one." />
           </span>
           <span class="flex items-center">
-            <select v-model="klass" class="rounded-md border border-input bg-background px-2 py-1 text-sm">
-              <option value="">Any target class</option>
-              <option v-for="c in classes" :key="c" :value="c">{{ c }}</option>
-            </select>
+            <NativeSelect v-model="klass" class="h-8">
+              <NativeSelectOption value="">Any target class</NativeSelectOption>
+              <NativeSelectOption v-for="c in classes" :key="c" :value="c">{{ c }}</NativeSelectOption>
+            </NativeSelect>
             <ActInfo text="Open Targets' protein family — enzyme, membrane receptor, transcription factor and so on." />
           </span>
           <label class="flex items-center gap-2 text-sm"
                  :class="liab ? 'font-medium text-destructive' : ''">
-            <input v-model="liab" type="checkbox" class="size-4 accent-[var(--destructive)]" />
+            <Checkbox v-model="liab" />
             Strike out liabilities
             <ActInfo text="A public annotation recording that an adverse effect has been observed and published for this protein — from clinical or experimental evidence, aggregated by Open Targets. Its limits matter: the flag is not dose-, modality- or indication-specific, it says nothing about whether an effect is manageable, and it can only exist for targets that have already been drugged or studied. So an unflagged gene is not safe — it is unstudied. Treat it as evidence of attention, not of danger." />
           </label>
-          <span class="font-mono text-[11px] text-muted-foreground">
+          <span class="font-mono text-2xs text-muted-foreground">
             {{ shown.length }} of {{ data?.rows.length ?? 0 }} shown
           </span>
         </div>
@@ -494,25 +501,25 @@
                 <TableCell class="font-mono tabular-nums text-muted-foreground">{{ r.rank_in_disease }}</TableCell>
                 <TableCell class="font-mono font-medium">{{ r.gene_name }}</TableCell>
                 <TableCell class="text-muted-foreground">{{ r.ot_class_l1 || '—' }}</TableCell>
-                <TableCell class="font-mono text-[11px]">{{ tractLabel(r) }}</TableCell>
+                <TableCell class="font-mono text-2xs">{{ tractLabel(r) }}</TableCell>
                 <TableCell class="no-underline">
-                  <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-[10px] uppercase"
-                        :class="r.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary-foreground'">
+                  <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-2xs uppercase"
+                        :class="r.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary'">
                     {{ r.is_target ? 'associated' : 'novel' }}
                   </span>
                   <span v-if="r.approved_for_disease"
-                        class="mr-1 inline-block rounded bg-chart-3/20 px-1.5 py-0.5 font-mono text-[10px] uppercase">approved</span>
+                        class="mr-1 inline-block rounded bg-success/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-success">approved</span>
                   <span v-if="r.investigational_for_disease"
-                        class="mr-1 inline-block rounded bg-chart-4/25 px-1.5 py-0.5 font-mono text-[10px] uppercase">trial</span>
+                        class="mr-1 inline-block rounded bg-warning/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-warning">trial</span>
                   <span v-if="r.has_safety_liability"
-                        class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-destructive">liability</span>
+                        class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-destructive">liability</span>
                 </TableCell>
                 <TableCell class="text-xs text-muted-foreground">
                   <template v-if="rowDrivers(r).length">
                     <span v-for="(d, i) in rowDrivers(r)" :key="d.key">
                       <span v-if="i">, </span>{{ d.label ?? d.key }}<span
                         v-if="d.value" class="ml-0.5 font-mono tabular-nums"
-                        :class="d.sign === '+' ? 'text-chart-3' : 'text-destructive'"
+                        :style="{ color: seriesVar(d.sign === '+' ? 'contrast' : 'negative') }"
                       >{{ d.sign }}{{ d.value }}</span>
                     </span>
                   </template>
@@ -524,29 +531,25 @@
         </div>
         <div v-if="shown.length > PAGE"
              class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
-          <span class="font-mono text-[11px] text-muted-foreground">
+          <span class="font-mono text-2xs text-muted-foreground">
             {{ (page - 1) * PAGE + 1 }}–{{ Math.min(page * PAGE, shown.length) }}
             of {{ shown.length.toLocaleString() }}
           </span>
           <div class="flex items-center gap-1">
-            <button type="button" class="rounded-md border border-input px-2 py-1 text-[12px]
-                    disabled:opacity-40 hover:enabled:bg-accent/50"
-                    :disabled="page === 1" @click="page = 1">« First</button>
-            <button type="button" class="rounded-md border border-input px-2 py-1 text-[12px]
-                    disabled:opacity-40 hover:enabled:bg-accent/50"
-                    :disabled="page === 1" @click="page--">‹ Prev</button>
-            <span class="px-2 font-mono text-[11px] text-muted-foreground">
+            <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
+                    :disabled="page === 1" @click="page = 1">« First</Button>
+            <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
+                    :disabled="page === 1" @click="page--">‹ Prev</Button>
+            <span class="px-2 font-mono text-2xs text-muted-foreground">
               page {{ page }} / {{ pageCount }}
             </span>
-            <button type="button" class="rounded-md border border-input px-2 py-1 text-[12px]
-                    disabled:opacity-40 hover:enabled:bg-accent/50"
-                    :disabled="page === pageCount" @click="page++">Next ›</button>
-            <button type="button" class="rounded-md border border-input px-2 py-1 text-[12px]
-                    disabled:opacity-40 hover:enabled:bg-accent/50"
-                    :disabled="page === pageCount" @click="page = pageCount">Last »</button>
+            <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
+                    :disabled="page === pageCount" @click="page++">Next ›</Button>
+            <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
+                    :disabled="page === pageCount" @click="page = pageCount">Last »</Button>
           </div>
         </div>
-        <EaEmpty v-if="!shown.length" :icon="ListFilter" title="Nothing matches"
+        <EmptyState v-if="!shown.length" :icon="ListNumbered" title="Nothing matches"
                  description="Loosen a filter, or pick another disease." />
 
         <template #note>
@@ -577,7 +580,7 @@
                :chips="[['live', 'live']]" method-label="How the percentile is computed"
                desc="Every model input for this gene, ranked inside this disease's own pool."
                :src="['dashboard_candidates']">
-        <EaEmpty v-if="!sel" :icon="Microscope" title="Pick a row"
+        <EmptyState v-if="!sel" :icon="Microscope" title="Pick a row"
                  description="Click any candidate in the list above." />
 
         <p v-else-if="detailError"
@@ -589,19 +592,19 @@
           <!-- Where this candidate sits, before any explanation of why. -->
           <div class="flex flex-col gap-1.5">
             <div class="flex flex-wrap items-baseline gap-2">
-              <span class="font-mono text-[17px] font-medium">{{ sel.gene_name }}</span>
-              <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-[10px] uppercase"
-                    :class="sel.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary-foreground'">
+              <span class="font-mono text-lg font-medium">{{ sel.gene_name }}</span>
+              <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-2xs uppercase"
+                    :class="sel.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary'">
                 {{ sel.is_target ? 'associated' : 'novel' }}
               </span>
               <span v-if="sel.approved_for_disease"
-                    class="inline-block rounded bg-chart-3/20 px-1.5 py-0.5 font-mono text-[10px] uppercase">approved</span>
+                    class="inline-block rounded bg-success/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-success">approved</span>
               <span v-if="sel.investigational_for_disease"
-                    class="inline-block rounded bg-chart-4/25 px-1.5 py-0.5 font-mono text-[10px] uppercase">trial</span>
+                    class="inline-block rounded bg-warning/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-warning">trial</span>
               <span v-if="sel.has_safety_liability"
-                    class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-destructive">liability</span>
+                    class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-destructive">liability</span>
             </div>
-            <p class="font-mono text-[11px] text-muted-foreground">
+            <p class="font-mono text-2xs text-muted-foreground">
               rank #{{ sel.rank_in_disease.toLocaleString() }}<template v-if="detail?.pool_size">
                 of {{ detail.pool_size.toLocaleString() }}</template>
               <template v-if="sel.rank_percentile !== null"> · {{ sel.rank_percentile }} pct</template>
@@ -610,7 +613,7 @@
               · node_index {{ sel.gene_index }}
             </p>
             <p v-if="sel.has_safety_liability && safetyEvents.length"
-               class="text-[12px] leading-relaxed text-muted-foreground">
+               class="text-xs leading-relaxed text-muted-foreground">
               <span class="text-destructive">Recorded liability:</span>
               {{ safetyEvents.join(' · ') }}
             </p>
@@ -618,57 +621,57 @@
 
           <!-- What moved it. Two drivers, because two is what is stored. -->
           <div class="flex flex-col gap-1.5">
-            <h3 class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+            <h3 class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">
               What moved this candidate
               <ActInfo text="The features with the largest SHAP contribution for this one prediction, with the direction of each. A positive driver pushed the score up; a negative one pushed it down." />
             </h3>
             <div v-if="drivers.length" class="flex flex-col gap-1">
               <div v-for="d in drivers" :key="d.key"
                    class="flex items-baseline justify-between gap-3 rounded-md bg-muted/40 px-2.5 py-1.5">
-                <span class="text-[12.5px] leading-snug">
+                <span class="text-xs leading-snug">
                   {{ d.label ?? d.key }}
-                  <span v-if="d.label" class="ml-1 font-mono text-[10px] text-muted-foreground">{{ d.key }}</span>
+                  <span v-if="d.label" class="ml-1 font-mono text-2xs text-muted-foreground">{{ d.key }}</span>
                 </span>
-                <span v-if="d.value" class="flex-none font-mono text-[12px] tabular-nums"
-                      :class="d.sign === '+' ? 'text-chart-3' : 'text-destructive'">
+                <span v-if="d.value" class="flex-none font-mono text-xs tabular-nums"
+                      :style="{ color: seriesVar(d.sign === '+' ? 'contrast' : 'negative') }">
                   {{ d.sign }}{{ d.value }}
                 </span>
               </div>
             </div>
-            <p v-else class="text-[13px] text-muted-foreground">No attribution stored for this candidate.</p>
-            <p class="text-[11.5px] leading-relaxed text-muted-foreground">
+            <p v-else class="text-sm text-muted-foreground">No attribution stored for this candidate.</p>
+            <p class="text-2xs leading-relaxed text-muted-foreground">
               <b class="text-foreground">The two strongest drivers only.</b> A full per-feature waterfall
               needs the scoring recipe to carry its whole SHAP matrix into
-              <code class="font-mono text-[10.5px]">dashboard_candidates</code>; today only the top two
+              <code class="font-mono text-2xs">dashboard_candidates</code>; today only the top two
               survive the flow, so this is what exists rather than what was chosen.
             </p>
           </div>
 
           <!-- Every model input, ranked inside this disease's own pool. -->
           <div class="flex flex-col gap-2">
-            <h3 class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+            <h3 class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">
               The evidence, against this disease
               <ActInfo text="Every input to the champion model, not a selection. The bar is the candidate's rank within this disease's own pool — the raw value beside it is what the model actually read." />
             </h3>
-            <p v-if="detailBusy" class="text-[13px] text-muted-foreground">Loading…</p>
+            <p v-if="detailBusy" class="text-sm text-muted-foreground">Loading…</p>
             <div v-for="g in featureGroups" :key="g.kind" class="flex flex-col gap-1.5">
-              <span class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground/70">
+              <span class="font-mono text-2xs uppercase tracking-wide text-muted-foreground/70">
                 <ActTerm :t="`feature-${g.kind}`" plain>{{ g.kind }}</ActTerm>
               </span>
               <div v-for="f in g.features" :key="f.key" class="flex flex-col gap-0.5">
                 <div class="flex items-baseline justify-between gap-3">
-                  <span class="text-[12px] leading-snug">
+                  <span class="text-xs leading-snug">
                     {{ f.label }}
                     <ActInfo v-if="f.direction === 'lower'"
                              text="Fewer is stronger for this one: a candidate one hop from the disease module is as close as the feature can report. The bar is ranked accordingly." />
                   </span>
-                  <span class="flex-none font-mono text-[11px] tabular-nums text-muted-foreground">
+                  <span class="flex-none font-mono text-2xs tabular-nums text-muted-foreground">
                     {{ fmtValue(f.value) }} · {{ f.percentile }} pct
                   </span>
                 </div>
-                <div class="h-[5px] overflow-hidden rounded-full bg-muted">
-                  <i class="block h-full rounded-full bg-chart-3"
-                     :style="{ width: `${f.percentile}%` }" />
+                <div class="h-1.25 overflow-hidden rounded-full bg-muted">
+                  <i class="block h-full rounded-full"
+                     :style="{ width: `${f.percentile}%`, background: seriesVar('contrast') }" />
                 </div>
               </div>
             </div>
@@ -678,7 +681,7 @@
 
         <template #method>
           <p><b class="text-foreground">How the percentile is computed.</b> For one gene and one
-            feature it is <code class="font-mono text-[10.5px]">100 × (candidates for this disease this
+            feature it is <code class="font-mono text-2xs">100 × (candidates for this disease this
             one is stronger than) ÷ (candidates with a non-null value)</code> — a rank <b>within this
             disease's own pool</b>, never a global one. The same gene can sit at the 96th percentile
             here and the 40th for another disease on an identical raw value.</p>
@@ -688,20 +691,20 @@
           <p v-if="detail?.missing_features?.length" class="mt-1.5">
             <b class="text-foreground">Not shown:</b>
             <code v-for="m in detail.missing_features" :key="m"
-                  class="mx-1 font-mono text-[10.5px]">{{ m }}</code>
+                  class="mx-1 font-mono text-2xs">{{ m }}</code>
             — a model input that never reaches
-            <code class="font-mono text-[10.5px]">dashboard_candidates</code>, so the bars above are
+            <code class="font-mono text-2xs">dashboard_candidates</code>, so the bars above are
             {{ detail.features.length }} of the champion's
             {{ detail.features.length + detail.missing_features.length }} features.
           </p>
         </template>
       </ActCard>
 
-      <ActCard v-if="!sel" span="col-span-12 lg:col-span-6" :icon="Network"
+      <ActCard v-if="!sel" span="col-span-12 lg:col-span-6" :icon="Flow"
                title="See the evidence on the graph"
                desc="Five ready-made queries showing the routes behind a candidate's score."
                :chips="[['live', 'live']]" :src="['Kuzu folder (ytvuniN8)']">
-        <EaEmpty :icon="Network" title="Pick a row"
+        <EmptyState :icon="Flow" title="Pick a row"
                  description="The five queries are generated locally from the candidate you select." />
       </ActCard>
 
@@ -725,12 +728,14 @@
             captures only the currently displayed result.</p>
           <p class="mt-1.5">Traversal is <b class="text-foreground">undirected</b>, relationship
             variables are bound and returned, and the engine's gene label is
-            <code class="font-mono text-[10.5px]">protein</code>. The two GO queries exclude terms with
+            <code class="font-mono text-2xs">protein</code>. The two GO queries exclude terms with
             <ActTerm t="node">node</ActTerm> degree above 200, which is what stops a generic term such
             as “protein binding” from returning the whole graph. Node indices are snapshot-specific
             and generated from the selected row.</p>
         </template>
       </VisualGraphExplorerCard>
+    </div>
+  </div>
     </div>
   </div>
 </template>

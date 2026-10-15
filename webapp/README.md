@@ -1,16 +1,19 @@
-# Blueprint — Dataiku DSS Webapp Starter
+# Target Prioritizer webapp
 
-> **Lifecycle:** Canonical · **Audience:** contributors configuring or extending the webapp ·
-> **Authority:** architecture, setup, feature-block and local-development reference · **Update when:**
-> those contracts or supported workflows change · **Generated dependencies:** current frontend,
-> backend and configuration structure · **Excludes:** project analytical claims and deployment history.
+> **Lifecycle:** Canonical · **Audience:** contributors running or extending the webapp ·
+> **Authority:** architecture, setup and local-development reference · **Update when:** those
+> contracts or supported workflows change · **Generated dependencies:** current frontend, backend
+> and configuration structure · **Excludes:** project analytical claims, deployment procedure
+> (`DEPLOYMENT.md`) and deployment history.
 
-A copy-to-start template for building on-brand webapps on Dataiku DSS.
-If you know Python and data but have never shipped a web frontend, this gets you there:
-the plumbing — local dev, DSS deployment, sidebar, settings, data access — is already wired up.
-You fill in your domain logic.
+The demo surface for Part 2: four acts that walk a scientist from the evidence base to a ranked list
+of candidate targets (see `../docs/demo/WEBAPP_DESIGN.md` for what each act claims and why). It is a
+Vue single-page app with a FastAPI backend, deployed as a DSS webapp in `DEMO_TARGET_IDENTIFICATION`,
+and built on the team's webapp framework, [bs-blueprint](https://github.com/dataiku/bs-blueprint).
 
-**Stack:** Vue 3 (frontend) · FastAPI (backend) · Tailwind + vendored Dataiku design tokens · `reka-ui` (headless UI primitives) · `uv` / `npm` (package managers).
+**Stack:** Vue 3 (frontend) · FastAPI (backend) · Tailwind + the team's design system
+(`@dataiku/ea-ui-kit` and `bs-blueprint`, pinned in `frontend/package.json`) · ECharts ·
+`uv` / `npm` (package managers).
 
 ---
 
@@ -21,33 +24,40 @@ You fill in your domain logic.
 | Tool | What it is | Install |
 |------|-----------|---------|
 | [`uv`](https://docs.astral.sh/uv/) | Python package manager (replaces `pip`/`venv`) | `curl -Lsf https://astral.sh/uv/install.sh \| sh` |
-| [`Node.js`](https://nodejs.org/) | JavaScript runtime; ships with `npm`, the frontend package manager | [nodejs.org](https://nodejs.org/) or `brew install node` |
-| `dku` CLI | Dataiku command-line tool for deploying | Install globally so it's on your PATH, then authenticate with `dku auth` |
-| `~/.dataiku/config.json` | Your local DSS credentials | |
+| [`Node.js`](https://nodejs.org/) `^20.19`, `^22.13` or `>=24` | JavaScript runtime; ships with `npm` | [nodejs.org](https://nodejs.org/) or `brew install node` |
+| GitHub Packages access | The kit and icons (`@dataiku/*`) are private npm packages | Once per machine, see below |
+| `dku` CLI | Dataiku command-line tool, used for credentials and deploying | Install globally so it's on your PATH, then `dku auth login` |
 
-### Get started
-
-Clone the repo, set the app identity in `app.env`, start the app:
+**GitHub Packages, once per machine.** npm needs the `@dataiku` scope and a token with the
+`read:packages` scope in `~/.npmrc`. With the GitHub CLI:
 
 ```bash
-git clone git@github.com:dataiku/bs-blueprint.git my-app
-cd my-app
-# edit app.env: LIB_NS, APP_PREFIX, VITE_APP_NAME, ENV_NAME, DKU_INSTANCE, PROJECT_KEY
-make dev                          # → open http://localhost:5173
+gh auth refresh -s read:packages
 ```
 
-`app.env` is the single source of truth for the app's identity and DSS target — that's
-the whole setup, no code edits. `make dev` installs deps on first run and **blocks
-(exits non-zero) until those six values are set**, listing any that are missing. The
-frontend hot-reloads on save; the backend reloads on Python file saves. No DSS
-connection needed for the Wizard, Charts, and Flow views.
+```bash
+printf '%s\n' '@dataiku:registry=https://npm.pkg.github.com' "//npm.pkg.github.com/:_authToken=$(gh auth token)" >> ~/.npmrc && chmod 600 ~/.npmrc
+```
 
-> **Setting up with an AI coding agent?** Don't let it guess the identity/target values.
-> The agent should discover the real options and ask you to confirm: derive `LIB_NS` /
-> `APP_PREFIX` / `VITE_APP_NAME` from an app name you give it, list your DSS instances
-> (`dku auth list`) for `DKU_INSTANCE`, and run `dku project list` to pick
-> `PROJECT_KEY`. It writes them to `app.env` only after you confirm, then runs `make dev`.
-> (See `AGENTS.md` for the exact agent instructions.)
+`npm view @dataiku/ea-ui-kit version` should then print a version. The token follows your `gh`
+login: after a new `gh auth login`, replace that line.
+
+### Run it locally
+
+`app.env` is already filled in for `DEMO_TARGET_IDENTIFICATION` and committed. Every act reads live
+DSS datasets, so the backend needs DSS credentials in its environment:
+
+```bash
+eval "$(dku auth export-env)"
+```
+
+```bash
+make dev
+```
+
+Then open <http://localhost:5173>. `make dev` installs dependencies on first run; the frontend
+hot-reloads on save and the backend reloads on Python file saves. Without the credentials every
+act shows an HTTP 502 (see `DEPLOYMENT.md`, "Known traps").
 
 ```bash
 make stop     # kill both servers
@@ -56,32 +66,14 @@ make logs     # tail the log files in .run/logs/
 make deps     # force-reinstall both Python and Node deps
 ```
 
+Before declaring frontend work done, run `npm run check` from `frontend/`: it runs bs-blueprint's
+doctor, the design lint and the typecheck, and must print `check: ok`.
+
 ### Deploy to DSS
 
-Two one-time steps, then one command:
-
-**One-time setup:**
-
-1. The wizard sets `PROJECT_KEY` and `ENV_NAME` for you; to change them later, edit `app.env`:
-   ```bash
-   PROJECT_KEY=MY_PROJECT   # your DSS project key (uppercase, created automatically if missing)
-   ENV_NAME=my-code-env     # a Python ≥3.11 code env on the DSS instance
-   ```
-   Leave `WEBAPP_ID=` empty — `make deploy` will create the webapp and write its ID back.
-
-2. Make sure the code env is already created on DSS (DSS UI → Administration → Code envs),
-   with at least `fastapi` and `uvicorn` installed.
-
-**Deploy:**
-
-```bash
-make deploy
-```
-
-This builds the frontend, creates the DSS project and webapp if they don't exist yet,
-uploads all code to the project library, patches the webapp definition, and restarts the
-backend. The new webapp's ID is written back to `app.env` automatically so subsequent
-deploys reuse the same webapp. Open the webapp in DSS — it should show your app.
+`make deploy` builds the frontend, mirrors the code into the project library and updates webapp
+`OlmPX9a`. It is a live change to the demo: read `DEPLOYMENT.md` first, which also covers verifying
+that a deploy landed.
 
 ---
 
@@ -91,11 +83,11 @@ deploys reuse the same webapp. Open the webapp in DSS — it should show your ap
 
 A DSS webapp is a small website that lives **inside a DSS project** and has direct access
 to that project's datasets, models, LLMs, and variables. Users open it from the DSS
-interface; it appears in an embedded frame (an `<iframe>`).
+interface, which renders the webapp's HTML and JavaScript inside the project page.
 
 ### Two halves
 
-Every webapp in this template has two parts that run in different places:
+This webapp, like every DSS webapp of its kind, has two parts that run in different places:
 
 - **Frontend** — the HTML/CSS/JavaScript that runs in the **user's browser**. This is
   what the user sees and clicks. It can't read DSS data directly — it has to ask the backend.
@@ -127,20 +119,16 @@ IN DSS (after make deploy)
 ─────────────────────────────────────────────────────────
   Browser                     DSS server
   ┌─────────────────────────────────────────────────────┐
-  │  DSS UI                                             │
-  │  ┌─────────────────────────────────────────────┐   │
-  │  │ webapp iframe                               │   │
-  │  │  ┌─────────────────────────────────────┐   │   │
-  │  │  │  Vue SPA         served by FastAPI  │   │   │
-  │  │  │  /api/... ──────────────────────►   │   │   │
-  │  │  │              FastAPI               │   │   │
-  │  │  │              + dataiku Python API  │   │   │
-  │  │  └─────────────────────────────────────┘   │   │
-  │  └─────────────────────────────────────────────┘   │
+  │  DSS UI renders the webapp's html + js parameters   │
+  │  ┌─────────────────────────────────────────────┐    │
+  │  │  dss-main.js ── loads assets/index.js|css ──┼──► FastAPI /assets
+  │  │  Vue SPA (#/evidence, #/shortlist, …)       │    │
+  │  │  apiUrl('/api/…') ──────────────────────────┼──► FastAPI /api
+  │  └─────────────────────────────────────────────┘    │   + dataiku Python API
   └─────────────────────────────────────────────────────┘
-  One FastAPI process serves the built frontend files
-  AND answers /api calls. The dataiku module is
-  available and talks to the surrounding DSS project.
+  FastAPI serves the built bundle from /assets AND answers
+  /api calls. dataiku.getWebAppBackendUrl() (injected by
+  DSS) turns both paths into the backend's real URL.
 ```
 
 The key insight: **the exact same Python code** handles both modes. `dss_client.get_project()`
@@ -153,7 +141,7 @@ detects which mode it's in and connects to DSS accordingly.
 ### Repository layout
 
 ```
-my-app/
+webapp/
 │
 ├── app.env              ← Single source of truth: app name, project key, webapp ID,
 │                          code env, ports. Edit here before deploying. Never commit .env.
@@ -166,42 +154,37 @@ my-app/
 │   ├── config.py        ← Reads APP_PREFIX from env → derives all other config variables
 │   ├── dss_client.py    ← The dual-mode connector: dataiku.api_client() in DSS, dataikuapi locally
 │   ├── routes/
-│   │   ├── system.py    ← /api/system/health, /llms, /settings (GET + PUT)
-│   │   └── example.py   ← /api/example/datasets, /preview  ← replace with your routes
+│   │   ├── system.py    ← /api/system/health
+│   │   └── evidence.py, calibration.py, families.py, candidates.py ← one route file per act
 │   └── services/
-│       └── settings.py  ← App settings persisted to DSS project variables
+│       └── dataset_cache.py ← Reads and caches the act datasets
 │
 ├── dss_webapp/          ← The thin DSS glue layer (not application logic)
-│   ├── deploy.sh        ← Uploads backend + built frontend to DSS, patches webapp definition
+│   ├── deploy.sh        ← Mirrors backend + built frontend to DSS, patches webapp definition
 │   ├── backend.py       ← DSS-injected entry point: sets env vars, calls configure(app)
-│   ├── html.html        ← Minimal HTML div that the webapp definition shows
-│   ├── js.js            ← Creates a full-page iframe pointing at the FastAPI backend
 │   └── css.css          ← body { margin: 0 } — hides the outer page chrome
 │
 └── frontend/            ← TypeScript/Vue. Runs in the user's browser.
-    ├── package.json     ← Node dependencies (Vue, Vite, Tailwind, reka-ui…)
+    ├── package.json     ← Node dependencies (Vue, Vite, Tailwind, the kit, bs-blueprint…)
     ├── vite.config.ts   ← Build tool config: /api proxy, base path, single-bundle output
     ├── tsconfig*.json   ← TypeScript config
     └── src/
         ├── main.ts          ← App entry point: create Vue app, add Pinia + router, mount
-        ├── App.vue          ← Root component: just <router-view />
-        ├── styles/tokens.css ← Dataiku design tokens (colors, sidebar, radius, dark mode)
-        ├── style.css        ← Tailwind setup + bridges tokens.css into Tailwind utilities
+        ├── App.vue          ← Root component: applies the kit theme, then <router-view />
+        ├── styles/kit.css   ← the @dataiku/ea-ui-kit theme, wired by bs-blueprint
+        ├── style.css        ← imports kit.css, plus a few app-specific base rules
+        ├── utils/seriesColours.ts ← the one table that maps chart meanings to kit colours
         ├── config.ts        ← App name + icon — the two things to change when you copy this
-        ├── utils/api.ts     ← apiUrl(): the iframe path-prefix fix (see below)
+        ├── utils/api.ts     ← re-exports apiUrl() from bs-blueprint (see below)
         ├── router/index.ts  ← All pages live here; sidebar builds itself from route metadata
-        ├── components/ui/   ← Local Ea* primitives (EaButton, EaSelect, EaEmpty…)
-        ├── components/layout/AppSidebar.vue ← Local sidebar, built from route metadata
-        ├── composables/useAppMenu.ts ← Turns route metadata into sidebar menu items
-        ├── router/features.ts ← Optional-block routes, registered only when ENABLE_* is on
         ├── layouts/
-        │   └── DefaultLayout.vue  ← Sidebar + <router-view /> shell
-        ├── stores/
-        │   ├── settings.ts  ← LLM selection and other settings, synced to DSS via /api
+        │   └── DefaultLayout.vue  ← bs-blueprint's AppLayout + the Glossary button and drawer
+        ├── stores/          ← glossary drawer state, presenter notes (per browser)
 
         └── views/
-            ├── ExampleView.vue   ← Dataset picker + row preview: the full FE↔BE↔DSS demo
-            └── SettingsView.vue  ← LLM picker backed by /api/system/settings
+            ├── EvidenceView.vue, CalibrationView.vue, TherapeuticAreaView.vue,
+            │   ShortlistView.vue ← the four acts
+            └── SettingsView.vue  ← per-browser display settings (presenter notes)
 ```
 
 ---
@@ -213,13 +196,12 @@ all navigation happens in JavaScript without full page reloads. We use **Vue 3**
 framework — roughly similar to React or Angular if you've heard of those.
 
 **Styling** comes from **Tailwind CSS** (utility classes like `text-sm`, `flex`, `gap-4`)
-backed by **Dataiku design tokens** vendored into `src/styles/tokens.css` (colors, sidebar
-palette, radius, dark mode). The token values mirror Dataiku's brand, so utilities like
-`bg-primary` and `text-muted-foreground` make the app look like a Dataiku product. Form
-controls and empty states are small local components in `src/components/ui/` (`EaSelect`,
-`EaButton`, `EaEmpty`, `SettingsSwitchItem`) — token-styled wrappers, mostly built on
-[`reka-ui`](https://reka-ui.com) headless primitives. There is no external component-library
-dependency to track or update.
+backed by the **`@dataiku/ea-ui-kit` theme** (imported through `src/styles/kit.css`), so
+utilities like `bg-primary` and `text-muted-foreground` make the app look like a Dataiku
+product. Chart colours come from `src/utils/seriesColours.ts`, which maps each meaning to a
+kit token. Form controls, tables and buttons are the kit's own parts (`Button`, `Input`,
+`Checkbox`, `NativeSelect`, `Table*`), and the few composites the kit lacks come from
+bs-blueprint (`SelectField`, `EmptyState`, `SettingsSwitchItem`). The app copies none of them.
 
 **Routing** — the sidebar is not manually built. Add a page like this in `router/index.ts`:
 
@@ -228,19 +210,18 @@ dependency to track or update.
   path: 'my-feature',
   name: 'myFeature',
   component: MyView,
-  meta: { title: 'My Feature', icon: DatabaseIcon, menu: 'primary', order: 2 },
+  meta: { title: 'My Feature', icon: Dataset, menu: 'primary', order: 2 },
 }
 ```
 
-The `meta` object is all `AppSidebar` (`components/layout/AppSidebar.vue`, via the
-`useAppMenu` composable) needs. The sidebar item appears automatically. Settings always lives
-at the bottom (`menu: 'tertiary'`). Optional blocks declare their routes in
-`router/features.ts` and are only registered when their `ENABLE_*` flag is on.
+The `meta` object is all bs-blueprint's `AppLayout` needs: the sidebar item appears
+automatically. Settings lives at the bottom (`menu: 'tertiary'`). Each view starts with
+bs-blueprint's `PageHeader` and scrolls in its own body (`<div class="min-h-0 flex-1 overflow-auto">`),
+because the shell does not scroll the content pane for you.
 
 **State** is managed with **Pinia** (Vue's official state library, simpler than Redux).
-One store ships with the blueprint:
-- `settings.ts` — fetches and persists app settings through the backend `/api/system/settings`
-  endpoint, which stores them in the DSS **project variables** (survives webapp restarts).
+Two small stores remain: `glossary.ts` (the drawer's open state and the term to scroll to) and
+`presenter.ts` (whether presenter notes show, kept in the browser rather than the DSS project).
 
 **API calls** always go through `apiUrl()` from `utils/api.ts`. See the non-obvious bits
 section below for why.
@@ -277,17 +258,15 @@ in-DSS.
 
 **Local dev installs `dataiku-internal-client` for real row previews.** The public
 `dataiku-api-client` lists datasets and reads schemas, but its streaming reader differs from the
-in-DSS one, so dataset *row* previews degrade to schema-only locally. The blueprint pulls in the
+in-DSS one, so dataset *row* previews degrade to schema-only locally. This app pulls in the
 real internal `dataiku` (`dataiku-internal-client`, a required dev dependency) so `get_dataiku()`
 in `dss_client.py` can run `dataiku.Dataset(...).get_dataframe()` against the remote instance —
 identical to in-DSS. `dataikuapi` stays for the control-plane. See **Architecture decisions →
 "Local dataset previews via `dataiku-internal-client`"** for the full rationale and trade-offs.
 
 **Routes vs services** — routes handle HTTP (parse params, return JSON, raise HTTP errors).
-Services contain the actual logic and Dataiku API calls. The `system.py` route calls
-`project.list_llms(...)` to find available LLMs; `settings.py` uses
-`project.get_variables()` / `project.set_variables()` to persist settings. The `example.py`
-route calls `dataiku.Dataset(name).get_dataframe(limit=n)` in DSS to fetch rows.
+Services contain the actual logic and Dataiku API calls. The act routes read their datasets
+through `services/dataset_cache.py`.
 
 ---
 
@@ -302,14 +281,15 @@ on `sys.path` for anything running in that project. `make deploy` uploads the ba
 the built frontend into `python/<LIB_NS>/` so DSS can import your code.
 
 **Project variables** — a simple key-value store per DSS project, writable from Python
-(`project.get_variables()` / `project.set_variables()`). The blueprint uses them to store
-app settings (selected LLM, etc.) so they survive webapp restarts.
+(`project.get_variables()` / `project.set_variables()`). The flow uses them (for example the demo
+panel); this app only reads data and stores no settings of its own in DSS.
 
 **What `make deploy` does, step by step:**
 
 ```
 1. cd frontend && npm run build
-     → Compiles Vue/TS → static HTML/JS/CSS in frontend/dist/
+     → Compiles Vue/TS → frontend/dist/: assets/index.js|css, plus dss-main.js and a
+       body-only index.html emitted by @dataiku/vite-plugin-dku-webapp
 
 2. dku project create --if-not-exists
      → Creates the DSS project if it doesn't exist yet (idempotent).
@@ -317,17 +297,18 @@ app settings (selected LLM, etc.) so they survive webapp restarts.
 3. dku webapp create  (only when WEBAPP_ID is empty in app.env)
      → Creates a new STANDARD webapp; writes the generated ID back to app.env.
 
-4. dku library mkdir + write  (for every file in backend/ and frontend/dist/)
-     → Uploads to python/<LIB_NS>/backend/ and python/<LIB_NS>/frontend_dist/
+4. dku library sync --delete  (backend/ and frontend/dist/)
+     → Mirrors to python/<LIB_NS>/backend/ and python/<LIB_NS>/frontend_dist/,
+       deleting remote files that no longer exist locally
 
 5. dku webapp get-definition → patch JSON → dku webapp set-definition
-     → Sets backendFramework=FASTAPI, code env, and the html/js/css glue code
+     → Sets backendFramework=FASTAPI, the code env, html = dist/index.html,
+       js = dist/dss-main.js, css = dss_webapp/css.css
 
 6. dku webapp stop + start
      → DSS imports <LIB_NS>.backend.app and calls configure(app) on its FastAPI instance
-     → deploy.sh then polls `dku webapp status` until the backend reports running.
-       If it doesn't come up within ~45 s, the script exits non-zero and prints the
-       recent backend logs inline (from `dku webapp logs`) — no need to open the DSS UI.
+     → `dku webapp start` blocks until the backend is up or has crashed; on a crash it
+       prints the reason and log tail and the script exits non-zero.
 ```
 
 ---
@@ -336,29 +317,16 @@ app settings (selected LLM, etc.) so they survive webapp restarts.
 
 These are the parts that look like magic until you know why they exist. Don't remove them.
 
-**`apiUrl()` and the router `baseUrl` — the iframe sub-path problem**
+**`apiUrl()` and hash routes — the frontend and backend live on different URLs**
 
-When DSS shows the webapp, the browser's URL looks like:
-```
-https://my-dss.company.com/web-apps-backends/MY_PROJECT/WEBAPP_ID/
-```
-The SPA is loaded inside an `<iframe>` at that path. If the frontend does a bare
-`fetch('/api/datasets')`, the browser resolves it against the origin root:
-```
-https://my-dss.company.com/api/datasets   ← wrong! hits DSS, not your FastAPI
-```
-It needs to be:
-```
-https://my-dss.company.com/web-apps-backends/MY_PROJECT/WEBAPP_ID/api/datasets
-```
+DSS renders the webapp's page itself, but the FastAPI backend that answers `/api/...` lives at
+its own URL (`…/web-apps-backends/<PROJECT>/<WEBAPP_ID>/`). A bare `fetch('/api/x')` would hit
+DSS, not FastAPI. `apiUrl()` — re-exported from bs-blueprint in `utils/api.ts` — asks the
+DSS-injected `dataiku.getWebAppBackendUrl()` for the real URL. Locally there is no `dataiku`
+global, so it returns `/api/x` unchanged and Vite's proxy routes it to FastAPI.
 
-`apiUrl()` in `utils/api.ts` solves this by capturing `window.location.pathname` at
-startup — before Vue Router starts changing it — and prepending it to every API call.
-The same logic applies to the router: it sets its `base` to the current pathname when
-embedded, so that internal navigation stays under the iframe path.
-
-In local dev (no iframe), `apiUrl('/api/x')` returns `/api/x` unchanged, and Vite's
-proxy routes it to FastAPI. No special handling needed.
+DSS also owns the page URL, so the router uses `createWebHashHistory()`: act URLs are
+`…#/evidence`, `…#/shortlist`, and a refresh keeps you on the act.
 
 **`base: './'` and the single-bundle output — serving assets from a sub-path**
 
@@ -399,10 +367,9 @@ still: create a code env with Python 3.11+ and set it in `app.env` as `ENV_NAME`
 
 ## Configuration and renaming
 
-All per-project settings live in `app.env`, which is checked into git. The identity
-and DSS-target keys (`LIB_NS`, `APP_PREFIX`, `VITE_APP_NAME`, `ENV_NAME`, `PROJECT_KEY`,
-`DKU_INSTANCE`) ship **empty** — fill them in, and `make dev` refuses to start until
-they are set.
+All per-project settings live in `app.env`, which is checked into git and already set for this
+app. `make dev` refuses to start if any of the identity and DSS-target keys (`LIB_NS`,
+`APP_PREFIX`, `VITE_APP_NAME`, `ENV_NAME`, `PROJECT_KEY`, `DKU_INSTANCE`) is empty.
 
 | Key | Used by | Purpose |
 |-----|---------|---------|
@@ -474,10 +441,10 @@ Cypher, join graph results or render a graph/table canvas; those responsibilitie
      path: 'my-feature',
      name: 'myFeature',
      component: MyView,
-     meta: { title: 'My Feature', icon: DatabaseIcon, menu: 'primary', order: 2 },
+     meta: { title: 'My Feature', icon: Dataset, menu: 'primary', order: 2 },
    }
    ```
-   Import your icon from `lucide-vue-next`. `menu: 'primary'` puts it in the main
+   Import your icon from `@dataiku/vue-icons` (the DSS icon set). `menu: 'primary'` puts it in the main
    navigation; `menu: 'tertiary'` puts it in the footer (like Settings).
    See [The frontend, explained](#the-frontend-explained) for how the router drives the sidebar.
 
@@ -505,15 +472,6 @@ Cypher, join graph results or render a graph/table canvas; those responsibilitie
 3. Call it from the frontend with `fetch(apiUrl('/api/my-feature/items'))`.
    See [The non-obvious bits](#the-non-obvious-bits-explained) for why `apiUrl()` is needed.
 
-### Add a settings field
-
-Settings are persisted to DSS **project variables** (survive webapp restarts, shared
-across all users of the webapp).
-
-1. Add the key to `ALLOWED_KEYS` in `backend/services/settings.py` and to `_blank()`.
-2. Add the field to `AppSettings` interface in `frontend/src/stores/settings.ts`.
-3. Add a control in `frontend/src/views/SettingsView.vue`.
-
 ---
 
 ## Glossary
@@ -525,8 +483,8 @@ across all users of the webapp).
 | **Vue 3** | JavaScript framework for building UIs (comparable to React); uses `.vue` files with `<script>`, `<template>`, `<style>` |
 | **Pinia** | Vue's state management library — a store is a reactive object shared across components |
 | **Tailwind CSS** | Utility-class CSS library: instead of writing `.my-button { color: red }`, you write `class="text-red-500"` directly in HTML |
-| **Design tokens** | CSS variables in `src/styles/tokens.css` (Dataiku colors, sidebar palette, radius, dark mode), bridged into Tailwind utilities so `bg-primary` etc. look like a Dataiku product |
-| **reka-ui** | Headless (unstyled) Vue UI primitives used to build the local `Ea*` components in `src/components/ui/` |
+| **Design tokens** | CSS variables defined by the `@dataiku/ea-ui-kit` theme and exposed as Tailwind utilities, so `bg-primary` etc. look like a Dataiku product |
+| **reka-ui** | Headless (unstyled) Vue UI primitives that the kit's components are built on |
 | **FastAPI** | Python web framework: you decorate functions with `@router.get("/path")` and they become API endpoints |
 | **`uv`** | Python package manager; `uv sync` reads `pyproject.toml` and creates a virtualenv with the right deps |
 | **`npm`** | Node package manager (ships with Node.js); `npm install` reads `package.json` |
@@ -534,203 +492,12 @@ across all users of the webapp).
 | **Project library** | The `python/` directory inside a DSS project that's on `sys.path` for everything in that project; `make deploy` uploads the backend here |
 | **Project variables** | Key-value store per DSS project, readable and writable from Python at runtime; used here to persist app settings |
 | **Managed folder** | DSS object for storing arbitrary files (PDFs, images, etc.) inside a project; use instead of the local filesystem (which isn't writable in DSS) |
-| **iframe** | HTML element that embeds one website inside another; DSS shows webapps this way |
-
----
-
-## Optional building blocks
-
-The blueprint ships five optional, independently toggled features. All five are **on by default** so a new teammate sees the full catalogue of what's available on first boot. Turn off the ones you don't need by setting `ENABLE_*=0` in `app.env` (one line per flag) and restarting `make dev`.
-
-The three **self-contained** blocks (Wizard, Charts, Flow) render with zero configuration — no DSS, no LLM. The two **DSS-dependent** blocks (Documents, Chatbot) need a Managed Folder or LLM and will show a "needs configuration" empty state until wired up.
-
-### Wizard
-
-A 3-step guided creation form that validates each step before proceeding, then POSTs a single payload. Demonstrates the multi-step input pattern: collect → validate → review → submit.
-
-Each step is its own child route (`/wizard/basics`, `/wizard/details`, `/wizard/review`). The routes are tagged `meta.menuLevel: 'flow'`, which makes the app sidebar switch to its flow-level view: a vertical stepper with one circle per step, a hollow (disabled) circle for steps you can't reach yet, and a "Back" link to the app-level nav. Step disabling is driven by per-route `meta.state` callbacks reading the wizard Pinia store.
-
-**What it adds:** a "New element" sidebar CTA, `POST /api/wizard/submit`. No persistence — replace the result logic in `backend/routes/wizard.py` with a real DSS write (project variables, dataset append, managed folder) when you're ready.
-
-**Enable:**
-```bash
-ENABLE_WIZARD=1   # in app.env
-```
-
-**Verify locally:**
-1. `make dev` → click "New element" → sidebar switches to the vertical stepper; Details and Review circles are hollow.
-2. Fill in Name and Category → Next button enables, the remaining circles fill and become clickable.
-3. Step 2 (Notes) is optional — Next always enabled.
-4. Review step → click Create → success card shows the returned id.
-
-**Graduation options:** the routed-steps structure already scales to longer or branching wizards — add a child route per step and (if needed) a `meta.state` callback to gate it.
-
----
-
-### Charts
-
-An ECharts dashboard (KPI sparklines, donut, gauge, bar/line charts) fed by **frontend mock
-data** (`src/data/mock/`). It's a **frontend-only** block — there is no backend route — so it
-demonstrates the chart-component pattern without needing a DSS connection.
-
-**What it adds:** a "Charts" sidebar entry and the dashboard components in
-`components/dashboard/*.vue`. Replace the mock data with a real DSS dataset read (add a backend
-route like the other blocks and fetch via `apiUrl()`).
-
-**Enable:**
-```bash
-ENABLE_CHARTS=1   # in app.env (frontend build flag only — read by Vite, not the backend)
-```
-
-**Verify locally:**
-1. `make dev` → "Charts" appears in the sidebar.
-2. The dashboard renders (KPIs, donut, gauge, timelines) from mock data.
-3. Resize the window — charts autoresize.
-
-**Using the chart components:** each component builds an ECharts `option` typed as
-`EChartsOption` and registers its pieces with `use([…])`. Colors come from the chart design
-tokens (`var(--chart-1..5)`), so they follow dark/light mode automatically.
-
----
-
-### Flow
-
-A Vue Flow node/edge graph rendered from a backend endpoint. Demonstrates how to turn domain data (pipeline stages, dataset dependencies, recipe graphs) into an interactive, pannable, zoomable node graph.
-
-**What it adds:** a "Flow" sidebar entry, `GET /api/flow/sample` (4-node pipeline graph). Node positions are baked into the backend response — no layout library required for the hello-world.
-
-**Enable:**
-```bash
-ENABLE_FLOW=1   # in app.env
-```
-
-**Verify locally:**
-1. `make dev` → "Flow" appears in the sidebar.
-2. A 4-node pipeline graph renders (Raw Data → Process → Enrich → Output).
-3. Pan and zoom work; the canvas fits the graph on load.
-
-**Graduation options:** for auto-layout of large graphs, add `@dagrejs/dagre` (npm) and compute node positions on the frontend — keep the backend response position-free in that case.
-
----
-
-### Documents
-
-Lets users upload files (PDF, images, text, audio/video) to a DSS Managed Folder, with metadata stored in SQLite. An optional LLM auto-describe feature (`ENABLE_DESCRIBE`) produces a 1–3 sentence summary of each file using the configured LLM.
-
-**What it adds:** a "Documents" sidebar entry, six backend endpoints (`/api/documents`), a DSS Managed Folder (auto-created on first upload), the shared SQLite + persistence layer.
-
-**Enable:**
-```bash
-# In app.env
-ENABLE_DOCUMENTS=1
-
-# Optional: LLM auto-describe (requires langchain-core + pymupdf in the code env)
-ENABLE_DESCRIBE=1
-```
-
-**Verify locally:**
-1. `make dev` → "Documents" appears in the sidebar.
-2. Upload a file → it appears in the list.
-3. Download link returns the original bytes.
-
-**Folder auto-creation:** the backend looks up or creates a DSS Managed Folder named `<APP_PREFIX> Documents` on first upload, then caches its id in the app-settings project variable. If auto-creation fails (no writable connection on your local dev instance), create the folder manually in the DSS UI and set `documents_folder_id` in Settings.
-
----
-
-### Chatbot (agent + tool-call approval)
-
-An LLM agent that streams responses via SSE and can call tools. Mutating tools require the user's approval before execution — the agent suspends, the UI shows Allow/Deny buttons, the user decides, the agent resumes.
-
-**What it adds:** an "Assistant" sidebar entry, conversation management (CRUD), the SSE message streaming endpoint, the permission broker, a tool registry (5 starter tools — 4 read-only + 1 mutating demo), conversation history in SQLite, and a "Tool permissions" section in Settings.
-
-**Enable:**
-```bash
-ENABLE_CHATBOT=1   # in app.env
-```
-
-**Verify locally:**
-1. `make dev` → "Assistant" appears in the sidebar.
-2. Pick an LLM in Settings.
-3. Type a message → tokens stream in.
-4. Ask "list my datasets" → `list_datasets` runs automatically (policy: allow).
-5. Ask to "make a note: hello" → `create_scratch_note` shows Allow/Deny buttons.
-6. Click Allow → the agent resumes and completes its response.
-
-**Starter tools shipped:**
-| Tool | Policy | Purpose |
-|---|---|---|
-| `list_datasets` | allow | Lists all datasets in the project; demonstrates dual-mode DSS access |
-| `inspect_dataset` | allow | Returns schema (column names + types) for a named dataset |
-| `sample_data` | allow | Returns up to N rows from a dataset as a markdown table |
-| `search_knowledge_base` | allow | Semantic search across all knowledge banks in the project |
-| `create_scratch_note` | prompt | **Mutating demo** — writes to DSS project variables; demonstrates the full approval flow |
-
-When `ENABLE_DOCUMENTS=1` is also set, two additional tools (`list_documents`, `read_document`) are added automatically.
-
-**Both on together:** the agent gains `list_documents`/`read_document` tools and its system prompt includes a summary of uploaded documents, so it can answer questions about uploaded files.
-
----
-
-### Flag reference
-
-Each `ENABLE_*` flag in `app.env` controls **both** the backend route and the frontend sidebar
-entry. Vite reads these flags directly at build time via `envPrefix: ['VITE_', 'ENABLE_']`
-in `vite.config.ts` — no separate `VITE_ENABLE_*` line needed.
-
-| Key | Purpose |
-|---|---|
-| `ENABLE_WIZARD` | Register Wizard route (`POST /api/wizard/submit`) + show sidebar entry |
-| `ENABLE_CHARTS` | Register the Charts route + sidebar entry (frontend-only; mock data, no backend route) |
-| `ENABLE_FLOW` | Register Flow route (`GET /api/flow/sample`) + show sidebar entry |
-| `ENABLE_DOCUMENTS` | Register Documents routes + enable folder/SQLite + show sidebar entry |
-| `ENABLE_CHATBOT` | Register Chatbot routes + agent loop + show sidebar entry |
-| `ENABLE_DESCRIBE` | LLM auto-describe on upload (backend-only sub-option of Documents) |
 
 ---
 
 ## Architecture decisions & trade-offs
 
-This blueprint makes several non-obvious choices. They are **deliberate**, documented here so your team can debate them, extend from them, or replace them when your app outgrows the starter constraints. Each entry follows the pattern: **Decision → Why → Trade-off → When to revisit.**
-
----
-
-### SQLite for persistence
-
-**Decision:** chat conversations, messages, and document metadata live in an embedded SQLite database. The live file location depends on context:
-
-| Context | Path |
-|---|---|
-| Local dev | `<repo>/.run/state.db` |
-| DSS (live) | `get_workload_local_folder_path() / state.db` — a per-webapp directory on the DSS instance disk (e.g. `/data/dataiku/run/webapps/<ID>/workload-local/`). Persists across backend restarts as long as the webapp is not fully redeployed. |
-
-**Why:** SQLite gives real transactional semantics, indexes, foreign keys, and a clean data-access layer (`services/memory_state.py`). Alternatives were considered and explicitly rejected:
-- *Project variables* — the single JSON blob per key has a size limit and lacks querying. Fine for a handful of settings, not for conversation history.
-- *Managed-folder JSON* — loses transactional guarantees and becomes a concurrency hazard under concurrent requests.
-- *External SQL connection* — no extra infra needed, especially valuable for a starter that should work on any DSS instance.
-
-**Trade-off:** this is a **single-writer** design. SQLite does not support multiple concurrent writers. DSS webapp backends run single-process by default (`autoStartBackend` in the webapp definition), so this is safe as-is.
-
-**When to revisit:**
-- Your app needs more than one backend process (load balancing, zero-downtime deploys).
-- You need true ACID guarantees across multiple concurrent users modifying shared data.
-
-The upgrade path: swap `get_conn()` for a connection pool backed by a DSS SQL connection (Postgres, Snowflake, etc.). The service layer (`memory_state.py`, `documents_service.py`) is the only thing that changes — the routes and the agent loop are unaffected.
-
----
-
-### Tool-call approval, not user RBAC
-
-**Decision:** the chatbot uses a *tool-call approval* model (the agent asks before mutating; the user approves or denies inline) rather than user-level role-based access control.
-
-**Why:** the tool-call approval model solves the most immediate safety concern for an agentic starter — giving users visibility and control over what the agent does — without requiring any user authentication infrastructure. Who can *open* the webapp is controlled by DSS (project permissions). Everyone who can open it shares the same capability level.
-
-**What this is not:** this is not authorization. There is no concept of "admin vs. read-only user," no per-user data isolation, no audit log of who approved what.
-
-**When to revisit:** when your app needs real per-user authorization (multi-tenant data, admin-only configuration changes, audit trails), build it by:
-1. Resolving the DSS user with `dataiku.api_client().get_auth_info()` (see `services/current_user.py` for the pattern).
-2. Mapping the user or their DSS group to a role (stored in project variables or a dedicated dataset).
-3. Injecting a role check as a FastAPI dependency on routes that need it.
-None of this infrastructure is absent by accident — it was left out to keep the starter focused.
+This app makes several non-obvious choices. They are **deliberate**, documented here so your team can debate them, extend from them, or replace them when your app outgrows the starter constraints. Each entry follows the pattern: **Decision → Why → Trade-off → When to revisit.**
 
 ---
 
@@ -738,9 +505,9 @@ None of this infrastructure is absent by accident — it was left out to keep th
 
 **Decision:** `vite.config.ts` forces a single JavaScript output file (`assets/index.js`) and uses `base: './'` for relative asset paths.
 
-**Why:** the frontend is served from inside a DSS webapp iframe at a sub-path (e.g. `https://my-dss.company.com/web-apps-backends/PROJECT/WEBAPP_ID/`). DSS's project-library serving does not reliably handle the chunk manifest that Vite's default code-splitting produces — requests for dynamically-imported chunks 404. A single bundle avoids this entirely.
+**Why:** the bundle is served by the FastAPI backend at a sub-path (e.g. `https://my-dss.company.com/web-apps-backends/PROJECT/WEBAPP_ID/assets/`). DSS's project-library serving does not reliably handle the chunk manifest that Vite's default code-splitting produces — requests for dynamically-imported chunks 404. A single bundle avoids this entirely.
 
-**Trade-off:** the bundle cannot be lazy-loaded. All views — including disabled blocks — are bundled. It also means `import()` lazy routes cannot be used; all route components must be statically imported. With all five optional blocks enabled (the default), the JS bundle is approximately 1 MB minified / 350 KB gzipped, which includes echarts (~600 KB) and @vue-flow/core. If you don't use Charts or Flow and want to fully reclaim that weight, remove the npm packages (`npm remove echarts vue-echarts @vue-flow/core`) in addition to setting the flags to 0 — disabling the block via env flags alone hides the UI but does not shrink the bundle.
+**Trade-off:** the bundle cannot be lazy-loaded. It also means `import()` lazy routes cannot be used; all route components must be statically imported. The JS bundle is approximately 990 KB minified / 330 KB gzipped, most of it echarts, which the act charts use.
 
 **When to revisit:** if the app grows to where the initial load time is noticeably slow (> 2–3 s on a reasonable connection), the right fix is to change the DSS library serving strategy (host the frontend externally or use a DSS API node with proper static-file handling) rather than fighting Vite's code-splitting within the current constraints.
 
@@ -766,14 +533,13 @@ None of this infrastructure is absent by accident — it was left out to keep th
 
 **Trade-off:** the URL is **instance-specific and hardcoded** for our team, and unversioned — a DSS upgrade changes the tarball, so refresh the lock with `uv lock --upgrade-package dataiku-internal-client`. It's dev-only: inside DSS the runtime provides `dataiku`, and dev-group deps aren't shipped in the deployable wheel. Because there is no row-reading fallback, local dev **requires** `uv sync` (and DSS connectivity) — a stale checkout that skipped it will `ImportError` on `dataiku` rather than silently degrading. That's a deliberate trade for one simple code path.
 
-**When to revisit:** when the blueprint must target **multiple instances**, derive the URL from the configured instance (`~/.dataiku/config.json` / `DKU_INSTANCE`) instead of hardcoding it; or, if the team standardizes on locally-installed kits, point at the kit instead.
+**When to revisit:** when the app must target **multiple instances**, derive the URL from the configured instance (`~/.dataiku/config.json` / `DKU_INSTANCE`) instead of hardcoding it; or, if the team standardizes on locally-installed kits, point at the kit instead.
 
 ---
 
 ## Tech notes
 
 - **Python ≥3.11** — recommended for the code env. The backend uses `from __future__ import annotations` as a 3.9 compatibility shim, but type errors can still surface on very old envs.
-- **Design tokens / UI** — the app owns its look: tokens in `frontend/src/styles/tokens.css`, local `Ea*` components in `frontend/src/components/ui/` (built on `reka-ui`). There is no external component-library dependency. To re-theme, edit the token values in one place.
-- **Settings storage key** — `<prefix>_app_settings` in the project's *standard* variables namespace. Two webapps in the same project with different `APP_PREFIX` values won't collide.
+- **Design tokens / UI** — the look comes from the team's design system (`@dataiku/ea-ui-kit` through bs-blueprint); the app owns no palette. Components come from the kit, and the few composites it lacks from bs-blueprint; the app keeps no local copies.
 - **No writable local filesystem in DSS** — the plugin install directory is read-only. Use **Managed Folders** for user-uploaded files and **project variables** for configuration.
 - **WebSockets** — DSS's WSGI layer doesn't support WebSocket upgrades. If you need push updates, use Server-Sent Events (SSE) instead (FastAPI's `sse-starlette` package, already in `pyproject.toml`).

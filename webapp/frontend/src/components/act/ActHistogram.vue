@@ -11,6 +11,7 @@
   import { GridComponent, TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
   import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
+  import { seriesColor, resolveColour } from '@/utils/seriesColours'
 
   use([BarChart, GridComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActHistogram' })
@@ -22,8 +23,6 @@
 
   const ready = ref(false)
   onMounted(() => nextTick(() => (ready.value = true)))
-  const token = (n: string, f: string) =>
-    getComputedStyle(document.documentElement).getPropertyValue(n).trim() || f
 
   const chartOption = computed((): EChartsOption => ({
     animationDuration: 700,
@@ -42,23 +41,23 @@
       type: 'category',
       data: props.bins.map((b) => b.lo.toFixed(2)),
       name: props.xLabel, nameLocation: 'middle', nameGap: 20,
-      nameTextStyle: { fontFamily: 'DM Mono, monospace', fontSize: 10 },
+      nameTextStyle: { fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 10 },
       axisTick: { alignWithLabel: true },
       axisLabel: {
-        fontFamily: 'DM Mono, monospace', fontSize: 9, color: 'var(--muted-foreground)',
+        fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 9, color: resolveColour('var(--muted-foreground)'),
         interval: (i: number) => i % 4 === 0,
       },
     },
     yAxis: {
       type: 'value',
-      splitLine: { lineStyle: { type: 'dashed', color: 'var(--border)' } },
-      axisLabel: { fontFamily: 'DM Mono, monospace', fontSize: 9, color: 'var(--muted-foreground)' },
+      splitLine: { lineStyle: { type: 'dashed', color: resolveColour('var(--border)') } },
+      axisLabel: { fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 9, color: resolveColour('var(--muted-foreground)') },
     },
     series: [{
       type: 'bar',
       data: props.bins.map((b) => b.n),
       barCategoryGap: '2%',            // bins touch: this is a distribution, not categories
-      itemStyle: { color: token('--chart-2', '#3EDAB2'), borderRadius: [2, 2, 0, 0] },
+      itemStyle: { color: seriesColor('measured'), borderRadius: [2, 2, 0, 0] },
     }],
   }))
 </script>

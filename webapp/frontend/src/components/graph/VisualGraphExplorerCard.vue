@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
-  import { Check, Copy, ExternalLink, Network } from 'lucide-vue-next'
+  import { ArrowExternalLink, Checkmark, Copy, Flow } from '@dataiku/vue-icons'
   import ActCard from '@/components/act/ActCard.vue'
-  import { EaButton } from '@/components/ui'
+  import { Button, ToggleGroup, ToggleGroupItem } from '@dataiku/ea-ui-kit'
   import { copyVisualGraphCypher, visualGraphExplorerUrl } from '@/utils/visualGraphExplorer'
 
   defineOptions({ name: 'VisualGraphExplorerCard' })
@@ -65,6 +65,13 @@
     emit('selectQuery', starter)
   }
 
+  // The ToggleGroup emits the chosen id, or an empty value when the active chip
+  // is clicked again; a query is always selected, so that click is ignored.
+  function pickStarter(id: unknown) {
+    const starter = props.starterQueries?.find((s) => s.id === id)
+    if (starter) selectStarter(starter)
+  }
+
   async function copyOnly() {
     if (!hasQuery.value) return
     copied.value = await copyVisualGraphCypher(preparedCypher.value)
@@ -73,41 +80,37 @@
 </script>
 
 <template>
-  <ActCard :span="span" :title="title" :desc="description" :icon="Network" :chips="chips" :src="src"
-           accent="var(--chart-2)" :method-label="methodLabel ?? 'How this is computed'">
+  <ActCard :span="span" :title="title" :desc="description" :icon="Flow" :chips="chips" :src="src"
+           :method-label="methodLabel ?? 'How this is computed'">
     <div class="flex flex-col gap-3">
-      <div v-if="starterQueries?.length" role="group" aria-label="Available graph queries"
-           class="flex flex-wrap gap-2">
-        <button v-for="starter in starterQueries" :key="starter.id" type="button"
-                :aria-pressed="selectedStarterId === starter.id" :title="starter.description"
-                class="rounded-md border px-2.5 py-1 text-left text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-                :class="selectedStarterId === starter.id
-                  ? 'border-primary bg-primary/15 text-primary-foreground'
-                  : 'border-border bg-muted/30 text-muted-foreground hover:bg-muted/60'"
-                @click="selectStarter(starter)">
+      <ToggleGroup v-if="starterQueries?.length" type="single" variant="outline" size="sm"
+                   :spacing="2" aria-label="Available graph queries" class="flex-wrap"
+                   :model-value="selectedStarterId" @update:model-value="pickStarter">
+        <ToggleGroupItem v-for="starter in starterQueries" :key="starter.id" :value="starter.id"
+                         :title="starter.description" class="px-2.5 text-xs">
           {{ starter.label }}
-        </button>
-      </div>
+        </ToggleGroupItem>
+      </ToggleGroup>
 
-      <p v-if="contextTitle" class="font-mono text-[10.5px] uppercase tracking-[0.08em] text-muted-foreground">
+      <p v-if="contextTitle" class="font-mono text-2xs uppercase tracking-wider text-muted-foreground">
         Context: {{ contextTitle }}
       </p>
 
       <div v-if="hasQuery" class="rounded-md border border-border bg-muted/25">
         <div class="border-b border-border px-2.5 py-1.5">
-          <p class="font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+          <p class="font-mono text-2xs uppercase tracking-wider text-muted-foreground">
             Selected query<span v-if="selectedStarter"> · {{ selectedStarter.label }}</span>
           </p>
-          <p v-if="selectedStarter?.description" class="mt-0.5 text-[11.5px] leading-relaxed text-muted-foreground">
+          <p v-if="selectedStarter?.description" class="mt-0.5 text-2xs leading-relaxed text-muted-foreground">
             {{ selectedStarter.description }}
           </p>
         </div>
         <pre tabindex="0" aria-label="Selected Cypher query, selectable for manual copy"
-             class="max-h-44 overflow-auto p-2.5 font-mono text-[10.5px] leading-relaxed text-foreground outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40">{{ preparedCypher }}</pre>
+             class="max-h-44 overflow-auto p-2.5 font-mono text-2xs leading-relaxed text-foreground outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/40">{{ preparedCypher }}</pre>
       </div>
 
-      <div v-if="hasQuery" class="text-[11.5px] leading-relaxed text-muted-foreground">
-        <p class="font-mono text-[10px] uppercase tracking-[0.08em]">Run it in the Explorer</p>
+      <div v-if="hasQuery" class="text-2xs leading-relaxed text-muted-foreground">
+        <p class="font-mono text-2xs uppercase tracking-wider">Run it in the Explorer</p>
         <ol class="mt-1 list-decimal space-y-0.5 pl-4">
           <li>Copy the query above with <b class="text-foreground">Copy query</b>.</li>
           <li>Open the Explorer with <b class="text-foreground">Open full Explorer</b>. It opens in a new tab.</li>
@@ -117,18 +120,18 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <EaButton v-if="hasQuery" variant="outline" size="sm" @click="copyOnly">
-          <Check v-if="copied" class="size-3.5" />
+        <Button v-if="hasQuery" variant="outline" size="sm" @click="copyOnly">
+          <Checkmark v-if="copied" class="size-3.5" />
           <Copy v-else class="size-3.5" />
           {{ copied ? 'Copied' : 'Copy query' }}
-        </EaButton>
-        <EaButton v-if="explorerUrl" size="sm" :href="explorerUrl" target="_blank" rel="noopener noreferrer">
-          <ExternalLink class="size-3.5" /> Open full Explorer
+        </Button>
+        <Button v-if="explorerUrl" as="a" size="sm" :href="explorerUrl" target="_blank" rel="noopener noreferrer">
+          <ArrowExternalLink class="size-3.5" /> Open full Explorer
           <span class="sr-only">(opens in a new tab)</span>
-        </EaButton>
-        <EaButton v-else size="sm" disabled>
-          <ExternalLink class="size-3.5" /> Open full Explorer
-        </EaButton>
+        </Button>
+        <Button v-else size="sm" disabled>
+          <ArrowExternalLink class="size-3.5" /> Open full Explorer
+        </Button>
         <span v-if="copyFailed" role="status" class="text-xs text-destructive">
           Copy was not available. Select the query above and copy it manually.
         </span>

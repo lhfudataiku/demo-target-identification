@@ -30,10 +30,10 @@
    * It is hidden by the presenter-notes switch (stores/presenter.ts), which is
    * the whole reason one app can serve both audiences.
    */
-  import { computed, ref, useSlots } from 'vue'
-  import { ChevronRight, Presentation } from 'lucide-vue-next'
-  import type { LucideIcon } from 'lucide-vue-next'
-  import { usePresenterStore } from '@/stores/presenter'
+  import { computed, ref, useSlots, type Component } from 'vue'
+  import { ChevronRight, Comment } from '@dataiku/vue-icons'
+    import { usePresenterStore } from '@/stores/presenter'
+  import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@dataiku/ea-ui-kit'
 
   defineOptions({ name: 'ActCard' })
 
@@ -47,7 +47,7 @@
       span?: string
       /** Source dataset names, rendered as a provenance footer */
       src?: string[]
-      icon?: LucideIcon
+      icon?: Component
       /** Any CSS colour; defaults to the brand accent. */
       accent?: string
       /** Label on the collapsed methodology disclosure. */
@@ -94,18 +94,18 @@
           <component :is="icon" class="size-4" />
         </span>
         <div class="flex flex-col gap-0.5">
-          <h2 class="font-serif text-[17px] font-semibold leading-snug tracking-tight">{{ title }}</h2>
+          <h2 class="text-lg font-semibold leading-snug tracking-tight">{{ title }}</h2>
           <p v-if="desc || $slots.desc"
-             class="max-w-2xl text-[13px] leading-relaxed text-muted-foreground">
+             class="max-w-2xl text-sm leading-relaxed text-muted-foreground">
             <slot name="desc">{{ desc }}</slot>
           </p>
         </div>
       </div>
       <div v-if="chips?.length" class="flex flex-none gap-1.5">
         <span v-for="[label, kind] in chips" :key="label"
-              class="rounded-md px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide"
+              class="rounded-md px-1.5 py-0.5 font-mono text-2xs uppercase tracking-wide"
               :class="{
-                'bg-primary/25 text-primary-foreground': kind === 'live',
+                'bg-primary/25 text-primary': kind === 'live',
                 'bg-muted text-muted-foreground': kind === 'mock',
                 'bg-accent text-accent-foreground': kind === 'port',
               }">{{ label }}</span>
@@ -116,41 +116,40 @@
 
     <footer v-if="hasFooter" class="mt-auto flex flex-col">
       <!-- The insight that did not fit in one sentence. Always visible. -->
-      <div v-if="hasNote" class="border-t px-5 py-2.5 text-[12.5px] leading-relaxed" :style="edgeStyle">
+      <div v-if="hasNote" class="border-t px-5 py-2.5 text-xs leading-relaxed" :style="edgeStyle">
         <slot name="note" />
       </div>
 
       <!-- Methodology, collapsed. The disclosure is the whole point: a client
            never has to read it, and a data scientist is one click from it. -->
-      <div v-if="hasMethod" class="border-t" :style="edgeStyle">
-        <button type="button"
-                class="flex w-full items-center gap-1.5 px-5 py-2 text-left font-mono text-[10px]
-                       uppercase tracking-wide text-muted-foreground transition-colors
-                       hover:text-foreground focus-visible:outline-none focus-visible:ring-2
-                       focus-visible:ring-ring/40"
-                :aria-expanded="open" @click="open = !open">
+      <Collapsible v-if="hasMethod" v-model:open="open" class="border-t" :style="edgeStyle">
+        <CollapsibleTrigger
+          class="flex w-full items-center gap-1.5 px-5 py-2 text-left font-mono text-2xs
+                 uppercase tracking-wide text-muted-foreground transition-colors
+                 hover:text-foreground focus-visible:outline-none focus-visible:ring-2
+                 focus-visible:ring-ring/40">
           <ChevronRight class="size-3 transition-transform" :class="open ? 'rotate-90' : ''" />
           {{ methodLabel }}
-        </button>
-        <div v-if="open" class="px-5 pb-3 text-[11.5px] leading-relaxed text-muted-foreground">
+        </CollapsibleTrigger>
+        <CollapsibleContent class="px-5 pb-3 text-2xs leading-relaxed text-muted-foreground">
           <slot name="method" />
-        </div>
-      </div>
+        </CollapsibleContent>
+      </Collapsible>
 
       <!-- For the person demoing, not for the room. -->
       <div v-if="showPresenter"
-           class="flex items-start gap-2 border-t bg-secondary/60 px-5 py-2.5 text-[12.5px]
+           class="flex items-start gap-2 border-t bg-secondary/60 px-5 py-2.5 text-xs
                   leading-relaxed"
            :style="edgeStyle">
-        <Presentation class="mt-0.5 size-3.5 flex-none text-muted-foreground" />
+        <Comment class="mt-0.5 size-3.5 flex-none text-muted-foreground" />
         <div><slot name="presenter" /></div>
       </div>
 
       <div v-if="src?.length"
            class="flex flex-wrap items-center gap-2 border-t px-5 py-2" :style="edgeStyle">
-        <span class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">src</span>
+        <span class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">src</span>
         <a v-for="s in src" :key="s" :href="`${DSS}/${s}/explore/`" target="_blank" rel="noopener"
-           class="font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">{{ s }}</a>
+           class="font-mono text-2xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">{{ s }}</a>
       </div>
     </footer>
   </section>

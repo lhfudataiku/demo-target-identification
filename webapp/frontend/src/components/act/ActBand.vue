@@ -11,6 +11,7 @@
   import { GridComponent, TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
   import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
+  import { seriesColor, resolveColour } from '@/utils/seriesColours'
 
   use([BarChart, GridComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActBand' })
@@ -22,8 +23,6 @@
 
   const ready = ref(false)
   onMounted(() => nextTick(() => (ready.value = true)))
-  const token = (n: string, f: string) =>
-    getComputedStyle(document.documentElement).getPropertyValue(n).trim() || f
 
   const chartOption = computed((): EChartsOption => ({
     animationDuration: 700,
@@ -42,20 +41,20 @@
     yAxis: { type: 'category', show: false, data: [''] },
     series: [
       { name: props.inLabel, type: 'bar', stack: 'g', barWidth: 26, data: [props.inValue],
-        itemStyle: { color: token('--chart-2', '#3EDAB2'), borderRadius: [3, 0, 0, 3] } },
+        itemStyle: { color: seriesColor('measured'), borderRadius: [3, 0, 0, 3] } },
       { name: props.outLabel, type: 'bar', stack: 'g', data: [props.outValue],
-        itemStyle: { color: token('--muted', '#EEEDEA'), borderRadius: [0, 3, 3, 0] } },
+        itemStyle: { color: resolveColour('var(--muted)'), borderRadius: [0, 3, 3, 0] } },
     ],
   }))
 </script>
 
 <template>
   <div class="flex flex-col gap-1.5">
-    <div class="h-[34px] w-full">
+    <div class="h-8.5 w-full">
       <VChart v-if="ready" :option="chartOption" :autoresize="true" class="h-full w-full" />
     </div>
-    <div class="flex justify-between font-mono text-[10.5px]">
-      <span class="text-primary-foreground">
+    <div class="flex justify-between font-mono text-2xs">
+      <span class="text-foreground">
         <b>{{ inValue.toLocaleString() }}</b> {{ inLabel }}
       </span>
       <span class="text-muted-foreground">

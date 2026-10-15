@@ -17,7 +17,7 @@
         {"key": "gpgd_rows", "value": 5373706, "unit": "route admissions", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb2_splitting_and_pool.py", "section": "5.2", "check": "5.2 GPGD rows"}},
         {"key": "gcd_rows", "value": 42227, "unit": "route admissions", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb2_splitting_and_pool.py", "section": "5.2", "check": "5.2 GCD rows"}}
       ],
-      "documentation_consumers": ["docs/prioritizer/TARGET_PRIORITIZER.md", "docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/prioritizer/PHASE3_PREREGISTRATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/DASHBOARD_MOCKUP_V3.html", "docs/demo/mockup_parity.html"],
+      "documentation_consumers": ["docs/prioritizer/TARGET_PRIORITIZER.md", "docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/prioritizer/PHASE3_PREREGISTRATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md"],
       "webapp_api_consumers": ["webapp/backend/routes/calibration.py"],
       "review_policy": "Re-run nb2, then review pool/split denominators and every listed consumer whenever a route, seed gate or graph input changes."
     },
@@ -31,7 +31,7 @@
         {"key": "feature_count", "value": 14, "unit": "features", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "repository_json", "path": "tools/model_registry.json", "pointer": "/models/hJLGoYn4/n_features"}},
         {"key": "model_name", "value": "m7-f14", "unit": "name", "display_precision": null, "absolute_tolerance": null, "authority": {"kind": "repository_json", "path": "tools/model_registry.json", "pointer": "/models/hJLGoYn4/name"}}
       ],
-      "documentation_consumers": ["docs/prioritizer/TARGET_PRIORITIZER.md", "docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/prioritizer/PHASE3_PREREGISTRATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/BREAST_SURGEON_BRIEFING.md", "docs/demo/DASHBOARD_MOCKUP_V3.html", "docs/demo/panel_selection.html", "docs/demo/panel_selection/README.md", "docs/prioritizer/wiki/01-overview.md", "docs/prioritizer/wiki/03-technical-requirements.md", "docs/prioritizer/wiki/04-release-notes.md"],
+      "documentation_consumers": ["docs/prioritizer/TARGET_PRIORITIZER.md", "docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/prioritizer/PHASE3_PREREGISTRATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/BREAST_SURGEON_BRIEFING.md", "docs/demo/panel_selection.html", "docs/demo/panel_selection/README.md"],
       "webapp_api_consumers": ["webapp/backend/routes/calibration.py", "webapp/frontend/src/views/CalibrationView.vue"],
       "review_policy": "A champion change requires model-registry review plus all governed validation checks; never retarget consumers from a metric alone."
     },
@@ -44,7 +44,7 @@
         {"key": "macro_per_disease_auroc", "value": 0.8230, "unit": "AUROC", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "10.1", "check": "10.1 macro per-disease AUC"}},
         {"key": "held_out_diseases", "value": 670, "unit": "diseases", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "10.1", "check": "10.1 validation diseases"}}
       ],
-      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/prioritizer/PHASE3_PREREGISTRATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/DASHBOARD_MOCKUP_V3.html", "docs/demo/panel_selection.html", "docs/demo/panel_selection/README.md", "docs/prioritizer/wiki/01-overview.md", "docs/prioritizer/wiki/02-walkthrough.md", "docs/prioritizer/wiki/04-release-notes.md"],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/prioritizer/PHASE3_PREREGISTRATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/panel_selection.html", "docs/demo/panel_selection/README.md"],
       "webapp_api_consumers": ["webapp/backend/routes/calibration.py", "webapp/frontend/src/views/CalibrationView.vue"],
       "review_policy": "Re-run nb3 and review the distribution and denominator before changing any headline; report the macro value with its 670-disease scope."
     },
@@ -57,7 +57,7 @@
         {"key": "pooled_auroc", "value": 0.8932, "unit": "AUROC", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "-", "check": "header pooled AUC"}},
         {"key": "macro_per_disease_auroc", "value": 0.8230, "unit": "AUROC", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "10.1", "check": "10.1 macro per-disease AUC"}}
       ],
-      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/DASHBOARD_MOCKUP_V3.html"],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md"],
       "webapp_api_consumers": ["webapp/backend/routes/calibration.py", "webapp/frontend/src/views/CalibrationView.vue"],
       "review_policy": "Fail review if pooled and macro semantics are collapsed, if the pooled value is promoted to the headline, or if either value changes without nb3 evidence."
     },
@@ -70,7 +70,7 @@
         {"key": "families", "value": 505, "unit": "families", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "7.3", "check": "7.3 families"}},
         {"key": "macro_family_auroc", "value": 0.8009, "unit": "AUROC", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "7.3", "check": "7.3 per-family macro AUC"}}
       ],
-      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/DASHBOARD_MOCKUP_V3.html"],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md"],
       "webapp_api_consumers": ["webapp/backend/routes/calibration.py", "webapp/frontend/src/views/CalibrationView.vue"],
       "review_policy": "Re-run nb3 after split-family or champion changes and retain the warning that the aggregate hides family-level variation."
     },
@@ -84,7 +84,7 @@
         {"key": "pearson_r", "value": 0.002, "unit": "correlation", "display_precision": 3, "absolute_tolerance": 0.0005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "7.4", "check": "7.4 orthogonality pearson r"}},
         {"key": "r_squared", "value": 0.0000, "unit": "R2", "display_precision": 4, "absolute_tolerance": 0.00005, "authority": {"kind": "notebook_assertion", "notebook": "nb3_validation_and_plots.py", "section": "7.4", "check": "7.4 orthogonality R2"}}
       ],
-      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/DASHBOARD_MOCKUP_V3.html"],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md"],
       "webapp_api_consumers": ["webapp/backend/routes/calibration.py"],
       "review_policy": "Review association and therapeutic axes together after model or drug-label changes; never describe association AUROC as therapeutic prediction."
     },
@@ -139,7 +139,7 @@
         {"key": "macro_dm_lift_at_10", "value": 3.11, "unit": "fold", "display_precision": 2, "absolute_tolerance": 0.005, "authority": {"kind": "notebook_assertion", "notebook": "nb4_results_three_axes.py", "section": "8.4", "check": "8.4 macro dm lift @10"}},
         {"key": "pooled_dm_lift_at_200", "value": 2.42, "unit": "fold", "display_precision": 2, "absolute_tolerance": 0.005, "authority": {"kind": "notebook_assertion", "notebook": "nb4_results_three_axes.py", "section": "8.4", "check": "8.4 pooled dm lift @200"}}
       ],
-      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/DASHBOARD_MOCKUP_V3.html"],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/prioritizer/FEATURE_AUDIT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md"],
       "webapp_api_consumers": [],
       "review_policy": "Re-run nb4/nb6 after model or candidate-population changes; never merge pooled and macro lifts or compare them without naming K."
     },
@@ -153,7 +153,7 @@
         {"key": "her2_tnbc_novel_overlap", "value": 2, "unit": "top-50 genes", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb4_results_three_axes.py", "section": "8.10", "check": "8.10 HER2+ vs TNBC novel overlap"}},
         {"key": "tnbc_known_targets", "value": 8, "unit": "targets", "display_precision": 0, "absolute_tolerance": 0, "authority": {"kind": "notebook_assertion", "notebook": "nb4_results_three_axes.py", "section": "8.10", "check": "8.10 TNBC known targets"}}
       ],
-      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/BREAST_SURGEON_BRIEFING.md", "docs/demo/DASHBOARD_MOCKUP_V3.html", "docs/demo/panel_selection.html"],
+      "documentation_consumers": ["docs/prioritizer/VALIDATION.md", "docs/overview/PROJECT_CONTEXT.md", "docs/demo/DEMO_NARRATIVE.md", "docs/demo/WEBAPP_DESIGN.md", "docs/demo/BREAST_SURGEON_BRIEFING.md", "docs/demo/panel_selection.html"],
       "webapp_api_consumers": ["webapp/backend/routes/families.py"],
       "review_policy": "Re-run nb4 and nb7 after graph, champion or panel changes; do not quote thin-disease AUROC and keep clinician-review defects visible."
     },

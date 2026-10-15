@@ -344,7 +344,7 @@ across the project boundary any more (PROJECT_CONTEXT §4.3).
 > bit-identical; the five carrying order-dependent float aggregation (the three DWPC metapaths,
 > guilt-by-association and node centrality) matched to **6 decimal places**, which is float
 > accumulation order, not content. Full record and machine-readable fingerprints:
-> [`../operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md`](../operations/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md).
+> [`GRAPH_SNAPSHOT_SWITCH_2026-09-03.md`](../../archive/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md) (archived).
 >
 > The older `enriched_clean-gFdnaU` named in earlier revisions of this section **has since been
 > deleted**; the graph project now holds these two Kuzu folders and no third.

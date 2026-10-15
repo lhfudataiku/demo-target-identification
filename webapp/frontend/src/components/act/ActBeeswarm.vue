@@ -11,6 +11,7 @@
   import { GridComponent, MarkAreaComponent, MarkLineComponent, TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
   import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
+  import { seriesColor, resolveColour } from '@/utils/seriesColours'
 
   use([ScatterChart, GridComponent, MarkAreaComponent, MarkLineComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActBeeswarm' })
@@ -23,8 +24,6 @@
 
   const ready = ref(false)
   onMounted(() => nextTick(() => (ready.value = true)))
-  const token = (n: string, f: string) =>
-    getComputedStyle(document.documentElement).getPropertyValue(n).trim() || f
 
   const stats = computed(() => {
     const v = props.points.map((p) => p.value).sort((a, b) => a - b)
@@ -33,7 +32,7 @@
   })
 
   const chartOption = computed((): EChartsOption => {
-    const accent = token('--chart-2', '#3EDAB2')
+    const accent = seriesColor('measured')
     // Deterministic jitter: a hash of the index, so the swarm is stable across
     // renders rather than reshuffling on every repaint.
     const pts = props.points.map((p, i) =>
@@ -55,9 +54,9 @@
       xAxis: {
         type: 'value', min: props.min, max: props.max, name: props.unit,
         nameLocation: 'middle', nameGap: 20,
-        nameTextStyle: { fontFamily: 'DM Mono, monospace', fontSize: 10 },
-        splitLine: { lineStyle: { type: 'dashed', color: 'var(--border)' } },
-        axisLabel: { fontFamily: 'DM Mono, monospace', fontSize: 10, color: 'var(--muted-foreground)' },
+        nameTextStyle: { fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 10 },
+        splitLine: { lineStyle: { type: 'dashed', color: resolveColour('var(--border)') } },
+        axisLabel: { fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 10, color: resolveColour('var(--muted-foreground)') },
       },
       yAxis: { type: 'value', min: -0.15, max: 1.15, show: false },
       series: [{
@@ -73,7 +72,7 @@
           lineStyle: { color: accent, width: 2 },
           label: {
             formatter: `median ${stats.value.med.toFixed(3)}`,
-            fontFamily: 'DM Mono, monospace', fontSize: 10, position: 'insideEndTop',
+            fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 10, position: 'insideEndTop',
           },
           data: [{ xAxis: stats.value.med }],
         },

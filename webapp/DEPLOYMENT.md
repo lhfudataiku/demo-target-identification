@@ -1,8 +1,8 @@
 # Deploying this webapp
 
 > **Lifecycle:** Canonical · **Audience:** webapp deployers and reviewers · **Authority:** deployment,
-> embedding and runtime verification procedure · **Update when:** the build, upload, restart or iframe
-> contract changes · **Generated dependencies:** the deployment scripts and current webapp structure ·
+> page-loading and runtime verification procedure · **Update when:** the build, upload, restart or
+> page-loading contract changes · **Generated dependencies:** the deployment scripts and current webapp structure ·
 > **Excludes:** UI design rationale and analytical evidence.
 
 **The one thing to know before anything else:**
@@ -26,6 +26,16 @@ bundle can never travel through git.** It reaches DSS only when `deploy.sh` uplo
 This is the single most confusing thing about the setup. A colleague can commit, push,
 and watch the project sync succeed, and the webapp will still serve the UI from whenever
 someone last ran `make deploy`.
+
+## How DSS loads the app (since 2026-10-15)
+
+There is no iframe. The build uses `@dataiku/vite-plugin-dku-webapp`, and `deploy.sh` sets the
+webapp's **html** parameter to the body-only `dist/index.html` and its **js** parameter to
+`dist/dss-main.js`. DSS renders those in the project page; `dss-main.js` then loads
+`assets/index.js` and `assets/index.css` from the FastAPI backend's `/assets` route through the
+DSS-injected `dataiku.getWebAppBackendUrl()`, and every API call resolves the same way through
+`apiUrl()`. Act URLs are hash routes (`…#/shortlist`), so a refresh keeps the act; bookmarks taken
+before 2026-10-15 (`…/shortlist`) open Act 1 instead.
 
 ## Where things live on DSS
 
@@ -79,7 +89,7 @@ that surfaces in the UI as an unexplained HTTP 500.
 | a screen | `frontend/src/views/*.vue` |
 | shared card / layout | `frontend/src/components/act/ActCard.vue` |
 | navigation, act order | `frontend/src/router/index.ts` |
-| colours, fonts | `frontend/src/styles/tokens.css` (Dataiku brand — see below) |
+| a chart's colour | `frontend/src/utils/seriesColours.ts` — name the meaning, not the colour (see below) |
 
 ### 2. Check it locally (optional)
 
@@ -114,8 +124,15 @@ follows and will block.
 make deploy
 ```
 
-Which does, in order: `npm run build` → upload `backend/` → upload `frontend/dist/` →
-patch the webapp definition → restart the backend.
+Which does, in order: `npm run build` → mirror `backend/` → mirror `frontend/dist/` → set the
+webapp definition (html and js from the build) → restart the backend. Both mirrors use
+`dku library sync --delete`: **a file deleted locally is deleted on DSS too.** Before a deploy that
+removes files, preview exactly what will go:
+
+```bash
+dku library sync backend /python/target_prioritizer/backend \
+  -P DEMO_TARGET_IDENTIFICATION --delete -e '.*' --dry-run | grep -i delete
+```
 
 ### 4. Verify it actually landed
 
@@ -182,19 +199,15 @@ dku library read /python/target_prioritizer/backend/app.py \
 This should show `evidence_router` and no `graph_router` or `/api/graph` match. Confirm the runtime
 surface as well (the webapp logs must be healthy; a stale source file alone is not a registered route).
 
-**Prune retired library files deliberately.** `make deploy` overwrites and uploads files but does not
-delete files that were removed locally. After the Wave 6 cleanup is deployed and after the backend check
-above, remove this exact retired remote file explicitly:
+Finally, confirm the webapp definition is the plugin build, not an iframe shim — a deploy from an
+older `deploy.sh` would leave a blank page:
 
 ```bash
-dku library delete /python/target_prioritizer/backend/routes/graph.py \
-  -P DEMO_TARGET_IDENTIFICATION --yes
-dku library list --path /python/target_prioritizer/backend/routes \
-  -P DEMO_TARGET_IDENTIFICATION | grep -F graph.py
+dku webapp get-definition OlmPX9a -P DEMO_TARGET_IDENTIFICATION | python3 -c \
+  "import json,sys; p=json.load(sys.stdin)['params']; print(repr(p['html'][:40]), 'iframe' in p['js'])"
 ```
 
-The final command must produce no match. Do not use a recursive delete for this cleanup, and do not
-delete the `routes/` directory: all remaining application routes live there.
+Expect `'\n    <div id="app"></div>\n  '` and `False`.
 
 ### 5. Commit and push
 
@@ -204,21 +217,21 @@ Separately, and for version control only. It updates nothing on DSS.
 
 ## Design system
 
-The app uses the **Dataiku brand palette**, not the shadcn defaults the template shipped
-with. `frontend/src/styles/tokens.css` holds the values:
+Since 2026-10-15 the app uses the team's design system: the `@dataiku/ea-ui-kit` theme (DSS
+product palette, indigo primary, Source Sans Pro), wired by bs-blueprint through
+`frontend/src/styles/kit.css`. The app owns no palette; `frontend/DESIGN.md` (managed by
+bs-blueprint) lists the tokens and rules, and `npm run check` enforces them.
 
-```
-dkBlack #1A1A1A   dkWhite #FEFEF9   dkDarkGreen #06312E
-dkBeige #F8F4E4   dkGreen #3EDAB2   dkLightGreen #C7FFF1
-dkBlue  #7092F2   dkOrange #EDAB4F   (data viz only)
-```
+**Chart colours carry meaning**, so a view names the meaning and
+`frontend/src/utils/seriesColours.ts` picks the kit token: `measured` (the model's result),
+`contrast` (what it is compared with), `highlight` (the exception to look at), `approved`,
+`trial`, `baseline` and `negative`. The table is documented in
+[`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) §3.5; change it there first.
 
-Fonts: **Spectral** headings, **Roboto** body, **DM Mono** data — the sanctioned Google
-substitutes for Signifier / Untitled Sans / Söhne Mono.
-
-Two rules that are easy to break: `dkGreen` is a **light** mint, so anything on it takes
-dark text (`--primary-foreground` is dkDarkGreen, never white). And Orange+Green or
-Blue+Green must never be co-dominant surfaces.
+Two rules that are easy to break: ECharts draws on a canvas and cannot read CSS variables or the
+kit's space-separated `hsl()` values, so canvas colours always go through `seriesColor()` or
+`resolveColour()`. And `text-primary-foreground` is white in the kit: on a faint `bg-primary/NN`
+tint use `text-primary` instead.
 
 ## Guardrails the UI must keep
 
@@ -246,6 +259,9 @@ These are demo requirements, not style preferences. They are enforced in
 | Local dev: HTTP 502 `Unknown API Key` | No credential in the environment and a stale `api_key` in `~/.dataiku/config.json`. Run `eval "$(dku auth export-env)"`. `dku whoami` succeeding does **not** mean the webapp can authenticate — different credential store. |
 | Local dev: HTTP 500 on every API call | `BACKEND_PORT` no longer matches the Vite proxy. |
 | `nginx: could not open error log file` in the logs | Harmless. Gunicorn binds fine afterwards. |
+| `connect() failed (111: Connection refused)` right after a restart | The proxy probing before Gunicorn is up. Harmless if `Application startup complete` follows. |
+| Blank page in DSS after a deploy | The webapp's html/js are not the plugin build (deployed from an older `deploy.sh`, or `dist/` built without the plugin). Check the definition (§4) and redeploy. |
+| An old link (`…/shortlist`) opens Act 1 | Act URLs are hash routes since 2026-10-15: use `…#/shortlist`. |
 
 ## Dataset caching — the known staleness, and the fix
 

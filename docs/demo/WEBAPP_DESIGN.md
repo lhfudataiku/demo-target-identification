@@ -5,7 +5,7 @@
 > **Lifecycle:** Canonical · **Audience:** webapp implementers and technical reviewers · **Authority:**
 > Vue/FastAPI architecture, routes, state, interaction and data contracts · **Update when:** an app
 > contract, route, interaction or backing-data contract changes · **Generated dependencies:**
-> [`FLOW_MAP.md`](FLOW_MAP.md) for live flow lineage, the notebook assertions cited in §9 and
+> [`FLOW_MAP.md`](../operations/FLOW_MAP.md) for live flow lineage, the notebook assertions cited in §9 and
 > [`../prioritizer/CLAIM_REGISTRY.json`](../prioritizer/CLAIM_REGISTRY.json) for governed consumers ·
 > **Excludes:** hand-authored DSS-flow inventories, native-dashboard evaluation and build chronology.
 > Detailed analytical rationale lives in [`../prioritizer/VALIDATION.md`](../prioritizer/VALIDATION.md);
@@ -20,15 +20,16 @@ targets a disease's field has already validated — and the test is a scientist'
 disease they know. It is not a discovery claim, and the app must not read as one. We are an AI
 platform company demonstrating machinery, not a drug-discovery vendor proposing a research direction.
 
-**What the demo surface is.** A single Vue SPA deployed as a DSS STANDARD webapp, built from the
-`bs-blueprint` template. **Four acts in the app; acts 5 and 6 are a spoken talk track**, because they
+**What the demo surface is.** A single Vue SPA deployed as a DSS STANDARD webapp, built on the team's
+`bs-blueprint` framework. **Four acts in the app; acts 5 and 6 are a spoken talk track**, because they
 are about the platform rather than the biology.
 
-**Status.** Mockup iteration 3 — [`DASHBOARD_MOCKUP_V3.html`](DASHBOARD_MOCKUP_V3.html) is the current
-artefact. Earlier iterations are historical material in
+**Status.** Built: all four acts are live views in [`../../webapp/`](../../webapp/), and the app is the
+current artefact. The three mockup iterations it was derived from, including the mockup-to-app parity
+check, are historical material in
 [`../../archive/dashboard-mockup-iterations/`](../../archive/dashboard-mockup-iterations/).
 
-**Where the rest lives.** [`FLOW_MAP.md`](FLOW_MAP.md) is the generated flow authority. Historical
+**Where the rest lives.** [`FLOW_MAP.md`](../operations/FLOW_MAP.md) is the generated flow authority. Historical
 native-dashboard evaluation is in [`../../archive/NATIVE_DASHBOARD_EVALUATION.md`](../../archive/NATIVE_DASHBOARD_EVALUATION.md),
 and build chronology remains in [`../../archive/DASHBOARD_BUILD_LOG.md`](../../archive/DASHBOARD_BUILD_LOG.md).
 
@@ -114,10 +115,17 @@ top-15 table.
 
 ### 3.1 The stack
 
-Copied from `~/Documents/GitHub/bs-blueprint` via `make copy DEST=…`. Vue 3 + Vite + Tailwind 4 +
-ECharts + Pinia + vue-router, with a FastAPI backend and `dss_webapp/deploy.sh`, which builds the bundle,
-uploads `backend/` and `frontend_dist/` into the project library under `python/<LIB_NS>/`, and patches a
-STANDARD webapp definition to serve it.
+Vue 3 + Vite + Tailwind 4 + ECharts + Pinia + vue-router on the team's
+[bs-blueprint](https://github.com/dataiku/bs-blueprint) framework, pinned to a commit in
+`frontend/package.json`: the `@dataiku/ea-ui-kit` theme and components, the `@dataiku/vue-icons` set,
+and bs-blueprint's app shell (`AppLayout`, `PageHeader`) and composites. A FastAPI backend serves the
+act data and the built bundle. `dss_webapp/deploy.sh` mirrors `backend/` and `frontend_dist/` into the
+project library under `python/<LIB_NS>/` and sets the STANDARD webapp's html and js from the build
+(`@dataiku/vite-plugin-dku-webapp`), so DSS renders the app directly, with no iframe.
+
+The app was seeded from an early copy of the framework's template and realigned with the current
+framework on 2026-10-15 (`DEC-DEMO-003`; the phase-by-phase record is
+[`../../archive/BLUEPRINT_ALIGNMENT_PLAN.md`](../../archive/BLUEPRINT_ALIGNMENT_PLAN.md)).
 
 **What we get for free that the native route could not give us:** routed acts with a sidebar that builds
 itself from route `meta`; real prose beside real charts; display-only columns; row-level drill; a single
@@ -169,10 +177,10 @@ a defect (§3.7).
 | 3 | `/therapeutic-area` | `TherapeuticAreaView` | `GET /api/families`, `/api/families/{id}` | `family_panel_metrics`, `family_panel_overlap`, `family_panel_top50`, `family_panel_programme`, `persona_enrichment`, `demo_panel_config` |
 | 4 | `/shortlist` | `ShortlistView` | `GET /api/candidates{,/diseases,/gene}` | `dashboard_candidates` |
 
-Two non-act routes are registered as `menu: 'tertiary'` — `/settings` (`SettingsView`) and `/admin`
-(`AdminView`, gated on the Admin toggle). The **glossary is not a route**: it is an overlay
-(`stores/glossary.ts` + `ActGlossaryDrawer`, mounted once in `DefaultLayout` beside the Explorer
-dialog), triggered from the sidebar footer or by clicking any `ActTerm`. A route would have been
+One non-act route is registered as `menu: 'tertiary'`: `/settings` (`SettingsView`, per-browser
+presenter notes). The **glossary is not a route**: it is an overlay (`stores/glossary.ts` +
+`ActGlossaryDrawer`, mounted once in `DefaultLayout`), opened from the Glossary button that
+bs-blueprint's shell places at the top right of every page, or by clicking any `ActTerm`. A route would have been
 fewer files and would have followed §3.5's build-itself convention, but a reader asking *"what was
 AUC again?"* is mid-card, and navigating away answers the question by losing their place.
 
@@ -193,8 +201,8 @@ drawer now renders `feature_glossary.CHAMPION` so it cannot go stale again.
 ### 3.4 Mock first, then swap
 
 > **Completed 2026-09-03.** All four act views read live backend routes and every act mock module has
-> been deleted, as the rule below requires. What remains under `frontend/src/data/mock/` belongs to the
-> optional template blocks (tickets, business outcomes, ticket flow), not to an act. The section is
+> been deleted, as the rule below requires. The mock modules that remained belonged to the template's
+> optional blocks, and were removed with those blocks on 2026-10-15. The section is
 > kept because the swap rule still governs any new view — and because the closing warning turned out
 > to be the section's most load-bearing sentence: two hard-coded figures did outlive the swap, in act
 > 2's own copy rather than in a mock module, and §6 now carries a guardrail for exactly that.
@@ -221,16 +229,38 @@ swaps to live data, its mock module is deleted, not commented out.
 
 ### 3.5 Conventions that are not negotiable
 
-From the blueprint's agent instructions (`AGENTS` at its repo root); violating them means the app stops looking like a Dataiku product.
+From bs-blueprint's rules (the managed block in `webapp/AGENTS.md`, enforced by `npm run check`, which
+must print `check: ok` with no suppressions); violating them means the app stops looking like a Dataiku
+product.
 
-- **Never hardcode colors.** Tailwind utilities over the tokens in `styles/tokens.css` —
-  `bg-background`, `text-muted-foreground`, `border-border`, `bg-primary`, `text-destructive`. No hex, no
-  `text-[#…]`. Chart series use `--chart-1..5`.
+- **Never hardcode colors.** Tailwind utilities over the kit theme's tokens — `bg-background`,
+  `text-muted-foreground`, `border-border`, `bg-primary`, `text-destructive`. No hex, no `text-[#…]`.
+  A chart series names its meaning and takes its colour from `frontend/src/utils/seriesColours.ts`,
+  which holds exactly this table; it never picks a `--chart-N` slot directly. Change the table here
+  first, then the module.
+
+  | Meaning | Where it appears | Kit token |
+  |---|---|---|
+  | `measured` — the model or pipeline result | precision, AUPRC, corroborated interactions, candidate pool, node types, AUC histogram, personas, eligible band | `chart-2` (teal) |
+  | `contrast` — the series compared against it | other drivers, relations, shared terms, trustworthy intervals, overlap matrix, positive SHAP, score bar | `chart-3` (navy) |
+  | `highlight` — the exception to look at | single-source interactions, genes distinct to one term | `chart-1` (orange) |
+  | `approved`, `trial` | Act 4 drug badges | `success`, `warning` |
+  | `baseline` — base rate or chance | base rate, grouped sources, duplicate admissions | `muted-foreground` |
+  | `negative` — untrustworthy or negative | failed-trust interval, negative SHAP | `destructive` |
+  | categories with no fixed meaning | Sankey routes and splits, label-evidence donut | `chart-1…5` in order |
+
+  Canvas charts resolve colours through `seriesColor()` or `resolveColour()`, because ECharts cannot
+  read CSS variables or the kit's space-separated `hsl()` values.
+- **Type and spacing on the scale.** No arbitrary values (`text-[13px]`, `w-[86px]`): use the kit's
+  type steps and Tailwind's numeric spacing. The one exception is chart-internal labels in the two
+  dense HTML charts (gene coverage grid, subtype overlap matrix), sized in their component's scoped
+  CSS and declared in `frontend/eslint.config.js`, as canvas charts size theirs in chart options.
 - **Let the sidebar build itself.** Add an act by adding a route with `meta: { title, icon, menu:
   'primary', order }`. Never hand-build a menu array.
-- **`apiUrl()` for every call.** A bare `fetch('/api/…')` breaks inside the DSS iframe.
-- **`Ea*` primitives first** (`EaSelect`, `EaButton`, `EaEmpty`, the `table/` and `scroll-area/` sets)
-  before custom markup. Icons from `lucide-vue-next`.
+- **`apiUrl()` for every call.** A bare `fetch('/api/…')` does not reach the backend inside DSS.
+- **Kit parts first** — `@dataiku/ea-ui-kit` (`Button`, `Input`, `Checkbox`, `NativeSelect`,
+  `Table*`, …) and bs-blueprint's `SelectField`, `EmptyState` and `SettingsSwitchItem` — before custom
+  markup; never copy a component into the app. Icons from `@dataiku/vue-icons`, the DSS icon set.
 - **No binary assets.** DSS libraries are text-only — no `.png`, no logo files.
 - **One view + one route + one backend route file + one service file.** Replace the example view; do not
   accrete beside it.
@@ -240,13 +270,17 @@ From the blueprint's agent instructions (`AGENTS` at its repo root); violating t
 ### 3.6 Build and deploy
 
 ```bash
-make copy DEST=~/Documents/GitHub/target-prioritizer-app   # seed from the blueprint
-make dev                                                    # vite + backend, local
-make deploy                                                 # build, upload libs, patch the webapp
+eval "$(dku auth export-env)"   # DSS credentials for the local backend
+make dev                         # vite + backend, local
+make deploy                      # build, mirror the library, set the webapp definition
 ```
 
-`PROJECT_KEY=DEMO_TARGET_IDENTIFICATION` in `app.env`, plus `LIB_NS` / `APP_PREFIX` /
-`VITE_APP_NAME`. First deploy creates the webapp and writes its id back to `app.env`.
+`app.env` holds the identity (`PROJECT_KEY=DEMO_TARGET_IDENTIFICATION`, `LIB_NS`, `APP_PREFIX`,
+`VITE_APP_NAME`, `WEBAPP_ID`). The procedure, including verification, is
+[`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md). To take a newer framework release, bump the
+pinned `bs-blueprint` commit or tag in `frontend/package.json`, run `npm install` and
+`npx bs-blueprint sync` (from `frontend/`), then `python3 tools/sync_harness.py --write` so the updated
+rules block reaches `webapp/CLAUDE.md` as well, then `npm run check`.
 
 ### 3.7 The card copy contract
 
@@ -652,9 +686,11 @@ the pivot matters more than it looks.
 - **No login, no user management, no persistence.** This is a demo surface over read-only flow output.
 - **No writes to DSS.** The one exception worth considering later is act 3's clinician review form
   (`breast_shortlist`), and it is out of scope until someone asks.
-- **No LLM anything.** The blueprint ships a chat block; leave `ENABLE_CHATBOT=0`. A chatbot over a
-  ranked gene list is the kind of thing that makes a careful audience stop trusting the careful parts.
-- Blocks to enable: none of the blueprint's five. All six acts are new views.
+- **No LLM anything.** A chatbot over a ranked gene list is the kind of thing that makes a careful
+  audience stop trusting the careful parts. The template's chat block, like its other optional blocks
+  (wizard, charts, flow, documents), was never enabled and was deleted on 2026-10-15, together with the
+  `ENABLE_*` flags ([`BLUEPRINT_ALIGNMENT_PLAN.md`](../../archive/BLUEPRINT_ALIGNMENT_PLAN.md), Phase 0). Every routed
+  view is an act or Settings.
 
 ---
 
@@ -771,7 +807,7 @@ warning flag; never optimise against it.
 
 ## 10. Flow lineage
 
-[`FLOW_MAP.md`](FLOW_MAP.md) is the generated authority for zones, datasets, producers and consumers.
+[`FLOW_MAP.md`](../operations/FLOW_MAP.md) is the generated authority for zones, datasets, producers and consumers.
 Read it before pruning or changing a backing contract; do not duplicate it here. In particular, use its
 notebook-provenance and zone-membership rules rather than reference counts to judge whether a serving
 dataset is safe to remove.

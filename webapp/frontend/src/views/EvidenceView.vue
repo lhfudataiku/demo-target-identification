@@ -34,7 +34,9 @@
   import ActInfo from '@/components/act/ActInfo.vue'
   import VisualGraphExplorerCard from '@/components/graph/VisualGraphExplorerCard.vue'
   import { ACT1_EXPLORER_QUERIES } from '@/utils/a1ExplorerQueries'
-  import { Database, GitBranch, Layers, FileText } from 'lucide-vue-next'
+  import { Dataset, FileText, MergeBranch, Stacked } from '@dataiku/vue-icons'
+  import { seriesVar } from '@/utils/seriesColours'
+  import { PageHeader } from 'bs-blueprint'
 
   defineOptions({ name: 'EvidenceView' })
 
@@ -54,10 +56,10 @@
   //   PPI provenance  — corroborated by 2+ interactomes vs a single source
   //   node sources    — the six external vocabularies vs the one we derived
   const ppiRows = computed(() => (data.value?.ppi_provenance ?? []).map((r) => ({
-    ...r, colour: r.label.includes('+') ? 'var(--chart-2)' : 'var(--chart-1)',
+    ...r, colour: r.label.includes('+') ? seriesVar('measured') : seriesVar('highlight'),
   })))
   const sourceRows = computed(() => (data.value?.node_sources ?? []).map((r) => ({
-    ...r, colour: /grouped/i.test(r.label) ? 'var(--muted-foreground)' : 'var(--chart-2)',
+    ...r, colour: /grouped/i.test(r.label) ? seriesVar('baseline') : seriesVar('measured'),
   })))
 
   /** EXTERNAL sources only. `totals.sources` counts rows in
@@ -121,12 +123,12 @@
 </script>
 
 <template>
+  <div class="flex h-full flex-col">
+    <PageHeader title="Act 1 of 4 · The evidence base" />
+    <div class="min-h-0 flex-1 overflow-auto">
   <div class="flex flex-col gap-6 p-6">
     <header class="flex flex-col gap-1.5 border-b border-border pb-5">
-      <p class="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-        Act 1 of 4 · The evidence base
-      </p>
-      <h1 class="font-serif text-3xl font-semibold tracking-tight">What went in?</h1>
+      <h2 class="text-3xl font-semibold tracking-tight">What went in?</h2>
       <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
         Public biomedical knowledge, assembled from six external sources and accepted against a
         frozen reference. No model yet — this act is about what the machine can see, and about the
@@ -139,7 +141,7 @@
     </p>
 
     <div class="grid grid-cols-12 gap-4">
-      <ActCard span="col-span-12" title="The knowledge graph" :icon="Database"
+      <ActCard span="col-span-12" title="The knowledge graph" :icon="Dataset"
                :chips="[['live', 'live']]"
                :src="['graph_node_type_counts', 'graph_relation_counts', 'graph_ppi_provenance']">
         <template #desc>
@@ -164,7 +166,7 @@
 
         <div v-if="totals" class="mt-3 flex flex-wrap gap-x-4 gap-y-1">
           <span v-for="[name, def] in SOURCES" :key="name"
-                class="font-mono text-[11px] text-muted-foreground">
+                class="font-mono text-2xs text-muted-foreground">
             {{ name }}<ActInfo :text="def" />
           </span>
         </div>
@@ -204,25 +206,25 @@
         </template>
       </VisualGraphExplorerCard>
 
-      <ActCard span="col-span-12 lg:col-span-5" title="What's in the graph" :icon="Layers"
+      <ActCard span="col-span-12 lg:col-span-5" title="What's in the graph" :icon="Stacked"
                :chips="[['live', 'live']]" :src="['graph_node_type_counts']">
         <template #desc>
           Eight kinds of biological entity — genes, diseases, drugs, pathways and more.
         </template>
-        <ActBar v-if="data" :rows="data.node_types" color="var(--chart-2)" />
+        <ActBar v-if="data" :rows="data.node_types" :color="seriesVar('measured')" />
         <template #note>
           Each bar is a <ActTerm t="node" /> type. The model only ever scores one pair of these —
           a gene against a disease.
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-7" title="How things connect" :icon="GitBranch"
+      <ActCard span="col-span-12 lg:col-span-7" title="How things connect" :icon="MergeBranch"
                :chips="[['live', 'live']]" :src="['graph_relation_counts']">
         <template #desc>
           Eighteen <ActTerm t="relation">relationship types</ActTerm> — which protein interacts with
           which, what a drug targets, what a disease is linked to.
         </template>
-        <ActBar v-if="data" :rows="data.relations" color="var(--chart-3)" />
+        <ActBar v-if="data" :rows="data.relations" :color="seriesVar('contrast')" />
         <template #note>
           <b>Protein–protein interactions dominate.</b> That is not an accident of this build — it is
           what the public evidence base actually looks like, and it is why most of the model's
@@ -236,7 +238,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-5" title="Where the data came from" :icon="Database"
+      <ActCard span="col-span-12 lg:col-span-5" title="Where the data came from" :icon="Dataset"
                :chips="[['live', 'live']]" :src="['graph_node_source_counts']">
         <template #desc>
           Six public reference <ActTerm t="ontology">vocabularies</ActTerm>. The grey bar is our own
@@ -254,7 +256,7 @@
       </ActCard>
 
       <ActCard span="col-span-12 lg:col-span-7" title="Provenance on every edge"
-               :icon="GitBranch" accent="var(--chart-3)"
+               :icon="MergeBranch"
                :chips="[['live', 'live']]" :src="['graph_ppi_provenance']">
         <template #desc>
           Every protein–protein interaction names the database that asserted
@@ -262,11 +264,11 @@
           two or more</template>.
         </template>
         <ActBar v-if="data" :rows="ppiRows" />
-        <div class="mt-2 flex gap-4 font-mono text-[10.5px] text-muted-foreground">
+        <div class="mt-2 flex gap-4 font-mono text-2xs text-muted-foreground">
           <span class="flex items-center gap-1.5">
-            <span class="inline-block size-2.5 rounded-sm" style="background:var(--chart-1)"></span>single source</span>
+            <span class="inline-block size-2.5 rounded-sm" :style="{ background: seriesVar('highlight') }"></span>single source</span>
           <span class="flex items-center gap-1.5">
-            <span class="inline-block size-2.5 rounded-sm" style="background:var(--chart-2)"></span>corroborated by 2+ <ActTerm t="interactome">interactomes</ActTerm></span>
+            <span class="inline-block size-2.5 rounded-sm" :style="{ background: seriesVar('measured') }"></span>corroborated by 2+ <ActTerm t="interactome">interactomes</ActTerm></span>
         </div>
         <template #note>
           <b><ActTerm t="provenance" /> is not accuracy.</b> It records where a fact came from and how
@@ -276,7 +278,7 @@
       </ActCard>
 
       <ActCard span="col-span-12 lg:col-span-6" title="What counts as “known”"
-               :icon="FileText" accent="var(--chart-4)"
+               :icon="FileText"
                :chips="[['live', 'live']]" :src="['graph_label_evidence']">
         <template #desc>
           Every gene–disease <ActTerm t="association" /> carries an
@@ -293,5 +295,7 @@
       </ActCard>
 
       </div>
+  </div>
+    </div>
   </div>
 </template>

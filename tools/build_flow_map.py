@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate docs/demo/FLOW_MAP.md from live DSS plus the repository's readers.
+"""Generate docs/operations/FLOW_MAP.md from live DSS plus the repository's readers.
 
 FLOW_MAP.md was marked "Generated / never edit by hand" for months without a
 generator existing -- it was produced by hand from live DSS and then drifted
@@ -26,7 +26,7 @@ import sys
 
 PROJECT = "DEMO_TARGET_IDENTIFICATION"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT = os.path.join(ROOT, "docs", "demo", "FLOW_MAP.md")
+OUT = os.path.join(ROOT, "docs", "operations", "FLOW_MAP.md")
 SNAPSHOT = os.path.join(ROOT, ".index", "dss_snapshot.json")
 # A quoted dataset name is a real read; a bare occurrence is usually prose.
 QUOTED = r'''["']{}["']'''

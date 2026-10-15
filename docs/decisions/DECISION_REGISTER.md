@@ -96,7 +96,7 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Status:** accepted
 - **Decision:** Organize validation and serving zones by the question they answer, not by the DSS tool used.
 - **Rationale:** Question-oriented zones support the objection-led demo and make evidence ownership visible.
-- **Evidence:** [`FLOW_MAP.md`](../demo/FLOW_MAP.md), [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md)
+- **Evidence:** [`FLOW_MAP.md`](../operations/FLOW_MAP.md), [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md)
 - **Consequences:** Tool changes do not require conceptual zone renames; generated topology remains the flow authority.
 - **Supersedes:** tool-oriented zone naming
 - **Superseded by:** —
@@ -356,7 +356,7 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Status:** accepted
 - **Decision:** Classify governed DSS builds deterministically against an explicitly accepted baseline; keep no-change and refresh-only events machine-readable, and request targeted review only for claim, contract or incident deltas.
 - **Rationale:** Sending every routine dataset or recipe operation through an agent repeats unchanged context, burns tokens and recreates documentation drift without adding review value.
-- **Evidence:** [`BUILD_GOVERNANCE.md`](../operations/BUILD_GOVERNANCE.md), [`DOC_RESTRUCTURE_PLAN.md` §8](../demo/DOC_RESTRUCTURE_PLAN.md)
+- **Evidence:** [`BUILD_GOVERNANCE.md`](../operations/BUILD_GOVERNANCE.md), [`DOC_RESTRUCTURE_PLAN.md` §8](../../archive/doc-restructure-2026-08-28/DOC_RESTRUCTURE_PLAN.md)
 - **Consequences:** Build events never write prose directly; live execution uses explicit target and evidence contracts, and scenario creation or a pilot build remains separately authorized.
 - **Supersedes:** per-operation agent review and turn-by-turn Markdown build logging
 - **Superseded by:** —
@@ -398,5 +398,18 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Evidence:** [`PHASE3_PREREGISTRATION.md` §2](../prioritizer/PHASE3_PREREGISTRATION.md) for the Class 1 / Class 2 split, `tools/recipe_classes.json` for the hand-recorded classification, `.index/recipes.tsv` (`gate` and `class` columns) for the live inventory, and `dss_recipes/visual/` for the mirrored visual formulas.
 - **Consequences:** A future seed change touches **ten** recipes and no variable. Nine are Class 1 (pure NULL-fill): `compute_enriched_disease_context_1`, `compute_enriched_dwpc_GCD`, `compute_enriched_dwpc_GGD`, `compute_enriched_dwpc_GPGD`, `compute_enriched_guilt_by_association_1`, `compute_enriched_module_size_1`, `compute_enriched_shared_pathway_count_1` (all `module_size >= 20`, Cypher via the visual-graph plugin), plus `compute_enriched_prox_closest` (`MIN_SEEDS 5; POOL_MIN 20`) and `compute_enriched_rwr_score_1` (`MIN_SEEDS 20`), both Python. The tenth, `compute_dwpc_go_metapaths` (`MIN_MODULE 20`), is Class 2 and **holds at 20**. Query the live list with `awk -F'\t' '$3!="-"' .index/recipes.tsv` rather than trusting this paragraph, which is a snapshot.
 - **Supersedes:** —
+- **Superseded by:** —
+- **Historical sources:** —
+
+## DEC-DEMO-003 — The webapp adopts the team framework and its product theme
+
+- **Date:** 2026-10-14
+- **Domain:** demo
+- **Status:** accepted
+- **Decision:** Realign the Target Prioritizer webapp with the team's current `bs-blueprint` framework through its own tooling (`adopt`, then `npm run check` as a ratchet), taking the `@dataiku/ea-ui-kit` product theme, kit primitives, DSS icons, the framework's app shell and its DSS deploy model. No brand-palette override is kept. Chart series that carry meaning keep it through an explicit series-to-slot mapping.
+- **Rationale:** The app was seeded from an early copy of the framework and kept that copy's local palette, primitives and icon set while the framework moved to the engineering team's kit, so it no longer looks like the team's other webapps. Keeping the brand palette as an override was the alternative; it is exactly the drift the framework's checks flag, and it would make every future framework update a manual merge.
+- **Evidence:** [`WEBAPP_DESIGN.md`](../demo/WEBAPP_DESIGN.md) §3.1 (the stack as built) and §3.5 (the rules, including the series-to-colour table); the phase-by-phase record, with the trial-run baseline and decisions D1–D4, is [`BLUEPRINT_ALIGNMENT_PLAN.md`](../../archive/BLUEPRINT_ALIGNMENT_PLAN.md) (archived when implemented).
+- **Consequences:** The app's look changes from the brand palette (mint primary, Spectral/Roboto) to the product theme (indigo primary, Source Sans Pro). Deployment drops the iframe, and act URLs move behind a hash. Webapp agent instructions must carry the framework's managed rules block through the harness. Implemented in eight phases, all committed and deployed on 2026-10-15; act content, claims and data contracts are unaffected (`DEC-DEMO-002` still holds).
+- **Supersedes:** the brand-palette theming described in `webapp/DEPLOYMENT.md` "Design system"
 - **Superseded by:** —
 - **Historical sources:** —

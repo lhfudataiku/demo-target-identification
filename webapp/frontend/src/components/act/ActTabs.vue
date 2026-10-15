@@ -1,20 +1,23 @@
 <script setup lang="ts">
-  /** Segmented control — v3's `.seg` tab switch (By disease / By family, All / Novel only). */
+  /** Segmented control (By disease / By family, All / Novel only), on the kit's ToggleGroup. */
+  import { ToggleGroup, ToggleGroupItem } from '@dataiku/ea-ui-kit'
+
   defineOptions({ name: 'ActTabs' })
   defineProps<{ modelValue: string; options: { value: string; label: string }[] }>()
-  defineEmits<{ (e: 'update:modelValue', v: string): void }>()
+  const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>()
+
+  // A single-choice ToggleGroup lets the user click the active item off, which
+  // emits an empty value. A segmented control always has one choice, so ignore it.
+  function select(v: unknown) {
+    if (typeof v === 'string' && v) emit('update:modelValue', v)
+  }
 </script>
 
 <template>
-  <div class="inline-flex rounded-lg border border-border bg-secondary/60 p-0.5">
-    <button
-      v-for="o in options" :key="o.value" type="button"
-      class="rounded-md px-3 py-1 text-[12px] transition-colors"
-      :class="o.value === modelValue
-        ? 'bg-card font-medium text-foreground shadow-sm'
-        : 'text-muted-foreground hover:text-foreground'"
-      :aria-selected="o.value === modelValue"
-      @click="$emit('update:modelValue', o.value)"
-    >{{ o.label }}</button>
-  </div>
+  <ToggleGroup type="single" variant="outline" size="sm" :model-value="modelValue"
+               @update:model-value="select">
+    <ToggleGroupItem v-for="o in options" :key="o.value" :value="o.value" class="px-3 text-xs">
+      {{ o.label }}
+    </ToggleGroupItem>
+  </ToggleGroup>
 </template>

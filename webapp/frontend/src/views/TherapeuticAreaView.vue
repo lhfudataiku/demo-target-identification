@@ -22,16 +22,18 @@
   import { apiUrl } from '@/utils/api'
   import ActCard from '@/components/act/ActCard.vue'
   import ActStat from '@/components/act/ActStat.vue'
-  import { EaSelect, EaEmpty } from '@/components/ui'
+  import { EmptyState, SelectField } from 'bs-blueprint'
   import ActTabs from '@/components/act/ActTabs.vue'
-  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@dataiku/ea-ui-kit'
   import ActTerm from '@/components/act/ActTerm.vue'
   import ActInfo from '@/components/act/ActInfo.vue'
   import ActIntervals from '@/components/act/ActIntervals.vue'
   import ActMatrix from '@/components/act/ActMatrix.vue'
   import ActBar from '@/components/act/ActBar.vue'
   import ActGeneGrid from '@/components/act/ActGeneGrid.vue'
-  import { Network, GitCompare, Ruler, Users, Grid3x3 } from 'lucide-vue-next'
+  import { ChartHeatmap, Flow, JoinInner, UserGroup, WarningOutline } from '@dataiku/vue-icons'
+  import { seriesVar } from '@/utils/seriesColours'
+  import { PageHeader } from 'bs-blueprint'
 
   defineOptions({ name: 'TherapeuticAreaView' })
 
@@ -90,7 +92,7 @@
       .map((t) => ({
         label: `${t.disease_name}  (n=${t.n_pos})`,
         count: Math.round((t.enrichment ?? 0) * 10) / 10,
-        colour: t.trustworthy ? 'var(--chart-3)' : 'var(--destructive)',
+        colour: t.trustworthy ? seriesVar('contrast') : seriesVar('negative'),
       })))
   // Genes shared by every pair in the family: the common programme.
   // The tab selects which overlap the matrix shows — it was bound but unused,
@@ -143,14 +145,14 @@
 </script>
 
 <template>
+  <div class="flex h-full flex-col">
+    <PageHeader title="Act 3 of 4 · The therapeutic area" />
+    <div class="min-h-0 flex-1 overflow-auto">
   <div class="flex flex-col gap-6 p-6">
     <header class="flex flex-col gap-1.5 border-b border-border pb-5">
-      <p class="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-        Act 3 of 4 · The therapeutic area
-      </p>
-      <h1 class="font-serif text-3xl font-semibold tracking-tight">
+      <h2 class="text-3xl font-semibold tracking-tight">
         Does it hold across my area, or just on one term?
-      </h1>
+      </h2>
       <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
         Most groups own one therapeutic area, so a single cherry-picked disease proves nothing. Pick
         a family and see the same model against every term in it — with the uncertainty each term
@@ -163,7 +165,7 @@
     </p>
 
     <div class="grid grid-cols-12 gap-4">
-      <ActCard span="col-span-12" :icon="Network" title="The family panel" :chips="[['live', 'live']]"
+      <ActCard span="col-span-12" :icon="Flow" title="The family panel" :chips="[['live', 'live']]"
                method-label="Why families, and why we split by them"
                :src="['family_panel']">
         <template #desc>
@@ -173,7 +175,7 @@
         <div class="flex flex-wrap items-end gap-4">
           <label class="flex min-w-80 flex-col gap-1 text-sm">
             <span class="text-muted-foreground">Disease family</span>
-            <EaSelect v-model="selectedStr" placeholder="— Select a family —"
+            <SelectField v-model="selectedStr" placeholder="— Select a family —"
                       :options="families.map((f) => ({ value: String(f.family_id),
                                  label: `${f.family_name} — ${f.n_terms} terms` }))" />
           </label>
@@ -205,7 +207,7 @@
                            :class="t.trustworthy ? '' : 'text-muted-foreground line-through'">
                   {{ t.auc.toFixed(4) }}
                 </TableCell>
-                <TableCell class="font-mono text-[11.5px] tabular-nums text-muted-foreground">
+                <TableCell class="font-mono text-2xs tabular-nums text-muted-foreground">
                   {{ t.lo95.toFixed(3) }}–{{ t.hi95.toFixed(3) }}
                 </TableCell>
                 <TableCell class="font-mono tabular-nums">{{ t.enrichment ?? '—' }}</TableCell>
@@ -245,7 +247,7 @@
         <ActIntervals v-if="detail"
                       :rows="orderedTerms.map((t) => ({ label: t.disease_name, value: t.auc,
                              lo: t.lo95, hi: t.hi95, n: t.n_pos, muted: !t.trustworthy }))" />
-        <EaEmpty v-else :icon="Network" title="No family selected"
+        <EmptyState v-else :icon="Flow" title="No family selected"
                  description="Pick a disease family to see every term in it." />
 
         <template #note>
@@ -265,7 +267,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12" :icon="Ruler" accent="var(--chart-4)"
+      <ActCard span="col-span-12" :icon="WarningOutline"
                title="When AUC stops working" :chips="[['live', 'live']]"
                method-label="How enrichment is computed"
                :src="['family_panel']">
@@ -276,12 +278,12 @@
         </template>
 
         <ActBar v-if="thin.length" :rows="thin" :row-height="22" />
-        <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
+        <p v-else class="py-4 text-center text-sm text-muted-foreground">
           Every term in this family has enough associated targets to score.
         </p>
-        <div v-if="thin.length" class="mt-2 flex gap-4 font-mono text-[10.5px] text-muted-foreground">
+        <div v-if="thin.length" class="mt-2 flex gap-4 font-mono text-2xs text-muted-foreground">
           <span class="flex items-center gap-1.5">
-            <span class="inline-block size-2.5 rounded-sm" style="background:var(--chart-3)"></span>
+            <span class="inline-block size-2.5 rounded-sm" :style="{ background: seriesVar('contrast') }"></span>
             AUC is trustworthy for this term
           </span>
           <span class="flex items-center gap-1.5">
@@ -307,7 +309,7 @@
 
       
 
-      <ActCard span="col-span-12 lg:col-span-7" :icon="GitCompare" accent="var(--chart-3)"
+      <ActCard span="col-span-12 lg:col-span-7" :icon="JoinInner"
                title="Subtype overlap" :chips="[['live', 'live']]"
                method-label="What the top 50 is"
                :src="['family_panel_overlap']">
@@ -319,14 +321,14 @@
                  :options="[{ value: 'all', label: 'All top-50 genes' },
                             { value: 'novel', label: 'Novel only' }]" />
         <p v-if="detail && detail.coverage.with_data < detail.coverage.total"
-           class="mb-3 text-[12.5px] text-muted-foreground">
+           class="mb-3 text-xs text-muted-foreground">
           Showing the <b>{{ detail.coverage.with_data }}</b> of {{ detail.coverage.total }} terms that
           carry ranked candidates — the rest are not scored into a top-50 list, so they cannot appear.
         </p>
         <ActMatrix v-if="overlapPairs.length" :labels="overlapLabels" :pairs="overlapPairs" />
-        <EaEmpty v-else :icon="GitCompare" title="No overlap computed"
+        <EmptyState v-else :icon="JoinInner" title="No overlap computed"
                  description="Pairwise top-50 overlap has not been computed for this family." />
-        <p v-if="overlapPairs.length" class="mt-2 font-mono text-[10.5px] text-muted-foreground">
+        <p v-if="overlapPairs.length" class="mt-2 font-mono text-2xs text-muted-foreground">
           each cell = shared genes out of 50 · higher is more similar
         </p>
 
@@ -348,7 +350,7 @@
 
       
 
-      <ActCard span="col-span-12 lg:col-span-6" :icon="Users" accent="var(--chart-2)"
+      <ActCard span="col-span-12 lg:col-span-6" :icon="UserGroup"
                title="Shared vs. subtype-specific"
                method-label="Why only the curated leaf terms">
         <template #desc>
@@ -361,34 +363,34 @@
         <template v-if="detail?.programme?.leaves?.length">
           <!-- The shared core first: it is the answer the title promises. -->
           <div class="flex flex-col gap-1.5">
-            <p class="font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+            <p class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">
               shared by all {{ detail.programme.leaves.length }} subtypes ·
               {{ detail.programme.n_common }} of 50
             </p>
             <div class="flex flex-wrap gap-1">
               <span v-for="g in detail.programme.common" :key="g"
                     class="rounded border border-border bg-muted/40 px-1.5 py-0.5
-                           font-mono text-[11px] text-muted-foreground">{{ g }}</span>
+                           font-mono text-2xs text-muted-foreground">{{ g }}</span>
             </div>
           </div>
 
           <div class="mt-4 flex flex-col gap-2.5">
-            <p class="font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+            <p class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">
               in exactly one subtype's top 50
             </p>
             <div v-for="lf in detail.programme.leaves" :key="lf" class="flex flex-col gap-1">
-              <span class="text-[12.5px] font-medium">
+              <span class="text-xs font-medium">
                 {{ lf }}
-                <span class="font-mono text-[10.5px] text-muted-foreground">
+                <span class="font-mono text-2xs text-muted-foreground">
                   {{ (detail.programme.specific[lf] ?? []).length }} own
                 </span>
               </span>
               <div class="flex flex-wrap gap-1">
                 <span v-for="g in (detail.programme.specific[lf] ?? []).slice(0, 14)" :key="g"
                       class="rounded border border-primary/40 bg-primary/10 px-1.5 py-0.5
-                             font-mono text-[11px] text-primary-foreground">{{ g }}</span>
+                             font-mono text-2xs text-primary">{{ g }}</span>
                 <span v-if="(detail.programme.specific[lf] ?? []).length > 14"
-                      class="px-1 font-mono text-[10.5px] text-muted-foreground">
+                      class="px-1 font-mono text-2xs text-muted-foreground">
                   +{{ (detail.programme.specific[lf] ?? []).length - 14 }} more
                 </span>
               </div>
@@ -396,7 +398,7 @@
           </div>
 
         </template>
-        <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
+        <p v-else class="py-4 text-center text-sm text-muted-foreground">
           No leaf subtypes configured for this family.
         </p>
 
@@ -415,7 +417,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12" :icon="Grid3x3" accent="var(--chart-3)"
+      <ActCard span="col-span-12" :icon="ChartHeatmap"
                title="Gene coverage across the family"
                :chips="[['live', 'live']]" method-label="How to read the grid"
                :src="['family_panel_top50']">
@@ -425,11 +427,11 @@
         </template>
         <ActGeneGrid v-if="gridGenes.length" :genes="gridGenes" :columns="overlapLabels"
                      :shared-at="Math.min(3, overlapLabels.length)" />
-        <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
+        <p v-else class="py-4 text-center text-sm text-muted-foreground">
           No top-50 membership computed for this family.
         </p>
         <p v-if="gridTotal > gridGenes.length"
-           class="mt-2 font-mono text-[10.5px] text-muted-foreground">
+           class="mt-2 font-mono text-2xs text-muted-foreground">
           showing the {{ gridGenes.length }} most widely shared of {{ gridTotal }} genes
         </p>
 
@@ -447,5 +449,7 @@
       </ActCard>
 
       </div>
+  </div>
+    </div>
   </div>
 </template>

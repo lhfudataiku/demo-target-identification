@@ -33,29 +33,3 @@ CORS_ORIGINS: list[str] = [
     ).split(",")
     if o.strip()
 ]
-
-
-# ── Optional building blocks ───────────────────────────────────────────────────
-# Flags are UNPREFIXED so they survive a rename (which only rewrites
-# APP_PREFIX/LIB_NS lines).  We use a strict parser instead of the bare
-# bool(os.environ.get(...)) idiom because that treats "0" and "false" as
-# truthy — a footgun when operators explicitly turn something off.
-
-def _flag(name: str) -> bool:
-    """Return True only for explicit "on" values; "0"/"false" → False."""
-    return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "on"}
-
-
-ENABLE_DOCUMENTS: bool = _flag("ENABLE_DOCUMENTS")
-ENABLE_CHATBOT: bool = _flag("ENABLE_CHATBOT")
-
-# Sub-option of DOCUMENTS: LLM auto-describe (pulls langchain-core + pymupdf).
-# Kept separate so a team can enable document storage without the heavy deps.
-ENABLE_DESCRIBE: bool = _flag("ENABLE_DESCRIBE")
-
-# ── Self-contained blocks (no DSS / no persistence required) ──────────────────
-# These render with zero configuration and are safe to leave on by default.
-# NB: ENABLE_CHARTS is a frontend-only flag (charts use mock data, no backend
-# route), so it is read by the Vite build, not here.
-ENABLE_WIZARD: bool = _flag("ENABLE_WIZARD")
-ENABLE_FLOW: bool = _flag("ENABLE_FLOW")

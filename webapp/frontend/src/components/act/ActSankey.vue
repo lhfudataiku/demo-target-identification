@@ -7,6 +7,7 @@
   import { TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
   import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
+  import { categoricalColors, resolveColour } from '@/utils/seriesColours'
 
   use([SankeyChart, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActSankey' })
@@ -23,9 +24,7 @@
   const ready = ref(false)
   onMounted(() => nextTick(() => (ready.value = true)))
 
-  const PALETTE = ['--chart-1', '--chart-2', '--chart-3', '--chart-4', '--chart-5']
-  const colors = computed(() =>
-    PALETTE.map((v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim()))
+  const colors = computed(() => categoricalColors())
 
   const chartOption = computed((): EChartsOption => ({
     animationDuration: 900,
@@ -52,15 +51,13 @@
       data: props.nodes.map((n, i) => ({
         name: n.name,
         itemStyle: {
-          color: n.color
-            ? getComputedStyle(document.documentElement).getPropertyValue(n.color).trim() || n.color
-            : colors.value[i % colors.value.length],
+          color: n.color ? resolveColour(n.color) : colors.value[i % colors.value.length],
           borderWidth: 0,
         },
       })),
       links: props.links,
       lineStyle: { color: 'gradient', opacity: 0.34, curveness: 0.5 },
-      label: { fontFamily: 'DM Mono, monospace', fontSize: 10, color: 'var(--foreground)' },
+      label: { fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 10, color: resolveColour('var(--foreground)') },
     }],
   }))
 </script>

@@ -29,8 +29,8 @@
 
 <template>
   <span
-    class="ml-1 inline-grid size-[13px] cursor-help place-items-center rounded-full border
-           border-current align-[1px] font-sans text-[9px] leading-none opacity-45
+    class="ml-1 inline-grid size-3.25 cursor-help place-items-center rounded-full border
+           border-current relative -top-px font-sans text-2xs leading-none opacity-45
            transition-opacity hover:opacity-100 focus:opacity-100"
     tabindex="0" role="note" :aria-label="text"
     @mouseenter="show" @focus="show" @mouseleave="open = false" @blur="open = false"
@@ -39,8 +39,8 @@
   <Teleport to="body">
     <span
       v-if="open"
-      class="pointer-events-none fixed z-[9999] max-w-[280px] -translate-x-1/2 rounded-md border
-             border-border bg-popover px-2.5 py-1.5 text-[12px] font-normal normal-case leading-snug
+      class="pointer-events-none fixed z-50 max-w-70 -translate-x-1/2 rounded-md border
+             border-border bg-popover px-2.5 py-1.5 text-xs font-normal normal-case leading-snug
              tracking-normal text-popover-foreground shadow-lg"
       :style="{ left: x + 'px', top: y + 'px' }"
       role="tooltip"
