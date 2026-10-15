@@ -8,9 +8,10 @@
 > [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md), [`../../webapp/README.md`](../../webapp/README.md) and
 > [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented and verified.
 
-**Status: IN PROGRESS — Phase 0 implemented 2026-10-15, not yet committed.** All four decisions in §8 were
+**Status: IN PROGRESS — Phase 0 committed 2026-10-15; Phase 1 implemented 2026-10-15, not yet committed.** All four decisions in §8 were
 taken on the recommendations, and the direction is recorded as
-[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 1–8 have not started. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
+[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 2–8 have not started. **Deploys are paused
+from Phase 1 until Phase 2 lands** (see Phase 1). The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
 a phase, commit, push, DSS deployment and any live DSS change remain separate actions, each requiring
 its own approval.
 
@@ -133,7 +134,8 @@ primitives" and "use Lucide components". Phase 1 must:
 ### 4.5 Version pinning and tooling
 
 - The framework has no release tags. `adopt` writes the unpinned `github:dataiku/bs-blueprint`, so pin
-  the adopted commit (`#37e3823`) until a tag exists.
+  the adopted commit until a tag exists. Phase 1 pinned `8d7741c`, three commits after the trial's
+  `37e3823`; those three commits change only the framework's example app, not the package.
 - The lint toolchain supports Node `^20.19`, `^22.13` or `>=24`. Node 23 works but warns, so use the
   current LTS.
 - New tracked `.json` and `.js` files mean regenerating the code index (`tools/build_recipe_index.py`).
@@ -157,7 +159,7 @@ Delete the wizard, charts, tickets, flow, documents and chatbot blocks: their vi
 stores, mock data, backend routes and `ENABLE_*` flags. **Accept:** the four acts, Settings and Admin
 behave as before, and the typecheck passes. This removes 12 of the 27 Lucide files before migration starts.
 
-> **Implemented 2026-10-15, awaiting commit approval.** Beyond the six blocks, the phase also removed
+> **Implemented and committed 2026-10-15.** Beyond the six blocks, the phase also removed
 > two pieces of unrouted template scaffolding (the Agents registry and the Example dataset preview,
 > with their always-on `/api/agents` and `/api/example` routes), the chatbot's tool-permission section
 > in Settings, and the packages only the blocks used (`@vue-flow/core`, `marked`, `sse-starlette`,
@@ -176,6 +178,27 @@ Run `adopt` from `webapp/frontend/`, pin the commit, add the Vite wiring (`dkuWe
 commit `eslint-suppressions.json` and `bs-blueprint.baseline.json`. **Accept:** `check: ok`, the
 harness check in `tools/check_indexes.sh` passes, and the app looks unchanged, because `tokens.css`
 still overrides the kit.
+
+> **Implemented 2026-10-15, awaiting commit approval.** `npm run check` prints `check: ok` (0
+> blocking, 7 baselined); the typecheck and build pass. What differed from the plan:
+>
+> - **Deploys are paused until Phase 2.** `dkuWebapp()` runs on every build and always reduces
+>   `dist/index.html` to body markup, which the current iframe deploy cannot serve: it would publish a
+>   blank app. `deploy.sh` therefore refuses any build carrying `dist/dss-main.js`, with a message
+>   naming Phase 2. Phase 2 removes the guard when it replaces the deploy.
+> - **The rules block reaches Claude Code too.** `adopt` writes the block into `webapp/AGENTS.md`
+>   only. `tools/sync_harness.py` now reads it back from there and appends it to both generated webapp
+>   entry files, so a harness sync keeps it and Claude Code (which reads `CLAUDE.md`) sees it. The
+>   overlay's `Ea*`, Lucide and `tokens.css` guidance is rewritten to agree with the block.
+> - **The hook is installed twice.** The doctor requires it in `webapp/.claude/settings.json`, but
+>   Claude Code loads project settings only from the session root, so the repository's root
+>   `.claude/settings.json` carries the same hook, pointed at `webapp/frontend`. Worth raising upstream.
+> - **Managed documents.** `webapp/frontend/DESIGN.md` and `webapp/frontend/docs/design-migration.md`
+>   are registered in `tools/index_manifest.json` as excluded from claims. `tools/check_links.py`
+>   skips only their mention check: they name files in the framework's repository and design-token
+>   references that look like Markdown file names, and `npx bs-blueprint sync` would overwrite any local correction.
+> - The new UI rules point agents at the framework's `apiUrl()`, which resolves backend URLs only in
+>   the Phase 2 deploy model; with deploys paused, nothing using it can reach DSS before then.
 
 ### Phase 2 — deployment model *(D4; the only live step)*
 

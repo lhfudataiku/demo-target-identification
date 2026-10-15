@@ -1,5 +1,4 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import './styles/kit.css';
 
 /* Design tokens (CSS variables for colors, sidebar, radius, charts, dark
    mode). This is the app's own visual identity — see styles/tokens.css. */

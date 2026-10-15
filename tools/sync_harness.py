@@ -11,6 +11,26 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HEADER = "<!-- GENERATED FILE: edit the canonical harness source, then run python3 tools/sync_harness.py --write. -->\n\n"
 
+# bs-blueprint owns a managed block of UI rules in webapp/AGENTS.md (`npx bs-blueprint sync` rewrites
+# it, and its doctor checks it). A plain regeneration from harness/ would delete it, so the block is
+# read back from webapp/AGENTS.md and carried into both webapp entry files: Codex reads AGENTS.md,
+# Claude Code reads CLAUDE.md, and both need the rules.
+BLOCK_BEGIN = "<!-- bs-blueprint:begin -->"
+BLOCK_END = "<!-- bs-blueprint:end -->"
+BLOCK_SOURCE = ROOT / "webapp/AGENTS.md"
+BLOCK_TARGETS = {ROOT / "webapp/AGENTS.md", ROOT / "webapp/CLAUDE.md"}
+
+
+def managed_block() -> str:
+    """Return the bs-blueprint block currently in webapp/AGENTS.md, or "" when absent."""
+    if not BLOCK_SOURCE.is_file():
+        return ""
+    text = BLOCK_SOURCE.read_text()
+    start, end = text.find(BLOCK_BEGIN), text.find(BLOCK_END)
+    if start < 0 or end < start:
+        return ""
+    return text[start:end + len(BLOCK_END)]
+
 
 def generated(source: Path) -> str:
     return HEADER + source.read_text()
@@ -29,24 +49,29 @@ def mappings() -> list[tuple[Path, Path, bool]]:
     ]
 
 
-def expected(source: Path, include_header: bool) -> str:
-    return generated(source) if include_header else source.read_text()
+def expected(source: Path, target: Path, include_header: bool, block: str) -> str:
+    text = generated(source) if include_header else source.read_text()
+    if block and target in BLOCK_TARGETS:
+        text = text.rstrip("\n") + "\n\n" + block + "\n"
+    return text
 
 
 def write() -> int:
+    block = managed_block()  # read before webapp/AGENTS.md is overwritten
     for source, target, include_header in mappings():
         target.parent.mkdir(parents=True, exist_ok=True)
         if target.is_symlink():
             target.unlink()
-        target.write_text(expected(source, include_header))
+        target.write_text(expected(source, target, include_header, block))
         print(f"wrote {target.relative_to(ROOT)}")
     return 0
 
 
 def check() -> int:
     stale = []
+    block = managed_block()
     for source, target, include_header in mappings():
-        if not target.is_file() or target.read_text() != expected(source, include_header):
+        if not target.is_file() or target.read_text() != expected(source, target, include_header, block):
             stale.append(target.relative_to(ROOT).as_posix())
     if stale:
         print("stale harness copies: " + ", ".join(stale), file=sys.stderr)

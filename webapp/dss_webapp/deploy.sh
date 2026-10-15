@@ -54,6 +54,18 @@ if [ ! -d "$FRONTEND_DIST" ]; then
     exit 1
 fi
 
+# The frontend now builds with @dataiku/vite-plugin-dku-webapp, which reduces
+# dist/index.html to body markup. This script still deploys the iframe model
+# (html.html + js.js load the backend's index.html), which would show a blank
+# page. Refuse until Phase 2 of docs/demo/BLUEPRINT_ALIGNMENT_PLAN.md moves the
+# deploy to the plugin model, then remove this guard.
+if [ -f "$FRONTEND_DIST/dss-main.js" ]; then
+    echo "✗ This build targets the dkuWebapp deploy model, but deploy.sh still uses"
+    echo "  the iframe model and would publish a blank app. Deploys are paused until"
+    echo "  Phase 2 of docs/demo/BLUEPRINT_ALIGNMENT_PLAN.md lands."
+    exit 1
+fi
+
 # ── Ensure code env has the packages the app needs ────────────────────────────
 # Adds only what's missing — never removes packages the operator added manually.
 # Rebuilds the env (blocking) only when the spec changes, so normal deploys

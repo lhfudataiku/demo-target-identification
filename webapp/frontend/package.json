@@ -6,15 +6,19 @@
     "dev": "vite",
     "build": "vite build",
     "typecheck": "vue-tsc -b",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check": "bs-blueprint check"
   },
   "dependencies": {
+    "@dataiku/ea-ui-kit": "^0.0.8",
+    "@dataiku/vue-icons": "^2.0.0",
+    "bs-blueprint": "github:dataiku/bs-blueprint#8d7741ce72c43120502647c17c3d48f53737c64a",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "echarts": "^5.6.0",
     "lucide-vue-next": "^0.469.0",
     "pinia": "^3.0.0",
-    "reka-ui": "^2.6.1",
+    "reka-ui": "^2.11.0",
     "tailwind-merge": "^2.6.0",
     "tw-animate-css": "^1.2.5",
     "vue": "^3.5.0",
@@ -22,13 +26,17 @@
     "vue-router": "^4.4.0"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.6",
+    "@dataiku/vite-plugin-dku-webapp": "^1.0.2",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^22.0.0",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/tsconfig": "^0.7.0",
-    "tailwindcss": "^4.1.6",
-    "typescript": "~5.7.2",
+    "tailwindcss": "^4.1.17",
+    "typescript": "^5.9.3",
     "vite": "^6.3.5",
-    "vue-tsc": "^2.2.8"
+    "vue-tsc": "^3.3.13"
+  },
+  "overrides": {
+    "@internationalized/date": "3.12.0"
   }
 }

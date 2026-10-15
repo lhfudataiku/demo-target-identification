@@ -1,0 +1,8 @@
+/* Design system wiring, installed by `bs-blueprint init`. Import this file from src/style.css.
+   1. The @dataiku/ea-ui-kit theme (it imports Tailwind, tw-animate-css and the typography plugin).
+   2. Tailwind must scan the two source-distributed packages so their classes are generated.
+   3. The bs-blueprint extras: tokens the kit theme lacks (success, warning, text-2xs). */
+@import '@dataiku/ea-ui-kit/style/rfx.css';
+@source '../../node_modules/@dataiku/ea-ui-kit/src/components';
+@source '../../node_modules/bs-blueprint/src';
+@import './kit-extras.css';

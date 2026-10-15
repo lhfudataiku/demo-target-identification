@@ -9,6 +9,12 @@
 
 > **`git push` does not deploy the webapp. `make deploy` does.**
 
+> **Deploys are paused (since 2026-10-15).** The frontend now builds for the bs-blueprint deploy
+> model, which this document and `deploy.sh` do not implement yet, so `deploy.sh` refuses the build
+> rather than publish a blank app. Phase 2 of
+> [`BLUEPRINT_ALIGNMENT_PLAN.md`](../docs/demo/BLUEPRINT_ALIGNMENT_PLAN.md) replaces the deploy and
+> this procedure.
+
 Git is version control. Deployment is a separate, explicit step. They both put files
 on the DSS instance, in different places, and only one of those places is executed.
 

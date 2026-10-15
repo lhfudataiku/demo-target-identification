@@ -33,5 +33,18 @@
       "Bash(dku ml settings:*)",
       "Bash(dku recipe get-settings:*)"
     ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR/webapp/frontend\" && npx bs-blueprint hook"
+          }
+        ]
+      }
+    ]
   }
 }
