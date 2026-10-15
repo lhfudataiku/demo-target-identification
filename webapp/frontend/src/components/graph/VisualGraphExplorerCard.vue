@@ -2,7 +2,7 @@
   import { computed, ref, watch } from 'vue'
   import { ArrowExternalLink, Checkmark, Copy, Flow } from '@dataiku/vue-icons'
   import ActCard from '@/components/act/ActCard.vue'
-  import { EaButton } from '@/components/ui'
+  import { Button } from '@dataiku/ea-ui-kit'
   import { copyVisualGraphCypher, visualGraphExplorerUrl } from '@/utils/visualGraphExplorer'
 
   defineOptions({ name: 'VisualGraphExplorerCard' })
@@ -117,18 +117,18 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <EaButton v-if="hasQuery" variant="outline" size="sm" @click="copyOnly">
+        <Button v-if="hasQuery" variant="outline" size="sm" @click="copyOnly">
           <Checkmark v-if="copied" class="size-3.5" />
           <Copy v-else class="size-3.5" />
           {{ copied ? 'Copied' : 'Copy query' }}
-        </EaButton>
-        <EaButton v-if="explorerUrl" size="sm" :href="explorerUrl" target="_blank" rel="noopener noreferrer">
+        </Button>
+        <Button v-if="explorerUrl" as="a" size="sm" :href="explorerUrl" target="_blank" rel="noopener noreferrer">
           <ArrowExternalLink class="size-3.5" /> Open full Explorer
           <span class="sr-only">(opens in a new tab)</span>
-        </EaButton>
-        <EaButton v-else size="sm" disabled>
+        </Button>
+        <Button v-else size="sm" disabled>
           <ArrowExternalLink class="size-3.5" /> Open full Explorer
-        </EaButton>
+        </Button>
         <span v-if="copyFailed" role="status" class="text-xs text-destructive">
           Copy was not available. Select the query above and copy it manually.
         </span>

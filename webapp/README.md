@@ -10,7 +10,7 @@ If you know Python and data but have never shipped a web frontend, this gets you
 the plumbing — local dev, DSS deployment, sidebar, settings, data access — is already wired up.
 You fill in your domain logic.
 
-**Stack:** Vue 3 (frontend) · FastAPI (backend) · Tailwind + vendored Dataiku design tokens · `reka-ui` (headless UI primitives) · `uv` / `npm` (package managers).
+**Stack:** Vue 3 (frontend) · FastAPI (backend) · Tailwind + the team's design system (`@dataiku/ea-ui-kit` and `bs-blueprint`) · `uv` / `npm` (package managers).
 
 ---
 
@@ -173,7 +173,7 @@ my-app/
 │   └── css.css          ← body { margin: 0 } — hides the outer page chrome
 │
 └── frontend/            ← TypeScript/Vue. Runs in the user's browser.
-    ├── package.json     ← Node dependencies (Vue, Vite, Tailwind, reka-ui…)
+    ├── package.json     ← Node dependencies (Vue, Vite, Tailwind, the kit, bs-blueprint…)
     ├── vite.config.ts   ← Build tool config: /api proxy, base path, single-bundle output
     ├── tsconfig*.json   ← TypeScript config
     └── src/
@@ -185,7 +185,6 @@ my-app/
         ├── config.ts        ← App name + icon — the two things to change when you copy this
         ├── utils/api.ts     ← re-exports apiUrl() from bs-blueprint (see below)
         ├── router/index.ts  ← All pages live here; sidebar builds itself from route metadata
-        ├── components/ui/   ← Local Ea* primitives (EaButton, EaSelect, EaEmpty…)
         ├── components/layout/AppSidebar.vue ← Local sidebar, built from route metadata
         ├── composables/useAppMenu.ts ← Turns route metadata into sidebar menu items
         ├── layouts/
@@ -211,11 +210,9 @@ framework — roughly similar to React or Angular if you've heard of those.
 backed by the **`@dataiku/ea-ui-kit` theme** (imported through `src/styles/kit.css`), so
 utilities like `bg-primary` and `text-muted-foreground` make the app look like a Dataiku
 product. Chart colours come from `src/utils/seriesColours.ts`, which maps each meaning to a
-kit token. Form
-controls and empty states are small local components in `src/components/ui/` (`EaSelect`,
-`EaButton`, `EaEmpty`, `SettingsSwitchItem`) — token-styled wrappers, mostly built on
-[`reka-ui`](https://reka-ui.com) headless primitives. There is no external component-library
-dependency to track or update.
+kit token. Form controls, tables and buttons are the kit's own parts (`Button`, `Input`,
+`Checkbox`, `NativeSelect`, `Table*`), and the few composites the kit lacks come from
+bs-blueprint (`SelectField`, `EmptyState`, `SettingsSwitchItem`). The app copies none of them.
 
 **Routing** — the sidebar is not manually built. Add a page like this in `router/index.ts`:
 
@@ -510,7 +507,7 @@ across all users of the webapp).
 | **Pinia** | Vue's state management library — a store is a reactive object shared across components |
 | **Tailwind CSS** | Utility-class CSS library: instead of writing `.my-button { color: red }`, you write `class="text-red-500"` directly in HTML |
 | **Design tokens** | CSS variables defined by the `@dataiku/ea-ui-kit` theme and exposed as Tailwind utilities, so `bg-primary` etc. look like a Dataiku product |
-| **reka-ui** | Headless (unstyled) Vue UI primitives used to build the local `Ea*` components in `src/components/ui/` |
+| **reka-ui** | Headless (unstyled) Vue UI primitives that the kit's components are built on |
 | **FastAPI** | Python web framework: you decorate functions with `@router.get("/path")` and they become API endpoints |
 | **`uv`** | Python package manager; `uv sync` reads `pyproject.toml` and creates a virtualenv with the right deps |
 | **`npm`** | Node package manager (ships with Node.js); `npm install` reads `package.json` |
@@ -566,7 +563,7 @@ This blueprint makes several non-obvious choices. They are **deliberate**, docum
 ## Tech notes
 
 - **Python ≥3.11** — recommended for the code env. The backend uses `from __future__ import annotations` as a 3.9 compatibility shim, but type errors can still surface on very old envs.
-- **Design tokens / UI** — the look comes from the team's design system (`@dataiku/ea-ui-kit` through bs-blueprint); the app owns no palette. Local `Ea*` components in `frontend/src/components/ui/` remain until the plan's Phase 5 replaces them with kit parts.
+- **Design tokens / UI** — the look comes from the team's design system (`@dataiku/ea-ui-kit` through bs-blueprint); the app owns no palette. Components come from the kit, and the few composites it lacks from bs-blueprint; the app keeps no local copies.
 - **Settings storage key** — `<prefix>_app_settings` in the project's *standard* variables namespace. Two webapps in the same project with different `APP_PREFIX` values won't collide.
 - **No writable local filesystem in DSS** — the plugin install directory is read-only. Use **Managed Folders** for user-uploaded files and **project variables** for configuration.
 - **WebSockets** — DSS's WSGI layer doesn't support WebSocket upgrades. If you need push updates, use Server-Sent Events (SSE) instead (FastAPI's `sse-starlette` package, already in `pyproject.toml`).

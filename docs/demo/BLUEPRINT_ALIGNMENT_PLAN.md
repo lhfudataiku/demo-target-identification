@@ -8,9 +8,9 @@
 > [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md), [`../../webapp/README.md`](../../webapp/README.md) and
 > [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented and verified.
 
-**Status: IN PROGRESS — Phases 0–3 committed and deployed 2026-10-15; Phase 4 implemented locally, not yet committed or deployed.** All four decisions in §8 were
+**Status: IN PROGRESS — Phases 0–4 committed and deployed 2026-10-15; Phase 5 implemented locally, not yet committed or deployed.** All four decisions in §8 were
 taken on the recommendations, and the direction is recorded as
-[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 5–8 have not started. The deploy pause that Phase 1 introduced ended with Phase 2. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
+[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 6–8 have not started. The deploy pause that Phase 1 introduced ended with Phase 2. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
 a phase, commit, push, DSS deployment and any live DSS change remain separate actions, each requiring
 its own approval.
 
@@ -284,7 +284,7 @@ Switch the remaining Lucide imports to `@dataiku/vue-icons`, using the framework
 choose the hand-picked glyphs, recording each choice in the commit message. Uninstall `lucide-vue-next`.
 **Accept:** the doctor no longer reports icon drift.
 
-> **Implemented 2026-10-15, awaiting commit approval.** Twelve files moved to `@dataiku/vue-icons`:
+> **Implemented, committed and deployed 2026-10-15.** Twelve files moved to `@dataiku/vue-icons`:
 > 10 glyphs kept their name, 9 took the framework's renames (for example `Database` → `Dataset`,
 > `Network` → `Flow`, `Loader2` → `Spinner`), and the 14 with no counterpart took these picks,
 > agreed with the user:
@@ -315,6 +315,28 @@ choose the hand-picked glyphs, recording each choice in the commit message. Unin
 Replace `EaButton`, `EaSelect`, `EaEmpty`, `SettingsSwitchItem`, and the `table/` and `scroll-area/`
 sets with kit parts or framework composites, then delete `src/components/ui`. **Accept:** the
 Shortlist table keeps sorting, search and filters, and `ui-dir` drift is gone.
+
+> **Implemented 2026-10-15, awaiting commit approval.** `src/components/ui` (15 files) is deleted and
+> the doctor's primitives finding closed. Replacements: `EaSelect` → `SelectField`, `EaEmpty` →
+> `EmptyState` and `SettingsSwitchItem` → the bs-blueprint ones (identical props); `EaButton` and the
+> local `Table*` parts → the kit's (the Explorer link renders through `Button as="a"`). Following the
+> framework's recipe, hand-styled controls moved too: Act 4's checkboxes, rank box, gene search,
+> tractability and class selects and paging buttons, the glossary search and close button, and the
+> hand-built presenter switch in Settings (now `SettingsSwitchItem`). The unused `cn()` helper and the
+> direct `clsx`, `class-variance-authority` and `tailwind-merge` dependencies went with them (the kit
+> declares its own).
+>
+> - **One behaviour change, deliberate:** the kit's `Input` emits strings, so the rank box now keeps
+>   the last valid cut-off while it is empty instead of querying with `max_rank=''`.
+> - **Verified locally:** every Act 4 population filter re-queries and extends the funnel; search,
+>   tractability, class and the liability strike-through narrow or mark the view without changing
+>   the population; paging and the disease picker work and reset to page 1; the Act 3 family
+>   picker, the glossary search and close, the Explorer link (`<a target="_blank">`, checked with a
+>   DSS origin set), the presenter switch and the Admin switch all behave as before.
+> - **Left for Phase 7:** three custom interactive pieces still use raw buttons — the Explorer card's
+>   starter-query chips, the card's "how this is computed" toggle, and `ActTabs`.
+> - **Noticed, not changed:** Act 4's disease info text says "One of the 13 diseases" while the
+>   picker lists the 12 the API returns.
 
 ### Phase 6 — shell
 

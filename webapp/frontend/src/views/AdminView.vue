@@ -6,7 +6,7 @@
  * preference, not authorization: DSS project permissions control who can use
  * the app. Add real RBAC if hidden sections must be enforced server-side.
  */
-import { SettingsSwitchItem } from '@/components/ui'
+import { SettingsSwitchItem } from 'bs-blueprint'
 import { useAdminStore } from '@/stores/admin'
 
 defineOptions({ name: 'AdminView' })

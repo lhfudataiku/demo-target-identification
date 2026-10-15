@@ -10,7 +10,7 @@
    */
   import { onMounted, computed, ref } from 'vue'
   import { Spinner } from '@dataiku/vue-icons'
-  import { EaSelect } from '@/components/ui'
+  import { SelectField, SettingsSwitchItem } from 'bs-blueprint'
   import { useSettingsStore } from '@/stores/settings'
   import { usePresenterStore } from '@/stores/presenter'
 
@@ -66,7 +66,7 @@
         <div class="px-5 py-4 space-y-2">
           <label class="text-xs font-medium text-muted-foreground">LLM</label>
           <div class="flex items-center gap-2">
-            <EaSelect
+            <SelectField
               class="flex-1 min-w-0"
               placeholder="— Select an LLM —"
               :model-value="store.settings.llm_id ?? undefined"
@@ -102,30 +102,12 @@
           </p>
         </div>
         <div class="px-5 py-4">
-          <div class="flex items-center justify-between py-1">
-            <div class="pr-6">
-              <p class="text-sm font-medium">Presenter notes</p>
-              <p class="text-xs text-muted-foreground">
-                Show the lines written for whoever is demoing — the caveat to volunteer, the number
-                not to quote. Turn this off before sharing your screen with a client.
-              </p>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              :aria-checked="presenter.showNotes"
-              aria-label="Show presenter notes"
-              class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors
-                     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
-              :class="presenter.showNotes ? 'bg-primary' : 'bg-muted'"
-              @click="presenter.showNotes = !presenter.showNotes"
-            >
-              <span
-                class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
-                :class="presenter.showNotes ? 'translate-x-4' : 'translate-x-0.5'"
-              />
-            </button>
-          </div>
+          <SettingsSwitchItem
+            id="presenter-notes"
+            v-model="presenter.showNotes"
+            label="Presenter notes"
+            description="Show the lines written for whoever is demoing — the caveat to volunteer, the number not to quote. Turn this off before sharing your screen with a client."
+          />
         </div>
       </section>
 

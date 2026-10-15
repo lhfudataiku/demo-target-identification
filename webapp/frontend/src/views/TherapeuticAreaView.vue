@@ -22,9 +22,9 @@
   import { apiUrl } from '@/utils/api'
   import ActCard from '@/components/act/ActCard.vue'
   import ActStat from '@/components/act/ActStat.vue'
-  import { EaSelect, EaEmpty } from '@/components/ui'
+  import { EmptyState, SelectField } from 'bs-blueprint'
   import ActTabs from '@/components/act/ActTabs.vue'
-  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@dataiku/ea-ui-kit'
   import ActTerm from '@/components/act/ActTerm.vue'
   import ActInfo from '@/components/act/ActInfo.vue'
   import ActIntervals from '@/components/act/ActIntervals.vue'
@@ -174,7 +174,7 @@
         <div class="flex flex-wrap items-end gap-4">
           <label class="flex min-w-80 flex-col gap-1 text-sm">
             <span class="text-muted-foreground">Disease family</span>
-            <EaSelect v-model="selectedStr" placeholder="— Select a family —"
+            <SelectField v-model="selectedStr" placeholder="— Select a family —"
                       :options="families.map((f) => ({ value: String(f.family_id),
                                  label: `${f.family_name} — ${f.n_terms} terms` }))" />
           </label>
@@ -246,7 +246,7 @@
         <ActIntervals v-if="detail"
                       :rows="orderedTerms.map((t) => ({ label: t.disease_name, value: t.auc,
                              lo: t.lo95, hi: t.hi95, n: t.n_pos, muted: !t.trustworthy }))" />
-        <EaEmpty v-else :icon="Flow" title="No family selected"
+        <EmptyState v-else :icon="Flow" title="No family selected"
                  description="Pick a disease family to see every term in it." />
 
         <template #note>
@@ -325,7 +325,7 @@
           carry ranked candidates — the rest are not scored into a top-50 list, so they cannot appear.
         </p>
         <ActMatrix v-if="overlapPairs.length" :labels="overlapLabels" :pairs="overlapPairs" />
-        <EaEmpty v-else :icon="JoinInner" title="No overlap computed"
+        <EmptyState v-else :icon="JoinInner" title="No overlap computed"
                  description="Pairwise top-50 overlap has not been computed for this family." />
         <p v-if="overlapPairs.length" class="mt-2 font-mono text-[10.5px] text-muted-foreground">
           each cell = shared genes out of 50 · higher is more similar

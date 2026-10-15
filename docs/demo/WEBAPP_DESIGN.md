@@ -231,8 +231,9 @@ From the blueprint's agent instructions (`AGENTS` at its repo root); violating t
 - **Let the sidebar build itself.** Add an act by adding a route with `meta: { title, icon, menu:
   'primary', order }`. Never hand-build a menu array.
 - **`apiUrl()` for every call.** A bare `fetch('/api/…')` does not reach the backend inside DSS.
-- **`Ea*` primitives first** (`EaSelect`, `EaButton`, `EaEmpty`, the `table/` and `scroll-area/` sets)
-  before custom markup. Icons from `@dataiku/vue-icons`, the DSS icon set.
+- **Kit parts first** — `@dataiku/ea-ui-kit` (`Button`, `Input`, `Checkbox`, `NativeSelect`,
+  `Table*`, …) and bs-blueprint's `SelectField`, `EmptyState` and `SettingsSwitchItem` — before custom
+  markup; never copy a component into the app. Icons from `@dataiku/vue-icons`, the DSS icon set.
 - **No binary assets.** DSS libraries are text-only — no `.png`, no logo files.
 - **One view + one route + one backend route file + one service file.** Replace the example view; do not
   accrete beside it.

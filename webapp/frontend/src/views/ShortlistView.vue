@@ -40,12 +40,12 @@
   import { apiUrl } from '@/utils/api'
   import { buildA4ExplorerQueries } from '@/utils/a4ExplorerQueries'
   import ActCard from '@/components/act/ActCard.vue'
-  import { EaSelect, EaEmpty } from '@/components/ui'
+  import { EmptyState, SelectField } from 'bs-blueprint'
   import ActTabs from '@/components/act/ActTabs.vue'
   import ActInfo from '@/components/act/ActInfo.vue'
   import ActTerm from '@/components/act/ActTerm.vue'
   import VisualGraphExplorerCard from '@/components/graph/VisualGraphExplorerCard.vue'
-  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+  import { Button, Checkbox, Input, NativeSelect, NativeSelectOption, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@dataiku/ea-ui-kit'
   import { Flow, ListNumbered, Microscope } from '@dataiku/vue-icons'
   import { seriesVar } from '@/utils/seriesColours'
 
@@ -84,7 +84,7 @@
 
   const diseases = ref<Disease[]>([])
   const selected = ref<number | undefined>()
-  // EaSelect models strings; disease_index is numeric.
+  // SelectField models strings; disease_index is numeric.
   const selectedStr = computed<string | undefined>({
     get: () => (selected.value === undefined ? undefined : String(selected.value)),
     set: (v) => { selected.value = v === undefined ? undefined : Number(v) },
@@ -97,6 +97,12 @@
   const tractableOnly = ref(false)
   const excludeSecreted = ref(false)
   const maxRank = ref(200)
+  // The kit's Input emits strings. Keep the last valid rank while the box is
+  // empty or mid-edit, rather than querying with max_rank=''.
+  function setMaxRank(v: string | number) {
+    const n = Number(v)
+    if (v !== '' && Number.isFinite(n) && n >= 1) maxRank.value = n
+  }
 
   // The table's own controls, as v3 has them. These filter the rows already
   // loaded rather than refetching: the funnel above describes the population,
@@ -387,20 +393,20 @@
               Disease
               <ActInfo text="One of the 13 diseases scored into a ranked candidate list." />
             </span>
-            <EaSelect v-model="selectedStr" placeholder="— Select a disease —"
+            <SelectField v-model="selectedStr" placeholder="— Select a disease —"
                       :options="diseases.map((d) => ({ value: String(d.disease_index),
                                  label: `${d.disease_name} (${d.n_candidates.toLocaleString()})` }))" />
           </label>
           <label class="flex items-center gap-2 text-sm">
-            <input v-model="novelOnly" type="checkbox" class="size-4 accent-primary" /> Novel only
+            <Checkbox v-model="novelOnly" /> Novel only
             <ActInfo text="Drops genes already annotated as targets for this disease, so what remains is what the model surfaced rather than reproduced." />
           </label>
           <label class="flex items-center gap-2 text-sm">
-            <input v-model="tractableOnly" type="checkbox" class="size-4 accent-primary" /> Tractable
+            <Checkbox v-model="tractableOnly" /> Tractable
             <ActInfo text="Open Targets judges the protein reachable by a small molecule or an antibody." />
           </label>
           <label class="flex items-center gap-2 text-sm">
-            <input v-model="excludeSecreted" type="checkbox" class="size-4 accent-primary" /> Not secreted
+            <Checkbox v-model="excludeSecreted" /> Not secreted
             <ActInfo text="Excludes proteins released between cells. Harder to drug than ones sitting on a membrane." />
           </label>
           <label class="flex flex-col gap-1 text-sm">
@@ -408,8 +414,8 @@
               Rank ≤
               <ActInfo text="How far down the ranked list to go. Every count below carries this cut-off, so a number can never mean two things." />
             </span>
-            <input v-model.number="maxRank" type="number" min="1" max="5000"
-                   class="w-24 rounded-md border border-input bg-background px-2 py-1.5" />
+            <Input :model-value="maxRank" type="number" min="1" max="5000" class="w-24"
+                   @update:model-value="setMaxRank" />
           </label>
         </div>
 
@@ -433,30 +439,29 @@
           <span class="ml-1 normal-case tracking-normal opacity-70">· filters what is on screen</span>
         </p>
         <div class="flex flex-wrap items-center gap-2">
-          <input v-model="search" type="search" placeholder="Search gene…"
-                 class="w-36 rounded-md border border-input bg-background px-2 py-1 text-sm" />
+          <Input v-model="search" type="search" placeholder="Search gene…" class="h-8 w-36" />
           <ActTabs :model-value="novelOnly ? 'novel' : 'all'"
                    :options="[{ value: 'all', label: 'All' }, { value: 'novel', label: 'Novel only' }]"
                    @update:model-value="(v) => (novelOnly = v === 'novel')" />
           <span class="flex items-center">
-            <select v-model="tract" class="rounded-md border border-input bg-background px-2 py-1 text-sm">
-              <option value="">Any tractability</option>
-              <option value="sm">Small-molecule</option>
-              <option value="ab">Antibody</option>
-              <option value="either">Either</option>
-            </select>
+            <NativeSelect v-model="tract" class="h-8">
+              <NativeSelectOption value="">Any tractability</NativeSelectOption>
+              <NativeSelectOption value="sm">Small-molecule</NativeSelectOption>
+              <NativeSelectOption value="ab">Antibody</NativeSelectOption>
+              <NativeSelectOption value="either">Either</NativeSelectOption>
+            </NativeSelect>
             <ActInfo text="Small-molecule: a drug-like pocket. Antibody: reachable from outside the cell. Either: at least one." />
           </span>
           <span class="flex items-center">
-            <select v-model="klass" class="rounded-md border border-input bg-background px-2 py-1 text-sm">
-              <option value="">Any target class</option>
-              <option v-for="c in classes" :key="c" :value="c">{{ c }}</option>
-            </select>
+            <NativeSelect v-model="klass" class="h-8">
+              <NativeSelectOption value="">Any target class</NativeSelectOption>
+              <NativeSelectOption v-for="c in classes" :key="c" :value="c">{{ c }}</NativeSelectOption>
+            </NativeSelect>
             <ActInfo text="Open Targets' protein family — enzyme, membrane receptor, transcription factor and so on." />
           </span>
           <label class="flex items-center gap-2 text-sm"
                  :class="liab ? 'font-medium text-destructive' : ''">
-            <input v-model="liab" type="checkbox" class="size-4 accent-[var(--destructive)]" />
+            <Checkbox v-model="liab" />
             Strike out liabilities
             <ActInfo text="A public annotation recording that an adverse effect has been observed and published for this protein — from clinical or experimental evidence, aggregated by Open Targets. Its limits matter: the flag is not dose-, modality- or indication-specific, it says nothing about whether an effect is manageable, and it can only exist for targets that have already been drugged or studied. So an unflagged gene is not safe — it is unstudied. Treat it as evidence of attention, not of danger." />
           </label>
@@ -530,24 +535,20 @@
             of {{ shown.length.toLocaleString() }}
           </span>
           <div class="flex items-center gap-1">
-            <button type="button" class="rounded-md border border-input px-2 py-1 text-[12px]
-                    disabled:opacity-40 hover:enabled:bg-accent/50"
-                    :disabled="page === 1" @click="page = 1">« First</button>
-            <button type="button" class="rounded-md border border-input px-2 py-1 text-[12px]
-                    disabled:opacity-40 hover:enabled:bg-accent/50"
-                    :disabled="page === 1" @click="page--">‹ Prev</button>
+            <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
+                    :disabled="page === 1" @click="page = 1">« First</Button>
+            <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
+                    :disabled="page === 1" @click="page--">‹ Prev</Button>
             <span class="px-2 font-mono text-[11px] text-muted-foreground">
               page {{ page }} / {{ pageCount }}
             </span>
-            <button type="button" class="rounded-md border border-input px-2 py-1 text-[12px]
-                    disabled:opacity-40 hover:enabled:bg-accent/50"
-                    :disabled="page === pageCount" @click="page++">Next ›</button>
-            <button type="button" class="rounded-md border border-input px-2 py-1 text-[12px]
-                    disabled:opacity-40 hover:enabled:bg-accent/50"
-                    :disabled="page === pageCount" @click="page = pageCount">Last »</button>
+            <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
+                    :disabled="page === pageCount" @click="page++">Next ›</Button>
+            <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
+                    :disabled="page === pageCount" @click="page = pageCount">Last »</Button>
           </div>
         </div>
-        <EaEmpty v-if="!shown.length" :icon="ListNumbered" title="Nothing matches"
+        <EmptyState v-if="!shown.length" :icon="ListNumbered" title="Nothing matches"
                  description="Loosen a filter, or pick another disease." />
 
         <template #note>
@@ -578,7 +579,7 @@
                :chips="[['live', 'live']]" method-label="How the percentile is computed"
                desc="Every model input for this gene, ranked inside this disease's own pool."
                :src="['dashboard_candidates']">
-        <EaEmpty v-if="!sel" :icon="Microscope" title="Pick a row"
+        <EmptyState v-if="!sel" :icon="Microscope" title="Pick a row"
                  description="Click any candidate in the list above." />
 
         <p v-else-if="detailError"
@@ -702,7 +703,7 @@
                title="See the evidence on the graph"
                desc="Five ready-made queries showing the routes behind a candidate's score."
                :chips="[['live', 'live']]" :src="['Kuzu folder (ytvuniN8)']">
-        <EaEmpty :icon="Flow" title="Pick a row"
+        <EmptyState :icon="Flow" title="Pick a row"
                  description="The five queries are generated locally from the candidate you select." />
       </ActCard>
 

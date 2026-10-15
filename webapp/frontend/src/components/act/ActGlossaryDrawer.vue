@@ -15,6 +15,7 @@
   import { Book, Search, X } from '@dataiku/vue-icons'
   import { GLOSSARY, GLOSSARY_GROUPS, GROUP_LABEL } from '@/utils/glossary'
   import { useGlossaryStore } from '@/stores/glossary'
+  import { Button, Input } from '@dataiku/ea-ui-kit'
 
   defineOptions({ name: 'ActGlossaryDrawer' })
 
@@ -77,21 +78,17 @@
               </p>
             </div>
           </div>
-          <button type="button" aria-label="Close glossary"
-                  class="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent/50
-                         hover:text-foreground focus-visible:outline-none focus-visible:ring-2
-                         focus-visible:ring-ring/40"
+          <Button variant="ghost" size="icon-sm" aria-label="Close glossary" class="text-muted-foreground"
                   @click="store.close()">
             <X class="size-4" />
-          </button>
+          </Button>
         </header>
 
         <div class="flex-none border-b border-border px-5 py-3">
-          <div class="flex items-center gap-2 rounded-md border border-input bg-background px-2.5 py-1.5">
-            <Search class="size-3.5 flex-none text-muted-foreground" />
-            <input v-model="q" type="search" placeholder="Search a term or its definition…"
-                   aria-label="Search the glossary"
-                   class="w-full bg-transparent text-[13px] outline-none placeholder:text-muted-foreground" />
+          <div class="relative">
+            <Search class="pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input v-model="q" type="search" placeholder="Search a term or its definition…"
+                   aria-label="Search the glossary" class="pl-8" />
           </div>
           <p class="mt-1.5 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
             {{ shown === total ? `${total} terms` : `${shown} of ${total} terms` }}

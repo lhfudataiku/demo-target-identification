@@ -1,7 +1,6 @@
 {
   "bs-blueprint": "0.2.0",
   "drift": {
-    "ui-dir": 15,
     "local-duplicates": 4,
     "theme-mode": 1
   }

@@ -42,7 +42,7 @@
   import ActBeeswarm from '@/components/act/ActBeeswarm.vue'
   import ActTabs from '@/components/act/ActTabs.vue'
   import ActTerm from '@/components/act/ActTerm.vue'
-  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@dataiku/ea-ui-kit'
   import { ArrowSplit, ChartHorizontalBar, Filter, ListBulleted, Odometer, Target } from '@dataiku/vue-icons'
   import { seriesVar } from '@/utils/seriesColours'
 
