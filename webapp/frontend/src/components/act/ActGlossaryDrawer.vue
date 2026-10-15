@@ -56,14 +56,14 @@
 
 <template>
   <Teleport to="body">
-    <div v-if="store.isOpen" class="fixed inset-0 z-[100] flex justify-end"
+    <div v-if="store.isOpen" class="fixed inset-0 z-40 flex justify-end"
          role="dialog" aria-modal="true" aria-label="Glossary">
       <!-- Scrim. Click-through-to-close, and it dims the deck rather than
            hiding it: the card you were reading stays visible behind. -->
       <div class="absolute inset-0 bg-foreground/25" @click="store.close()" />
 
       <section ref="panel" tabindex="-1"
-               class="relative flex h-full w-[min(30rem,100vw)] flex-col border-l border-border
+               class="relative flex h-full w-120 max-w-full flex-col border-l border-border
                       bg-card shadow-xl outline-none"
                @keydown.esc="store.close()">
         <header class="flex flex-none items-start justify-between gap-3 border-b border-border px-5 py-4">
@@ -72,8 +72,8 @@
               <Book class="size-4" />
             </span>
             <div class="flex flex-col gap-0.5">
-              <h2 class="text-[17px] font-semibold leading-snug tracking-tight">Glossary</h2>
-              <p class="text-[12.5px] leading-relaxed text-muted-foreground">
+              <h2 class="text-lg font-semibold leading-snug tracking-tight">Glossary</h2>
+              <p class="text-xs leading-relaxed text-muted-foreground">
                 Every data-science and biology term this deck uses.
               </p>
             </div>
@@ -90,29 +90,29 @@
             <Input v-model="q" type="search" placeholder="Search a term or its definition…"
                    aria-label="Search the glossary" class="pl-8" />
           </div>
-          <p class="mt-1.5 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+          <p class="mt-1.5 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
             {{ shown === total ? `${total} terms` : `${shown} of ${total} terms` }}
           </p>
         </div>
 
         <div class="flex-1 overflow-y-auto px-5 py-4">
           <div v-for="s in sections" :key="s.group" class="mb-6 last:mb-0">
-            <h3 class="mb-2 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+            <h3 class="mb-2 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
               {{ GROUP_LABEL[s.group] }}
             </h3>
             <dl class="flex flex-col">
               <div v-for="key in s.keys" :id="`glossary-${key}`" :key="key"
                    class="border-b border-border py-2.5 last:border-b-0 scroll-mt-4"
                    :class="store.focusKey === key ? 'bg-accent/40' : ''">
-                <dt class="text-[13px] font-medium leading-snug">{{ GLOSSARY[key].term }}</dt>
-                <dd class="mt-0.5 text-[12.5px] leading-relaxed text-muted-foreground">
+                <dt class="text-sm font-medium leading-snug">{{ GLOSSARY[key].term }}</dt>
+                <dd class="mt-0.5 text-xs leading-relaxed text-muted-foreground">
                   {{ GLOSSARY[key].def }}
                 </dd>
               </div>
             </dl>
           </div>
 
-          <p v-if="!sections.length" class="py-8 text-center text-[13px] text-muted-foreground">
+          <p v-if="!sections.length" class="py-8 text-center text-sm text-muted-foreground">
             No term matches “{{ q }}”.
           </p>
         </div>

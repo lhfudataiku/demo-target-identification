@@ -10,8 +10,8 @@ the task.
   values in `app.env` must come from the user or read-only discovery; do not guess them. Show derived
   values and ask for confirmation before writing them.
 - UI change: follow the bs-blueprint block below and the relevant component; the recipes for migrating
-  older code are in `frontend/docs/` (managed by bs-blueprint). The app is mid-migration
-  (`docs/demo/BLUEPRINT_ALIGNMENT_PLAN.md`): fix baselined drift in a file you touch, never add new.
+  older code are in `frontend/docs/` (managed by bs-blueprint). The app carries no baselined
+  drift: a change must keep `npm run check` clean, with no new suppression.
 - Frontend route or API call: inspect `frontend/src/router/` and use `apiUrl()`; a bare `/api/...`
   fetch does not reach the backend inside DSS.
 - Backend/DSS data access: inspect `backend/dss_client.py` and the closest route/service. Use

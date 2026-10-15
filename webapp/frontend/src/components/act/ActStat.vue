@@ -23,11 +23,11 @@
 
 <template>
   <div class="flex flex-col gap-0.5">
-    <span class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+    <span class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">
       <ActTerm v-if="t" :t="t" plain>{{ label }}</ActTerm>
       <template v-else>{{ label }}<ActInfo v-if="info" :text="info" /></template>
     </span>
     <span class="font-mono text-2xl font-medium tabular-nums leading-tight">{{ value }}</span>
-    <span v-if="sub" class="text-[11px] leading-snug text-muted-foreground">{{ sub }}</span>
+    <span v-if="sub" class="text-2xs leading-snug text-muted-foreground">{{ sub }}</span>
   </div>
 </template>

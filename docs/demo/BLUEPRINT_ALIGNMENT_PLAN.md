@@ -8,9 +8,9 @@
 > [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md), [`../../webapp/README.md`](../../webapp/README.md) and
 > [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented and verified.
 
-**Status: IN PROGRESS — Phases 0–5 committed and deployed 2026-10-15; Phase 6 implemented locally, not yet committed or deployed.** All four decisions in §8 were
+**Status: IN PROGRESS — Phases 0–6 committed and deployed 2026-10-15; Phase 7 implemented locally, not yet committed or deployed.** All four decisions in §8 were
 taken on the recommendations, and the direction is recorded as
-[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 7–8 have not started. The deploy pause that Phase 1 introduced ended with Phase 2. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
+[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phase 8 has not started. The deploy pause that Phase 1 introduced ended with Phase 2. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
 a phase, commit, push, DSS deployment and any live DSS change remain separate actions, each requiring
 its own approval.
 
@@ -344,7 +344,7 @@ Shortlist table keeps sorting, search and filters, and `ui-dir` drift is gone.
 `AppSidebar.vue`, `DefaultLayout.vue`, `useAppMenu.ts` and `types/menu.ts`. Use sorting from the
 framework. **Accept:** the sidebar is still built from route `meta`, and the act order is unchanged.
 
-> **Implemented 2026-10-15, awaiting commit approval.** `DefaultLayout` now wraps bs-blueprint's
+> **Implemented, committed and deployed 2026-10-15.** `DefaultLayout` now wraps bs-blueprint's
 > `AppLayout`, which builds the sidebar from route meta; the local `AppSidebar`, `useAppMenu`,
 > `types/menu.ts` and the unused `utils/sorting.ts` are deleted, and `App.vue` applies
 > `useThemeMode('light')`. The doctor reports **0 baselined findings**; only the lint backlog
@@ -369,6 +369,27 @@ framework. **Accept:** the sidebar is still built from route `meta`, and the act
 Work through the remaining restricted and unknown classes until `eslint-suppressions.json` and
 `bs-blueprint.baseline.json` are empty, then delete them. Classes the app keeps on purpose (such as
 Vue Flow's) are declared in `eslint.config.js`. **Accept:** `check: ok` with no baseline files.
+
+> **Implemented 2026-10-15, awaiting commit approval.** All 129 lint findings fixed; both baseline
+> files pruned to empty and deleted, as the framework's guide prescribes. `npm run check` passes
+> with no suppressions.
+>
+> - **Font sizes (102):** 8.5–11.5px → `text-2xs` (11px), 12–12.5px → `text-xs`, 13px →
+>   `text-sm`, 17px → `text-lg`. Small labels grow by up to 2.5px; that is the visible change.
+> - **Dense charts (decision taken with the user):** the gene coverage grid and the subtype overlap
+>   matrix keep their 8.5–9.5px labels in component-scoped CSS (`grid-tick`, `grid-gene`,
+>   `matrix-tick`, declared in `eslint.config.js`), as the canvas charts set font sizes in their
+>   options; every other label is on the scale.
+> - **Sizes and layers:** widths, heights, rotations and padding moved to Tailwind v4's numeric
+>   scale at the same pixel values (for example `w-[86px]` → `w-21.5`). The glossary drawer moved
+>   to `z-40` and info tooltips to `z-50`; `tracking-[0.08em]` became `tracking-wider` (0.05em).
+> - **The three raw-button pieces left from Phase 5:** `ActTabs` and the Explorer's query chips now
+>   run on the kit's `ToggleGroup` (a click on the active item no longer clears the choice), and
+>   the card's method disclosure on `Collapsible`.
+>
+> Verified locally: the act tabs switch and keep a choice, Act 4's "All / Novel only" tabs and
+> checkbox stay in sync both ways, the method disclosure opens, a query chip swaps the prepared
+> query, and the console is clean.
 
 ### Phase 8 — documentation
 

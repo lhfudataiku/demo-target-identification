@@ -263,7 +263,7 @@
         </template>
 
         <template v-if="data">
-          <p class="mb-1.5 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+          <p class="mb-1.5 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
             Disease nodes · <ActTerm t="eligibility-gate">gate</ActTerm> {{ data.eligibility.gate }}
           </p>
           <ActBand :in-label="'eligible'" :in-value="data.eligibility.eligible"
@@ -330,9 +330,9 @@
             ~{{ data.pairs_per_disease.toLocaleString() }} genes the graph links to each ≈
             {{ data.union_rows.toLocaleString() }} pairs. The excluded diseases contribute nothing.</p>
           <p class="mt-1.5"><b class="text-foreground">The three routes</b> are internally
-            <code class="font-mono text-[10.5px]">GGD</code> (gene–gene–disease),
-            <code class="font-mono text-[10.5px]">GPGD</code> (via pathway) and
-            <code class="font-mono text-[10.5px]">GCD</code> (via drug/compound). The drug route
+            <code class="font-mono text-2xs">GGD</code> (gene–gene–disease),
+            <code class="font-mono text-2xs">GPGD</code> (via pathway) and
+            <code class="font-mono text-2xs">GCD</code> (via drug/compound). The drug route
             admits pairs into the pool but no model feature traverses a drug node.</p>
         </template>
       </ActCard>
@@ -350,15 +350,15 @@
         </template>
 
         <template v-if="data">
-          <p class="mb-1 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+          <p class="mb-1 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
             <ActTerm t="precision">Precision</ActTerm> · %
           </p>
           <ActBar :rows="precisionRows" :row-height="26" />
-          <p class="mb-1 mt-4 font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+          <p class="mb-1 mt-4 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
             <ActTerm t="auprc">Average precision</ActTerm> · area under PR
           </p>
           <ActBar :rows="auprcRows" :row-height="26" />
-          <p class="mt-3 font-mono text-[10px] text-muted-foreground">
+          <p class="mt-3 font-mono text-2xs text-muted-foreground">
             <ActTerm t="champion-model">champion m7-f14</ActTerm> · metrics {{ data.champion.source }}
           </p>
         </template>
@@ -447,7 +447,7 @@
         <ActBeeswarm v-if="data" :points="data.personas"
                      :min="0" :max="Math.ceil(Math.max(...data.personas.map((p) => p.value)) / 10) * 10"
                      unit="rank enrichment" />
-        <p class="mt-2 font-mono text-[10.5px] text-muted-foreground">
+        <p class="mt-2 font-mono text-2xs text-muted-foreground">
           box = <ActTerm t="iqr">interquartile range</ActTerm> · line =
           <ActTerm t="median" /> · one dot per disease
         </p>
@@ -479,7 +479,7 @@
         </template>
 
         <ActBar v-if="data" :rows="driverRows" :row-height="17" />
-        <div class="mt-2 flex gap-4 font-mono text-[10.5px] text-muted-foreground">
+        <div class="mt-2 flex gap-4 font-mono text-2xs text-muted-foreground">
           <span class="flex items-center gap-1.5">
             <span class="inline-block size-2.5 rounded-sm" :style="{ background: seriesVar('measured') }"></span>
             edge-provenance features
@@ -518,7 +518,7 @@
           no expression, no biology of the protein itself.
         </template>
 
-        <div class="mb-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-[10.5px] text-muted-foreground">
+        <div class="mb-3 flex flex-wrap gap-x-4 gap-y-1 font-mono text-2xs text-muted-foreground">
           <span v-for="[label, key] in KINDS" :key="key">
             <ActTerm :t="key" plain>{{ label }}</ActTerm>
           </span>
@@ -534,14 +534,14 @@
           </TableHeader>
           <TableBody>
             <TableRow v-for="f in data.glossary" :key="f.feature">
-              <TableCell class="font-mono text-[11.5px] font-medium whitespace-nowrap">{{ f.feature }}</TableCell>
+              <TableCell class="font-mono text-2xs font-medium whitespace-nowrap">{{ f.feature }}</TableCell>
               <TableCell>
-                <span class="rounded px-1.5 py-0.5 font-mono text-[10px] uppercase"
+                <span class="rounded px-1.5 py-0.5 font-mono text-2xs uppercase"
                       :class="f.kind === 'provenance' ? 'bg-primary/25 text-primary' : 'bg-secondary text-muted-foreground'">
                   {{ f.kind }}
                 </span>
               </TableCell>
-              <TableCell class="text-[12px] text-muted-foreground">{{ f.what }}</TableCell>
+              <TableCell class="text-xs text-muted-foreground">{{ f.what }}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
@@ -552,14 +552,14 @@
           mechanism.
         </template>
         <template #method>
-          <p>The <code class="font-mono text-[10.5px]">dwpc_*</code> features are
+          <p>The <code class="font-mono text-2xs">dwpc_*</code> features are
             <ActTerm t="dwpc">degree-weighted path counts</ActTerm>: routes reaching the disease are
             counted, with routes through very well-connected nodes counted for less, so a popular hub
             gene cannot score highly on connectivity alone.</p>
           <p class="mt-1.5"><b class="text-foreground">This card has no src footer, deliberately.</b>
             It is not a dataset number: it is the champion's declared input list, whose authority is
-            <code class="font-mono text-[10.5px]">.index/features.tsv</code>. The wording comes from
-            <code class="font-mono text-[10.5px]">backend/feature_glossary.py</code>, the one copy —
+            <code class="font-mono text-2xs">.index/features.tsv</code>. The wording comes from
+            <code class="font-mono text-2xs">backend/feature_glossary.py</code>, the one copy —
             Act 4's candidate drawer renders the same strings, so the two acts cannot describe the
             same model differently.</p>
         </template>

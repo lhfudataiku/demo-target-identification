@@ -384,7 +384,7 @@
         </template>
 
         <!-- population controls: these refetch, because they change what is scored -->
-        <p class="mb-2 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+        <p class="mb-2 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
           Population<ActInfo text="These controls change which candidates are in the list at all, so the funnel below them changes too." />
           <span class="ml-1 normal-case tracking-normal opacity-70">· re-scores the list</span>
         </p>
@@ -435,7 +435,7 @@
         <hr class="my-4 border-border" />
 
         <!-- view controls: these filter what is already on screen -->
-        <p class="mb-2 font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+        <p class="mb-2 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
           View<ActInfo text="These controls only narrow what is drawn on screen. The funnel above still reports the true population, so nothing here can hide how big the list really is." />
           <span class="ml-1 normal-case tracking-normal opacity-70">· filters what is on screen</span>
         </p>
@@ -466,7 +466,7 @@
             Strike out liabilities
             <ActInfo text="A public annotation recording that an adverse effect has been observed and published for this protein — from clinical or experimental evidence, aggregated by Open Targets. Its limits matter: the flag is not dose-, modality- or indication-specific, it says nothing about whether an effect is manageable, and it can only exist for targets that have already been drugged or studied. So an unflagged gene is not safe — it is unstudied. Treat it as evidence of attention, not of danger." />
           </label>
-          <span class="font-mono text-[11px] text-muted-foreground">
+          <span class="font-mono text-2xs text-muted-foreground">
             {{ shown.length }} of {{ data?.rows.length ?? 0 }} shown
           </span>
         </div>
@@ -501,18 +501,18 @@
                 <TableCell class="font-mono tabular-nums text-muted-foreground">{{ r.rank_in_disease }}</TableCell>
                 <TableCell class="font-mono font-medium">{{ r.gene_name }}</TableCell>
                 <TableCell class="text-muted-foreground">{{ r.ot_class_l1 || '—' }}</TableCell>
-                <TableCell class="font-mono text-[11px]">{{ tractLabel(r) }}</TableCell>
+                <TableCell class="font-mono text-2xs">{{ tractLabel(r) }}</TableCell>
                 <TableCell class="no-underline">
-                  <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-[10px] uppercase"
+                  <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-2xs uppercase"
                         :class="r.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary'">
                     {{ r.is_target ? 'associated' : 'novel' }}
                   </span>
                   <span v-if="r.approved_for_disease"
-                        class="mr-1 inline-block rounded bg-success/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-success">approved</span>
+                        class="mr-1 inline-block rounded bg-success/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-success">approved</span>
                   <span v-if="r.investigational_for_disease"
-                        class="mr-1 inline-block rounded bg-warning/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-warning">trial</span>
+                        class="mr-1 inline-block rounded bg-warning/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-warning">trial</span>
                   <span v-if="r.has_safety_liability"
-                        class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-destructive">liability</span>
+                        class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-destructive">liability</span>
                 </TableCell>
                 <TableCell class="text-xs text-muted-foreground">
                   <template v-if="rowDrivers(r).length">
@@ -531,7 +531,7 @@
         </div>
         <div v-if="shown.length > PAGE"
              class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
-          <span class="font-mono text-[11px] text-muted-foreground">
+          <span class="font-mono text-2xs text-muted-foreground">
             {{ (page - 1) * PAGE + 1 }}–{{ Math.min(page * PAGE, shown.length) }}
             of {{ shown.length.toLocaleString() }}
           </span>
@@ -540,7 +540,7 @@
                     :disabled="page === 1" @click="page = 1">« First</Button>
             <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
                     :disabled="page === 1" @click="page--">‹ Prev</Button>
-            <span class="px-2 font-mono text-[11px] text-muted-foreground">
+            <span class="px-2 font-mono text-2xs text-muted-foreground">
               page {{ page }} / {{ pageCount }}
             </span>
             <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
@@ -592,19 +592,19 @@
           <!-- Where this candidate sits, before any explanation of why. -->
           <div class="flex flex-col gap-1.5">
             <div class="flex flex-wrap items-baseline gap-2">
-              <span class="font-mono text-[17px] font-medium">{{ sel.gene_name }}</span>
-              <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-[10px] uppercase"
+              <span class="font-mono text-lg font-medium">{{ sel.gene_name }}</span>
+              <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-2xs uppercase"
                     :class="sel.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary'">
                 {{ sel.is_target ? 'associated' : 'novel' }}
               </span>
               <span v-if="sel.approved_for_disease"
-                    class="inline-block rounded bg-success/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-success">approved</span>
+                    class="inline-block rounded bg-success/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-success">approved</span>
               <span v-if="sel.investigational_for_disease"
-                    class="inline-block rounded bg-warning/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-warning">trial</span>
+                    class="inline-block rounded bg-warning/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-warning">trial</span>
               <span v-if="sel.has_safety_liability"
-                    class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-destructive">liability</span>
+                    class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-destructive">liability</span>
             </div>
-            <p class="font-mono text-[11px] text-muted-foreground">
+            <p class="font-mono text-2xs text-muted-foreground">
               rank #{{ sel.rank_in_disease.toLocaleString() }}<template v-if="detail?.pool_size">
                 of {{ detail.pool_size.toLocaleString() }}</template>
               <template v-if="sel.rank_percentile !== null"> · {{ sel.rank_percentile }} pct</template>
@@ -613,7 +613,7 @@
               · node_index {{ sel.gene_index }}
             </p>
             <p v-if="sel.has_safety_liability && safetyEvents.length"
-               class="text-[12px] leading-relaxed text-muted-foreground">
+               class="text-xs leading-relaxed text-muted-foreground">
               <span class="text-destructive">Recorded liability:</span>
               {{ safetyEvents.join(' · ') }}
             </p>
@@ -621,55 +621,55 @@
 
           <!-- What moved it. Two drivers, because two is what is stored. -->
           <div class="flex flex-col gap-1.5">
-            <h3 class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+            <h3 class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">
               What moved this candidate
               <ActInfo text="The features with the largest SHAP contribution for this one prediction, with the direction of each. A positive driver pushed the score up; a negative one pushed it down." />
             </h3>
             <div v-if="drivers.length" class="flex flex-col gap-1">
               <div v-for="d in drivers" :key="d.key"
                    class="flex items-baseline justify-between gap-3 rounded-md bg-muted/40 px-2.5 py-1.5">
-                <span class="text-[12.5px] leading-snug">
+                <span class="text-xs leading-snug">
                   {{ d.label ?? d.key }}
-                  <span v-if="d.label" class="ml-1 font-mono text-[10px] text-muted-foreground">{{ d.key }}</span>
+                  <span v-if="d.label" class="ml-1 font-mono text-2xs text-muted-foreground">{{ d.key }}</span>
                 </span>
-                <span v-if="d.value" class="flex-none font-mono text-[12px] tabular-nums"
+                <span v-if="d.value" class="flex-none font-mono text-xs tabular-nums"
                       :style="{ color: seriesVar(d.sign === '+' ? 'contrast' : 'negative') }">
                   {{ d.sign }}{{ d.value }}
                 </span>
               </div>
             </div>
-            <p v-else class="text-[13px] text-muted-foreground">No attribution stored for this candidate.</p>
-            <p class="text-[11.5px] leading-relaxed text-muted-foreground">
+            <p v-else class="text-sm text-muted-foreground">No attribution stored for this candidate.</p>
+            <p class="text-2xs leading-relaxed text-muted-foreground">
               <b class="text-foreground">The two strongest drivers only.</b> A full per-feature waterfall
               needs the scoring recipe to carry its whole SHAP matrix into
-              <code class="font-mono text-[10.5px]">dashboard_candidates</code>; today only the top two
+              <code class="font-mono text-2xs">dashboard_candidates</code>; today only the top two
               survive the flow, so this is what exists rather than what was chosen.
             </p>
           </div>
 
           <!-- Every model input, ranked inside this disease's own pool. -->
           <div class="flex flex-col gap-2">
-            <h3 class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground">
+            <h3 class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">
               The evidence, against this disease
               <ActInfo text="Every input to the champion model, not a selection. The bar is the candidate's rank within this disease's own pool — the raw value beside it is what the model actually read." />
             </h3>
-            <p v-if="detailBusy" class="text-[13px] text-muted-foreground">Loading…</p>
+            <p v-if="detailBusy" class="text-sm text-muted-foreground">Loading…</p>
             <div v-for="g in featureGroups" :key="g.kind" class="flex flex-col gap-1.5">
-              <span class="font-mono text-[10px] uppercase tracking-wide text-muted-foreground/70">
+              <span class="font-mono text-2xs uppercase tracking-wide text-muted-foreground/70">
                 <ActTerm :t="`feature-${g.kind}`" plain>{{ g.kind }}</ActTerm>
               </span>
               <div v-for="f in g.features" :key="f.key" class="flex flex-col gap-0.5">
                 <div class="flex items-baseline justify-between gap-3">
-                  <span class="text-[12px] leading-snug">
+                  <span class="text-xs leading-snug">
                     {{ f.label }}
                     <ActInfo v-if="f.direction === 'lower'"
                              text="Fewer is stronger for this one: a candidate one hop from the disease module is as close as the feature can report. The bar is ranked accordingly." />
                   </span>
-                  <span class="flex-none font-mono text-[11px] tabular-nums text-muted-foreground">
+                  <span class="flex-none font-mono text-2xs tabular-nums text-muted-foreground">
                     {{ fmtValue(f.value) }} · {{ f.percentile }} pct
                   </span>
                 </div>
-                <div class="h-[5px] overflow-hidden rounded-full bg-muted">
+                <div class="h-1.25 overflow-hidden rounded-full bg-muted">
                   <i class="block h-full rounded-full"
                      :style="{ width: `${f.percentile}%`, background: seriesVar('contrast') }" />
                 </div>
@@ -681,7 +681,7 @@
 
         <template #method>
           <p><b class="text-foreground">How the percentile is computed.</b> For one gene and one
-            feature it is <code class="font-mono text-[10.5px]">100 × (candidates for this disease this
+            feature it is <code class="font-mono text-2xs">100 × (candidates for this disease this
             one is stronger than) ÷ (candidates with a non-null value)</code> — a rank <b>within this
             disease's own pool</b>, never a global one. The same gene can sit at the 96th percentile
             here and the 40th for another disease on an identical raw value.</p>
@@ -691,9 +691,9 @@
           <p v-if="detail?.missing_features?.length" class="mt-1.5">
             <b class="text-foreground">Not shown:</b>
             <code v-for="m in detail.missing_features" :key="m"
-                  class="mx-1 font-mono text-[10.5px]">{{ m }}</code>
+                  class="mx-1 font-mono text-2xs">{{ m }}</code>
             — a model input that never reaches
-            <code class="font-mono text-[10.5px]">dashboard_candidates</code>, so the bars above are
+            <code class="font-mono text-2xs">dashboard_candidates</code>, so the bars above are
             {{ detail.features.length }} of the champion's
             {{ detail.features.length + detail.missing_features.length }} features.
           </p>
@@ -728,7 +728,7 @@
             captures only the currently displayed result.</p>
           <p class="mt-1.5">Traversal is <b class="text-foreground">undirected</b>, relationship
             variables are bound and returned, and the engine's gene label is
-            <code class="font-mono text-[10.5px]">protein</code>. The two GO queries exclude terms with
+            <code class="font-mono text-2xs">protein</code>. The two GO queries exclude terms with
             <ActTerm t="node">node</ActTerm> degree above 200, which is what stops a generic term such
             as “protein binding” from returning the whole graph. Node indices are snapshot-specific
             and generated from the selected row.</p>

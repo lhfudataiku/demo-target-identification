@@ -207,7 +207,7 @@
                            :class="t.trustworthy ? '' : 'text-muted-foreground line-through'">
                   {{ t.auc.toFixed(4) }}
                 </TableCell>
-                <TableCell class="font-mono text-[11.5px] tabular-nums text-muted-foreground">
+                <TableCell class="font-mono text-2xs tabular-nums text-muted-foreground">
                   {{ t.lo95.toFixed(3) }}–{{ t.hi95.toFixed(3) }}
                 </TableCell>
                 <TableCell class="font-mono tabular-nums">{{ t.enrichment ?? '—' }}</TableCell>
@@ -278,10 +278,10 @@
         </template>
 
         <ActBar v-if="thin.length" :rows="thin" :row-height="22" />
-        <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
+        <p v-else class="py-4 text-center text-sm text-muted-foreground">
           Every term in this family has enough associated targets to score.
         </p>
-        <div v-if="thin.length" class="mt-2 flex gap-4 font-mono text-[10.5px] text-muted-foreground">
+        <div v-if="thin.length" class="mt-2 flex gap-4 font-mono text-2xs text-muted-foreground">
           <span class="flex items-center gap-1.5">
             <span class="inline-block size-2.5 rounded-sm" :style="{ background: seriesVar('contrast') }"></span>
             AUC is trustworthy for this term
@@ -321,14 +321,14 @@
                  :options="[{ value: 'all', label: 'All top-50 genes' },
                             { value: 'novel', label: 'Novel only' }]" />
         <p v-if="detail && detail.coverage.with_data < detail.coverage.total"
-           class="mb-3 text-[12.5px] text-muted-foreground">
+           class="mb-3 text-xs text-muted-foreground">
           Showing the <b>{{ detail.coverage.with_data }}</b> of {{ detail.coverage.total }} terms that
           carry ranked candidates — the rest are not scored into a top-50 list, so they cannot appear.
         </p>
         <ActMatrix v-if="overlapPairs.length" :labels="overlapLabels" :pairs="overlapPairs" />
         <EmptyState v-else :icon="JoinInner" title="No overlap computed"
                  description="Pairwise top-50 overlap has not been computed for this family." />
-        <p v-if="overlapPairs.length" class="mt-2 font-mono text-[10.5px] text-muted-foreground">
+        <p v-if="overlapPairs.length" class="mt-2 font-mono text-2xs text-muted-foreground">
           each cell = shared genes out of 50 · higher is more similar
         </p>
 
@@ -363,34 +363,34 @@
         <template v-if="detail?.programme?.leaves?.length">
           <!-- The shared core first: it is the answer the title promises. -->
           <div class="flex flex-col gap-1.5">
-            <p class="font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+            <p class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">
               shared by all {{ detail.programme.leaves.length }} subtypes ·
               {{ detail.programme.n_common }} of 50
             </p>
             <div class="flex flex-wrap gap-1">
               <span v-for="g in detail.programme.common" :key="g"
                     class="rounded border border-border bg-muted/40 px-1.5 py-0.5
-                           font-mono text-[11px] text-muted-foreground">{{ g }}</span>
+                           font-mono text-2xs text-muted-foreground">{{ g }}</span>
             </div>
           </div>
 
           <div class="mt-4 flex flex-col gap-2.5">
-            <p class="font-mono text-[10.5px] uppercase tracking-wide text-muted-foreground">
+            <p class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">
               in exactly one subtype's top 50
             </p>
             <div v-for="lf in detail.programme.leaves" :key="lf" class="flex flex-col gap-1">
-              <span class="text-[12.5px] font-medium">
+              <span class="text-xs font-medium">
                 {{ lf }}
-                <span class="font-mono text-[10.5px] text-muted-foreground">
+                <span class="font-mono text-2xs text-muted-foreground">
                   {{ (detail.programme.specific[lf] ?? []).length }} own
                 </span>
               </span>
               <div class="flex flex-wrap gap-1">
                 <span v-for="g in (detail.programme.specific[lf] ?? []).slice(0, 14)" :key="g"
                       class="rounded border border-primary/40 bg-primary/10 px-1.5 py-0.5
-                             font-mono text-[11px] text-primary">{{ g }}</span>
+                             font-mono text-2xs text-primary">{{ g }}</span>
                 <span v-if="(detail.programme.specific[lf] ?? []).length > 14"
-                      class="px-1 font-mono text-[10.5px] text-muted-foreground">
+                      class="px-1 font-mono text-2xs text-muted-foreground">
                   +{{ (detail.programme.specific[lf] ?? []).length - 14 }} more
                 </span>
               </div>
@@ -398,7 +398,7 @@
           </div>
 
         </template>
-        <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
+        <p v-else class="py-4 text-center text-sm text-muted-foreground">
           No leaf subtypes configured for this family.
         </p>
 
@@ -427,11 +427,11 @@
         </template>
         <ActGeneGrid v-if="gridGenes.length" :genes="gridGenes" :columns="overlapLabels"
                      :shared-at="Math.min(3, overlapLabels.length)" />
-        <p v-else class="py-4 text-center text-[13px] text-muted-foreground">
+        <p v-else class="py-4 text-center text-sm text-muted-foreground">
           No top-50 membership computed for this family.
         </p>
         <p v-if="gridTotal > gridGenes.length"
-           class="mt-2 font-mono text-[10.5px] text-muted-foreground">
+           class="mt-2 font-mono text-2xs text-muted-foreground">
           showing the {{ gridGenes.length }} most widely shared of {{ gridTotal }} genes
         </p>
 

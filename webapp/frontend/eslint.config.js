@@ -3,5 +3,7 @@ import { designConfig } from 'bs-blueprint/eslint'
 
 export default [
   { ignores: ['node_modules/**', 'dist/**'] },
-  ...designConfig({ entryPoint: 'src/style.css' }),
+  // Chart-internal label classes, sized in their component's scoped <style>
+  // (see BLUEPRINT_ALIGNMENT_PLAN.md, Phase 7).
+  ...designConfig({ entryPoint: 'src/style.css', ignore: ['^matrix-tick$', '^grid-tick$', '^grid-gene$'] }),
 ]

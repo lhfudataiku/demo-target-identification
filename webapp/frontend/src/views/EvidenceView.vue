@@ -166,7 +166,7 @@
 
         <div v-if="totals" class="mt-3 flex flex-wrap gap-x-4 gap-y-1">
           <span v-for="[name, def] in SOURCES" :key="name"
-                class="font-mono text-[11px] text-muted-foreground">
+                class="font-mono text-2xs text-muted-foreground">
             {{ name }}<ActInfo :text="def" />
           </span>
         </div>
@@ -264,7 +264,7 @@
           two or more</template>.
         </template>
         <ActBar v-if="data" :rows="ppiRows" />
-        <div class="mt-2 flex gap-4 font-mono text-[10.5px] text-muted-foreground">
+        <div class="mt-2 flex gap-4 font-mono text-2xs text-muted-foreground">
           <span class="flex items-center gap-1.5">
             <span class="inline-block size-2.5 rounded-sm" :style="{ background: seriesVar('highlight') }"></span>single source</span>
           <span class="flex items-center gap-1.5">

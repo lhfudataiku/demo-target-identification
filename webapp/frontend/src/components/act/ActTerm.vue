@@ -40,7 +40,7 @@
       :is="entry ? 'button' : 'span'"
       v-bind="entry ? { type: 'button', title: 'Open the glossary here' } : {}"
       :class="entry
-        ? ['cursor-pointer bg-transparent p-0 text-left font-[inherit] text-[length:inherit] text-inherit',
+        ? ['cursor-pointer bg-transparent p-0 text-left text-inherit',
            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40',
            plain ? '' : 'underline decoration-dotted decoration-muted-foreground/50 underline-offset-2']
         : ''"

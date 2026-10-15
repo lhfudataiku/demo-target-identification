@@ -35,7 +35,7 @@ LIMIT 1`
     </template>
   </AppLayout>
 
-  <aside v-if="showExplorerPreview" class="fixed bottom-4 right-4 z-40 w-[min(28rem,calc(100vw-2rem))]">
+  <aside v-if="showExplorerPreview" class="fixed bottom-4 right-4 z-40 w-112 max-w-full">
     <VisualGraphExplorerCard
       title="Explorer launcher preview"
       description="Development-only harness. It prepares a query but never executes it."

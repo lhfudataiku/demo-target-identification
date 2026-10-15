@@ -8,7 +8,7 @@
 </script>
 
 <template>
-  <div class="rounded-lg border-l-2 border-primary bg-secondary/70 px-3.5 py-2.5 text-[13px] leading-relaxed">
+  <div class="rounded-lg border-l-2 border-primary bg-secondary/70 px-3.5 py-2.5 text-sm leading-relaxed">
     <slot />
   </div>
 </template>

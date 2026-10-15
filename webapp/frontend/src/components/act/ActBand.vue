@@ -50,10 +50,10 @@
 
 <template>
   <div class="flex flex-col gap-1.5">
-    <div class="h-[34px] w-full">
+    <div class="h-8.5 w-full">
       <VChart v-if="ready" :option="chartOption" :autoresize="true" class="h-full w-full" />
     </div>
-    <div class="flex justify-between font-mono text-[10.5px]">
+    <div class="flex justify-between font-mono text-2xs">
       <span class="text-foreground">
         <b>{{ inValue.toLocaleString() }}</b> {{ inLabel }}
       </span>
