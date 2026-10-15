@@ -17,6 +17,7 @@
     EChartsOption,
     TooltipComponentFormatterCallbackParams,
   } from 'echarts'
+  import { categoricalColors, resolveColour, seriesVar } from '@/utils/seriesColours'
 
   use([BarChart, GridComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActBar' })
@@ -32,21 +33,14 @@
       /** px per bar; the chart grows with the data rather than scrolling. */
       rowHeight?: number
     }>(),
-    { color: 'var(--chart-2)', multicolour: false, rowHeight: 22 },
+    { color: seriesVar('measured'), multicolour: false, rowHeight: 22 },
   )
-
-  const PALETTE = ['--chart-1', '--chart-2', '--chart-3', '--chart-4', '--chart-5']
 
   const height = computed(() => Math.max(120, props.rows.length * props.rowHeight + 28))
 
-  // ECharts renders to canvas and cannot resolve CSS custom properties, so the
-  // token is read off the document at build time.
-  const resolve = (c: string) => {
-    const m = /^var\((--[\w-]+)\)$/.exec(c)
-    if (!m) return c
-    return getComputedStyle(document.documentElement).getPropertyValue(m[1]).trim() || '#3EDAB2'
-  }
-  const resolved = computed(() => resolve(props.color))
+  // ECharts renders to canvas and cannot resolve CSS custom properties (nor the
+  // kit's space-separated hsl()), so every colour is resolved to rgb() first.
+  const resolved = computed(() => resolveColour(props.color))
 
   const option = computed((): EChartsOption => ({
     grid: { left: 4, right: 56, top: 4, bottom: 4, containLabel: true },
@@ -67,26 +61,26 @@
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
-        fontFamily: 'DM Mono, monospace', fontSize: 11, color: 'var(--muted-foreground)',
+        fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 11, color: resolveColour('var(--muted-foreground)'),
         width: 190, overflow: 'truncate',   // long disease names must not eat the plot
       },
     },
     series: [{
       type: 'bar',
       data: props.rows.map((r) => (r.colour
-        ? { value: r.count, itemStyle: { color: resolve(r.colour) } }
+        ? { value: r.count, itemStyle: { color: resolveColour(r.colour) } }
         : r.count)),
       itemStyle: { borderRadius: [0, 3, 3, 0] },
       colorBy: props.multicolour ? 'data' : 'series',
       color: props.multicolour
-        ? PALETTE.map((v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim())
+        ? categoricalColors()
         : resolved.value,
       barMaxWidth: 14,
       label: {
         show: true, position: 'right',
         formatter: (params: DefaultLabelFormatterCallbackParams) =>
           typeof params.value === 'number' ? params.value.toLocaleString() : String(params.value ?? ''),
-        fontFamily: 'DM Mono, monospace', fontSize: 11,
+        fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 11,
       },
     }],
   }))

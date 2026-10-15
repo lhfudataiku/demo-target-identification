@@ -179,8 +179,9 @@ my-app/
     └── src/
         ├── main.ts          ← App entry point: create Vue app, add Pinia + router, mount
         ├── App.vue          ← Root component: just <router-view />
-        ├── styles/tokens.css ← Dataiku design tokens (colors, sidebar, radius, dark mode)
-        ├── style.css        ← Tailwind setup + bridges tokens.css into Tailwind utilities
+        ├── styles/kit.css   ← the @dataiku/ea-ui-kit theme, wired by bs-blueprint
+        ├── style.css        ← imports kit.css, plus a few app-specific base rules
+        ├── utils/seriesColours.ts ← the one table that maps chart meanings to kit colours
         ├── config.ts        ← App name + icon — the two things to change when you copy this
         ├── utils/api.ts     ← re-exports apiUrl() from bs-blueprint (see below)
         ├── router/index.ts  ← All pages live here; sidebar builds itself from route metadata
@@ -207,9 +208,10 @@ all navigation happens in JavaScript without full page reloads. We use **Vue 3**
 framework — roughly similar to React or Angular if you've heard of those.
 
 **Styling** comes from **Tailwind CSS** (utility classes like `text-sm`, `flex`, `gap-4`)
-backed by **Dataiku design tokens** vendored into `src/styles/tokens.css` (colors, sidebar
-palette, radius, dark mode). The token values mirror Dataiku's brand, so utilities like
-`bg-primary` and `text-muted-foreground` make the app look like a Dataiku product. Form
+backed by the **`@dataiku/ea-ui-kit` theme** (imported through `src/styles/kit.css`), so
+utilities like `bg-primary` and `text-muted-foreground` make the app look like a Dataiku
+product. Chart colours come from `src/utils/seriesColours.ts`, which maps each meaning to a
+kit token. Form
 controls and empty states are small local components in `src/components/ui/` (`EaSelect`,
 `EaButton`, `EaEmpty`, `SettingsSwitchItem`) — token-styled wrappers, mostly built on
 [`reka-ui`](https://reka-ui.com) headless primitives. There is no external component-library
@@ -507,7 +509,7 @@ across all users of the webapp).
 | **Vue 3** | JavaScript framework for building UIs (comparable to React); uses `.vue` files with `<script>`, `<template>`, `<style>` |
 | **Pinia** | Vue's state management library — a store is a reactive object shared across components |
 | **Tailwind CSS** | Utility-class CSS library: instead of writing `.my-button { color: red }`, you write `class="text-red-500"` directly in HTML |
-| **Design tokens** | CSS variables in `src/styles/tokens.css` (Dataiku colors, sidebar palette, radius, dark mode), bridged into Tailwind utilities so `bg-primary` etc. look like a Dataiku product |
+| **Design tokens** | CSS variables defined by the `@dataiku/ea-ui-kit` theme and exposed as Tailwind utilities, so `bg-primary` etc. look like a Dataiku product |
 | **reka-ui** | Headless (unstyled) Vue UI primitives used to build the local `Ea*` components in `src/components/ui/` |
 | **FastAPI** | Python web framework: you decorate functions with `@router.get("/path")` and they become API endpoints |
 | **`uv`** | Python package manager; `uv sync` reads `pyproject.toml` and creates a virtualenv with the right deps |
@@ -564,7 +566,7 @@ This blueprint makes several non-obvious choices. They are **deliberate**, docum
 ## Tech notes
 
 - **Python ≥3.11** — recommended for the code env. The backend uses `from __future__ import annotations` as a 3.9 compatibility shim, but type errors can still surface on very old envs.
-- **Design tokens / UI** — the app owns its look: tokens in `frontend/src/styles/tokens.css`, local `Ea*` components in `frontend/src/components/ui/` (built on `reka-ui`). There is no external component-library dependency. To re-theme, edit the token values in one place.
+- **Design tokens / UI** — the look comes from the team's design system (`@dataiku/ea-ui-kit` through bs-blueprint); the app owns no palette. Local `Ea*` components in `frontend/src/components/ui/` remain until the plan's Phase 5 replaces them with kit parts.
 - **Settings storage key** — `<prefix>_app_settings` in the project's *standard* variables namespace. Two webapps in the same project with different `APP_PREFIX` values won't collide.
 - **No writable local filesystem in DSS** — the plugin install directory is read-only. Use **Managed Folders** for user-uploaded files and **project variables** for configuration.
 - **WebSockets** — DSS's WSGI layer doesn't support WebSocket upgrades. If you need push updates, use Server-Sent Events (SSE) instead (FastAPI's `sse-starlette` package, already in `pyproject.toml`).

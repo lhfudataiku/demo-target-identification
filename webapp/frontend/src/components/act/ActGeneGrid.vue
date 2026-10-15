@@ -10,6 +10,7 @@
    * columns rather than one unscannable strip.
    */
   import { computed } from 'vue'
+  import { seriesVar } from '@/utils/seriesColours'
 
   defineOptions({ name: 'ActGeneGrid' })
 
@@ -48,7 +49,8 @@
         </div>
         <div v-for="row in g" :key="row.name" class="flex items-center">
           <div class="w-[86px] flex-none truncate pr-1.5 text-right font-mono text-[9px]"
-               :class="row.n_terms >= sharedAt ? 'text-muted-foreground' : 'text-[color:var(--chart-1)]'"
+               :class="row.n_terms >= sharedAt ? 'text-muted-foreground' : ''"
+               :style="row.n_terms >= sharedAt ? undefined : { color: seriesVar('highlight') }"
                :title="`${row.name} — in ${row.n_terms} of ${columns.length} subtypes`">{{ row.name }}</div>
           <!-- the title lives on the CELL, not the dot: a 6px dot is not a
                hover target, which is why the tooltip never appeared. -->
@@ -61,7 +63,7 @@
                   :style="{
                     width: dot(row.ranks[c]).size + 'px',
                     height: dot(row.ranks[c]).size + 'px',
-                    background: row.n_terms >= sharedAt ? 'var(--chart-3)' : 'var(--chart-1)',
+                    background: row.n_terms >= sharedAt ? seriesVar('contrast') : seriesVar('highlight'),
                     opacity: dot(row.ranks[c]).op,
                   }" />
           </div>
@@ -70,11 +72,11 @@
     </div>
     <div class="flex flex-wrap gap-4 font-mono text-[10.5px] text-muted-foreground">
       <span class="flex items-center gap-1.5">
-        <span class="inline-block size-2.5 rounded-full" style="background:var(--chart-3)"></span>
+        <span class="inline-block size-2.5 rounded-full" :style="{ background: seriesVar('contrast') }"></span>
         in {{ sharedAt }}+ terms — the common programme
       </span>
       <span class="flex items-center gap-1.5">
-        <span class="inline-block size-2.5 rounded-full" style="background:var(--chart-1)"></span>
+        <span class="inline-block size-2.5 rounded-full" :style="{ background: seriesVar('highlight') }"></span>
         subtype-specific
       </span>
       <span>dot size and opacity encode rank · hover for the number</span>

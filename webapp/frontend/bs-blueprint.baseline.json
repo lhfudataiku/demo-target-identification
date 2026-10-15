@@ -2,7 +2,6 @@
   "bs-blueprint": "0.2.0",
   "drift": {
     "deps-forbidden": 2,
-    "app-tokens": 2,
     "icons": 12,
     "ui-dir": 15,
     "local-duplicates": 4,

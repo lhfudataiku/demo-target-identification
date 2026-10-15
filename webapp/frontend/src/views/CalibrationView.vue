@@ -44,6 +44,7 @@
   import ActTerm from '@/components/act/ActTerm.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
   import { Split, Gauge, Crosshair, ListTree, Target, Filter } from 'lucide-vue-next'
+  import { seriesVar } from '@/utils/seriesColours'
 
   defineOptions({ name: 'CalibrationView' })
 
@@ -109,9 +110,9 @@
     const c = data.value?.champion
     if (!c) return []
     return [
-      { label: 'model precision', count: +(100 * c.precision).toFixed(1), colour: 'var(--chart-2)',
+      { label: 'model precision', count: +(100 * c.precision).toFixed(1), colour: seriesVar('measured'),
         note: `at the F1-optimised threshold · recall ${(100 * c.recall).toFixed(1)}%` },
-      { label: 'base rate (chance)', count: +(100 * c.base_rate).toFixed(2), colour: 'var(--muted-foreground)',
+      { label: 'base rate (chance)', count: +(100 * c.base_rate).toFixed(2), colour: seriesVar('baseline'),
         note: 'the validation split’s positive rate' },
     ]
   })
@@ -129,9 +130,9 @@
     const c = data.value?.champion
     if (!c) return []
     return [
-      { label: 'average precision', count: +c.auprc.toFixed(3), colour: 'var(--chart-2)',
+      { label: 'average precision', count: +c.auprc.toFixed(3), colour: seriesVar('measured'),
         note: 'area under the precision–recall curve' },
-      { label: 'baseline', count: +c.base_rate.toFixed(3), colour: 'var(--muted-foreground)',
+      { label: 'baseline', count: +c.base_rate.toFixed(3), colour: seriesVar('baseline'),
         note: 'what a random ranker scores' },
     ]
   })
@@ -139,7 +140,7 @@
   const driverRows = computed(() =>
     (data.value?.drivers ?? []).map((d) => ({
       label: d.label, count: d.count,
-      colour: data.value!.drivers_kind[d.label] === 'provenance' ? 'var(--chart-2)' : 'var(--chart-3)',
+      colour: data.value!.drivers_kind[d.label] === 'provenance' ? seriesVar('measured') : seriesVar('contrast'),
     })))
   /** Provenance's share of top-driver appearances, AND how many features earn
       it. Both numbers, because the share alone invites the wrong claim: at 38%
@@ -233,7 +234,7 @@
       <p class="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
         Act 2 of 4 · Calibration
       </p>
-      <h1 class="font-serif text-3xl font-semibold tracking-tight">How faithfully does it reconstruct?</h1>
+      <h1 class="text-3xl font-semibold tracking-tight">How faithfully does it reconstruct?</h1>
       <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
         Where the candidates come from, how they were split, and how reliably the already-validated
         targets land near the top. The distribution leads and the summary follows. Every metric on
@@ -248,7 +249,7 @@
     <div class="grid grid-cols-12 gap-4">
       <!-- ── The gate. Its own card: it is a claim about who is EXCLUDED, and
            it was previously the top third of a card about something else. ── -->
-      <ActCard span="col-span-12 lg:col-span-5" :icon="Filter" accent="var(--chart-4)"
+      <ActCard span="col-span-12 lg:col-span-5" :icon="Filter"
                title="Which diseases qualify" :chips="[['live', 'live']]"
                :src="['disease_eligibility']">
         <template #desc>
@@ -280,7 +281,7 @@
       </ActCard>
 
       <!-- ── The pool. -->
-      <ActCard span="col-span-12 lg:col-span-7" :icon="Split" accent="var(--chart-3)"
+      <ActCard span="col-span-12 lg:col-span-7" :icon="Split"
                title="How the candidate pool is built" :chips="[['live', 'live']]"
                :src="['enriched_dwpc_GGD', 'enriched_dwpc_GPGD', 'enriched_dwpc_GCD']">
         <template #desc>
@@ -293,8 +294,8 @@
         <template v-if="data">
           <ActSankey
             :nodes="[...routes.map((r) => ({ name: r.name })),
-                     { name: 'candidate pool', color: '--chart-2' },
-                     { name: 'duplicate admissions', color: '--muted' },
+                     { name: 'candidate pool', color: seriesVar('measured') },
+                     { name: 'duplicate admissions', color: 'var(--muted)' },
                      ...data.splits.map((sp) => ({ name: sp.split }))]"
             :links="[
               ...routes.map((r) => ({ source: r.name, target: 'candidate pool', value: r.count })),
@@ -335,7 +336,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-5" :icon="Target" accent="var(--chart-1)"
+      <ActCard span="col-span-12 lg:col-span-5" :icon="Target"
                title="Precision vs. chance" :chips="[['live', 'live']]"
                :src="['split_audit_2']">
         <template #desc>
@@ -430,7 +431,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-5" :icon="Gauge" accent="var(--chart-4)"
+      <ActCard span="col-span-12 lg:col-span-5" :icon="Gauge"
                title="Enrichment, disease by disease" :chips="[['live', 'live']]"
                :src="['persona_enrichment']">
         <template #desc>
@@ -465,7 +466,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12 lg:col-span-7" :icon="Crosshair" accent="var(--chart-2)"
+      <ActCard span="col-span-12 lg:col-span-7" :icon="Crosshair"
                title="What drives the score" :chips="[['live', 'live']]"
                :src="['shap_driver_frequency']">
         <template #desc>
@@ -479,11 +480,11 @@
         <ActBar v-if="data" :rows="driverRows" :row-height="17" />
         <div class="mt-2 flex gap-4 font-mono text-[10.5px] text-muted-foreground">
           <span class="flex items-center gap-1.5">
-            <span class="inline-block size-2.5 rounded-sm" style="background:var(--chart-2)"></span>
+            <span class="inline-block size-2.5 rounded-sm" :style="{ background: seriesVar('measured') }"></span>
             edge-provenance features
           </span>
           <span class="flex items-center gap-1.5">
-            <span class="inline-block size-2.5 rounded-sm" style="background:var(--chart-3)"></span>
+            <span class="inline-block size-2.5 rounded-sm" :style="{ background: seriesVar('contrast') }"></span>
             path, proximity and topology
           </span>
         </div>
@@ -509,7 +510,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12" :icon="ListTree" accent="var(--chart-5)"
+      <ActCard span="col-span-12" :icon="ListTree"
                title="The model's inputs" :chips="[['live', 'live']]">
         <template #desc>
           Fourteen <ActTerm t="feature">features</ActTerm>, all of them graph structure — no sequence,
@@ -535,7 +536,7 @@
               <TableCell class="font-mono text-[11.5px] font-medium whitespace-nowrap">{{ f.feature }}</TableCell>
               <TableCell>
                 <span class="rounded px-1.5 py-0.5 font-mono text-[10px] uppercase"
-                      :class="f.kind === 'provenance' ? 'bg-primary/25 text-primary-foreground' : 'bg-secondary text-muted-foreground'">
+                      :class="f.kind === 'provenance' ? 'bg-primary/25 text-primary' : 'bg-secondary text-muted-foreground'">
                   {{ f.kind }}
                 </span>
               </TableCell>

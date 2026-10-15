@@ -89,7 +89,7 @@ that surfaces in the UI as an unexplained HTTP 500.
 | a screen | `frontend/src/views/*.vue` |
 | shared card / layout | `frontend/src/components/act/ActCard.vue` |
 | navigation, act order | `frontend/src/router/index.ts` |
-| colours, fonts | `frontend/src/styles/tokens.css` (Dataiku brand — see below) |
+| a chart's colour | `frontend/src/utils/seriesColours.ts` — name the meaning, not the colour (see below) |
 
 ### 2. Check it locally (optional)
 
@@ -217,21 +217,21 @@ Separately, and for version control only. It updates nothing on DSS.
 
 ## Design system
 
-The app uses the **Dataiku brand palette**, not the shadcn defaults the template shipped
-with. `frontend/src/styles/tokens.css` holds the values:
+Since 2026-10-15 the app uses the team's design system: the `@dataiku/ea-ui-kit` theme (DSS
+product palette, indigo primary, Source Sans Pro), wired by bs-blueprint through
+`frontend/src/styles/kit.css`. The app owns no palette; `frontend/DESIGN.md` (managed by
+bs-blueprint) lists the tokens and rules, and `npm run check` enforces them.
 
-```
-dkBlack #1A1A1A   dkWhite #FEFEF9   dkDarkGreen #06312E
-dkBeige #F8F4E4   dkGreen #3EDAB2   dkLightGreen #C7FFF1
-dkBlue  #7092F2   dkOrange #EDAB4F   (data viz only)
-```
+**Chart colours carry meaning**, so a view names the meaning and
+`frontend/src/utils/seriesColours.ts` picks the kit token: `measured` (the model's result),
+`contrast` (what it is compared with), `highlight` (the exception to look at), `approved`,
+`trial`, `baseline` and `negative`. The table was approved in Phase 3 of
+[`BLUEPRINT_ALIGNMENT_PLAN.md`](../docs/demo/BLUEPRINT_ALIGNMENT_PLAN.md); change it there first.
 
-Fonts: **Spectral** headings, **Roboto** body, **DM Mono** data — the sanctioned Google
-substitutes for Signifier / Untitled Sans / Söhne Mono.
-
-Two rules that are easy to break: `dkGreen` is a **light** mint, so anything on it takes
-dark text (`--primary-foreground` is dkDarkGreen, never white). And Orange+Green or
-Blue+Green must never be co-dominant surfaces.
+Two rules that are easy to break: ECharts draws on a canvas and cannot read CSS variables or the
+kit's space-separated `hsl()` values, so canvas colours always go through `seriesColor()` or
+`resolveColour()`. And `text-primary-foreground` is white in the kit: on a faint `bg-primary/NN`
+tint use `text-primary` instead.
 
 ## Guardrails the UI must keep
 

@@ -17,6 +17,7 @@
   import { GridComponent, MarkLineComponent, TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
   import type { CustomSeriesRenderItemReturn, EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
+  import { seriesColor, resolveColour } from '@/utils/seriesColours'
 
   use([CustomChart, GridComponent, MarkLineComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActIntervals' })
@@ -28,14 +29,12 @@
   const LO = 0.6, HI = 1.06, RH = 24
   const ready = ref(false)
   onMounted(() => nextTick(() => (ready.value = true)))
-  const token = (n: string, f: string) =>
-    getComputedStyle(document.documentElement).getPropertyValue(n).trim() || f
   const height = computed(() => Math.max(150, props.rows.length * RH + 46))
 
   const chartOption = computed((): EChartsOption => {
-    const ok = token('--chart-3', '#7092F2')
-    const bad = token('--destructive', '#B3261E')
-    const dim = token('--muted-foreground', '#777')
+    const ok = seriesColor('contrast')
+    const bad = seriesColor('negative')
+    const dim = resolveColour('var(--muted-foreground)')
     return {
       animationDuration: 600,
       grid: { left: 128, right: 84, top: 8, bottom: 28, containLabel: false },
@@ -53,8 +52,8 @@
       },
       xAxis: {
         type: 'value', min: LO, max: HI,
-        splitLine: { lineStyle: { type: 'dashed', color: 'var(--border)' } },
-        axisLabel: { fontFamily: 'DM Mono, monospace', fontSize: 9.5, color: 'var(--muted-foreground)' },
+        splitLine: { lineStyle: { type: 'dashed', color: resolveColour('var(--border)') } },
+        axisLabel: { fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 9.5, color: resolveColour('var(--muted-foreground)') },
       },
       yAxis: {
         type: 'category', inverse: true, data: props.rows.map((r) => r.label),
@@ -98,7 +97,7 @@
               { type: 'text', style: {
                   x: width - 6, y: v[1] - 6, align: 'right',
                   text: `n=${n}` + (over ? `  hi ${rawHi.toFixed(3)}` : ''),
-                  fill: muted ? bad : dim, font: '9.5px "DM Mono", monospace' } },
+                  fill: muted ? bad : dim, font: '9.5px ui-monospace, SFMono-Regular, monospace' } },
             ],
           }
         },
@@ -110,7 +109,7 @@
           lineStyle: { color: bad, type: 'dashed', width: 1 },
           label: {
             formatter: 'AUC = 1.0, the ceiling', position: 'insideEndBottom',
-            fontFamily: 'DM Mono, monospace', fontSize: 9, color: bad,
+            fontFamily: 'ui-monospace, SFMono-Regular, monospace', fontSize: 9, color: bad,
           },
           data: [{ xAxis: 1.0 }],
         },

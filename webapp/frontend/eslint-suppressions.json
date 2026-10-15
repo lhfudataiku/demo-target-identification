@@ -14,7 +14,7 @@
   },
   "src/components/act/ActGeneGrid.vue": {
     "better-tailwindcss/no-restricted-classes": {
-      "count": 10
+      "count": 9
     }
   },
   "src/components/act/ActGlossaryDrawer.vue": {

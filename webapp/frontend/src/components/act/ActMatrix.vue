@@ -8,6 +8,7 @@
    * grid does the same with real text, selectable labels and native tooltips.
    */
   import { computed } from 'vue'
+  import { seriesVar } from '@/utils/seriesColours'
 
   defineOptions({ name: 'ActMatrix' })
 
@@ -52,7 +53,7 @@
           <div v-else
                class="grid h-[26px] place-items-center rounded-sm font-mono text-[9.5px]"
                :style="{
-                 background: `color-mix(in oklab, var(--chart-3) ${(8 + ((lookup.get(a + '|' + b) ?? 0) / max) * 90).toFixed(0)}%, var(--card))`,
+                 background: `color-mix(in oklab, ${seriesVar('contrast')} ${(8 + ((lookup.get(a + '|' + b) ?? 0) / max) * 90).toFixed(0)}%, var(--card))`,
                  color: ((lookup.get(a + '|' + b) ?? 0) / max) > 0.55
                    ? 'var(--primary-foreground)' : 'var(--muted-foreground)',
                }"

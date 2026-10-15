@@ -15,6 +15,7 @@
   import { LegendComponent, TooltipComponent } from 'echarts/components'
   import { CanvasRenderer } from 'echarts/renderers'
   import type { EChartsOption, TooltipComponentFormatterCallbackParams } from 'echarts'
+  import { categoricalColors, resolveColour } from '@/utils/seriesColours'
 
   use([PieChart, LegendComponent, TooltipComponent, CanvasRenderer])
   defineOptions({ name: 'ActDonut' })
@@ -27,9 +28,7 @@
   const ready = ref(false)
   onMounted(() => nextTick(() => (ready.value = true)))
 
-  const PALETTE = ['--chart-1', '--chart-2', '--chart-3', '--chart-4', '--chart-5']
-  const colors = computed(() =>
-    PALETTE.map((v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim()))
+  const colors = computed(() => categoricalColors())
 
   const chartOption = computed((): EChartsOption => ({
     animationDuration: 900,
@@ -47,7 +46,7 @@
     legend: {
       type: 'scroll', orient: 'vertical', top: 'center', right: 0,
       itemWidth: 10, itemHeight: 10, icon: 'roundRect',
-      textStyle: { fontSize: 11, color: 'var(--foreground)' },
+      textStyle: { fontSize: 11, color: resolveColour('var(--foreground)') },
     },
     series: [{
       type: 'pie',
@@ -57,7 +56,7 @@
       labelLine: { show: false },
       itemStyle: {
         borderRadius: 6,
-        borderColor: 'color-mix(in oklab, white 85%, var(--card) 15%)',
+        borderColor: resolveColour('var(--card)'),
         borderWidth: 1,
       },
       data: props.rows.map((r, i) => ({

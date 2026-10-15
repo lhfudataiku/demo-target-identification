@@ -67,11 +67,11 @@
                @keydown.esc="store.close()">
         <header class="flex flex-none items-start justify-between gap-3 border-b border-border px-5 py-4">
           <div class="flex items-start gap-3">
-            <span class="mt-0.5 grid size-8 flex-none place-items-center rounded-lg bg-primary/20 text-primary-foreground">
+            <span class="mt-0.5 grid size-8 flex-none place-items-center rounded-lg bg-primary/20 text-primary">
               <BookOpen class="size-4" />
             </span>
             <div class="flex flex-col gap-0.5">
-              <h2 class="font-serif text-[17px] font-semibold leading-snug tracking-tight">Glossary</h2>
+              <h2 class="text-[17px] font-semibold leading-snug tracking-tight">Glossary</h2>
               <p class="text-[12.5px] leading-relaxed text-muted-foreground">
                 Every data-science and biology term this deck uses.
               </p>

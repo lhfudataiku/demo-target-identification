@@ -224,9 +224,10 @@ swaps to live data, its mock module is deleted, not commented out.
 
 From the blueprint's agent instructions (`AGENTS` at its repo root); violating them means the app stops looking like a Dataiku product.
 
-- **Never hardcode colors.** Tailwind utilities over the tokens in `styles/tokens.css` —
-  `bg-background`, `text-muted-foreground`, `border-border`, `bg-primary`, `text-destructive`. No hex, no
-  `text-[#…]`. Chart series use `--chart-1..5`.
+- **Never hardcode colors.** Tailwind utilities over the kit theme's tokens — `bg-background`,
+  `text-muted-foreground`, `border-border`, `bg-primary`, `text-destructive`. No hex, no `text-[#…]`.
+  A chart series names its meaning (`measured`, `contrast`, `highlight`, …) and takes its colour from
+  `frontend/src/utils/seriesColours.ts`; it never picks a `--chart-N` slot directly.
 - **Let the sidebar build itself.** Add an act by adding a route with `meta: { title, icon, menu:
   'primary', order }`. Never hand-build a menu array.
 - **`apiUrl()` for every call.** A bare `fetch('/api/…')` does not reach the backend inside DSS.

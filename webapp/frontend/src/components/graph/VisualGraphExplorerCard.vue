@@ -74,7 +74,7 @@
 
 <template>
   <ActCard :span="span" :title="title" :desc="description" :icon="Network" :chips="chips" :src="src"
-           accent="var(--chart-2)" :method-label="methodLabel ?? 'How this is computed'">
+           :method-label="methodLabel ?? 'How this is computed'">
     <div class="flex flex-col gap-3">
       <div v-if="starterQueries?.length" role="group" aria-label="Available graph queries"
            class="flex flex-wrap gap-2">
@@ -82,7 +82,7 @@
                 :aria-pressed="selectedStarterId === starter.id" :title="starter.description"
                 class="rounded-md border px-2.5 py-1 text-left text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
                 :class="selectedStarterId === starter.id
-                  ? 'border-primary bg-primary/15 text-primary-foreground'
+                  ? 'border-primary bg-primary/15 text-primary'
                   : 'border-border bg-muted/30 text-muted-foreground hover:bg-muted/60'"
                 @click="selectStarter(starter)">
           {{ starter.label }}

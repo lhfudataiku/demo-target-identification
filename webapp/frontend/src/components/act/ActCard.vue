@@ -94,7 +94,7 @@
           <component :is="icon" class="size-4" />
         </span>
         <div class="flex flex-col gap-0.5">
-          <h2 class="font-serif text-[17px] font-semibold leading-snug tracking-tight">{{ title }}</h2>
+          <h2 class="text-[17px] font-semibold leading-snug tracking-tight">{{ title }}</h2>
           <p v-if="desc || $slots.desc"
              class="max-w-2xl text-[13px] leading-relaxed text-muted-foreground">
             <slot name="desc">{{ desc }}</slot>
@@ -105,7 +105,7 @@
         <span v-for="[label, kind] in chips" :key="label"
               class="rounded-md px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide"
               :class="{
-                'bg-primary/25 text-primary-foreground': kind === 'live',
+                'bg-primary/25 text-primary': kind === 'live',
                 'bg-muted text-muted-foreground': kind === 'mock',
                 'bg-accent text-accent-foreground': kind === 'port',
               }">{{ label }}</span>

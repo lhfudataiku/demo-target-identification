@@ -8,9 +8,9 @@
 > [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md), [`../../webapp/README.md`](../../webapp/README.md) and
 > [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented and verified.
 
-**Status: IN PROGRESS — Phases 0–1 committed 2026-10-15; Phase 2 deployed live 2026-10-15, not yet committed.** All four decisions in §8 were
+**Status: IN PROGRESS — Phases 0–2 committed and deployed 2026-10-15; Phase 3 implemented locally, not yet committed or deployed.** All four decisions in §8 were
 taken on the recommendations, and the direction is recorded as
-[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 3–8 have not started. The deploy pause that Phase 1 introduced ended with Phase 2. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
+[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 4–8 have not started. The deploy pause that Phase 1 introduced ended with Phase 2. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
 a phase, commit, push, DSS deployment and any live DSS change remain separate actions, each requiring
 its own approval.
 
@@ -217,7 +217,7 @@ act works, and the checks in [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYM
 against the test namespace. The live deploy then repeats those checks, and the test webapp and its
 library folder are removed afterwards, with approval.
 
-> **Deployed live 2026-10-15, awaiting commit approval.** `deploy.sh` now follows the framework's
+> **Deployed live and committed 2026-10-15.** `deploy.sh` now follows the framework's
 > starter: it mirrors `backend/` and `frontend/dist/` with `dku library sync --delete` and sets the
 > webapp's html and js from the build. A new `WRITE_BACK_WEBAPP_ID=0` switch keeps a throwaway
 > deploy from rewriting `app.env`. The router uses hash history, `apiUrl` comes from the framework,
@@ -240,6 +240,43 @@ library folder are removed afterwards, with approval.
 Delete `styles/tokens.css` and the `@theme inline` bridge. Map app-only tokens to kit tokens. Write the
 series-to-slot table (§4.2), review it, then move charts to `useThemeColors()` through that table. **Accept:** before/after screenshots of
 every act are reviewed, and no chart series changes meaning without that being noted.
+
+**Series-to-slot table — approved 2026-10-15.** Every meaning-bearing colour is read from
+`frontend/src/utils/seriesColours.ts`, which holds exactly this table:
+
+| Meaning | Where it appears | Before | Kit token |
+|---|---|---|---|
+| Measured: the model or pipeline result | precision, AUPRC, corroborated interactions, candidate pool, node types, AUC histogram, personas, eligible band | mint `--chart-2` | `chart-2` (teal) |
+| Contrast: the series compared against it | other drivers, relations, shared terms, trustworthy intervals, overlap matrix, positive SHAP, score bar | blue `--chart-3` | `chart-3` (navy) |
+| Highlight: the exception to look at | single-source interactions, genes distinct to one term | dark green `--chart-1` | `chart-1` (orange) |
+| Approved drug | Act 4 badge | blue tint | `success` |
+| Trial drug | Act 4 badge | orange tint | `warning` |
+| Baseline or chance | base rate, grouped sources, duplicate admissions | `--muted-foreground` | `muted-foreground` |
+| Untrustworthy or negative | failed-trust interval, negative SHAP | `--destructive` | `destructive` |
+| Categories with no fixed meaning | Sankey routes and splits, label-evidence donut | `--chart-1…5` | `chart-1…5` |
+
+Two further decisions, taken with it: card accent stripes, which were decorative, all use the kit
+`primary`; and act headlines drop the Spectral serif for the kit's sans (the Google Fonts link goes,
+and code and number text uses the system monospace). Canvas charts resolve every colour through the
+framework's `themeColor()`, because ECharts cannot parse the kit's space-separated `hsl()` values.
+
+> **Implemented 2026-10-15, awaiting commit approval.** `styles/tokens.css` and the `@theme inline`
+> bridge are deleted, the Google Fonts link is gone, and every chart reads the table above; the
+> doctor's app-palette finding closed on its own. Verified locally on all four acts against the
+> table. What surfaced on the way:
+>
+> - **White text on faint tints.** The old palette's `primary-foreground` was dark green (text on a
+>   light mint); the kit's is white. Eight places put it on a `bg-primary/NN` tint and became
+>   unreadable; they now use `text-primary`, the kit's chip pattern.
+> - **The interim sidebar.** The local sidebar painted the app name with `text-sidebar-primary`
+>   (near-white in the kit) and hovered with `bg-sidebar-accent` (solid indigo) without switching
+>   the text. It now follows the framework shell's pairings until Phase 6 replaces it.
+> - **Axis labels never had their colour.** Canvas charts were given `'var(--border)'` and
+>   `'var(--muted-foreground)'`, which ECharts cannot resolve, and named the DM Mono font; both now
+>   resolve properly.
+> - The Explorer card's accent and all eleven act-card accents now default to the kit primary.
+> - DEPLOYMENT.md "Design system", the webapp README and [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) §3.5
+>   were corrected in the same change, ahead of Phase 8.
 
 ### Phase 4 — icons
 

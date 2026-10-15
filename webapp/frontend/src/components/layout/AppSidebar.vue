@@ -47,8 +47,8 @@
     <!-- Brand header -->
     <div class="flex h-16 items-center border-b border-sidebar-border px-4">
       <RouterLink to="/" class="flex items-center gap-2">
-        <component :is="APP_ICON" class="h-5 w-5 text-sidebar-primary" />
-        <span class="text-base font-semibold text-sidebar-primary">{{ APP_NAME }}</span>
+        <component :is="APP_ICON" class="h-5 w-5 text-sidebar-foreground" />
+        <span class="text-base font-semibold text-sidebar-foreground">{{ APP_NAME }}</span>
       </RouterLink>
     </div>
 
@@ -75,8 +75,8 @@
           :to="{ name: item.name }"
           class="flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm transition-colors"
           :class="item.isActive
-            ? 'border-border bg-card font-medium text-foreground'
-            : 'text-sidebar-foreground hover:bg-sidebar-accent'"
+            ? 'bg-sidebar-accent font-medium text-sidebar-accent-foreground'
+            : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'"
         >
           <component :is="item.icon" v-if="item.icon" class="h-4 w-4 shrink-0" />
           <span class="truncate">{{ item.title }}</span>
@@ -93,8 +93,8 @@
             :to="{ name: item.name }"
             class="flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm transition-colors"
             :class="item.isActive
-              ? 'border-border bg-card font-medium text-foreground'
-              : 'text-sidebar-foreground hover:bg-sidebar-accent'"
+              ? 'bg-sidebar-accent font-medium text-sidebar-accent-foreground'
+              : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'"
           >
             <component :is="item.icon" v-if="item.icon" class="h-4 w-4 shrink-0" />
             <span class="truncate">{{ item.title }}</span>
@@ -107,7 +107,7 @@
         <button
           type="button"
           class="flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-left text-sm
-                 text-sidebar-foreground transition-colors hover:bg-sidebar-accent
+                 text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring/40"
           :aria-expanded="glossary.isOpen"
           @click="glossary.toggle()"
@@ -121,8 +121,8 @@
           :to="{ name: item.name }"
           class="flex items-center gap-2 rounded-md border border-transparent px-3 py-2 text-sm transition-colors"
           :class="item.isActive
-            ? 'border-border bg-card font-medium text-foreground'
-            : 'text-sidebar-foreground hover:bg-sidebar-accent'"
+            ? 'bg-sidebar-accent font-medium text-sidebar-accent-foreground'
+            : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'"
         >
           <component :is="item.icon" v-if="item.icon" class="h-4 w-4 shrink-0" />
           <span class="truncate">{{ item.title }}</span>
@@ -134,7 +134,7 @@
     <nav v-else class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-3">
       <RouterLink
         :to="{ name: 'home' }"
-        class="mb-3 flex items-center gap-2 rounded-md px-3 py-2 text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent"
+        class="mb-3 flex items-center gap-2 rounded-md px-3 py-2 text-sm text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
       >
         <MoveLeft class="h-4 w-4 shrink-0" />
         <span>Back</span>
@@ -177,8 +177,8 @@
             :class="item.isDisabled
               ? 'cursor-default text-muted-foreground'
               : item.isActive
-                ? 'border-border bg-card font-medium text-foreground'
-                : 'text-sidebar-foreground hover:bg-sidebar-accent'"
+                ? 'bg-sidebar-accent font-medium text-sidebar-accent-foreground'
+                : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'"
           >
             <component :is="item.icon" v-if="item.icon" class="h-4 w-4 shrink-0" />
             <span class="truncate">{{ item.title }}</span>

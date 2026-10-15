@@ -47,6 +47,7 @@
   import VisualGraphExplorerCard from '@/components/graph/VisualGraphExplorerCard.vue'
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
   import { ListFilter, Microscope, Network } from 'lucide-vue-next'
+  import { seriesVar } from '@/utils/seriesColours'
 
   defineOptions({ name: 'ShortlistView' })
 
@@ -346,7 +347,7 @@
       <p class="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
         Act 4 of 4 · The list
       </p>
-      <h1 class="font-serif text-3xl font-semibold tracking-tight">Does this look right to you?</h1>
+      <h1 class="text-3xl font-semibold tracking-tight">Does this look right to you?</h1>
       <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
         One disease, all the way down — and the act this demo exists for. Open a disease you know and
         judge the top of the list yourself; the scientist is the instrument. Then take the controls:
@@ -416,7 +417,7 @@
           <template v-for="(f, i) in data.funnel" :key="f.step">
             <span class="rounded-md px-2.5 py-1 font-mono text-xs"
                   :class="i === data.funnel.length - 1
-                    ? 'bg-primary/25 font-medium text-primary-foreground'
+                    ? 'bg-primary/25 font-medium text-primary'
                     : 'bg-secondary text-muted-foreground'">
               {{ f.step }} · {{ f.n.toLocaleString() }}
             </span>
@@ -497,13 +498,13 @@
                 <TableCell class="font-mono text-[11px]">{{ tractLabel(r) }}</TableCell>
                 <TableCell class="no-underline">
                   <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-[10px] uppercase"
-                        :class="r.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary-foreground'">
+                        :class="r.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary'">
                     {{ r.is_target ? 'associated' : 'novel' }}
                   </span>
                   <span v-if="r.approved_for_disease"
-                        class="mr-1 inline-block rounded bg-chart-3/20 px-1.5 py-0.5 font-mono text-[10px] uppercase">approved</span>
+                        class="mr-1 inline-block rounded bg-success/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-success">approved</span>
                   <span v-if="r.investigational_for_disease"
-                        class="mr-1 inline-block rounded bg-chart-4/25 px-1.5 py-0.5 font-mono text-[10px] uppercase">trial</span>
+                        class="mr-1 inline-block rounded bg-warning/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-warning">trial</span>
                   <span v-if="r.has_safety_liability"
                         class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-destructive">liability</span>
                 </TableCell>
@@ -512,7 +513,7 @@
                     <span v-for="(d, i) in rowDrivers(r)" :key="d.key">
                       <span v-if="i">, </span>{{ d.label ?? d.key }}<span
                         v-if="d.value" class="ml-0.5 font-mono tabular-nums"
-                        :class="d.sign === '+' ? 'text-chart-3' : 'text-destructive'"
+                        :style="{ color: seriesVar(d.sign === '+' ? 'contrast' : 'negative') }"
                       >{{ d.sign }}{{ d.value }}</span>
                     </span>
                   </template>
@@ -591,13 +592,13 @@
             <div class="flex flex-wrap items-baseline gap-2">
               <span class="font-mono text-[17px] font-medium">{{ sel.gene_name }}</span>
               <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-[10px] uppercase"
-                    :class="sel.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary-foreground'">
+                    :class="sel.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary'">
                 {{ sel.is_target ? 'associated' : 'novel' }}
               </span>
               <span v-if="sel.approved_for_disease"
-                    class="inline-block rounded bg-chart-3/20 px-1.5 py-0.5 font-mono text-[10px] uppercase">approved</span>
+                    class="inline-block rounded bg-success/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-success">approved</span>
               <span v-if="sel.investigational_for_disease"
-                    class="inline-block rounded bg-chart-4/25 px-1.5 py-0.5 font-mono text-[10px] uppercase">trial</span>
+                    class="inline-block rounded bg-warning/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-warning">trial</span>
               <span v-if="sel.has_safety_liability"
                     class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-[10px] uppercase text-destructive">liability</span>
             </div>
@@ -630,7 +631,7 @@
                   <span v-if="d.label" class="ml-1 font-mono text-[10px] text-muted-foreground">{{ d.key }}</span>
                 </span>
                 <span v-if="d.value" class="flex-none font-mono text-[12px] tabular-nums"
-                      :class="d.sign === '+' ? 'text-chart-3' : 'text-destructive'">
+                      :style="{ color: seriesVar(d.sign === '+' ? 'contrast' : 'negative') }">
                   {{ d.sign }}{{ d.value }}
                 </span>
               </div>
@@ -667,8 +668,8 @@
                   </span>
                 </div>
                 <div class="h-[5px] overflow-hidden rounded-full bg-muted">
-                  <i class="block h-full rounded-full bg-chart-3"
-                     :style="{ width: `${f.percentile}%` }" />
+                  <i class="block h-full rounded-full"
+                     :style="{ width: `${f.percentile}%`, background: seriesVar('contrast') }" />
                 </div>
               </div>
             </div>

@@ -32,6 +32,7 @@
   import ActBar from '@/components/act/ActBar.vue'
   import ActGeneGrid from '@/components/act/ActGeneGrid.vue'
   import { Network, GitCompare, Ruler, Users, Grid3x3 } from 'lucide-vue-next'
+  import { seriesVar } from '@/utils/seriesColours'
 
   defineOptions({ name: 'TherapeuticAreaView' })
 
@@ -90,7 +91,7 @@
       .map((t) => ({
         label: `${t.disease_name}  (n=${t.n_pos})`,
         count: Math.round((t.enrichment ?? 0) * 10) / 10,
-        colour: t.trustworthy ? 'var(--chart-3)' : 'var(--destructive)',
+        colour: t.trustworthy ? seriesVar('contrast') : seriesVar('negative'),
       })))
   // Genes shared by every pair in the family: the common programme.
   // The tab selects which overlap the matrix shows — it was bound but unused,
@@ -148,7 +149,7 @@
       <p class="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
         Act 3 of 4 · The therapeutic area
       </p>
-      <h1 class="font-serif text-3xl font-semibold tracking-tight">
+      <h1 class="text-3xl font-semibold tracking-tight">
         Does it hold across my area, or just on one term?
       </h1>
       <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
@@ -265,7 +266,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12" :icon="Ruler" accent="var(--chart-4)"
+      <ActCard span="col-span-12" :icon="Ruler"
                title="When AUC stops working" :chips="[['live', 'live']]"
                method-label="How enrichment is computed"
                :src="['family_panel']">
@@ -281,7 +282,7 @@
         </p>
         <div v-if="thin.length" class="mt-2 flex gap-4 font-mono text-[10.5px] text-muted-foreground">
           <span class="flex items-center gap-1.5">
-            <span class="inline-block size-2.5 rounded-sm" style="background:var(--chart-3)"></span>
+            <span class="inline-block size-2.5 rounded-sm" :style="{ background: seriesVar('contrast') }"></span>
             AUC is trustworthy for this term
           </span>
           <span class="flex items-center gap-1.5">
@@ -307,7 +308,7 @@
 
       
 
-      <ActCard span="col-span-12 lg:col-span-7" :icon="GitCompare" accent="var(--chart-3)"
+      <ActCard span="col-span-12 lg:col-span-7" :icon="GitCompare"
                title="Subtype overlap" :chips="[['live', 'live']]"
                method-label="What the top 50 is"
                :src="['family_panel_overlap']">
@@ -348,7 +349,7 @@
 
       
 
-      <ActCard span="col-span-12 lg:col-span-6" :icon="Users" accent="var(--chart-2)"
+      <ActCard span="col-span-12 lg:col-span-6" :icon="Users"
                title="Shared vs. subtype-specific"
                method-label="Why only the curated leaf terms">
         <template #desc>
@@ -386,7 +387,7 @@
               <div class="flex flex-wrap gap-1">
                 <span v-for="g in (detail.programme.specific[lf] ?? []).slice(0, 14)" :key="g"
                       class="rounded border border-primary/40 bg-primary/10 px-1.5 py-0.5
-                             font-mono text-[11px] text-primary-foreground">{{ g }}</span>
+                             font-mono text-[11px] text-primary">{{ g }}</span>
                 <span v-if="(detail.programme.specific[lf] ?? []).length > 14"
                       class="px-1 font-mono text-[10.5px] text-muted-foreground">
                   +{{ (detail.programme.specific[lf] ?? []).length - 14 }} more
@@ -415,7 +416,7 @@
         </template>
       </ActCard>
 
-      <ActCard span="col-span-12" :icon="Grid3x3" accent="var(--chart-3)"
+      <ActCard span="col-span-12" :icon="Grid3x3"
                title="Gene coverage across the family"
                :chips="[['live', 'live']]" method-label="How to read the grid"
                :src="['family_panel_top50']">
