@@ -122,7 +122,6 @@ webapp/backend/routes/families.py	webapp	LIVE (referenced)	3	docs/prioritizer/CL
 webapp/backend/routes/system.py	webapp	LIVE (referenced)	1	webapp/README.md
 webapp/backend/services/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
 webapp/backend/services/dataset_cache.py	webapp	LIVE (referenced)	2	webapp/README.md,webapp/backend/routes/candidates.py
-webapp/backend/services/settings.py	webapp	LIVE (referenced)	2	webapp/README.md,webapp/frontend/src/views/SettingsView.vue
 webapp/dss_webapp/backend.py	webapp	LIVE (referenced)	7	archive/flow-map-iterations/flow_map.html,tools/recipe_classes.json,webapp/README.md,webapp/app.env
 webapp/dss_webapp/deploy.sh	webapp	LIVE (referenced)	9	docs/demo/BLUEPRINT_ALIGNMENT_PLAN.md,docs/demo/WEBAPP_DESIGN.md,dss_lib/demo_identity.py,webapp/DEPLOYMENT.md
 webapp/frontend/bs-blueprint.baseline.json	webapp	LIVE (referenced)	4	docs/demo/BLUEPRINT_ALIGNMENT_PLAN.md,webapp/AGENTS.md,webapp/CLAUDE.md,webapp/frontend/docs/design-migration.md

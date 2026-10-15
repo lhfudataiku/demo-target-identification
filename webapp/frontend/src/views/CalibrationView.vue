@@ -45,6 +45,7 @@
   import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@dataiku/ea-ui-kit'
   import { ArrowSplit, ChartHorizontalBar, Filter, ListBulleted, Odometer, Target } from '@dataiku/vue-icons'
   import { seriesVar } from '@/utils/seriesColours'
+  import { PageHeader } from 'bs-blueprint'
 
   defineOptions({ name: 'CalibrationView' })
 
@@ -229,12 +230,12 @@
 </script>
 
 <template>
+  <div class="flex h-full flex-col">
+    <PageHeader title="Act 2 of 4 · Calibration" />
+    <div class="min-h-0 flex-1 overflow-auto">
   <div class="flex flex-col gap-6 p-6">
     <header class="flex flex-col gap-1.5 border-b border-border pb-5">
-      <p class="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-        Act 2 of 4 · Calibration
-      </p>
-      <h1 class="text-3xl font-semibold tracking-tight">How faithfully does it reconstruct?</h1>
+      <h2 class="text-3xl font-semibold tracking-tight">How faithfully does it reconstruct?</h2>
       <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
         Where the candidates come from, how they were split, and how reliably the already-validated
         targets land near the top. The distribution leads and the summary follows. Every metric on
@@ -563,6 +564,8 @@
             same model differently.</p>
         </template>
       </ActCard>
+    </div>
+  </div>
     </div>
   </div>
 </template>

@@ -33,6 +33,7 @@
   import ActGeneGrid from '@/components/act/ActGeneGrid.vue'
   import { ChartHeatmap, Flow, JoinInner, UserGroup, WarningOutline } from '@dataiku/vue-icons'
   import { seriesVar } from '@/utils/seriesColours'
+  import { PageHeader } from 'bs-blueprint'
 
   defineOptions({ name: 'TherapeuticAreaView' })
 
@@ -144,14 +145,14 @@
 </script>
 
 <template>
+  <div class="flex h-full flex-col">
+    <PageHeader title="Act 3 of 4 · The therapeutic area" />
+    <div class="min-h-0 flex-1 overflow-auto">
   <div class="flex flex-col gap-6 p-6">
     <header class="flex flex-col gap-1.5 border-b border-border pb-5">
-      <p class="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-        Act 3 of 4 · The therapeutic area
-      </p>
-      <h1 class="text-3xl font-semibold tracking-tight">
+      <h2 class="text-3xl font-semibold tracking-tight">
         Does it hold across my area, or just on one term?
-      </h1>
+      </h2>
       <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
         Most groups own one therapeutic area, so a single cherry-picked disease proves nothing. Pick
         a family and see the same model against every term in it — with the uncertainty each term
@@ -448,5 +449,7 @@
       </ActCard>
 
       </div>
+  </div>
+    </div>
   </div>
 </template>

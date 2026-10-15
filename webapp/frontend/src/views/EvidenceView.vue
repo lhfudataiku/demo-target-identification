@@ -36,6 +36,7 @@
   import { ACT1_EXPLORER_QUERIES } from '@/utils/a1ExplorerQueries'
   import { Dataset, FileText, MergeBranch, Stacked } from '@dataiku/vue-icons'
   import { seriesVar } from '@/utils/seriesColours'
+  import { PageHeader } from 'bs-blueprint'
 
   defineOptions({ name: 'EvidenceView' })
 
@@ -122,12 +123,12 @@
 </script>
 
 <template>
+  <div class="flex h-full flex-col">
+    <PageHeader title="Act 1 of 4 · The evidence base" />
+    <div class="min-h-0 flex-1 overflow-auto">
   <div class="flex flex-col gap-6 p-6">
     <header class="flex flex-col gap-1.5 border-b border-border pb-5">
-      <p class="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-        Act 1 of 4 · The evidence base
-      </p>
-      <h1 class="text-3xl font-semibold tracking-tight">What went in?</h1>
+      <h2 class="text-3xl font-semibold tracking-tight">What went in?</h2>
       <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
         Public biomedical knowledge, assembled from six external sources and accepted against a
         frozen reference. No model yet — this act is about what the machine can see, and about the
@@ -294,5 +295,7 @@
       </ActCard>
 
       </div>
+  </div>
+    </div>
   </div>
 </template>

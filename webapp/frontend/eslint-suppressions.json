@@ -54,11 +54,6 @@
       "count": 9
     }
   },
-  "src/components/layout/AppSidebar.vue": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 1
-    }
-  },
   "src/layouts/DefaultLayout.vue": {
     "better-tailwindcss/no-restricted-classes": {
       "count": 1
@@ -66,27 +61,22 @@
   },
   "src/views/CalibrationView.vue": {
     "better-tailwindcss/no-restricted-classes": {
-      "count": 18
+      "count": 16
     }
   },
   "src/views/EvidenceView.vue": {
-    "better-tailwindcss/no-restricted-classes": {
-      "count": 4
-    }
-  },
-  "src/views/SettingsView.vue": {
     "better-tailwindcss/no-restricted-classes": {
       "count": 2
     }
   },
   "src/views/ShortlistView.vue": {
     "better-tailwindcss/no-restricted-classes": {
-      "count": 36
+      "count": 34
     }
   },
   "src/views/TherapeuticAreaView.vue": {
     "better-tailwindcss/no-restricted-classes": {
-      "count": 17
+      "count": 15
     }
   }
 }

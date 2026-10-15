@@ -162,10 +162,10 @@ my-app/
 │   ├── config.py        ← Reads APP_PREFIX from env → derives all other config variables
 │   ├── dss_client.py    ← The dual-mode connector: dataiku.api_client() in DSS, dataikuapi locally
 │   ├── routes/
-│   │   ├── system.py    ← /api/system/health, /llms, /settings (GET + PUT)
+│   │   ├── system.py    ← /api/system/health
 │   │   └── evidence.py, calibration.py, families.py, candidates.py ← one route file per act
 │   └── services/
-│       └── settings.py  ← App settings persisted to DSS project variables
+│       └── dataset_cache.py ← Reads and caches the act datasets
 │
 ├── dss_webapp/          ← The thin DSS glue layer (not application logic)
 │   ├── deploy.sh        ← Mirrors backend + built frontend to DSS, patches webapp definition
@@ -178,24 +178,21 @@ my-app/
     ├── tsconfig*.json   ← TypeScript config
     └── src/
         ├── main.ts          ← App entry point: create Vue app, add Pinia + router, mount
-        ├── App.vue          ← Root component: just <router-view />
+        ├── App.vue          ← Root component: applies the kit theme, then <router-view />
         ├── styles/kit.css   ← the @dataiku/ea-ui-kit theme, wired by bs-blueprint
         ├── style.css        ← imports kit.css, plus a few app-specific base rules
         ├── utils/seriesColours.ts ← the one table that maps chart meanings to kit colours
         ├── config.ts        ← App name + icon — the two things to change when you copy this
         ├── utils/api.ts     ← re-exports apiUrl() from bs-blueprint (see below)
         ├── router/index.ts  ← All pages live here; sidebar builds itself from route metadata
-        ├── components/layout/AppSidebar.vue ← Local sidebar, built from route metadata
-        ├── composables/useAppMenu.ts ← Turns route metadata into sidebar menu items
         ├── layouts/
-        │   └── DefaultLayout.vue  ← Sidebar + <router-view /> shell
-        ├── stores/
-        │   ├── settings.ts  ← LLM selection and other settings, synced to DSS via /api
+        │   └── DefaultLayout.vue  ← bs-blueprint's AppLayout + the Glossary button and drawer
+        ├── stores/          ← glossary drawer state, presenter notes (per browser)
 
         └── views/
             ├── EvidenceView.vue, CalibrationView.vue, TherapeuticAreaView.vue,
             │   ShortlistView.vue ← the four acts
-            └── SettingsView.vue  ← LLM picker backed by /api/system/settings
+            └── SettingsView.vue  ← per-browser display settings (presenter notes)
 ```
 
 ---
@@ -225,14 +222,14 @@ bs-blueprint (`SelectField`, `EmptyState`, `SettingsSwitchItem`). The app copies
 }
 ```
 
-The `meta` object is all `AppSidebar` (`components/layout/AppSidebar.vue`, via the
-`useAppMenu` composable) needs. The sidebar item appears automatically. Settings always lives
-at the bottom (`menu: 'tertiary'`).
+The `meta` object is all bs-blueprint's `AppLayout` needs: the sidebar item appears
+automatically. Settings lives at the bottom (`menu: 'tertiary'`). Each view starts with
+bs-blueprint's `PageHeader` and scrolls in its own body (`<div class="min-h-0 flex-1 overflow-auto">`),
+because the shell does not scroll the content pane for you.
 
 **State** is managed with **Pinia** (Vue's official state library, simpler than Redux).
-One store ships with the blueprint:
-- `settings.ts` — fetches and persists app settings through the backend `/api/system/settings`
-  endpoint, which stores them in the DSS **project variables** (survives webapp restarts).
+Two small stores remain: `glossary.ts` (the drawer's open state and the term to scroll to) and
+`presenter.ts` (whether presenter notes show, kept in the browser rather than the DSS project).
 
 **API calls** always go through `apiUrl()` from `utils/api.ts`. See the non-obvious bits
 section below for why.
@@ -276,10 +273,8 @@ identical to in-DSS. `dataikuapi` stays for the control-plane. See **Architectur
 "Local dataset previews via `dataiku-internal-client`"** for the full rationale and trade-offs.
 
 **Routes vs services** — routes handle HTTP (parse params, return JSON, raise HTTP errors).
-Services contain the actual logic and Dataiku API calls. The `system.py` route calls
-`project.list_llms(...)` to find available LLMs; `settings.py` uses
-`project.get_variables()` / `project.set_variables()` to persist settings. The act routes read
-their datasets through `services/dataset_cache.py`.
+Services contain the actual logic and Dataiku API calls. The act routes read their datasets
+through `services/dataset_cache.py`.
 
 ---
 
@@ -294,8 +289,8 @@ on `sys.path` for anything running in that project. `make deploy` uploads the ba
 the built frontend into `python/<LIB_NS>/` so DSS can import your code.
 
 **Project variables** — a simple key-value store per DSS project, writable from Python
-(`project.get_variables()` / `project.set_variables()`). The blueprint uses them to store
-app settings (selected LLM, etc.) so they survive webapp restarts.
+(`project.get_variables()` / `project.set_variables()`). The flow uses them (for example the demo
+panel); this app only reads data and stores no settings of its own in DSS.
 
 **What `make deploy` does, step by step:**
 
@@ -486,15 +481,6 @@ Cypher, join graph results or render a graph/table canvas; those responsibilitie
 3. Call it from the frontend with `fetch(apiUrl('/api/my-feature/items'))`.
    See [The non-obvious bits](#the-non-obvious-bits-explained) for why `apiUrl()` is needed.
 
-### Add a settings field
-
-Settings are persisted to DSS **project variables** (survive webapp restarts, shared
-across all users of the webapp).
-
-1. Add the key to `ALLOWED_KEYS` in `backend/services/settings.py` and to `_blank()`.
-2. Add the field to `AppSettings` interface in `frontend/src/stores/settings.ts`.
-3. Add a control in `frontend/src/views/SettingsView.vue`.
-
 ---
 
 ## Glossary
@@ -564,6 +550,5 @@ This blueprint makes several non-obvious choices. They are **deliberate**, docum
 
 - **Python ≥3.11** — recommended for the code env. The backend uses `from __future__ import annotations` as a 3.9 compatibility shim, but type errors can still surface on very old envs.
 - **Design tokens / UI** — the look comes from the team's design system (`@dataiku/ea-ui-kit` through bs-blueprint); the app owns no palette. Components come from the kit, and the few composites it lacks from bs-blueprint; the app keeps no local copies.
-- **Settings storage key** — `<prefix>_app_settings` in the project's *standard* variables namespace. Two webapps in the same project with different `APP_PREFIX` values won't collide.
 - **No writable local filesystem in DSS** — the plugin install directory is read-only. Use **Managed Folders** for user-uploaded files and **project variables** for configuration.
 - **WebSockets** — DSS's WSGI layer doesn't support WebSocket upgrades. If you need push updates, use Server-Sent Events (SSE) instead (FastAPI's `sse-starlette` package, already in `pyproject.toml`).

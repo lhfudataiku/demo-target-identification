@@ -170,10 +170,10 @@ a defect (§3.7).
 | 3 | `/therapeutic-area` | `TherapeuticAreaView` | `GET /api/families`, `/api/families/{id}` | `family_panel_metrics`, `family_panel_overlap`, `family_panel_top50`, `family_panel_programme`, `persona_enrichment`, `demo_panel_config` |
 | 4 | `/shortlist` | `ShortlistView` | `GET /api/candidates{,/diseases,/gene}` | `dashboard_candidates` |
 
-Two non-act routes are registered as `menu: 'tertiary'` — `/settings` (`SettingsView`) and `/admin`
-(`AdminView`, gated on the Admin toggle). The **glossary is not a route**: it is an overlay
-(`stores/glossary.ts` + `ActGlossaryDrawer`, mounted once in `DefaultLayout` beside the Explorer
-dialog), triggered from the sidebar footer or by clicking any `ActTerm`. A route would have been
+One non-act route is registered as `menu: 'tertiary'`: `/settings` (`SettingsView`, per-browser
+presenter notes). The **glossary is not a route**: it is an overlay (`stores/glossary.ts` +
+`ActGlossaryDrawer`, mounted once in `DefaultLayout`), opened from the Glossary button that
+bs-blueprint's shell places at the top right of every page, or by clicking any `ActTerm`. A route would have been
 fewer files and would have followed §3.5's build-itself convention, but a reader asking *"what was
 AUC again?"* is mid-card, and navigating away answers the question by losing their place.
 
@@ -659,7 +659,7 @@ the pivot matters more than it looks.
   audience stop trusting the careful parts. The template's chat block, like its other optional blocks
   (wizard, charts, flow, documents), was never enabled and was deleted on 2026-10-15, together with the
   `ENABLE_*` flags ([`BLUEPRINT_ALIGNMENT_PLAN.md`](BLUEPRINT_ALIGNMENT_PLAN.md), Phase 0). Every routed
-  view is an act, Settings or Admin.
+  view is an act or Settings.
 
 ---
 

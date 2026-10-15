@@ -8,7 +8,7 @@
  * sources, not seven" -- the latter in the destructive red a client reads as a
  * data problem). One app, two audiences, one switch.
  *
- * Per-browser in localStorage, mirroring stores/admin.ts. Deliberately NOT a
+ * Per-browser in localStorage. Deliberately NOT a
  * DSS project variable: this is a property of who is standing in front of the
  * screen, not of the project, and it must not require a backend round trip
  * thirty seconds before a demo.

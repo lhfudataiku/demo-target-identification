@@ -48,6 +48,7 @@
   import { Button, Checkbox, Input, NativeSelect, NativeSelectOption, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@dataiku/ea-ui-kit'
   import { Flow, ListNumbered, Microscope } from '@dataiku/vue-icons'
   import { seriesVar } from '@/utils/seriesColours'
+  import { PageHeader } from 'bs-blueprint'
 
   defineOptions({ name: 'ShortlistView' })
 
@@ -348,12 +349,12 @@
 </script>
 
 <template>
+  <div class="flex h-full flex-col">
+    <PageHeader title="Act 4 of 4 · The list" />
+    <div class="min-h-0 flex-1 overflow-auto">
   <div class="flex flex-col gap-6 p-6">
     <header class="flex flex-col gap-1.5 border-b border-border pb-5">
-      <p class="font-mono text-[11px] uppercase tracking-[0.08em] text-muted-foreground">
-        Act 4 of 4 · The list
-      </p>
-      <h1 class="text-3xl font-semibold tracking-tight">Does this look right to you?</h1>
+      <h2 class="text-3xl font-semibold tracking-tight">Does this look right to you?</h2>
       <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
         One disease, all the way down — and the act this demo exists for. Open a disease you know and
         judge the top of the list yourself; the scientist is the instrument. Then take the controls:
@@ -733,6 +734,8 @@
             and generated from the selected row.</p>
         </template>
       </VisualGraphExplorerCard>
+    </div>
+  </div>
     </div>
   </div>
 </template>

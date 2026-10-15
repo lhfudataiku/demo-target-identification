@@ -8,9 +8,9 @@
 > [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md), [`../../webapp/README.md`](../../webapp/README.md) and
 > [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented and verified.
 
-**Status: IN PROGRESS — Phases 0–4 committed and deployed 2026-10-15; Phase 5 implemented locally, not yet committed or deployed.** All four decisions in §8 were
+**Status: IN PROGRESS — Phases 0–5 committed and deployed 2026-10-15; Phase 6 implemented locally, not yet committed or deployed.** All four decisions in §8 were
 taken on the recommendations, and the direction is recorded as
-[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 6–8 have not started. The deploy pause that Phase 1 introduced ended with Phase 2. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
+[`DEC-DEMO-003`](../decisions/DECISION_REGISTER.md). Phases 7–8 have not started. The deploy pause that Phase 1 introduced ended with Phase 2. The measurements in §3 come from a trial run on a throwaway copy of `webapp/`. Starting
 a phase, commit, push, DSS deployment and any live DSS change remain separate actions, each requiring
 its own approval.
 
@@ -316,7 +316,7 @@ Replace `EaButton`, `EaSelect`, `EaEmpty`, `SettingsSwitchItem`, and the `table/
 sets with kit parts or framework composites, then delete `src/components/ui`. **Accept:** the
 Shortlist table keeps sorting, search and filters, and `ui-dir` drift is gone.
 
-> **Implemented 2026-10-15, awaiting commit approval.** `src/components/ui` (15 files) is deleted and
+> **Implemented, committed and deployed 2026-10-15.** `src/components/ui` (15 files) is deleted and
 > the doctor's primitives finding closed. Replacements: `EaSelect` → `SelectField`, `EaEmpty` →
 > `EmptyState` and `SettingsSwitchItem` → the bs-blueprint ones (identical props); `EaButton` and the
 > local `Table*` parts → the kit's (the Explorer link renders through `Button as="a"`). Following the
@@ -343,6 +343,26 @@ Shortlist table keeps sorting, search and filters, and `ui-dir` drift is gone.
 `AppLayout` becomes the root route component, with `PageHeader` at the top of each act. Delete
 `AppSidebar.vue`, `DefaultLayout.vue`, `useAppMenu.ts` and `types/menu.ts`. Use sorting from the
 framework. **Accept:** the sidebar is still built from route `meta`, and the act order is unchanged.
+
+> **Implemented 2026-10-15, awaiting commit approval.** `DefaultLayout` now wraps bs-blueprint's
+> `AppLayout`, which builds the sidebar from route meta; the local `AppSidebar`, `useAppMenu`,
+> `types/menu.ts` and the unused `utils/sorting.ts` are deleted, and `App.vue` applies
+> `useThemeMode('light')`. The doctor reports **0 baselined findings**; only the lint backlog
+> (Phase 7) remains. Four decisions were taken with the user:
+>
+> | Question | Decision |
+> |---|---|
+> | Act openings vs the one-line `PageHeader` | `PageHeader` carries "Act N of 4 · name"; the question and intro stay below as the lede (the question is now an `h2`) |
+> | Glossary, a drawer the route-built sidebar cannot hold | A Glossary button in the shell's `page-actions` slot, top right of every page |
+> | Admin page, toggling an empty section | Removed, with its store and route guard |
+> | Settings LLM picker, used by nothing | Removed, with its store, `/api/system/llms`, `/api/system/settings` and `services/settings.py`; Settings keeps presenter notes |
+>
+> The shell does not scroll the content pane, so each view scrolls in its own body under the
+> `PageHeader`. Verified locally: the sidebar lists the four acts in order with Settings in the
+> footer and marks the active act; act bodies scroll under a fixed header; the Glossary button
+> opens and closes the drawer; sidebar links navigate; and Act 4's row click still brings the
+> "Why …?" card to just under the header. The backend now registers only the act routes and
+> `/api/system/health`.
 
 ### Phase 7 — lint cleanup
 
