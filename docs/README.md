@@ -60,8 +60,12 @@ evidence and generated documents appear first; planning and historical material 
 
 ## Planning
 
-No plan is open. Completed plans move to [`../archive/`](../archive/): the most recent is the webapp's
-bs-blueprint alignment, implemented 2026-10-15 (`DEC-DEMO-003`).
+| | |
+|---|---|
+| [`demo/ACT4_EVIDENCE_PLAN.md`](demo/ACT4_EVIDENCE_PLAN.md) | **Draft, 2026-10-23.** Act 4 as a candidate evidence review: HGNC identity, drug lineage, top-5 SHAP, cached CT.gov and PubMed retrieval with one LLM selection pass, and an evidence assistant |
+
+Completed plans move to [`../archive/`](../archive/): the most recent is the webapp's bs-blueprint
+alignment, implemented 2026-10-15 (`DEC-DEMO-003`).
 
 ## Historical material
 
