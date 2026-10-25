@@ -296,11 +296,11 @@ and 20 selection calls. The user runs it before a demo.
 
 | document | change |
 |---|---|
-| `decisions/DECISION_REGISTER.md` | one entry: an evidence-grounded assistant and LLM role labels in Act 4, with a DSS cache (D1, D4, D5) |
-| `demo/WEBAPP_DESIGN.md` | §3.3 routes, Act 4 card table, §6 guardrail rows, §8 |
-| `webapp/README.md`, `webapp/DEPLOYMENT.md` | new settings (tool, agent, folder, model ids) and the pre-fill step |
-| `operations/FLOW_MAP.md`, `.index/` | regenerate after Phases 3 and 4 |
-| `docs/README.md` | Planning section points here while the plan is open |
+| [`../decisions/DECISION_REGISTER.md`](../decisions/DECISION_REGISTER.md) | one entry: an evidence-grounded assistant and LLM role labels in Act 4, with a DSS cache (D1, D4, D5) |
+| [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) | §3.3 routes, Act 4 card table, §6 guardrail rows, §8 |
+| [`../../webapp/README.md`](../../webapp/README.md), [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) | new settings (tool, agent, folder, model ids) and the pre-fill step |
+| [`../operations/FLOW_MAP.md`](../operations/FLOW_MAP.md), `.index/` | regenerate after Phases 3 and 4 |
+| [`../README.md`](../README.md) | Planning section points here while the plan is open |
 
 ## 9. Risks
 
