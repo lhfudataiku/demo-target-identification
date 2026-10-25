@@ -62,7 +62,8 @@ evidence and generated documents appear first; planning and historical material 
 
 | | |
 |---|---|
-| [`demo/ACT4_EVIDENCE_PLAN.md`](demo/ACT4_EVIDENCE_PLAN.md) | **Draft, 2026-10-23.** Act 4 as a candidate evidence review: HGNC identity, drug lineage, top-5 SHAP, cached CT.gov and PubMed retrieval with one LLM selection pass, and an evidence assistant |
+| [`demo/WEBAPP_REDESIGN_SCOPE.md`](demo/WEBAPP_REDESIGN_SCOPE.md) | **Draft, 2026-10-25.** What the webapp redesign changes and why: the shortlist leads, Acts 1–3 become one "Why trust the list" page, and the shortlist becomes an evidence review (HGNC identity, drug lineage, top-5 SHAP, cached CT.gov and PubMed retrieval, an evidence assistant). Decisions D1–D12 and the measured starting point |
+| [`demo/WEBAPP_REDESIGN_WORKPLAN.md`](demo/WEBAPP_REDESIGN_WORKPLAN.md) | **Draft, 2026-10-25.** The redesign's phases, technical design and acceptance criteria, Phase 0 to release |
 
 Completed plans move to [`../archive/`](../archive/): the most recent is the webapp's bs-blueprint
 alignment, implemented 2026-10-15 (`DEC-DEMO-003`).
