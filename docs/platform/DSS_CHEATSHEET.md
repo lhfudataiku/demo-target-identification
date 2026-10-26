@@ -78,6 +78,21 @@ distinct datasets.
 > The pattern across all four: **the payload accepting a field is not evidence the engine honours it.**
 > Verify by building and diffing the output columns, not by reading the definition back.
 
+**2026-10-26, `join_drug_evidence_records`: the opposite held on three counts.** Built through the
+Python API (`new_recipe("join")`), then the payload edited:
+
+- **Top-level `selectedColumns` with `alias` both restricted and renamed.** Seven entries gave an
+  eight-column output (plus one post-join computed column), named by the aliases. Per-input `MANUAL`
+  `selectedColumns` were ignored: the schema still carried every column until the top-level list was set.
+- **A column computed on an input cannot be used in a join condition.** Validation fails with *"Dataset
+  … has no column gene_index"*; condition on the source column (`node_index`) instead.
+- **One input can feed several virtual inputs.** `graph_nodes` is listed **once** in `inputs` and
+  referenced by three `virtualInputs` (same `index`), each with its own pre-filter; it validated and
+  built. The rejection above is for the dataset listed twice in `inputs`.
+
+So the rules in the table depend on how the recipe was made or on the DSS version. Either way, the check
+in the note above is the one that decided it: compute the schema, build, and read the output columns.
+
 ### Creating a managed dataset by hand needs a path, not just a flag
 
 `dataset create` makes a **non-managed** dataset, which then fails any build with *"Clearing external

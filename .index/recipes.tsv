@@ -77,11 +77,13 @@ extract_hetionet_disease_slim	python	-	-		dss_recipes/extract_hetionet_disease_s
 filter_has_path_evidence	sampling	-	-		DSS-only	enriched_graph_features_1_family	enriched_graph_features_candidate_psplit
 filter_persona_diseases	join	-	-		DSS-only	demo_panel_config,psplit_validation_set	validation_set_personas_2
 finalize_dashboard_candidates	shaker	-	-		DSS-only	candidates_annotated	dashboard_candidates
+group_drug_protein_actions	grouping	-	-		DSS-only	drug_protein_edges	drug_protein_actions
 group_family_auc	grouping	-	-		DSS-only	family_validation_ranked	family_auc_grouped
 join_candidate_identity	join	-	-		DSS-only	graph_nodes,hgnc_identity	candidate_identity
 join_dashboard_annotations	join	-	-		DSS-only	disease_pool_sizes,drug_evidence_pairs,target_candidates_2	candidates_annotated
 join_disease_family_id	join	-	-		DSS-only	disease_family_id,enriched_graph_features_1	enriched_graph_features_1_family
 join_disease_name	join	-	-		DSS-only	graph_nodes,top_annotated	target_candidates_2
+join_drug_evidence_records	join	-	-		DSS-only	drug_disease_edges,drug_protein_actions,graph_nodes	drug_evidence_records
 join_orthogonality	join	-	-		DSS-only	drug_target_benchmark,validation_auc_by_disease	orthogonality_scatter
 rank_per_disease	window	-	-		DSS-only	persona2_scored_shap	top_candidates
 score_persona_candidates	prediction_scoring	-	-		DSS-only	hJLGoYn4,validation_set_personas_2	persona2_scored

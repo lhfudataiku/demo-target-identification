@@ -18,6 +18,7 @@ act3_family	compute_demo_panel_config	-	-
 act3_role	compute_demo_panel_config	-	-		
 act4_area	compute_demo_panel_config	-	-		
 act4_order	compute_demo_panel_config	-	-		
+action_type	join_drug_evidence_records	-	-		
 all_overlap	compute_family_panel_overlap	-	-		
 anchor_name	compute_disease_family_id	-	-		
 appr_kept	compute_filter_three_axes	-	-		
@@ -56,6 +57,7 @@ count	compute_graph_ppi_provenance	-	-
 count	compute_graph_relation_counts	-	-		
 count	compute_shap_driver_frequency	-	-		
 count	compute_validation_set_scored_grouped	-	-		
+count	group_drug_protein_actions	-	-		
 count	group_family_auc	-	-		
 coverage_pct	compute_pool_reachability	-	-		
 degree	compute_enriched_node_centrality_1	-	-		
@@ -83,12 +85,16 @@ disease_index	compute_enriched_rwr_score_1	MIN_SEEDS 20	1		MIN_SEEDS gate inside
 disease_index	compute_enriched_shared_pathway_count_1	module_size >= 20	1		n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
 disease_index	compute_known_drug_truth	-	-		
 disease_index	compute_ppi_cn_zscore	-	-		
+disease_index	join_drug_evidence_records	-	-		
 disease_name	compute_drug_target_benchmark	-	-		
 disease_name	join_disease_name	-	-		
 disease_pool_size	finalize_dashboard_candidates	-	-		
 disease_split_key	compute_disease_family_id	-	-		
+display_relation_concat	group_drug_protein_actions	-	-		
 doid	extract_hetionet_disease_slim	-	-		
 driver_slot	compute_shap_drivers_long	-	-		
+drug_id	join_drug_evidence_records	-	-		
+drug_name	join_drug_evidence_records	-	-		
 druggability_class	compute_drug_classified	-	-		
 druggability_evidence	compute_drug_classified	-	-		
 dwpc_GCD	compute_enriched_dwpc_GCD	module_size >= 20	1		POOL ROUTE, compound-mediated. Not a model feature -- pool membership only (see _champion_features_provenance). Source of the 5.2.1 selection bias.
@@ -116,6 +122,7 @@ gene_index	compute_gene_localization	-	-
 gene_index	compute_known_drug_truth	-	-		
 gene_index	compute_ppi_cn_zscore	-	-		
 gene_index	compute_ppi_evidence_depth	-	-		
+gene_index	join_drug_evidence_records	-	-		
 gene_index_count	count_candidates_per_disease	-	-		
 gene_n_diseases	compute_enriched_degree_controls_1	-	-		
 gene_name	decorate_target_candidates	-	-		
@@ -173,6 +180,7 @@ lift_top200	compute_novel_discovery_eval	-	-
 lift_top50	compute_novel_discovery_eval	-	-		
 localization_class	compute_gene_localization	-	-		
 lof_intolerant	compute_enriched_gene_safety_v2	-	-		
+max_stage	join_drug_evidence_records	-	-		
 mean_proba	compute_hub_bias_meter	-	-		
 median_degree	compute_hub_bias_meter	-	-		
 median_pct	compute_drug_target_benchmark	-	-		
@@ -263,6 +271,7 @@ scope	compute_family_panel_programme	-	-
 score	join_disease_name	-	-		
 shared_genes	compute_family_panel_overlap	-	-		
 shared_pathway_count	compute_enriched_shared_pathway_count_1	module_size >= 20	1		n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
+source_release	join_drug_evidence_records	-	-		
 split	compute_split_audit_2	-	-		
 split_key_name	compute_disease_family_id	-	-		
 split_key_rule	compute_disease_family_id	-	-		

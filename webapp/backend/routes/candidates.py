@@ -4,6 +4,7 @@
   GET /api/candidates            one disease's ranked candidates, filtered
   GET /api/candidates/gene       one candidate, against its own disease's spread
   GET /api/candidates/identity   one gene's HGNC identity, from the preloaded S1 dataset
+  GET /api/candidates/drugs      the drug records behind one pair's drug badges (S1)
 
 Backed by `dashboard_candidates` (zone 40; one row per disease-candidate pair,
 105,702 rows over 12 diseases when measured on 2026-10-23 -- /diseases serves the
@@ -305,3 +306,49 @@ def gene_identity(gene: int = Query(..., description="gene_index")) -> dict[str,
             **{k: r[k] for k in ("hgnc_id", "symbol", "name", "locus_type", "location",
                                  "date_modified", "ensembl_gene_id")},
             **{k: (r[k].split("|") if r[k] else []) for k in LIST_COLS}}
+
+
+# The drug records behind the two badges (redesign D7): `drug_evidence_records` (zone S1) holds one
+# row per pair x drug, built with visual recipes from the same drug_disease_edges and
+# drug_protein_edges that compute_drug_evidence_pairs reduces to two flags. It covers every linked
+# pair (86,123 records on 2026-10-26), not only candidates, so it does not depend on the scoring
+# chain. Grouping it by pair reproduces both flags for every row of dashboard_candidates.
+DRUGS = "drug_evidence_records"
+DRUG_COLS = ["disease_index", "gene_index", "drug_id", "drug_name", "max_stage", "relation",
+             "action_type", "source_release"]
+# Most advanced first. UNKNOWN is a programme whose stage Open Targets does not record, so it
+# sorts last rather than being read as early.
+STAGE_ORDER = ["APPROVAL", "PREAPPROVAL", "PHASE_3", "PHASE_2_3", "PHASE_2", "PHASE_1_2", "PHASE_1",
+               "EARLY_PHASE_1", "IND", "PRECLINICAL", "UNKNOWN"]
+
+
+@functools.lru_cache(maxsize=2)
+def _drugs_at(stamp: str) -> dict[tuple[int, int], list[dict[str, Any]]]:
+    """(disease_index, gene_index) -> its records. `stamp` is the cache key only."""
+    df = dataset_cache.frame(DRUGS, DRUG_COLS)
+    out: dict[tuple[int, int], list[dict[str, Any]]] = {}
+    for r in df.to_dict("records"):
+        r = {k: (None if v is None or v != v or v == "" else v) for k, v in r.items()}
+        r["drug_id"] = str(r["drug_id"])
+        # A drug with two recorded actions on the protein carries both, pipe-separated.
+        r["action_type"] = r["action_type"].split("|") if r["action_type"] else []
+        out.setdefault((int(r.pop("disease_index")), int(r.pop("gene_index"))), []).append(r)
+    rank = {s: i for i, s in enumerate(STAGE_ORDER)}
+    for recs in out.values():
+        recs.sort(key=lambda r: (rank.get(r["max_stage"], len(rank)), r["drug_name"] or ""))
+    return out
+
+
+@router.get("/drugs")
+def pair_drugs(disease: int = Query(..., description="disease_index"),
+               gene: int = Query(..., description="gene_index")) -> dict[str, Any]:
+    """The drugs that act on the gene AND are approved or investigated for exactly this disease.
+
+    An empty list means no link in the snapshot, not no drug: the link is exact-node, so a drug
+    approved for a broader disease term does not appear here.
+    """
+    try:
+        recs = _drugs_at(dataset_cache.build_stamp(DRUGS))
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Could not read {DRUGS}: {e}")
+    return {"disease_index": disease, "gene_index": gene, "records": recs.get((disease, gene), [])}

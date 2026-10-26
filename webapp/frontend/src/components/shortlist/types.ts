@@ -48,6 +48,26 @@ export interface Identity {
   locus_type?: string | null; date_modified?: string | null
 }
 
+/** One drug behind a pair's badges (`/api/candidates/drugs`, `drug_evidence_records`). The link
+    is exact-node: a drug recorded on a broader disease term is not here. */
+export interface DrugRecord {
+  drug_id: string; drug_name: string | null
+  /** Open Targets' highest clinical stage for this drug and this disease. */
+  max_stage: string | null
+  /** `indication` (approved or pre-approval) or `drug_investigated_for` (every other stage). */
+  relation: string
+  /** The drug's recorded action(s) on the protein. */
+  action_type: string[]
+  source_release: string
+}
+
+const STAGE_LABEL: Record<string, string> = {
+  APPROVAL: 'Approved', PREAPPROVAL: 'Pre-approval', PHASE_3: 'Phase 3', PHASE_2_3: 'Phase 2/3',
+  PHASE_2: 'Phase 2', PHASE_1_2: 'Phase 1/2', PHASE_1: 'Phase 1', EARLY_PHASE_1: 'Early phase 1',
+  IND: 'IND filed', PRECLINICAL: 'Preclinical', UNKNOWN: 'Stage not recorded',
+}
+export const stageLabel = (s: string | null) => (s ? STAGE_LABEL[s] ?? s : 'Stage not recorded')
+
 export interface Driver { key: string; label: string | null; sign: string; value: string }
 
 /* `top_shap_drivers` is a rendered STRING, not structured data:

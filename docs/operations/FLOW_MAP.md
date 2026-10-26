@@ -13,7 +13,7 @@
 > python3 tools/build_flow_map.py
 > ```
 
-Live DSS: **93 datasets across 18 zones**, cross-referenced against the recipe graph (91 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
+Live DSS: **95 datasets across 18 zones**, cross-referenced against the recipe graph (93 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
 
 A dataset counts as **read** only when its name appears *quoted* in reader code. A bare
 mention is prose: `calibration.py` names the three DWPC feature datasets in a display
@@ -31,9 +31,9 @@ so zones A1-A4 are read by named routes rather than by an unbuilt UI.
 
 ## Summary
 
-- datasets: **93**
-- endpoints (read by a webapp route or a notebook): **42**
-- flow intermediates (consumed by a recipe, no direct reader): **49**
+- datasets: **95**
+- endpoints (read by a webapp route or a notebook): **43**
+- flow intermediates (consumed by a recipe, no direct reader): **50**
 - genuine orphans: **2** — `llm_hx`, `shap_driver_frequency`
 
 > Every orphan here is a deliberate decision, not a finding. See
@@ -73,8 +73,8 @@ Foreign references in this zone (5), each feeding exactly one Sync or Merge reci
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
-| `drug_disease_edges` | nb6 | `compute_DEMO_KG_drug_disease_edges_copy` | 7 | notebook |
-| `drug_protein_edges` | nb6 | `compute_DEMO_KG_drug_protein_edges_copy` | 7 | notebook |
+| `drug_disease_edges` | nb6 | `compute_DEMO_KG_drug_disease_edges_copy` | 8 | notebook |
+| `drug_protein_edges` | nb6 | `compute_DEMO_KG_drug_protein_edges_copy` | 8 | notebook |
 | `raw_ot_druggability` | — | `compute_DEMO_KG_raw_ot_druggability_copy` | 1 | intermediate |
 | `raw_ot_known_drug` | nb4 | `compute_raw_ot_known_drug` | 1 | notebook |
 | `raw_ot_safety` | — | `compute_DEMO_KG_raw_ot_safety_copy` | 1 | intermediate |
@@ -95,7 +95,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 |---|---|---|--:|---|
 | `edge_metadata` | — | `compute_DEMO_KG_edge_metadata_copy` | 3 | intermediate |
 | `graph_edges` | nb5 | `compute_DEMO_KG_graph_edges_copy` | 8 | notebook |
-| `graph_nodes` | nb5, nb6 | `compute_DEMO_KG_graph_nodes_copy` | 22 | notebook |
+| `graph_nodes` | nb5, nb6 | `compute_DEMO_KG_graph_nodes_copy` | 23 | notebook |
 | `llm_hx` | — | — *(source)* | 0 | **ORPHAN** |
 
 ## 10 Features - graph traversal (Cypher)  (10 datasets, 10 recipes)
@@ -237,9 +237,11 @@ Foreign references in this zone (1), each feeding exactly one Sync or Merge reci
 
 _No datasets in this zone._
 
-## S1 Shortlist  (1 datasets, 1 recipes)
+## S1 Shortlist  (3 datasets, 3 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `candidate_identity` | **webapp:routes/candidates** | `join_candidate_identity` | 0 | webapp |
+| `drug_evidence_records` | **webapp:routes/candidates** | `join_drug_evidence_records` | 0 | webapp |
+| `drug_protein_actions` | — | `group_drug_protein_actions` | 1 | intermediate |
 

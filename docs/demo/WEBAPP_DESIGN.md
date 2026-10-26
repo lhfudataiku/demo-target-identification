@@ -35,10 +35,11 @@ check, are historical material in
 and answer Acts 1–3 as the three sections of one page, *Why trust the list*, with one disease shared by
 both pages; the shortlist gains an evidence review and an evidence assistant. The sections that state
 principles (§4, §6, §8) already carry it, each change marked *planned*. The sections that describe the
-app as built change with the phase that builds it. **Phases 1–3 are built, not yet deployed:** the
+app as built change with the phase that builds it. **Phases 1–4 are built, not yet deployed:** the
 two-page navigation, the shared disease and *Why trust the list* (Phase 1); the shortlist split into the
 list and a tabbed card for the selected candidate, with the *How do we know?* links (Phase 2); and the
-candidate's HGNC identity in that card's header (Phase 3). §3.3
+candidate's HGNC identity in that card's header (Phase 3); and the drug records behind the badges
+(Phase 4). §3.3
 and the act tables below describe them. The deployed webapp keeps the four act routes until the Phase 8
 switch-over.
 
@@ -187,7 +188,7 @@ a defect (§3.7).
 
 | act | route | view | backend route | backing datasets |
 |---|---|---|---|---|
-| 4 | `/shortlist` (home) | `ShortlistView` → `shortlist/CandidateTable`, `CandidateHeader`, `OverviewTab`, `RankingTab`, `LineageTab` | `GET /api/candidates{,/diseases,/gene,/identity}` | `dashboard_candidates`; `candidate_identity` (zone S1) for `/identity` |
+| 4 | `/shortlist` (home) | `ShortlistView` → `shortlist/CandidateTable`, `CandidateHeader`, `OverviewTab`, `RankingTab`, `LineageTab` | `GET /api/candidates{,/diseases,/gene,/identity,/drugs}` | `dashboard_candidates`; from zone S1, `candidate_identity` for `/identity` and `drug_evidence_records` for `/drugs` |
 | 1 | `/trust?section=graph` | `TrustView` → `trust/GraphSection` | `GET /api/evidence` | `graph_node_type_counts`, `graph_relation_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence` |
 | 2 | `/trust?section=reconstruction` | `TrustView` → `trust/ReconstructionSection` | `GET /api/calibration` | `validation_auc_by_disease`, `family_auc_by_family`, `split_audit_2`, `disease_eligibility`, `persona_enrichment`, `hub_bias_meter`, `orthogonality_scatter`, the `COUNT_RECORDS` metrics of `enriched_dwpc_{GGD,GPGD,GCD}`, + the live champion saved model |
 | 3 | `/trust?section=family` | `TrustView` → `trust/FamilySection` | `GET /api/families`, `/api/families/{id}` | `family_panel_metrics`, `family_panel_overlap`, `family_panel_top50`, `family_panel_programme`, `persona_enrichment`, `demo_panel_config` |
@@ -504,8 +505,7 @@ TNBC's 8 known targets on screen *before* act 6 claims anything about it.
 
 *The shortlist*, the home page (built in Phase 2, not yet deployed): the ranked list, then one card for
 the selected candidate with five tabs — Overview, *Why this ranking?*, Trials, Literature, and Drugs &
-graph. Trials and Literature hold an empty state until Phase 6; the Drugs & graph tab shows the two
-drug flags and their lineage until the per-drug records of Phase 4.
+graph. Trials and Literature hold an empty state until Phase 6.
 
 | claim | where | asserts |
 |---|---|---|
@@ -513,6 +513,7 @@ drug flags and their lineage until the per-drug records of Phase 4.
 | The ranked list | paged table, 15 rows a page | 12,272 rows: rank, gene, class, tractability, the association badge, the drug-evidence badges and the safety badge. The SHAP drivers moved to the candidate's *Why this ranking?* tab |
 | The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tractable 7,950 → not secreted 7,273 → rank ≤ 200 → 38** (re-derived 2026-10-26 through the backend's own filter; previously 7,951 and 7,274) |
 | Candidate detail | the card below the list: a header, then the Overview and *Why this ranking?* tabs | rank against the pool, every flag and the gene's HGNC identity in the header; the stored SHAP drivers, each with its percentile in **this disease's own distribution** |
+| The drugs behind the badges | Drugs & graph tab · table under the badges | every drug that acts on the gene **and** is recorded for exactly this disease node: name, highest stage, action on the gene, DrugBank id, release. ERBB2 × HER2+: tucatinib (approval), poziotinib (phase 2). An empty table reads *no link in snapshot* |
 | The mechanism, on the graph | Drugs & graph tab · shared Explorer card with five independent bounded presets | prepared interaction, pathway, molecular-function, biological-process and drug-context queries for the selected disease and gene |
 | *How do we know?* | the intro row (all three sections); the Overview tab's model box (section 2) and association box (section 1) | links to *Why trust the list*, landing on the section |
 
@@ -531,6 +532,15 @@ From `hgnc_complete_set_2026-10-06.txt`, 20,860 of 20,861 gene nodes match (PGM5
 NCBI Gene ID), 10 graph symbols have since been renamed by HGNC, and the HER2+ top 200 agree field for
 field with a live HGNC lookup. A first build looked genes up live at the HGNC REST service; it was
 replaced the same day.
+
+**Drug records are the badges, kept one row per drug** (scope D7). The tab reads
+`drug_evidence_records` (zone S1), built with a visual Group and Join from the same
+`drug_disease_edges` and `drug_protein_edges` that `compute_drug_evidence_pairs` reduces to two flags.
+It holds every linked pair (86,123 records over 55,270 pairs), so it does not depend on the scoring
+chain; grouped by pair, the 2,294 records on candidate pairs reproduce both flags for all 105,702 pairs
+with zero mismatches (checked 2026-10-26), so a badge and the table under it cannot disagree. The link
+is exact-node: lapatinib and neratinib act on ERBB2 but are recorded on *breast cancer*, so they are
+not in HER2+'s table.
 
 **Why this ranking? lists only the stored drivers** (scope D2). The tab shows each feature with a stored
 SHAP value, its sign and size, and where this gene's value sits in this disease's pool; the champion's

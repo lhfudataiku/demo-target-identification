@@ -264,6 +264,16 @@
    "approved_for_disease",
    "investigational_for_disease"
   ],
+  "drug_evidence_records": [
+   "drug_id",
+   "max_stage",
+   "relation",
+   "action_type",
+   "disease_index",
+   "gene_index",
+   "drug_name",
+   "source_release"
+  ],
   "drug_joined": [
    "gene_index",
    "is_plasma_membrane",
@@ -290,6 +300,14 @@
    "node_name",
    "node_source",
    "node_index"
+  ],
+  "drug_protein_actions": [
+   "x_id",
+   "y_id",
+   "x_type",
+   "y_type",
+   "display_relation_concat",
+   "count"
   ],
   "drug_protein_edges": [
    "x_id",
@@ -3133,6 +3151,18 @@
    ]
   }
  },
+ "group_drug_protein_actions": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "drug_protein_edges"
+  ],
+  "outputs": [
+   "drug_protein_actions"
+  ],
+  "type": "grouping",
+  "visual": null
+ },
  "group_family_auc": {
   "code": null,
   "cypher": null,
@@ -3202,6 +3232,27 @@
   ],
   "type": "join",
   "visual": null
+ },
+ "join_drug_evidence_records": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "drug_disease_edges",
+   "drug_protein_actions",
+   "graph_nodes"
+  ],
+  "outputs": [
+   "drug_evidence_records"
+  ],
+  "type": "join",
+  "visual": {
+   "expressions": [
+    "node_type == \"disease\"",
+    "node_type == \"drug\"",
+    "node_type == \"gene/protein\""
+   ],
+   "values": []
+  }
  },
  "join_orthogonality": {
   "code": null,

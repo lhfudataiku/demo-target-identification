@@ -1,28 +1,53 @@
 <script setup lang="ts">
   /**
-   * "Drugs & graph" — what the drug badges mean and where they come from, and
+   * "Drugs & graph" — the drugs behind the badges, where they come from, and
    * the five Visual Graph Explorer queries for the pair. The per-drug records
-   * behind the badges (scope D7) join this tab in a later phase; until then it
-   * shows the two flags and the lineage that produced them.
+   * (`/api/candidates/drugs`, scope D7) are this tab's own request: if it fails,
+   * the tab says so and the badges and Explorer still work.
    *
    * The Explorer queries are generated locally from the live pair. Nothing runs
    * when a row is selected: the user picks one query, copies it, and runs it in
    * the Explorer. A later query replaces the current Explorer result; the app
    * never joins or accumulates graph responses.
    */
-  import { computed, ref } from 'vue'
-  import { Button, Collapsible, CollapsibleContent, CollapsibleTrigger } from '@dataiku/ea-ui-kit'
+  import { computed, ref, watch } from 'vue'
+  import {
+    Button, Collapsible, CollapsibleContent, CollapsibleTrigger, Skeleton,
+    Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+  } from '@dataiku/ea-ui-kit'
   import { ChevronDown, ChevronRight, DataLineage } from '@dataiku/vue-icons'
   import { StatusBadge } from 'bs-blueprint'
   import ActTerm from '@/components/act/ActTerm.vue'
   import VisualGraphExplorerCard from '@/components/graph/VisualGraphExplorerCard.vue'
   import { buildA4ExplorerQueries } from '@/utils/a4ExplorerQueries'
-  import type { Row } from './types'
+  import { apiUrl } from '@/utils/api'
+  import { stageLabel, type DrugRecord, type Row } from './types'
 
   const props = defineProps<{ row: Row; diseaseIndex: number; diseaseName: string }>()
   const open = ref(false)
 
   const hasDrug = computed(() => Boolean(props.row.approved_for_disease || props.row.investigational_for_disease))
+
+  const records = ref<DrugRecord[] | null>(null)
+  const recordsError = ref<string | null>(null)
+
+  async function loadRecords(disease: number, gene: number) {
+    records.value = null; recordsError.value = null
+    const current = () => props.diseaseIndex === disease && props.row.gene_index === gene
+    try {
+      const res = await fetch(apiUrl(`/api/candidates/drugs?disease=${disease}&gene=${gene}`))
+      const body = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(body?.detail ?? `HTTP ${res.status}`)
+      // A slower earlier request must not overwrite a later selection.
+      if (current()) records.value = body.records
+    } catch (e) {
+      if (current()) recordsError.value = e instanceof Error ? e.message : String(e)
+    }
+  }
+  watch(() => [props.diseaseIndex, props.row.gene_index] as const,
+    ([d, g]) => loadRecords(d, g), { immediate: true })
+
+  const releases = computed(() => [...new Set((records.value ?? []).map((r) => r.source_release))])
 
   const LINEAGE = [
     ['Open Targets Platform 26.06', 'ChEMBL drug layer: mechanisms of action and clinical indications'],
@@ -31,6 +56,7 @@
     ['drug_disease_edges · drug_protein_edges', 'the stage and the drug’s action on the protein survive here'],
     ['compute_drug_evidence_pairs', 'DEMO_TARGET_IDENTIFICATION · keeps two yes/no flags per gene–disease pair'],
     ['approved / in-trials badges', 'the two flags, as this list shows them'],
+    ['drug_evidence_records', 'the same edges kept one row per drug, with stage and action: the table above'],
   ]
 
   const explorerQueries = computed(() =>
@@ -62,6 +88,40 @@
           broader disease node does not count here.
         </template>
       </p>
+      <Skeleton v-if="hasDrug && !records && !recordsError" class="h-20 w-full" />
+      <p v-else-if="recordsError" class="text-xs text-muted-foreground">
+        Drug records unavailable: {{ recordsError }}
+      </p>
+      <template v-else-if="records?.length">
+        <div class="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow class="bg-muted/30">
+                <TableHead>Drug</TableHead>
+                <TableHead>Highest stage for this disease</TableHead>
+                <TableHead>Action on {{ row.gene_name }}</TableHead>
+                <TableHead>DrugBank</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow v-for="d in records" :key="d.drug_id">
+                <TableCell class="font-medium">{{ d.drug_name ?? d.drug_id }}</TableCell>
+                <TableCell>
+                  <StatusBadge :status="d.relation === 'indication' ? 'success' : 'warning'">
+                    {{ stageLabel(d.max_stage) }}
+                  </StatusBadge>
+                </TableCell>
+                <TableCell class="text-xs">{{ d.action_type.length ? d.action_type.join(' · ').toLowerCase() : '—' }}</TableCell>
+                <TableCell class="font-mono text-xs">{{ d.drug_id }}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+        <p class="font-mono text-2xs text-muted-foreground">
+          {{ releases.join(' · ') }} · {{ records.length }} {{ records.length === 1 ? 'drug' : 'drugs' }} linked to
+          this exact disease node
+        </p>
+      </template>
     </section>
 
     <Collapsible v-model:open="open">

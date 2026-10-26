@@ -55,7 +55,7 @@ chain, the flow migration decided separately, Phase 3 preloaded from Part 1). No
 | 1 | navigation and the evidence page | — |
 | 2 | the shortlist on existing data | — |
 | 3 | HGNC identity | one new Part 1 recipe, a sync, a join (D16) |
-| 4 | drug lineage | new dataset and recipes |
+| 4 | drug lineage | a Group and a Join in S1, two datasets |
 | 5 | top-5 SHAP | new recipes beside the old scoring chain |
 | 6 | trials and literature | managed folder, scenario |
 | 7 | evidence assistant | agent |
@@ -204,27 +204,49 @@ exists; the header it feeds stays as built.
 - **Done when:** ERBB2 shows HGNC:3430 with the file's date; no request leaves the backend for HGNC;
   `FLOW_MAP.md` lists no webapp read of `graph_nodes`.
 
-## 6. Phase 4 — drug lineage *(DSS)*
+## 6. Phase 4 — drug lineage *(DSS: a Group and a Join in S1)*
 
-- New dataset `drug_evidence_records` in zone `S1 Shortlist` (D15; managed storage, Parquet), one
-  row per pair × drug, built with visual Join recipes: `drug_disease_edges` ⋈ `drug_protein_edges` on
-  the drug, `graph_nodes` for both indexes, restricted to pairs in `dashboard_candidates`.
+**Built 2026-10-26** in zone `S1 Shortlist` (D15), visual recipes only, managed storage, Parquet. The
+existing flags and `compute_drug_evidence_pairs` are not touched.
+
+- **`group_drug_protein_actions`** (Group) reads `drug_protein_edges` and writes `drug_protein_actions`,
+  one row per drug × gene, with the drug's recorded actions on the protein concatenated, distinct and
+  pipe-separated. Without it the join repeats a drug: 45 drug–gene edges are the same drug with a second
+  action (DB00480: inhibitor and modulator), which made 24 records two rows. 7,959 edges → 7,914 rows.
+- **`join_drug_evidence_records`** (Join) writes `drug_evidence_records`, one row per pair × drug:
+  `drug_disease_edges` ⋈ `drug_protein_actions` on the drug; `graph_nodes` three times, each pre-filtered
+  to one node type (disease, gene/protein, drug) because disease ids and NCBI Gene ids are both bare
+  integers. **It covers every linked pair, not only candidates:** an inner join to
+  `dashboard_candidates` was built first and dropped the same day, so the dataset does not depend on
+  the scoring chain and a rebuild of zone 40 (or Phase 5's chain) never reaches it.
 
   | field | from |
   |---|---|
-  | `disease_index`, `gene_index` | `graph_nodes` |
-  | `drug_id` (DrugBank) | `x_id` |
-  | `drug_name` | `graph_nodes.node_name` |
+  | `disease_index`, `gene_index` | `graph_nodes.node_index` (disease, gene/protein) |
+  | `drug_id` (DrugBank) | `drug_disease_edges.x_id` |
+  | `drug_name` | `graph_nodes.node_name` (drug) |
   | `max_stage` | `drug_disease_edges.display_relation` |
   | `relation` | `drug_disease_edges.relation` |
-  | `action_type` | `drug_protein_edges.display_relation` |
-  | `source_release` | constant `Open Targets Platform 26.06` |
+  | `action_type` | `drug_protein_actions`, pipe-separated |
+  | `source_release` | constant `Open Targets Platform 26.06`, a post-join computed column |
 
-- A check that grouping the records by pair reproduces `approved_for_disease` and
-  `investigational_for_disease` exactly. The existing flags are not touched.
-- `GET /api/candidates/drugs?disease=&gene=` feeds the Drugs & graph tab.
-- **Done when:** ERBB2 × HER2+ lists tucatinib and poziotinib with their stages, and the check passes
-  over every pair.
+  Renames are aliases in the join's top-level column selection; a join condition cannot use a column
+  computed on its input, so conditions name the source columns.
+- **Builds**, non-recursive and one at a time, so nothing upstream rebuilt: `drug_protein_actions`, then
+  `drug_evidence_records` — **86,123 records over 55,270 pairs**, the same pairs as
+  `drug_evidence_pairs`; no pair × drug repeated, every drug named. 2,294 records over 1,378 pairs fall
+  on candidate pairs.
+- **Check**, run read-only on 2026-10-26: grouping the records by pair reproduces `approved_for_disease`
+  and `investigational_for_disease` for **all 105,702 pairs of `dashboard_candidates`, zero
+  mismatches**. It is not yet an assertion script; adding it to
+  `nb6_interrogation_and_close.py` waits on the nb3 library drift, because `push_assertions.py --push`
+  overwrites the whole library.
+- **Backend.** `GET /api/candidates/drugs?disease=&gene=` reads `drug_evidence_records` through the
+  dataset cache and returns the pair's records, most advanced stage first and *stage not recorded* last.
+- **Tab.** Drugs & graph lists drug, highest stage for this disease, action on the gene and DrugBank id,
+  under the badges; its request is its own, so a failure leaves the badges and the Explorer working.
+- **Done:** ERBB2 × HER2+ lists tucatinib (approval, inhibitor) and poziotinib (phase 2, inhibitor),
+  read through the route against the live dataset; the check passes over every pair. Not yet deployed.
 
 ## 7. Phase 5 — top-5 SHAP *(DSS: new recipes beside the old chain)*
 
