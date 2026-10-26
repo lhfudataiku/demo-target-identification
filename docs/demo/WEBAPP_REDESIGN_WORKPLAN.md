@@ -6,7 +6,8 @@
 > dependencies:** none · **Excludes:** the decisions, measurements and target design, which are
 > [`WEBAPP_REDESIGN_SCOPE.md`](WEBAPP_REDESIGN_SCOPE.md) and are referenced here by their ids (D1–D15).
 
-**Status: DRAFT — 2026-10-25. Not approved; no phase has started.**
+**Status: DRAFT — 2026-10-25, revised 2026-10-26 (a second webapp, Phase 5 beside the old scoring
+chain, the flow migration decided separately). Not approved; no phase has started.**
 
 ## 1. How the work runs
 
@@ -33,6 +34,14 @@
   so it is worth raising upstream through bs-blueprint's own upstream guide.
 - Phases marked **DSS** change the live project. Each needs the user's approval at the time; the user
   runs builds, scenarios and `make deploy`, and Claude verifies read-only afterwards.
+- **The redesign deploys to a second webapp in `DEMO_TARGET_IDENTIFICATION`**, so the current
+  *Target Prioritizer* (`OlmPX9a`) keeps serving the demo until the switch-over in Phase 8. On the
+  redesign branch `app.env` sets its own `LIB_NS` (`target_prioritizer_next`), a distinct
+  `VITE_APP_NAME` (`Target Prioritizer (next)`) and an empty `WEBAPP_ID`; the first `make deploy`
+  creates the webapp and writes its id back. **The separate `LIB_NS` is load-bearing:** `deploy.sh`
+  mirrors the backend and frontend into `python/<LIB_NS>/` with `--delete`, so a second webapp sharing
+  the namespace would replace the code the live webapp imports at its next restart. Both webapps read
+  the same datasets, and no phase changes one the current webapp reads.
 - Nothing is committed or pushed without the user's approval of a change summary.
 - The mockup's components are the reference for Phases 1 and 2. Their source is in the git-ignored
   `docs/demo/design_review/source/` (scope §4.4; its README maps each file). They were written against
@@ -47,15 +56,14 @@
 | 2 | the shortlist on existing data | — |
 | 3 | HGNC identity | — |
 | 4 | drug lineage | new dataset and recipes |
-| 5 | top-5 SHAP | scoring recipe, rebuild |
+| 5 | top-5 SHAP | new recipes beside the old scoring chain |
 | 6 | trials and literature | managed folder, scenario |
 | 7 | evidence assistant | agent |
-| 8 | verification and release | deploy |
-| 9 | flow migration, in its own workplan | see that workplan |
+| 8 | verification and switch-over | deploy |
 
-Phases 1–3 need no DSS change and can ship as one release. Phases 4–6 each depend only on Phase 2's
-tabs; Phase 7 uses what 3–6 provide. Phase 9 starts only after Phase 8, because its inventory reads
-what the released webapp actually reads.
+Phases 1–3 change no dataset or recipe and can ship to the second webapp as one release. Phases 4–6
+each depend only on Phase 2's tabs; Phase 7 uses what 3–6 provide. The redesign is complete at
+Phase 8. The flow migration is not one of its phases: whether it runs is decided afterwards (§11).
 
 ## 2. Phase 0 — decisions and documents
 
@@ -66,8 +74,8 @@ what the released webapp actually reads.
 - `WEBAPP_DESIGN.md`: §3.3 routes, §4 acts table and Acts 1–4 sections, §6 guardrail rows, §8.
 - **Done when:** the user approves the doc diff.
 
-**The boundary rule (D14).** It governs every phase from here on, and the flow migration enforces it
-on what already exists:
+**The boundary rule (D14).** It governs every phase from here on, whether or not the flow migration
+later runs; the migration, if it runs, enforces it on what already exists:
 
 - **Notebooks read only zones 00–31** (after the migration, through the evidence project's exposed
   objects) and recompute anything downstream in their own code. A notebook never reads a serving zone.
@@ -76,21 +84,23 @@ on what already exists:
   neither depends on the other's outputs.
 
 **The target zone layout after zone 40 (D15)**, one zone per function of the new webapp. Datasets
-named here exist today unless marked; the flow migration's M1 maps every remaining dataset, and places
-each intermediate with its first served consumer.
+named here exist today unless marked. New objects go straight into these zones; if the flow migration
+runs, its M1 maps every remaining dataset and places each intermediate with its first served consumer.
 
 | zone | serves | endpoint datasets |
 |---|---|---|
-| `40 Scoring & ranking` | both pages, as the shared core | `persona2_scored`, `persona2_scored_shap` (with `shap_top5`, Phase 5), `top_candidates`, `target_candidates_2`, `candidates_annotated` |
-| `S1 Shortlist` | the shortlist | `dashboard_candidates`; `drug_evidence_records` (new, Phase 4); the `act4_evidence_cache` folder (new, Phase 6) |
+| `40 Scoring & ranking` | both pages, as the shared core | `persona2_scored`, `persona2_scored_shap`, `top_candidates`, `target_candidates_2`, `candidates_annotated` |
+| `S1 Shortlist` | the shortlist | `dashboard_candidates`; `drug_evidence_records` (new, Phase 4); `persona2_scored_shap5` and `candidate_shap_top5` (new, Phase 5); the `act4_evidence_cache` folder (new, Phase 6) |
 | `S2 Evidence · graph` | section 1, what the model can see | `graph_node_type_counts`, `graph_relation_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence` |
 | `S3 Evidence · reconstruction` | section 2 | `validation_auc_by_disease`, `split_audit_2`, `disease_eligibility`, `hub_bias_meter`, `orthogonality_scatter`, `family_auc_by_family`, `persona_enrichment` |
 | `S4 Evidence · family panels` | section 3 | `demo_panel_config`, `family_panel`, `family_panel_metrics`, `family_panel_overlap`, `family_panel_programme`, `family_panel_top50` |
 
-Leaving the main project: `breast_panel_metrics` and the A4 notebook-only datasets (`known_drug_truth`,
-`filter_three_axes`, `pool_reachability`) move to the evidence project; `shap_driver_frequency` and
-`shap_drivers_long` are expected to be deleted. Both are confirmed in the migration's M1. Zone 20 is
-re-zoned into drug annotation, gene annotation, and disease family with split key, without a rebuild.
+If the flow migration runs: `breast_panel_metrics` and the A4 notebook-only datasets
+(`known_drug_truth`, `filter_three_axes`, `pool_reachability`) move to the evidence project;
+`shap_driver_frequency` and `shap_drivers_long` are expected to be deleted. Both are confirmed in the
+migration's M1. Zone 20 is re-zoned into drug annotation, gene annotation, and disease family with
+split key, without a rebuild. If it does not run, these stay where they are and nothing in the
+redesign reads them.
 
 ## 3. Phase 1 — navigation and the evidence page
 
@@ -176,14 +186,34 @@ re-zoned into drug annotation, gene annotation, and disease family with split ke
 - **Done when:** ERBB2 × HER2+ lists tucatinib and poziotinib with their stages, and the check passes
   over every pair.
 
-## 7. Phase 5 — top-5 SHAP *(DSS)*
+## 7. Phase 5 — top-5 SHAP *(DSS: new recipes beside the old chain)*
 
-- `score_persona_candidates`: `nbExplanations` 3 → 5. `compute_top_shap_drivers_1`: add a structured
-  column `shap_top5` (JSON list of `{feature, value}`); **leave `top_shap_drivers` unchanged**.
-  Propagate `shap_top5` and `prox_kernel` to `dashboard_candidates`.
-- Rebuild the zone from `persona2_scored`. Scores and ranks must be identical before and after.
-- Ranking tab: up to five rows, SHAP sign and value, the feature's percentile in this disease (D2).
-- **Done when:** ranks unchanged; ERBB2 shows five drivers.
+**Today's scoring chain is not edited.** `score_persona_candidates` writes `persona2_scored`, then
+`compute_top_shap_drivers_1` → `persona2_scored_shap` → `rank_per_disease`, which sets every rank. Its
+`top_shap_drivers` string reaches `dashboard_candidates`, which `nb6` and `nb7` read and the current
+webapp serves. Phase 5 builds beside it, in zone `S1 Shortlist` (D15):
+
+- `score_persona_candidates_shap5`: a copy of `score_persona_candidates` (the same saved model
+  `hJLGoYn4` and active version, the same input `validation_set_personas_2`, the same background of
+  100) with `nbExplanations: 5`, writing `persona2_scored_shap5`.
+- `compute_shap_top5` (Python): one row per scored pair, `disease_index`, `gene_index` and
+  `shap_top5`, a JSON list of up to five `{feature, shap, value, percentile}`, the percentile taken
+  within the disease's pool. It carries `prox_kernel`'s value, the one champion input
+  `dashboard_candidates` cannot show (`MISSING_FEATURES` in `backend/routes/candidates.py`), so
+  `dashboard_candidates` gains no column. Writes `candidate_shap_top5`.
+- Build only these two: one job, `--target persona2_scored_shap5 --target candidate_shap_top5`, each
+  non-recursive, so nothing in zone 40 or upstream rebuilds. Record the scoring time (scope §7).
+- Checks, read-only, with a script under `tools/` that writes nothing to DSS: every pair's prediction
+  in `persona2_scored_shap5` equals `persona2_scored`'s; every pair in `dashboard_candidates` has a
+  row in `candidate_shap_top5`; and the share of pairs whose first two drivers match
+  `top_shap_drivers` is reported, with examples where they differ. A difference is investigated, not
+  patched: a second run need not reproduce the same top two if its background sample differs.
+- `GET /api/candidates/drivers?disease=&gene=` feeds the Ranking tab: up to five rows, SHAP sign and
+  value, the feature's percentile in this disease (D2).
+- The two scoring runs then compute the same predictions twice. Both stay; folding them into one is
+  left to the flow migration decision (§11).
+- **Done when:** predictions are equal on every pair; no existing recipe or dataset has changed;
+  ERBB2 × HER2+ shows five drivers with their percentiles.
 
 ## 8. Phase 6 — trials and literature *(DSS: cache folder, pre-fill scenario)*
 
@@ -247,15 +277,27 @@ failure shows inside its tab only; every rendered quote is a substring of its pa
 - **Done when:** the starter questions answer with working citations on ERBB2 and SMARCA2, every
   general-knowledge line is marked, and every graph answer shows its Cypher.
 
-## 10. Phase 8 — verification and release
+## 10. Phase 8 — verification and switch-over *(DSS: deploy)*
 
 - `npm run check`; a local run over HER2+ with ERBB2, SMARCA2 and one novel gene, plus a disease with
   no family panel; cold and warm timings; forced tool timeouts.
-- The user runs `make deploy`; read-only verification afterwards.
+- The user runs `make deploy` from the redesign branch to the second webapp; read-only verification
+  there while the current webapp still serves the demo.
+- **Switch-over**, when the user chooses: the redesign moves into the original webapp, so its URL and
+  any links to it are kept. `app.env` returns to `LIB_NS=target_prioritizer`, `WEBAPP_ID=OlmPX9a` and
+  the original display name, and the user runs `make deploy`. No dataset changes. Rollback is a
+  `make deploy` from `main`.
+- After a grace period agreed with the user, the user deletes the second webapp and its
+  `python/target_prioritizer_next/` library folder.
 - Regenerate `.index/` and `FLOW_MAP.md` once the new datasets exist.
+- **Done when:** the original webapp serves the redesign, and the second webapp and its library
+  folder are gone.
 
-## 11. Phase 9 — flow migration
+## 11. After the redesign — the flow migration decision
 
-Carried out in its own workplan, [`../operations/FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md):
-a separate evidence project for the notebooks (D13), and the main project's flow after zone 40
-rebuilt in the target zones (D15), compared with the old, then retired. It starts after Phase 8.
+The flow migration is not part of the redesign, and no phase above depends on it. After Phase 8 the
+user decides whether it runs, in full, in part or not at all, from what the release has shown. Its
+plan, and the options that decision weighs, are in
+[`../operations/FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md) §1. Whatever
+is decided, two things from Phase 0 hold: the boundary rule (D14) governs every new object, and new
+objects go in the target zones (D15).

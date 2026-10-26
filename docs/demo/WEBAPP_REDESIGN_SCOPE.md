@@ -9,7 +9,8 @@
 > governed by [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md), [`../../webapp/README.md`](../../webapp/README.md)
 > and [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented.
 
-**Status: DRAFT — 2026-10-25. Not approved; nothing in DSS or the webapp has changed.** Supersedes
+**Status: DRAFT — 2026-10-25, revised 2026-10-26 (built beside what runs today; the flow migration
+decided separately). Not approved; nothing in DSS or the webapp has changed.** Supersedes
 the Act 4 evidence review plan of 2026-10-23 (in git history), whose content is split between this
 document and the workplan.
 
@@ -26,9 +27,13 @@ makes that the app's own shape:
   for the disease selected on the shortlist. Every analysis the three acts carried stays reachable
   under *Show the detail*.
 - **An evidence assistant** answers free questions over the same sources.
-- **The flow is separated afterwards.** The notebooks' supporting evidence moves into its own DSS
-  project, which reads only the upstream zones 00–31; the main project's flow after zone 40 is
-  rebuilt around the new pages' functions. That migration has its own workplan,
+- **It is built beside what runs today.** The redesign deploys to a second webapp in the same
+  project, and its top-5 SHAP scoring runs beside the existing chain, so the live demo and the
+  notebooks' numbers are untouched until the switch-over.
+- **The flow migration is decided afterwards.** Whether the notebooks' supporting evidence moves into
+  its own DSS project, which reads only the upstream zones 00–31, and whether the main project's flow
+  after zone 40 is rebuilt around the new pages' functions, is a separate decision taken after the
+  release. That migration has its own workplan,
   [`../operations/FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md).
 
 The agreed design is a static mockup over a 2026-10-23 snapshot, kept out of git at
@@ -41,7 +46,7 @@ Agreed in discussion between 2026-10-23 and 2026-10-26.
 | id | decision | consequence |
 |---|---|---|
 | D1 | The assistant may use the graph, CT.gov and PubMed tools and HGNC, and cite them. It may also answer from the LLM's general knowledge, **but such claims are marked "not from a retrieved source" and never rendered as citations** | reverses `WEBAPP_DESIGN.md` §8 *"No LLM anything"* for this one surface |
-| D2 | *Why this ranking?* shows the **top 5 SHAP contributions**, and only those features, each with its within-disease percentile | scoring recipe change and rebuild |
+| D2 | *Why this ranking?* shows the **top 5 SHAP contributions**, and only those features, each with its within-disease percentile | a second scoring recipe beside the existing chain; no existing recipe changes or rebuilds |
 | D3 | Trials and literature are retrieved **on demand for the selected pair only**: direct searches, then **one LLM selection pass**. No agent loop, no batch over all pairs | retrieval design in the workplan |
 | D4 | That pass also assigns each record a **role label**, and every label must carry a quote the backend verifies against the passage. A label that fails the check is dropped; the record stays, unlabelled | first LLM-derived labels in the app |
 | D5 | Results are **cached per (disease, gene) pair in a DSS managed folder** | reverses §8 *"No writes to DSS"* for this cache |
@@ -52,13 +57,14 @@ Agreed in discussion between 2026-10-23 and 2026-10-26.
 | D10 | **Acts 1–3 become one page, "Why trust the list"**, of three sections with a headline answer each and the rest under *Show the detail*. No analysis is removed | 20 cards on three pages become 3 sections on one; three move to the shortlist (§4.3) |
 | D11 | **One disease drives both pages.** Choosing it on either page changes it on the other | a shared store; the evidence page needs per-disease AUC for the shortlist's diseases |
 | D12 | The evidence page's family detail keeps the **form of the live Act 3 plots**: the shared/specific chip layout, the overlap matrix with its All/Novel toggle, and the gene coverage dot grid. **Their colours come from theme tokens**, not inline styles: the matrix tints in six steps of `chart-3`, the grid's dots and gene names use `chart-3` and `chart-1` with three size and opacity steps | reuse `ActTabs` as it is; `ActMatrix` and `ActGeneGrid` move their colours to token classes, the only change to them |
-| D13 | **After the release, the notebooks' supporting evidence moves to its own DSS project.** It reads `DEMO_TARGET_IDENTIFICATION`'s zones 00–31 through exposed objects, recomputes what it needs, and runs the notebook assertions. **`breast_panel_metrics` moves with it**, as supporting evidence; datasets nothing reads are deleted | a third project beside the two `ADR-001` bounds; the build-governance allowlist, the identity-recipe check and the `.index/_dead.json` keep entry change with it (flow migration M0) |
-| D14 | **The boundary rule.** Notebooks read only zones 00–31 and recompute anything downstream; the webapp backend reads only serving zones; no computed dataset is consumed by both | stated in workplan Phase 0, binding on every later phase; the flow migration enforces it on the existing flow |
-| D15 | **The flow after zone 40 is organised by the new webapp's functions**: a shared scoring and ranking core (`40`), then `S1 Shortlist`, `S2 Evidence · graph`, `S3 Evidence · reconstruction`, `S4 Evidence · family panels`. Zone 20 is re-zoned into its three jobs without a rebuild | layout in workplan Phase 0; Phases 4 and 6 build into `S1`; the migration rebuilds the rest beside the old zones and compares before retiring them |
+| D13 | **Whether the notebooks' supporting evidence moves to its own DSS project is decided after the release**, as the flow migration's step G. If it moves, it reads `DEMO_TARGET_IDENTIFICATION`'s zones 00–31 through exposed objects, recomputes what it needs, and runs the notebook assertions; **`breast_panel_metrics` moves with it**, as supporting evidence; datasets nothing reads are deleted | none before the decision. If it moves: a third project beside the two `ADR-001` bounds; the build-governance allowlist, the identity-recipe check and the `.index/_dead.json` keep entry change with it (flow migration M0) |
+| D14 | **The boundary rule.** Notebooks read only zones 00–31 and recompute anything downstream; the webapp backend reads only serving zones; no computed dataset is consumed by both | stated in workplan Phase 0, binding on every later phase; the flow migration, if it runs, enforces it on the existing flow |
+| D15 | **The flow after zone 40 is organised by the new webapp's functions**: a shared scoring and ranking core (`40`), then `S1 Shortlist`, `S2 Evidence · graph`, `S3 Evidence · reconstruction`, `S4 Evidence · family panels`. New objects go in these zones from the start; re-zoning the existing flow, including zone 20 into its three jobs without a rebuild, belongs to the flow migration decision | layout in workplan Phase 0; Phases 4–6 build into `S1`; if the migration runs in full, it rebuilds the rest beside the old zones and compares before retiring them, and otherwise the existing zones stay as they are |
 
 D1, D4 and D5 need one register entry; D9–D11 need another, because they change lasting demo scope
-and order and could not be reconstructed from the code; D14 and D15 are recorded with them. D13
-changes project ownership, so it needs a successor ADR to `ADR-001` rather than a register line alone.
+and order and could not be reconstructed from the code; D14 and D15 are recorded with them. If D13's
+move goes ahead, it changes project ownership, so it needs a successor ADR to `ADR-001` rather than a
+register line alone.
 
 ## 3. Starting point (measured 2026-10-23)
 
@@ -220,7 +226,7 @@ workplan clears them by the end of Phase 2. Dark mode was not rendered; the app 
 or liability badges; no pooled AUC beside the macro one; no ablation ladder or hyperparameters; no
 headline number without its spread; no language that prescribes research direction.
 
-**Through the migration (D13–D15).** `llm_hx` stays where it is (held for Part 1). Every governed
+**If the migration runs (D13–D15).** `llm_hx` stays where it is (held for Part 1). Every governed
 claim must resolve to the same value after the move, including `TI-VAL-009`, which follows `nb4` and
 `breast_panel_metrics` into the evidence project. No serving dataset is retired before its rebuilt
 copy matches it.

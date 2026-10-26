@@ -8,7 +8,8 @@
 > Phase 0, and the decisions in [`../demo/WEBAPP_REDESIGN_SCOPE.md`](../demo/WEBAPP_REDESIGN_SCOPE.md)
 > (D13–D15), which this plan carries out.
 
-**Status: DRAFT — 2026-10-26. Not approved; nothing in DSS has changed.**
+**Status: DRAFT — 2026-10-26. Not approved; nothing in DSS has changed. Not part of the webapp
+redesign: whether it runs is a separate decision taken after the redesign's Phase 8 (§1).**
 
 ## 1. Purpose and timing
 
@@ -22,18 +23,32 @@ other. This plan separates them:
 - **The main project's flow after zone 40 is rearranged by the new webapp's functions** (D15), rebuilt
   in new zones beside the old ones, compared, and only then retired.
 
-It runs **after the webapp redesign's Phase 8**, because its inventory reads what the released webapp
-actually reads. Two parts are settled earlier, in the redesign's Phase 0: the boundary rule (D14) and
-the target zone layout (D15). The redesign's Phases 4–6 put their new objects straight into the target
-zones, so nothing new lands in a zone this plan retires.
+**Whether it runs is a separate decision, taken after the webapp redesign's Phase 8.** The redesign is
+complete without it, and the decision waits for the release because M1's inventory reads what the
+released webapp actually reads. The case for it is the notebooks: today a change made for the demo can
+move a documented number. The decision weighs that against the cost of a third project, the
+build-governance and identity-check changes, and a rebuild-and-compare of the serving flow. It can
+take one of three forms:
+
+| option | steps | leaves |
+|---|---|---|
+| full | M0–M5 | the boundary rule enforced on the whole flow; the serving flow organised by webapp function |
+| evidence project only | M0–M2 | the notebooks independent of every serving zone, which already satisfies D14; the old serving zones and zone 20 as they are |
+| none | — | the boundary rule applied to new objects only; the notebooks keep reading the eight shared datasets in §2 |
+
+Two parts are settled earlier, in the redesign's Phase 0, and hold whichever is chosen: the boundary
+rule (D14) and the target zone layout (D15). The redesign's Phases 4–6 put their new objects straight
+into the target zones, so nothing new lands in a zone this plan would retire.
 
 Every step that changes DSS needs the user's approval at the time. The user runs builds, scenarios and
 `make deploy`; Claude verifies read-only. Nothing is committed without the user's approval.
 
 ## 2. Starting point (measured 2026-10-26)
 
-**The flow:** 91 datasets in 17 zones; the zones after 40 hold 41 of them (40: 11, A1: 5, A2: 16,
-A3: 6, A4: 3).
+**The flow:** 103 datasets in 17 zones, one of them the empty Default zone; the zones after 40 hold 41
+of them (40: 11, A1: 5, A2: 16, A3: 6, A4: 3). The redesign adds `drug_evidence_records`,
+`persona2_scored_shap5`, `candidate_shap_top5` and the `act4_evidence_cache` folder, all in `S1`,
+before the decision is taken.
 
 **What each notebook reads from zone 40 or later** — 15 distinct datasets, 23 reads:
 
@@ -81,6 +96,7 @@ every downstream number.
 
 | step | what | DSS change | done when |
 |---|---|---|---|
+| G | whether to run, after the redesign's Phase 8 | — | the user picks an option in §1 |
 | M0 | decisions | — | approved |
 | M1 | inventory and mapping | — | table approved |
 | M2 | the evidence project | new project, moved recipe | every assertion and governed claim unchanged |
@@ -109,6 +125,10 @@ every downstream number.
   project, or deleted because nothing reads it (`shap_driver_frequency` and `shap_drivers_long` are
   expected here). Intermediates follow their first served consumer.
 - **Zone 20:** confirm the three-zone split in §2 and that every recipe moves without a rebuild.
+- **The two scoring runs.** After the redesign's Phase 5, `score_persona_candidates` (zone 40) and
+  `score_persona_candidates_shap5` (`S1`) compute the same predictions. Decide whether both stay, or
+  the ranking core reads the second and the first is retired, which would also retire
+  `top_shap_drivers`.
 - **Done when:** the user approves one table: every dataset, its readers today, its readers after, its
   target zone or fate.
 
