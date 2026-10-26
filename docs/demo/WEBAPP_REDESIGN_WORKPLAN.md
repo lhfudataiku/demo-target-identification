@@ -4,7 +4,7 @@
 > **Authority:** the phase sequence, the technical design of each phase, and its acceptance criteria ·
 > **Update when:** a phase is accepted or re-scoped, or a budget in §8 is measured · **Generated
 > dependencies:** none · **Excludes:** the decisions, measurements and target design, which are
-> [`WEBAPP_REDESIGN_SCOPE.md`](WEBAPP_REDESIGN_SCOPE.md) and are referenced here by their ids (D1–D12).
+> [`WEBAPP_REDESIGN_SCOPE.md`](WEBAPP_REDESIGN_SCOPE.md) and are referenced here by their ids (D1–D15).
 
 **Status: DRAFT — 2026-10-25. Not approved; no phase has started.**
 
@@ -49,17 +49,46 @@
 | 6 | trials and literature | managed folder, scenario |
 | 7 | evidence assistant | agent |
 | 8 | verification and release | deploy |
+| 9 | flow migration, in its own workplan | see that workplan |
 
 Phases 1–3 need no DSS change and can ship as one release. Phases 4–6 each depend only on Phase 2's
-tabs; Phase 7 uses what 3–6 provide.
+tabs; Phase 7 uses what 3–6 provide. Phase 9 starts only after Phase 8, because its inventory reads
+what the released webapp actually reads.
 
 ## 2. Phase 0 — decisions and documents
 
 - Two register entries in `DECISION_REGISTER.md`: D1/D4/D5 (assistant, role labels, cache) and
-  D9–D11 (the list leads, one evidence page, one disease).
+  D9–D11 (the list leads, one evidence page, one disease). The boundary rule (D14) and the target
+  zone layout (D15) below are recorded with the second.
 - `DEMO_NARRATIVE.md`: act order and the four-acts table.
 - `WEBAPP_DESIGN.md`: §3.3 routes, §4 acts table and Acts 1–4 sections, §6 guardrail rows, §8.
 - **Done when:** the user approves the doc diff.
+
+**The boundary rule (D14).** It governs every phase from here on, and the flow migration enforces it
+on what already exists:
+
+- **Notebooks read only zones 00–31** (after the migration, through the evidence project's exposed
+  objects) and recompute anything downstream in their own code. A notebook never reads a serving zone.
+- **The webapp backend reads only serving zones** (`S1`–`S4` below).
+- **No computed dataset is consumed by both.** Both may depend on the same inputs in zones 00–31;
+  neither depends on the other's outputs.
+
+**The target zone layout after zone 40 (D15)**, one zone per function of the new webapp. Datasets
+named here exist today unless marked; the flow migration's M1 maps every remaining dataset, and places
+each intermediate with its first served consumer.
+
+| zone | serves | endpoint datasets |
+|---|---|---|
+| `40 Scoring & ranking` | both pages, as the shared core | `persona2_scored`, `persona2_scored_shap` (with `shap_top5`, Phase 5), `top_candidates`, `target_candidates_2`, `candidates_annotated` |
+| `S1 Shortlist` | the shortlist | `dashboard_candidates`; `drug_evidence_records` (new, Phase 4); the `act4_evidence_cache` folder (new, Phase 6) |
+| `S2 Evidence · graph` | section 1, what the model can see | `graph_node_type_counts`, `graph_relation_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence` |
+| `S3 Evidence · reconstruction` | section 2 | `validation_auc_by_disease`, `split_audit_2`, `disease_eligibility`, `hub_bias_meter`, `orthogonality_scatter`, `family_auc_by_family`, `persona_enrichment` |
+| `S4 Evidence · family panels` | section 3 | `demo_panel_config`, `family_panel`, `family_panel_metrics`, `family_panel_overlap`, `family_panel_programme`, `family_panel_top50` |
+
+Leaving the main project: `breast_panel_metrics` and the A4 notebook-only datasets (`known_drug_truth`,
+`filter_three_axes`, `pool_reachability`) move to the evidence project; `shap_driver_frequency` and
+`shap_drivers_long` are expected to be deleted. Both are confirmed in the migration's M1. Zone 20 is
+re-zoned into drug annotation, gene annotation, and disease family with split key, without a rebuild.
 
 ## 3. Phase 1 — navigation and the evidence page
 
@@ -125,9 +154,9 @@ tabs; Phase 7 uses what 3–6 provide.
 
 ## 6. Phase 4 — drug lineage *(DSS)*
 
-- New dataset `drug_evidence_records` (managed storage, Parquet), one row per pair × drug, built with
-  visual Join recipes: `drug_disease_edges` ⋈ `drug_protein_edges` on the drug, `graph_nodes` for both
-  indexes, restricted to pairs in `dashboard_candidates`.
+- New dataset `drug_evidence_records` in zone `S1 Shortlist` (D15; managed storage, Parquet), one
+  row per pair × drug, built with visual Join recipes: `drug_disease_edges` ⋈ `drug_protein_edges` on
+  the drug, `graph_nodes` for both indexes, restricted to pairs in `dashboard_candidates`.
 
   | field | from |
   |---|---|
@@ -183,8 +212,9 @@ tabs; Phase 7 uses what 3–6 provide.
 
 ### Cache and pre-fill
 
-- Folder `act4_evidence_cache`, one JSON file per pair: `{disease_index}/{gene_index}.json`, holding
-  the queries, raw and filtered records, the selection, `retrieved_at` and `selected_at`.
+- Folder `act4_evidence_cache` in zone `S1 Shortlist` (D15), one JSON file per pair:
+  `{disease_index}/{gene_index}.json`, holding the queries, raw and filtered records, the selection,
+  `retrieved_at` and `selected_at`.
 - Versions inside the file (tool config, query builder, prompt, model id); any mismatch is a miss.
 - One uvicorn worker (bs-blueprint rule), so a per-pair in-process lock prevents duplicate runs.
 - A **Refresh** control re-runs the pair.
@@ -221,3 +251,9 @@ failure shows inside its tab only; every rendered quote is a substring of its pa
   no family panel; cold and warm timings; forced tool timeouts.
 - The user runs `make deploy`; read-only verification afterwards.
 - Regenerate `.index/` and `FLOW_MAP.md` once the new datasets exist.
+
+## 11. Phase 9 — flow migration
+
+Carried out in its own workplan, [`../operations/FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md):
+a separate evidence project for the notebooks (D13), and the main project's flow after zone 40
+rebuilt in the target zones (D15), compared with the old, then retired. It starts after Phase 8.
