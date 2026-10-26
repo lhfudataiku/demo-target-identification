@@ -35,11 +35,11 @@ check, are historical material in
 and answer Acts 1–3 as the three sections of one page, *Why trust the list*, with one disease shared by
 both pages; the shortlist gains an evidence review and an evidence assistant. The sections that state
 principles (§4, §6, §8) already carry it, each change marked *planned*. The sections that describe the
-app as built change with the phase that builds it. **Phases 1–4 are built, not yet deployed:** the
+app as built change with the phase that builds it. **Phases 1–5 are built, not yet deployed:** the
 two-page navigation, the shared disease and *Why trust the list* (Phase 1); the shortlist split into the
 list and a tabbed card for the selected candidate, with the *How do we know?* links (Phase 2); and the
 candidate's HGNC identity in that card's header (Phase 3); and the drug records behind the badges
-(Phase 4). §3.3
+(Phase 4); and the top five SHAP drivers in *Why this ranking?* (Phase 5). §3.3
 and the act tables below describe them. The deployed webapp keeps the four act routes until the Phase 8
 switch-over.
 
@@ -188,7 +188,7 @@ a defect (§3.7).
 
 | act | route | view | backend route | backing datasets |
 |---|---|---|---|---|
-| 4 | `/shortlist` (home) | `ShortlistView` → `shortlist/CandidateTable`, `CandidateHeader`, `OverviewTab`, `RankingTab`, `LineageTab` | `GET /api/candidates{,/diseases,/gene,/identity,/drugs}` | `dashboard_candidates`; from zone S1, `candidate_identity` for `/identity` and `drug_evidence_records` for `/drugs` |
+| 4 | `/shortlist` (home) | `ShortlistView` → `shortlist/CandidateTable`, `CandidateHeader`, `OverviewTab`, `RankingTab`, `LineageTab` | `GET /api/candidates{,/diseases,/gene,/identity,/drugs,/drivers}` | `dashboard_candidates`; from zone S1, `candidate_identity` for `/identity`, `drug_evidence_records` for `/drugs` and `candidate_shap_top5` for `/drivers` |
 | 1 | `/trust?section=graph` | `TrustView` → `trust/GraphSection` | `GET /api/evidence` | `graph_node_type_counts`, `graph_relation_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence` |
 | 2 | `/trust?section=reconstruction` | `TrustView` → `trust/ReconstructionSection` | `GET /api/calibration` | `validation_auc_by_disease`, `family_auc_by_family`, `split_audit_2`, `disease_eligibility`, `persona_enrichment`, `hub_bias_meter`, `orthogonality_scatter`, the `COUNT_RECORDS` metrics of `enriched_dwpc_{GGD,GPGD,GCD}`, + the live champion saved model |
 | 3 | `/trust?section=family` | `TrustView` → `trust/FamilySection` | `GET /api/families`, `/api/families/{id}` | `family_panel_metrics`, `family_panel_overlap`, `family_panel_top50`, `family_panel_programme`, `persona_enrichment`, `demo_panel_config` |
@@ -512,7 +512,7 @@ graph. Trials and Literature hold an empty state until Phase 6.
 | The contract | not a block of its own: the Overview tab's *What these sources cannot tell you* carries the therapeutic-relevance clause, and the liability tooltip and note carry the safety one. The subtype clause is not on the page | the deliverable in one sentence, and **the three things it does not do** |
 | The ranked list | paged table, 15 rows a page | 12,272 rows: rank, gene, class, tractability, the association badge, the drug-evidence badges and the safety badge. The SHAP drivers moved to the candidate's *Why this ranking?* tab |
 | The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tractable 7,950 → not secreted 7,273 → rank ≤ 200 → 38** (re-derived 2026-10-26 through the backend's own filter; previously 7,951 and 7,274) |
-| Candidate detail | the card below the list: a header, then the Overview and *Why this ranking?* tabs | rank against the pool, every flag and the gene's HGNC identity in the header; the stored SHAP drivers, each with its percentile in **this disease's own distribution** |
+| Candidate detail | the card below the list: a header, then the Overview and *Why this ranking?* tabs | rank against the pool, every flag and the gene's HGNC identity in the header; the top five SHAP drivers, each with its percentile in **this disease's own distribution** |
 | The drugs behind the badges | Drugs & graph tab · table under the badges | every drug that acts on the gene **and** is recorded for exactly this disease node: name, highest stage, action on the gene, DrugBank id, release. ERBB2 × HER2+: tucatinib (approval), poziotinib (phase 2). An empty table reads *no link in snapshot* |
 | The mechanism, on the graph | Drugs & graph tab · shared Explorer card with five independent bounded presets | prepared interaction, pathway, molecular-function, biological-process and drug-context queries for the selected disease and gene |
 | *How do we know?* | the intro row (all three sections); the Overview tab's model box (section 2) and association box (section 1) | links to *Why trust the list*, landing on the section |
@@ -542,12 +542,16 @@ with zero mismatches (checked 2026-10-26), so a badge and the table under it can
 is exact-node: lapatinib and neratinib act on ERBB2 but are recorded on *breast cancer*, so they are
 not in HER2+'s table.
 
-**Why this ranking? lists only the stored drivers** (scope D2). The tab shows each feature with a stored
-SHAP value, its sign and size, and where this gene's value sits in this disease's pool; the champion's
-other inputs are in the glossary. Today the flow stores two drivers (`top_shap_drivers`); the top five
-arrive with the rescoring in Phase 5. The feature wording comes from `backend/feature_glossary.py`, so
-it moves when the champion does. One champion input, `prox_kernel`, never reaches
-`dashboard_candidates`; when it is a driver, the tab says it has no percentile rather than hiding it.
+**Why this ranking? lists only the top five drivers** (scope D2). The tab shows the five features with
+the largest SHAP values, each with its sign and size and where this gene's value sits in this disease's
+pool; the champion's other nine inputs are in the glossary. They come from `candidate_shap_top5` (zone
+S1), a second scoring run of the champion with five explanations beside the run that sets the rank; it
+scores every pair identically, and its two strongest drivers equal the stored `top_shap_drivers` on all
+105,702 pairs (2026-10-26). The Overview tab's strongest driver reads the same list. Percentiles are
+computed in the flow by the rule `/gene` uses, so `prox_kernel`, which never reaches
+`dashboard_candidates`, now has one. When a driver has no value — no such path for this gene — the
+tab says the contribution is its absence. The feature wording comes from `backend/feature_glossary.py`,
+so it moves when the champion does.
 webapp v1's drawer had shown three features — `rwr_score`, `ppi_common_neighbors`,
 `shared_pathway_count` — that are **not inputs to m7-f14**, which is why the set is derived, never
 curated.

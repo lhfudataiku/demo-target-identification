@@ -13,7 +13,7 @@
 > python3 tools/build_flow_map.py
 > ```
 
-Live DSS: **95 datasets across 18 zones**, cross-referenced against the recipe graph (93 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
+Live DSS: **97 datasets across 18 zones**, cross-referenced against the recipe graph (95 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
 
 A dataset counts as **read** only when its name appears *quoted* in reader code. A bare
 mention is prose: `calibration.py` names the three DWPC feature datasets in a display
@@ -31,9 +31,9 @@ so zones A1-A4 are read by named routes rather than by an unbuilt UI.
 
 ## Summary
 
-- datasets: **95**
-- endpoints (read by a webapp route or a notebook): **43**
-- flow intermediates (consumed by a recipe, no direct reader): **50**
+- datasets: **97**
+- endpoints (read by a webapp route or a notebook): **44**
+- flow intermediates (consumed by a recipe, no direct reader): **51**
 - genuine orphans: **2** — `llm_hx`, `shap_driver_frequency`
 
 > Every orphan here is a deliberate decision, not a finding. See
@@ -179,7 +179,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `target_candidates_2` | — | `join_disease_name` | 3 | intermediate |
 | `top_annotated` | — | `decorate_target_candidates` | 1 | intermediate |
 | `top_candidates` | — | `rank_per_disease` | 1 | intermediate |
-| `validation_set_personas_2` | — | `filter_persona_diseases` | 1 | intermediate |
+| `validation_set_personas_2` | — | `filter_persona_diseases` | 2 | intermediate |
 
 ## A1 Evidence base (serving)  (5 datasets, 5 recipes)
 
@@ -237,11 +237,13 @@ Foreign references in this zone (1), each feeding exactly one Sync or Merge reci
 
 _No datasets in this zone._
 
-## S1 Shortlist  (3 datasets, 3 recipes)
+## S1 Shortlist  (5 datasets, 5 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `candidate_identity` | **webapp:routes/candidates** | `join_candidate_identity` | 0 | webapp |
+| `candidate_shap_top5` | **webapp:routes/candidates** | `compute_shap_top5` | 0 | webapp |
 | `drug_evidence_records` | **webapp:routes/candidates** | `join_drug_evidence_records` | 0 | webapp |
 | `drug_protein_actions` | — | `group_drug_protein_actions` | 1 | intermediate |
+| `persona2_scored_shap5` | — | `score_persona_candidates_shap5` | 1 | intermediate |
 

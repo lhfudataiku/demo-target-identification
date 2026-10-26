@@ -56,6 +56,11 @@
    "source_file",
    "source_sha256"
   ],
+  "candidate_shap_top5": [
+   "disease_index",
+   "gene_index",
+   "shap_top5"
+  ],
   "candidates_annotated": [
    "gene_index",
    "disease_index",
@@ -1099,6 +1104,54 @@
    "prediction",
    "explanations",
    "top_shap_drivers"
+  ],
+  "persona2_scored_shap5": [
+   "gene_index",
+   "disease_index",
+   "gene_ppi_degree",
+   "gene_n_diseases",
+   "gene_n_pathways",
+   "module_size",
+   "degree",
+   "clustering_coefficient",
+   "triangles",
+   "eigenvector_centrality",
+   "pagerank",
+   "dwpc_GPGD",
+   "dwpc_GCD",
+   "dwpc_GGD",
+   "ppi_common_neighbors",
+   "ppi_adamic_adar",
+   "ppi_jaccard",
+   "prox_closest",
+   "prox_mean",
+   "prox_kernel",
+   "prox_n_reach",
+   "shared_pathway_count",
+   "shared_pathway_frac",
+   "rwr_score",
+   "disease_context",
+   "relation",
+   "has_inflammatory_go_annotation",
+   "ppi_evidence_depth",
+   "ppi_multi_source_frac",
+   "ppi_edges_with_provenance",
+   "ppi_common_neighbors_z",
+   "ppi_cn_expected",
+   "dwpc_GBGD",
+   "dwpc_GFGD",
+   "rwr_norm",
+   "is_target",
+   "disease_family_id",
+   "anchor_name",
+   "hop_depth",
+   "disease_split_key",
+   "split_key_name",
+   "split_key_rule",
+   "proba_0",
+   "proba_1",
+   "prediction",
+   "explanations"
   ],
   "persona_candidates": [
    "disease",
@@ -2959,6 +3012,18 @@
    "values": []
   }
  },
+ "compute_shap_top5": {
+  "code": "# Top-5 SHAP drivers per scored pair, for the shortlist's \"Why this ranking?\" tab (webapp redesign D2).\n# persona2_scored_shap5 -> candidate_shap_top5, one row per (disease_index, gene_index).\n# ----------------------------------------------------------------------------\n# BESIDE THE OLD CHAIN, NOT IN IT. compute_top_shap_drivers_1 keeps the top TWO of the main scoring\n# run as a rendered string (top_shap_drivers), which rank_per_disease, dashboard_candidates, nb6 and\n# nb7 depend on. This recipe reads a SECOND scoring run of the same saved model with\n# nbExplanations = 5 (score_persona_candidates_shap5) and changes nothing upstream.\n#\n# shap_top5 is a JSON list, strongest |SHAP| first, of up to five\n#     {\"feature\", \"shap\", \"value\", \"percentile\"}\n# where percentile is the share of THIS disease's pool the gene is STRONGER than on that feature:\n# strict inequality, so ties never inflate it, and for prox_closest (hop distance) stronger means\n# FEWER hops. This is the definition GET /api/candidates/gene uses (backend/routes/candidates.py);\n# LOWER_IS_STRONGER mirrors backend/feature_glossary.py and must move with it.\n#\n# It carries prox_kernel's value and percentile, the one champion input dashboard_candidates lacks,\n# so no column is added there.\n# ----------------------------------------------------------------------------\nimport json\n\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\nLOWER_IS_STRONGER = {\"prox_closest\"}\nN = 5\n\nsrc = dataiku.Dataset(\"persona2_scored_shap5\")\ndf = src.get_dataframe()\ndf[\"disease_index\"] = df[\"disease_index\"].astype(\"int64\")\ndf[\"gene_index\"] = df[\"gene_index\"].astype(\"int64\")\n\nparsed = df[\"explanations\"].map(lambda s: json.loads(s) if isinstance(s, str) and s else {})\nfeatures = sorted({f for d in parsed for f in d})\nmissing = [f for f in features if f not in df.columns]\nif missing:\n    raise ValueError(f\"explained features absent from the scored set: {missing}\")\nprint(f\"{len(df):,} pairs; explanations per pair:\", parsed.map(len).value_counts().to_dict())\n\n# Percentile of every pair on every explained feature, within its disease's pool.\npct = pd.DataFrame(index=df.index, columns=features, dtype=\"float64\")\nfor _, idx in df.groupby(\"disease_index\").groups.items():\n    pool = df.loc[idx]\n    for f in features:\n        v = pool[f].to_numpy(dtype=\"float64\")\n        ok = ~np.isnan(v)\n        vals = np.sort(v[ok])\n        if not len(vals):\n            continue\n        if f in LOWER_IS_STRONGER:\n            beaten = len(vals) - np.searchsorted(vals, v[ok], side=\"right\")\n        else:\n            beaten = np.searchsorted(vals, v[ok], side=\"left\")\n        pct.loc[pool.index[ok], f] = np.round(100.0 * beaten / len(vals), 1)\n\n\ndef num(x):\n    return None if x is None or x != x else float(x)\n\n\ndef top(i):\n    ranked = sorted(parsed[i].items(), key=lambda kv: abs(kv[1]), reverse=True)[:N]\n    return json.dumps([{\"feature\": f, \"shap\": round(float(s), 6), \"value\": num(df.at[i, f]),\n                        \"percentile\": num(pct.at[i, f])} for f, s in ranked])\n\n\nout = df[[\"disease_index\", \"gene_index\"]].copy()\nout[\"shap_top5\"] = [top(i) for i in df.index]\nif out.duplicated([\"disease_index\", \"gene_index\"]).any():\n    raise ValueError(\"more than one scored row for a pair\")\ndataiku.Dataset(\"candidate_shap_top5\").write_with_schema(out)\n\n",
+  "cypher": null,
+  "inputs": [
+   "persona2_scored_shap5"
+  ],
+  "outputs": [
+   "candidate_shap_top5"
+  ],
+  "type": "python",
+  "visual": null
+ },
  "compute_split_audit_2": {
   "code": "# Split integrity audit for the set_2 pipeline (elevated `disease_split_key`).\n#\n# WHY: set_2 is the first split keyed on `disease_split_key` (the anchor's most-specific\n# parent under the fanout cap) rather than `disease_family_id` (the anchor itself). The\n# whole point of the change is to stop MONDO parent/child pairs -- `diabetes mellitus` vs\n# `type 2 diabetes mellitus` -- from straddling train/test. That guarantee has to be\n# verified on the built data, not assumed from the GREL.\n#\n# Checks: (1) no split key appears in two splits, (2) no disease_index appears in two\n# splits, (3) positive rate is comparable across splits, (4) the persona diseases and the\n# diabetes pair all land in validation.\nimport dataiku\nimport pandas as pd\n\nCOLS = [\"disease_index\", \"disease_split_key\", \"disease_family_id\", \"split_key_name\", \"is_target\"]\n# Repointed 2026-08-19: the recipe's declared inputs were migrated to the psplit_* datasets on\n# 2026-08-17 but this code was not, so every build since has failed with \"Dataset\n# enriched_train_full_2 cannot be used\" and `split_audit_2` sat empty. TARGET_PRIORITIZER section 5.4\n# was quoting a pre-migration run. The leakage guarantee is only real if this recipe builds.\nSETS = {\"train\": \"psplit_train_set\",\n        \"validation\": \"psplit_validation_set\",\n        \"test\": \"psplit_test_set\"}\n# personas + the pair that motivated the elevated key\n# Indices remapped 2026-08-17 for the DEMO_KG_LS graph, resolved through\n# (node_id, node_type, node_source) -- see index_remap.json. node_index is DETERMINISTIC in that\n# graph, so these are stable from here on; they were not stable in the old single-project build.\n# They are still project-specific: the same diseases carry different integers per graph build.\n# GOVERNED BY NAME. The watch list is the `demo_panel.split_audit_watch` project\n# variable; node_index is resolved from graph_nodes at run time by\n# python/demo_identity.py, which raises on a missing or ambiguous name. Until\n# 2026-09-01 this pinned indices, which a graph rebuild renumbers -- the audit would\n# then have reported straddling for whichever diseases now held those slots.\n# The old labels here were abbreviations (\"non-small cell lung ca\"); the canonical\n# node_name is used now, so the printed audit matches the graph.\nimport demo_identity\n\n_watch_names = list(demo_identity.panel()[\"split_audit_watch\"])\nWATCH = {i: n for n, i in demo_identity.name_to_index(_watch_names).items()}\n\nframes = {k: dataiku.Dataset(v).get_dataframe(columns=COLS) for k, v in SETS.items()}\n\nrows = []\nfor name, df in frames.items():\n    rows.append({\"split\": name, \"rows\": len(df),\n                 \"positives\": int(df.is_target.sum()),\n                 \"pos_rate_pct\": round(100 * df.is_target.mean(), 4),\n                 \"n_diseases\": df.disease_index.nunique(),\n                 \"n_split_keys\": df.disease_split_key.nunique(),\n                 \"n_anchor_families\": df.disease_family_id.nunique()})\nsummary = pd.DataFrame(rows)\nprint(\"\\n=== set_2 split summary ===\")\nprint(summary.to_string(index=False))\n\nkeys = {k: set(df.disease_split_key.unique()) for k, df in frames.items()}\ndis = {k: set(df.disease_index.unique()) for k, df in frames.items()}\nprint(\"\\n=== integrity (must all be 0) ===\")\nfor a, b in [(\"train\", \"test\"), (\"train\", \"validation\"), (\"test\", \"validation\")]:\n    print(f\"  split_key overlap {a:10s} n {b:10s}: {len(keys[a] & keys[b]):5d}\"\n          f\"   |  disease overlap: {len(dis[a] & dis[b]):5d}\")\n\nprint(\"\\n=== watched diseases ===\")\nallf = pd.concat([df.assign(split=k) for k, df in frames.items()], ignore_index=True)\nlookup = (allf.drop_duplicates(\"disease_index\")\n              .set_index(\"disease_index\")[[\"split\", \"disease_split_key\", \"split_key_name\",\n                                           \"disease_family_id\"]])\nfor idx, label in WATCH.items():\n    if idx in lookup.index:\n        r = lookup.loc[idx]\n        print(f\"  {label:20s} idx {idx:6d} -> {r.split:10s} key {r.disease_split_key} \"\n              f\"({r.split_key_name})\")\n    else:\n        print(f\"  {label:20s} idx {idx:6d} -> NOT PRESENT (filtered out)\")\n\n# the diabetes pair: locate by split_key_name, since the indices shift between rebuilds\ndm = allf[allf.split_key_name.astype(str).str.contains(\"diabetes\", case=False, na=False)]\nprint(\"\\n=== diseases under a 'diabetes' split key ===\")\nif len(dm):\n    g = (dm.drop_duplicates(\"disease_index\")\n           .groupby([\"split_key_name\", \"split\"]).disease_index.nunique())\n    print(g.to_string())\nelse:\n    print(\"  none\")\n\n# per-split-key straddle report (should be empty) + the largest keys\nstraddle = (allf.drop_duplicates([\"disease_split_key\", \"split\"])\n                .groupby(\"disease_split_key\").split.nunique())\nprint(\"\\nsplit keys appearing in >1 split:\", int((straddle > 1).sum()))\n\nout = summary.copy()\nout[\"overlap_train_test_keys\"] = len(keys[\"train\"] & keys[\"test\"])\nout[\"overlap_train_val_keys\"] = len(keys[\"train\"] & keys[\"validation\"])\nout[\"overlap_test_val_keys\"] = len(keys[\"test\"] & keys[\"validation\"])\nout[\"straddling_split_keys\"] = int((straddle > 1).sum())\ndataiku.Dataset(\"split_audit_2\").write_with_schema(out)\n\n\n\n\n\n",
   "cypher": null,
@@ -3288,6 +3353,19 @@
   ],
   "outputs": [
    "persona2_scored"
+  ],
+  "type": "prediction_scoring",
+  "visual": null
+ },
+ "score_persona_candidates_shap5": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "hJLGoYn4",
+   "validation_set_personas_2"
+  ],
+  "outputs": [
+   "persona2_scored_shap5"
   ],
   "type": "prediction_scoring",
   "visual": null

@@ -1,6 +1,6 @@
 <script setup lang="ts">
   /**
-   * A fixed brief built from the candidate's flags and stored drivers. No LLM
+   * A fixed brief built from the candidate's flags and its top SHAP drivers. No LLM
    * writes this tab. Each box answers one question, points at the tab that holds
    * the detail, and — for the model and the association — at the section of
    * "Why trust the list" that says how we know (scope §4.1).

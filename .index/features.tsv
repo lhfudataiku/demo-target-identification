@@ -103,6 +103,7 @@ enrichment_at_50	compute_breast_panel	-	-
 ev_rank	compute_drug_classified	-	-		
 expected_at_50	compute_breast_panel	-	-		
 explanations	score_persona_candidates	-	-		
+explanations	score_persona_candidates_shap5	-	-		
 feature	compute_shap_drivers_long	-	-		
 gene	compute_family_panel_top50	-	-		
 gene_index	compute_drug_evidence_pairs	-	-		
@@ -241,10 +242,13 @@ ppi_cn_expected	compute_ppi_cn_zscore	-	-
 ppi_common_neighbors	compute_enriched_guilt_by_association_1	module_size >= 20	1		deg_m and ppi_deg_g are whole-graph COUNT{} over protein_protein, halved for the both-directions Kuzu build. Emits ppi_adamic_adar, ppi_jaccard.
 ppi_edges_with_provenance	compute_ppi_evidence_depth	-	-		
 prediction	score_persona_candidates	-	-		
+prediction	score_persona_candidates_shap5	-	-		
 prediction	score_psplit_validation_m7	-	-		
 proba_0	score_persona_candidates	-	-		
+proba_0	score_persona_candidates_shap5	-	-		
 proba_0	score_psplit_validation_m7	-	-		
 proba_1	score_persona_candidates	-	-		
+proba_1	score_persona_candidates_shap5	-	-		
 proba_1	score_psplit_validation_m7	-	-		
 prox_mean	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1		Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
 prox_n_reach	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1		Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
@@ -269,6 +273,7 @@ rwr_score	compute_enriched_rwr_score_1	MIN_SEEDS 20	1		MIN_SEEDS gate inside a p
 safety_flag	compute_enriched_gene_safety_v2	-	-		
 scope	compute_family_panel_programme	-	-		
 score	join_disease_name	-	-		
+shap_top5	compute_shap_top5	-	-		
 shared_genes	compute_family_panel_overlap	-	-		
 shared_pathway_count	compute_enriched_shared_pathway_count_1	module_size >= 20	1		n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
 source_release	join_drug_evidence_records	-	-		

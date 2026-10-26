@@ -27,7 +27,7 @@
   import LineageTab from '@/components/shortlist/LineageTab.vue'
   import OverviewTab from '@/components/shortlist/OverviewTab.vue'
   import RankingTab from '@/components/shortlist/RankingTab.vue'
-  import { TRUST_LINKS, parseDrivers, type Detail, type Payload, type Row } from '@/components/shortlist/types'
+  import { TRUST_LINKS, type Detail, type Drivers, type Payload, type Row } from '@/components/shortlist/types'
   import { useSelectionStore } from '@/stores/selection'
   import { apiUrl } from '@/utils/api'
 
@@ -81,7 +81,9 @@
 
   // Only the DISEASE invalidates a selection. The population filters do not:
   // percentiles are computed against the disease's whole pool, not the filtered one.
-  watch(diseaseIndex, () => { sel.value = null; detail.value = null; detailError.value = null })
+  watch(diseaseIndex, () => {
+    sel.value = null; detail.value = null; detailError.value = null; drivers.value = null; driversError.value = null
+  })
 
   async function select(r: Row) {
     if (diseaseIndex.value === undefined) return
@@ -92,8 +94,9 @@
     detailBusy.value = true
     reveal()
     const forGene = r.gene_index
+    const q = new URLSearchParams({ disease: String(diseaseIndex.value), gene: String(r.gene_index) })
+    loadDrivers(q, forGene)
     try {
-      const q = new URLSearchParams({ disease: String(diseaseIndex.value), gene: String(r.gene_index) })
       const res = await fetch(apiUrl(`/api/candidates/gene?${q}`))
       if (!res.ok) {
         const d = await res.json().catch(() => null)
@@ -122,10 +125,26 @@
     })
   }
 
-  // Driver wording comes from the list payload's own labels, which come from
-  // backend/feature_glossary.py, so the list and the tabs name features alike.
-  const drivers = computed(() =>
-    parseDrivers(sel.value?.top_shap_drivers, (k) => data.value?.feature_labels[k] ?? null))
+  // The top-5 SHAP drivers are their own request (a second scoring run, scope D2): if it fails,
+  // the Overview and Ranking tabs say so and everything else still works. Both tabs read this one
+  // copy, so they cannot name different strongest drivers.
+  const drivers = ref<Drivers | null>(null)
+  const driversError = ref<string | null>(null)
+  const driversBusy = ref(false)
+
+  async function loadDrivers(q: URLSearchParams, forGene: number) {
+    drivers.value = null; driversError.value = null; driversBusy.value = true
+    try {
+      const res = await fetch(apiUrl(`/api/candidates/drivers?${q}`))
+      const body = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(body?.detail ?? `HTTP ${res.status}`)
+      if (sel.value?.gene_index === forGene) drivers.value = body
+    } catch (e) {
+      if (sel.value?.gene_index === forGene) driversError.value = e instanceof Error ? e.message : String(e)
+    } finally {
+      if (sel.value?.gene_index === forGene) driversBusy.value = false
+    }
+  }
 </script>
 
 <template>
@@ -174,11 +193,11 @@
                   <TabsTrigger value="lineage">Drugs & graph</TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview" class="pt-4">
-                  <OverviewTab :row="sel" :detail="detail" :drivers="drivers" :disease-name="diseaseName"
+                  <OverviewTab :row="sel" :detail="detail" :drivers="drivers?.drivers ?? []" :disease-name="diseaseName"
                                @go="(t) => (tab = t)" />
                 </TabsContent>
                 <TabsContent value="ranking" class="pt-4">
-                  <RankingTab :drivers="drivers" :detail="detail" :busy="detailBusy" :error="detailError" />
+                  <RankingTab :drivers="drivers" :pool-size="detail?.pool_size ?? null" :busy="driversBusy" :error="driversError" />
                 </TabsContent>
                 <TabsContent value="trials" class="pt-4">
                   <EmptyState :icon="Pulse" title="Clinical trials are not retrieved yet"

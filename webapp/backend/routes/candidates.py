@@ -5,6 +5,7 @@
   GET /api/candidates/gene       one candidate, against its own disease's spread
   GET /api/candidates/identity   one gene's HGNC identity, from the preloaded S1 dataset
   GET /api/candidates/drugs      the drug records behind one pair's drug badges (S1)
+  GET /api/candidates/drivers    one pair's top-5 SHAP drivers with percentiles (S1)
 
 Backed by `dashboard_candidates` (zone 40; one row per disease-candidate pair,
 105,702 rows over 12 diseases when measured on 2026-10-23 -- /diseases serves the
@@ -15,6 +16,7 @@ judge the top of the list. Everything the act needs is already a column there.
 from __future__ import annotations
 
 import functools
+import json
 from typing import Any
 
 import numpy as np
@@ -35,7 +37,7 @@ DATASET = "dashboard_candidates"
 BULK_COLS = [
     "disease_index", "disease_name", "gene_index", "gene_name",
     "rank_in_disease", "score", "rank_percentile",
-    "is_target", "top_shap_drivers",
+    "is_target",
     "druggability_class", "ot_class_l1", "ot_sm_tractable", "ot_ab_tractable",
     "has_safety_liability", "safety_flag",
     "approved_for_disease", "investigational_for_disease",
@@ -160,13 +162,6 @@ def candidates(
         "funnel": funnel,
         "rows": rows,
         "returned": len(rows),
-        # `top_shap_drivers` is a rendered string of COLUMN names, and the table
-        # was showing them raw ("dwpc_GGD (+0.21)"). The detail drawer already
-        # resolves them, but only for the one selected gene. Fourteen entries,
-        # sent once per disease rather than per row -- and sourced here rather
-        # than restated in the frontend, because feature_glossary.py owns the
-        # model's feature wording (WEBAPP_DESIGN.md 3.7).
-        "feature_labels": dict(feature_glossary.LABEL),
     }
 
 
@@ -352,3 +347,37 @@ def pair_drugs(disease: int = Query(..., description="disease_index"),
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Could not read {DRUGS}: {e}")
     return {"disease_index": disease, "gene_index": gene, "records": recs.get((disease, gene), [])}
+
+
+# The top five SHAP drivers (redesign D2): `candidate_shap_top5` (zone S1) is a SECOND scoring run of
+# the champion with nbExplanations = 5, beside the chain that writes top_shap_drivers. Each driver
+# carries its value and its percentile in the disease's pool, computed in compute_shap_top5 by the
+# same rule as /gene above -- including prox_kernel, which dashboard_candidates cannot show.
+SHAP5 = "candidate_shap_top5"
+
+
+@functools.lru_cache(maxsize=2)
+def _shap5_at(stamp: str) -> dict[tuple[int, int], str]:
+    """(disease_index, gene_index) -> its JSON list, parsed per request. `stamp` is the cache key only."""
+    df = dataset_cache.frame(SHAP5, ["disease_index", "gene_index", "shap_top5"])
+    return {(int(d), int(g)): j for d, g, j in df.itertuples(index=False)}
+
+
+@router.get("/drivers")
+def pair_drivers(disease: int = Query(..., description="disease_index"),
+                 gene: int = Query(..., description="gene_index")) -> dict[str, Any]:
+    """Up to five drivers, strongest |SHAP| first, each with its within-disease percentile."""
+    try:
+        rows = _shap5_at(dataset_cache.build_stamp(SHAP5))
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Could not read {SHAP5}: {e}")
+    raw = rows.get((disease, gene))
+    if raw is None:
+        raise HTTPException(status_code=404, detail=f"No scored row for disease {disease}, gene {gene}")
+    drivers = [{"key": d["feature"], "label": feature_glossary.LABEL.get(d["feature"]),
+                "kind": feature_glossary.KIND.get(d["feature"]),
+                "direction": "lower" if d["feature"] in feature_glossary.LOWER_IS_STRONGER else "higher",
+                "shap": d["shap"], "value": d["value"], "percentile": d["percentile"]}
+               for d in json.loads(raw)]
+    return {"disease_index": disease, "gene_index": gene, "n_features": len(feature_glossary.CHAMPION),
+            "drivers": drivers}

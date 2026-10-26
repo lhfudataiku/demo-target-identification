@@ -56,7 +56,7 @@ chain, the flow migration decided separately, Phase 3 preloaded from Part 1). No
 | 2 | the shortlist on existing data | — |
 | 3 | HGNC identity | one new Part 1 recipe, a sync, a join (D16) |
 | 4 | drug lineage | a Group and a Join in S1, two datasets |
-| 5 | top-5 SHAP | new recipes beside the old scoring chain |
+| 5 | top-5 SHAP | two recipes beside the old scoring chain, two datasets |
 | 6 | trials and literature | managed folder, scenario |
 | 7 | evidence assistant | agent |
 | 8 | verification and switch-over | deploy |
@@ -248,34 +248,50 @@ existing flags and `compute_drug_evidence_pairs` are not touched.
 - **Done:** ERBB2 × HER2+ lists tucatinib (approval, inhibitor) and poziotinib (phase 2, inhibitor),
   read through the route against the live dataset; the check passes over every pair. Not yet deployed.
 
-## 7. Phase 5 — top-5 SHAP *(DSS: new recipes beside the old chain)*
+## 7. Phase 5 — top-5 SHAP *(DSS: two recipes beside the old chain)*
 
-**Today's scoring chain is not edited.** `score_persona_candidates` writes `persona2_scored`, then
-`compute_top_shap_drivers_1` → `persona2_scored_shap` → `rank_per_disease`, which sets every rank. Its
-`top_shap_drivers` string reaches `dashboard_candidates`, which `nb6` and `nb7` read and the current
-webapp serves. Phase 5 builds beside it, in zone `S1 Shortlist` (D15):
+**Built 2026-10-26. Today's scoring chain is not edited.** `score_persona_candidates` writes
+`persona2_scored`, then `compute_top_shap_drivers_1` → `persona2_scored_shap` → `rank_per_disease`,
+which sets every rank. Its `top_shap_drivers` string reaches `dashboard_candidates`, which `nb6` and
+`nb7` read. Phase 5 sits beside it, in zone `S1 Shortlist` (D15), managed storage, Parquet:
 
-- `score_persona_candidates_shap5`: a copy of `score_persona_candidates` (the same saved model
-  `hJLGoYn4` and active version, the same input `validation_set_personas_2`, the same background of
-  100) with `nbExplanations: 5`, writing `persona2_scored_shap5`.
-- `compute_shap_top5` (Python): one row per scored pair, `disease_index`, `gene_index` and
-  `shap_top5`, a JSON list of up to five `{feature, shap, value, percentile}`, the percentile taken
-  within the disease's pool. It carries `prox_kernel`'s value, the one champion input
-  `dashboard_candidates` cannot show (`MISSING_FEATURES` in `backend/routes/candidates.py`), so
-  `dashboard_candidates` gains no column. Writes `candidate_shap_top5`.
-- Build only these two: one job, `--target persona2_scored_shap5 --target candidate_shap_top5`, each
-  non-recursive, so nothing in zone 40 or upstream rebuilds. Record the scoring time (scope §7).
-- Checks, read-only, with a script under `tools/` that writes nothing to DSS: every pair's prediction
-  in `persona2_scored_shap5` equals `persona2_scored`'s; every pair in `dashboard_candidates` has a
-  row in `candidate_shap_top5`; and the share of pairs whose first two drivers match
-  `top_shap_drivers` is reported, with examples where they differ. A difference is investigated, not
-  patched: a second run need not reproduce the same top two if its background sample differs.
-- `GET /api/candidates/drivers?disease=&gene=` feeds the Ranking tab: up to five rows, SHAP sign and
-  value, the feature's percentile in this disease (D2).
-- The two scoring runs then compute the same predictions twice. Both stay; folding them into one is
-  left to the flow migration decision (§11).
-- **Done when:** predictions are equal on every pair; no existing recipe or dataset has changed;
-  ERBB2 × HER2+ shows five drivers with their percentiles.
+- **`score_persona_candidates_shap5`** writes `persona2_scored_shap5`: the same saved model `hJLGoYn4`
+  (m7-f14, active version), the same input `validation_set_personas_2` and the same payload, with one
+  difference, `nbExplanations: 5` (was 3). Created through the Python API, which named it
+  `score_validation_set_personas_2` whatever name was passed; it was renamed.
+- **`compute_shap_top5`** (Python, project code env) writes `candidate_shap_top5`: `disease_index`,
+  `gene_index` and `shap_top5`, a JSON list, strongest |SHAP| first, of five
+  `{feature, shap, value, percentile}`. The percentile is the share of the disease's pool the gene is
+  stronger than, by the rule `GET /api/candidates/gene` uses (strict inequality; fewer is stronger for
+  `prox_closest`), on the scored set's full-precision values. It covers `prox_kernel`, the one champion
+  input `dashboard_candidates` cannot show, so `dashboard_candidates` gains no column.
+  - On a sample of 720 drivers the percentiles equal `/gene`'s except one near-tie, where
+    `dashboard_candidates` stores the value rounded in its last digits.
+  - 9.4% of drivers have no value: the gene has no such path, and the SHAP value is the effect of
+    that absence. The tab says so rather than showing an empty cell.
+- **Builds**, non-recursive and one at a time, so nothing in zone 40 or upstream rebuilt:
+  `persona2_scored_shap5` in **8 min 13 s** of wall time (the 3-explanation run takes 8.1–8.2 min, so
+  five explanations cost almost nothing), then `candidate_shap_top5` — 105,702 rows, five explanations
+  each.
+- **Checks**, `python3 tools/check_shap_top5.py`, read-only (streams four datasets with `dku dataset
+  download`), passed on 2026-10-26:
+  1. every pair's `proba_1` and `prediction` equal `persona2_scored`'s: 105,702 of 105,702;
+  2. every pair of `dashboard_candidates` has a top-5 row: no pair missing;
+  3. the two strongest drivers match `top_shap_drivers` on **all 105,702 pairs**. Beyond the check,
+     the SHAP values on the features both runs explain are identical, and every pair's three stored
+     drivers are among its five: the Shapley background was drawn identically, so the two runs named
+     the same drivers.
+- **Backend.** `GET /api/candidates/drivers?disease=&gene=` reads `candidate_shap_top5` through the
+  dataset cache and adds each feature's wording, kind and direction from `feature_glossary.py`. The list
+  response no longer carries `top_shap_drivers` or `feature_labels`, which only the parsed drivers read.
+- **Tabs.** The shortlist fetches the drivers once per selection and passes the same list to Overview
+  (its strongest driver) and *Why this ranking?* (five rows: SHAP sign and value, the percentile).
+- The two scoring runs compute the same predictions twice. Both stay; folding them into one is left to
+  the flow migration decision (§11).
+- **Done:** predictions equal on every pair; no existing recipe or dataset changed; ERBB2 × HER2+ shows
+  five drivers, with SHAP and percentile within HER2+: `dwpc_GBGD` +1.30 (99.7), `dwpc_GPGD` +1.13
+  (99.1), `ppi_multi_source_frac` +0.71 (70.8), `dwpc_GFGD` +0.67 (98.9), `ppi_adamic_adar` +0.60 (99.3).
+  Not yet deployed.
 
 ## 8. Phase 6 — trials and literature *(DSS: cache folder, pre-fill scenario)*
 

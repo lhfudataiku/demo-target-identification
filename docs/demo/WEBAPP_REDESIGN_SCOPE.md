@@ -282,7 +282,10 @@ any safety or toxicity claim; storing assistant conversations.
   verified quotes, which bounds what an injected passage can do.
 - **PubMed is the open-access subset**; counts say "retrieved", never "all".
 - **Drug coverage gaps** (§3.2) can read as "no drug". Copy says "no link in snapshot".
-- **Rescoring cost** for top-5 SHAP is unmeasured.
+- **Rescoring cost** for top-5 SHAP: measured 2026-10-26 at **8 min 13 s** for 105,702 pairs, against
+  8.1–8.2 min for the 3-explanation run. The second run doubles the scoring time of a full rebuild,
+  not the cost of an explanation; folding the two runs is the flow migration's question (§11 of the
+  workplan).
 - **Text-to-Cypher reliability** limits the assistant's graph answers.
 - **Moving recipes breaks what fingerprints them.** Build governance's allowlist and pilot, the
   identity-recipe check and `tools/push_assertions.py` each assume one project. The flow migration's M0

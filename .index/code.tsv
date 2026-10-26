@@ -51,7 +51,7 @@ dss_recipes/compute_ppi_cn_zscore.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_ppi_evidence_depth.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_split_audit_2.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_target_reachability.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
-dss_recipes/compute_top_shap_drivers_1.py	recipe-mirror	MIRROR	1	webapp/frontend/src/components/shortlist/types.ts
+dss_recipes/compute_top_shap_drivers_1.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_tractability_lift.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_validation_auc_by_disease_2.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/cypher/compute_enriched_degree_controls_1.cypher	cypher-mirror	MIRROR	0	-
@@ -86,7 +86,7 @@ scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 tools/build_flow_map.py	tool	LIVE	3	docs/operations/FLOW_MAP.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/check_indexes.sh
 tools/build_governance.py	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
 tools/build_index.py	tool	LIVE	11	archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/decisions/README.md
-tools/build_recipe_index.py	tool	LIVE	37	README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md
+tools/build_recipe_index.py	tool	LIVE	38	README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md
 tools/capture_build_governance.py	tool	LIVE	1	docs/operations/BUILD_GOVERNANCE.md
 tools/check_claim_registry.py	tool	LIVE	4	docs/operations/FLOW_MIGRATION_WORKPLAN.md,docs/prioritizer/VALIDATION.md,tools/check_indexes.sh,tools/index_manifest.json
 tools/check_freshness.py	tool	LIVE	1	archive/DASHBOARD_BUILD_LOG.md
@@ -114,10 +114,10 @@ webapp/backend/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,w
 webapp/backend/app.py	webapp	LIVE (referenced)	4	archive/BLUEPRINT_ALIGNMENT_PLAN.md,tools/recipe_classes.json,webapp/DEPLOYMENT.md,webapp/README.md
 webapp/backend/config.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/app.env,webapp/dss_webapp/backend.py
 webapp/backend/dss_client.py	webapp	LIVE (referenced)	6	docs/demo/WEBAPP_DESIGN.md,harness/WEBAPP_OVERLAY.md,webapp/AGENTS.md,webapp/CLAUDE.md
-webapp/backend/feature_glossary.py	webapp	LIVE (referenced)	8	docs/demo/WEBAPP_DESIGN.md,tools/check_indexes.sh,tools/dataset_descriptions.json,tools/push_descriptions.py
+webapp/backend/feature_glossary.py	webapp	LIVE (referenced)	6	docs/demo/WEBAPP_DESIGN.md,docs/demo/WEBAPP_REDESIGN_WORKPLAN.md,tools/check_indexes.sh,tools/dataset_descriptions.json
 webapp/backend/routes/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
 webapp/backend/routes/calibration.py	webapp	LIVE (referenced)	5	docs/operations/FLOW_MAP.md,docs/prioritizer/CLAIM_REGISTRY.json,tools/build_flow_map.py,webapp/DEPLOYMENT.md
-webapp/backend/routes/candidates.py	webapp	LIVE (referenced)	5	docs/demo/WEBAPP_DESIGN.md,docs/demo/WEBAPP_REDESIGN_SCOPE.md,docs/demo/WEBAPP_REDESIGN_WORKPLAN.md,webapp/DEPLOYMENT.md
+webapp/backend/routes/candidates.py	webapp	LIVE (referenced)	4	docs/demo/WEBAPP_DESIGN.md,docs/demo/WEBAPP_REDESIGN_SCOPE.md,webapp/DEPLOYMENT.md,webapp/README.md
 webapp/backend/routes/evidence.py	webapp	LIVE (referenced)	2	webapp/DEPLOYMENT.md,webapp/README.md
 webapp/backend/routes/families.py	webapp	LIVE (referenced)	3	docs/prioritizer/CLAIM_REGISTRY.json,webapp/DEPLOYMENT.md,webapp/README.md
 webapp/backend/routes/system.py	webapp	LIVE (referenced)	1	webapp/README.md
