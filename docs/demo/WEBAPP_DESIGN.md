@@ -35,9 +35,11 @@ check, are historical material in
 and answer Acts 1–3 as the three sections of one page, *Why trust the list*, with one disease shared by
 both pages; the shortlist gains an evidence review and an evidence assistant. The sections that state
 principles (§4, §6, §8) already carry it, each change marked *planned*. The sections that describe the
-app as built change with the phase that builds it. **Phase 1 is built, not yet deployed:** the two-page
-navigation, the shared disease and *Why trust the list* (§3.3 and the Act 1–3 tables below describe
-them). The deployed webapp keeps the four act routes until the Phase 8 switch-over.
+app as built change with the phase that builds it. **Phases 1 and 2 are built, not yet deployed:** the
+two-page navigation, the shared disease and *Why trust the list* (Phase 1), and the shortlist split into
+the list and a tabbed card for the selected candidate, with the *How do we know?* links (Phase 2). §3.3
+and the act tables below describe them. The deployed webapp keeps the four act routes until the Phase 8
+switch-over.
 
 **Where the rest lives.** [`FLOW_MAP.md`](../operations/FLOW_MAP.md) is the generated flow authority. Historical
 native-dashboard evaluation is in [`../../archive/NATIVE_DASHBOARD_EVALUATION.md`](../../archive/NATIVE_DASHBOARD_EVALUATION.md),
@@ -184,7 +186,7 @@ a defect (§3.7).
 
 | act | route | view | backend route | backing datasets |
 |---|---|---|---|---|
-| 4 | `/shortlist` (home) | `ShortlistView` | `GET /api/candidates{,/diseases,/gene}` | `dashboard_candidates` |
+| 4 | `/shortlist` (home) | `ShortlistView` → `shortlist/CandidateTable`, `CandidateHeader`, `OverviewTab`, `RankingTab`, `LineageTab` | `GET /api/candidates{,/diseases,/gene}` | `dashboard_candidates` |
 | 1 | `/trust?section=graph` | `TrustView` → `trust/GraphSection` | `GET /api/evidence` | `graph_node_type_counts`, `graph_relation_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence` |
 | 2 | `/trust?section=reconstruction` | `TrustView` → `trust/ReconstructionSection` | `GET /api/calibration` | `validation_auc_by_disease`, `family_auc_by_family`, `split_audit_2`, `disease_eligibility`, `persona_enrichment`, `hub_bias_meter`, `orthogonality_scatter`, the `COUNT_RECORDS` metrics of `enriched_dwpc_{GGD,GPGD,GCD}`, + the live champion saved model |
 | 3 | `/trust?section=family` | `TrustView` → `trust/FamilySection` | `GET /api/families`, `/api/families/{id}` | `family_panel_metrics`, `family_panel_overlap`, `family_panel_top50`, `family_panel_programme`, `persona_enrichment`, `demo_panel_config` |
@@ -257,8 +259,11 @@ product.
 
 - **Never hardcode colors.** Tailwind utilities over the kit theme's tokens — `bg-background`,
   `text-muted-foreground`, `border-border`, `bg-primary`, `text-destructive`. No hex, no `text-[#…]`.
-  A chart series names its meaning and takes its colour from `frontend/src/utils/seriesColours.ts`,
-  which holds exactly this table; it never picks a `--chart-N` slot directly. Change the table here
+  A chart series names its meaning and takes its colour classes from
+  `frontend/src/utils/seriesColours.ts` (`SERIES_TEXT`, `SERIES_BG`), which holds exactly this table;
+  colours are classes, never inline styles, because the design lint cannot see a colour set through a
+  bound `:style`. The overlap matrix and the gene coverage grid name `chart-3` and `chart-1` directly, as
+  scope D12 fixed them; they carry this table's `contrast` and `highlight` meanings. Change the table here
   first, then the module.
 
   | Meaning | Where it appears | Kit token |
@@ -348,8 +353,7 @@ restates the other.
 ## 4. The four acts, and the talk track
 
 **Built in Phase 1, not yet deployed** (`DEC-DEMO-005`): the app opens on act 4, and acts 1–3 are the
-three sections of *Why trust the list*. The list's *How do we know?* links that lead there are planned
-for Phase 2.
+three sections of *Why trust the list*, reached from the list's *How do we know?* links (Phase 2).
 The act numbers stay as labels. What each act establishes does not depend on the order, so the third
 column says what it answers rather than why it comes first.
 
@@ -497,27 +501,35 @@ TNBC's 8 known targets on screen *before* act 6 claims anything about it.
 
 ### Act 4 — The shortlist
 
-| card | form | asserts |
-|---|---|---|
-| The contract | prose | the deliverable in one sentence, and **the three things it does not do** |
-| The ranked list | virtualised table | 12,272 rows, rank + percentile + score + SHAP drivers + status badges |
-| The validated filter | three checkboxes + live count | **12,272 → novel 11,673 → tractable 7,950 → not secreted 7,273 → rank ≤ 200 → 38** (re-derived 2026-10-26 through the backend's own filter; previously 7,951 and 7,274) |
-| Candidate detail | card, follows the selected row | rank against pool, SHAP drivers, **every champion feature** against **this disease's own distribution** |
-| The mechanism, on the graph | shared Explorer card with five independent bounded presets | prepared interaction, pathway, molecular-function, biological-process and drug-context queries for the selected disease and gene |
+*The shortlist*, the home page (built in Phase 2, not yet deployed): the ranked list, then one card for
+the selected candidate with five tabs — Overview, *Why this ranking?*, Trials, Literature, and Drugs &
+graph. Trials and Literature hold an empty state until Phase 6; the Drugs & graph tab shows the two
+drug flags and their lineage until the per-drug records of Phase 4.
 
-**Selection, not two pickers.** Clicking a row in the ranked list drives BOTH cards and scrolls the
-page to the detail card — the act's move is *judge a row, then ask why that row*, and separate pickers
-would let the drawer and the graph context describe different genes at once. Candidate selection prepares
+| claim | where | asserts |
+|---|---|---|
+| The contract | not a block of its own: the Overview tab's *What these sources cannot tell you* carries the therapeutic-relevance clause, and the liability tooltip and note carry the safety one. The subtype clause is not on the page | the deliverable in one sentence, and **the three things it does not do** |
+| The ranked list | paged table, 15 rows a page | 12,272 rows: rank, gene, class, tractability, the association badge, the drug-evidence badges and the safety badge. The SHAP drivers moved to the candidate's *Why this ranking?* tab |
+| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tractable 7,950 → not secreted 7,273 → rank ≤ 200 → 38** (re-derived 2026-10-26 through the backend's own filter; previously 7,951 and 7,274) |
+| Candidate detail | the card below the list: a header, then the Overview and *Why this ranking?* tabs | rank against the pool and every flag in the header; the stored SHAP drivers, each with its percentile in **this disease's own distribution** |
+| The mechanism, on the graph | Drugs & graph tab · shared Explorer card with five independent bounded presets | prepared interaction, pathway, molecular-function, biological-process and drug-context queries for the selected disease and gene |
+| *How do we know?* | the intro row (all three sections); the Overview tab's model box (section 2) and association box (section 1) | links to *Why trust the list*, landing on the section |
+
+**Selection, not two pickers.** Clicking a row in the ranked list drives the header and every tab, and
+scrolls the page to the candidate card — the act's move is *judge a row, then ask why that row*, and
+separate pickers would let two panels describe different genes at once. Candidate selection prepares
 the five route-specific queries but does not execute one; the user chooses a preset and opens the shared
 Explorer shell when ready to inspect the graph.
 
-**The detail card shows the champion's own inputs, not a selection.** webapp v1's drawer showed five
-features, of which three — `rwr_score`, `ppi_common_neighbors`, `shared_pathway_count` — are **not
-inputs to m7-f14**; they are columns `dashboard_candidates` happens to carry. A non-feature under the
-heading *"why this gene?"* answers a question the model never asked, so the set is derived from
-`backend/feature_glossary.py` and moves when the champion does. One champion input, `prox_kernel`,
-never reaches `dashboard_candidates`, and the card says so rather than showing 13 of 14 as if that
-were all of them.
+**Why this ranking? lists only the stored drivers** (scope D2). The tab shows each feature with a stored
+SHAP value, its sign and size, and where this gene's value sits in this disease's pool; the champion's
+other inputs are in the glossary. Today the flow stores two drivers (`top_shap_drivers`); the top five
+arrive with the rescoring in Phase 5. The feature wording comes from `backend/feature_glossary.py`, so
+it moves when the champion does. One champion input, `prox_kernel`, never reaches
+`dashboard_candidates`; when it is a driver, the tab says it has no percentile rather than hiding it.
+webapp v1's drawer had shown three features — `rwr_score`, `ppi_common_neighbors`,
+`shared_pathway_count` — that are **not inputs to m7-f14**, which is why the set is derived, never
+curated.
 
 **Percentile direction is per feature.** The bar is the share of this disease's pool the candidate is
 *stronger* than — a higher value everywhere except `prox_closest`, where fewer hops is stronger.

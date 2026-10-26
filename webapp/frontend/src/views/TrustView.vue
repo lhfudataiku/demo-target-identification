@@ -100,13 +100,16 @@
   watch(() => route.query.section, reveal)
 
   onMounted(async () => {
+    // Land on the section at once, against the placeholders' height, so a slow
+    // section never leaves the reader at the top of the page.
+    reveal(route.query.section)
     await Promise.all([
       selection.ensureDiseases(),
       getJson<EvidencePayload>('/api/evidence', evidence),
       getJson<CalibrationPayload>('/api/calibration', calibration),
       getJson<FamilySummary[]>('/api/families', families),
     ])
-    // Reveal once the sections have their height, or the offset lands short.
+    // Again once the sections have their real height, or the offset lands short.
     reveal(route.query.section)
   })
 </script>

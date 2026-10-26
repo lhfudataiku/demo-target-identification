@@ -1,0 +1,66 @@
+/**
+ * What the shortlist reads, as the backend serves it: `/api/candidates` (one
+ * disease's filtered list and its funnel) and `/api/candidates/gene` (one
+ * candidate's inputs, placed against its own disease's pool).
+ */
+
+export interface Row {
+  gene_index: number
+  gene_name: string; rank_in_disease: number; rank_percentile: number | null
+  score: number; is_target: number
+  top_shap_drivers: string | null; druggability_class: string | null; ot_class_l1: string | null
+  ot_sm_tractable: number; ot_ab_tractable: number
+  has_safety_liability: number; approved_for_disease: number; investigational_for_disease: number
+}
+
+export interface Payload {
+  disease_name: string; funnel: { step: string; n: number }[]; rows: Row[]; returned: number
+  /** column name -> the standalone wording, from backend/feature_glossary.py. */
+  feature_labels: Record<string, string>
+}
+
+/** One model feature, placed against this disease's own pool.
+    `percentile` is the share of the pool this candidate is STRONGER than,
+    measured in whichever direction the feature counts — `direction: 'lower'`
+    means fewer is stronger, which is true of hop distance and nothing else. */
+export interface Feature {
+  key: string; label: string; kind: string
+  direction: 'higher' | 'lower'
+  value: number; percentile: number
+}
+
+export interface Detail {
+  gene_index: number; pool_size: number | null; safety_events: string | null
+  features: Feature[]
+  /** Champion inputs `dashboard_candidates` does not carry — named, not hidden. */
+  missing_features: string[]
+}
+
+export interface Driver { key: string; label: string | null; sign: string; value: string }
+
+/* `top_shap_drivers` is a rendered STRING, not structured data:
+   "dwpc_GGD (+0.21), rwr_score (-0.04)" — see compute_top_shap_drivers_1.py,
+   which formats the top 2 by |contribution| and keeps the sign. Parsed back
+   apart so the page can show the evidence route rather than the column name,
+   and so a negative driver reads as one. A part that does not match the shape
+   is passed through verbatim rather than dropped. */
+export function parseDrivers(raw: string | null | undefined, label: (k: string) => string | null): Driver[] {
+  if (!raw) return []
+  return raw.split(/,\s*/).map((part) => {
+    const m = part.match(/^(.*?)\s*\(([+-])([\d.]+)\)\s*$/)
+    if (!m) return { key: part, label: null, sign: '', value: '' }
+    const key = m[1].trim()
+    return { key, label: label(key), sign: m[2], value: m[3] }
+  })
+}
+
+export const tractLabel = (r: Pick<Row, 'ot_sm_tractable' | 'ot_ab_tractable'>) =>
+  r.ot_sm_tractable && r.ot_ab_tractable ? 'Small molecule + antibody'
+    : r.ot_sm_tractable ? 'Small molecule' : r.ot_ab_tractable ? 'Antibody' : 'Not assessed'
+
+/** The three links from the shortlist to the evidence page (scope §4.1). */
+export const TRUST_LINKS = [
+  { section: 'graph', label: '1 · What the model can see' },
+  { section: 'reconstruction', label: '2 · How well it reconstructs this disease' },
+  { section: 'family', label: '3 · Does it hold across the family' },
+] as const

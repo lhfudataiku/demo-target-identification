@@ -1,10 +1,14 @@
 // The one place a chart series gets its colour.
 //
-// Colours carry meaning across acts — the model's own result is always the same
-// hue, the exception to look at is always another — so a view names the MEANING
-// and this table picks the kit token. The table is documented in
+// Colours carry meaning across the app — the model's own result is always the
+// same hue, the exception to look at is always another — so a view names the
+// MEANING and this table picks the kit token. The table is documented in
 // docs/demo/WEBAPP_DESIGN.md §3.5; change it there first.
-import { themeColor, type ThemeColorName } from 'bs-blueprint'
+//
+// Served as utility classes, never as inline styles: the design lint cannot see
+// a colour set through a bound `:style`, and a class it can check. Every class
+// is written out in full so Tailwind generates it.
+import type { ThemeColorName } from 'bs-blueprint'
 
 export const SERIES = {
   /** The model or pipeline result: precision, AUPRC, corroborated evidence, the pool. */
@@ -24,25 +28,24 @@ export const SERIES = {
 
 export type Series = keyof typeof SERIES
 
-/** Categories with no fixed meaning (Sankey routes, donut slices), in kit order. */
-const CATEGORICAL: ThemeColorName[] = ['chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5']
+/** Text colour for a series. */
+export const SERIES_TEXT: Record<Series, string> = {
+  measured: 'text-chart-2',
+  contrast: 'text-chart-3',
+  highlight: 'text-chart-1',
+  approved: 'text-success',
+  trial: 'text-warning',
+  baseline: 'text-muted-foreground',
+  negative: 'text-destructive',
+}
 
-/** CSS value for templates, inline styles and color-mix(): the browser resolves it. */
-export const seriesVar = (s: Series): string => `var(--${SERIES[s]})`
-
-/** Resolved rgb() for canvas renderers (ECharts cannot read CSS variables, nor the
- *  kit's space-separated hsl() values). Read at render time so it follows the theme. */
-export const seriesColor = (s: Series): string => themeColor(SERIES[s])
-
-/** Resolved rgb() palette for categorical charts. */
-export const categoricalColors = (): string[] => CATEGORICAL.map(themeColor)
-
-/** Resolve any CSS colour (including `var(--token)`) to rgb() for a canvas renderer. */
-export function resolveColour(css: string): string {
-  const probe = document.createElement('span')
-  probe.style.color = css
-  document.body.appendChild(probe)
-  const value = getComputedStyle(probe).color
-  probe.remove()
-  return value
+/** Fill for a series: bars, dots, swatches. */
+export const SERIES_BG: Record<Series, string> = {
+  measured: 'bg-chart-2',
+  contrast: 'bg-chart-3',
+  highlight: 'bg-chart-1',
+  approved: 'bg-success',
+  trial: 'bg-warning',
+  baseline: 'bg-muted-foreground',
+  negative: 'bg-destructive',
 }

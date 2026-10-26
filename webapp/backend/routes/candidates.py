@@ -4,9 +4,10 @@
   GET /api/candidates            one disease's ranked candidates, filtered
   GET /api/candidates/gene       one candidate, against its own disease's spread
 
-Backed by `dashboard_candidates` (zone 40, 129,253 rows over 13 diseases). One
-dataset, because act 4's whole job is: open a disease you know and judge the top
-of the list. Everything the act needs is already a column there.
+Backed by `dashboard_candidates` (zone 40; one row per disease-candidate pair,
+105,702 rows over 12 diseases when measured on 2026-10-23 -- /diseases serves the
+live list). One dataset, because act 4's whole job is: open a disease you know and
+judge the top of the list. Everything the act needs is already a column there.
 """
 
 from __future__ import annotations

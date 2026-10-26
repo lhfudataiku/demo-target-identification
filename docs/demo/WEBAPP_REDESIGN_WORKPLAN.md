@@ -150,8 +150,10 @@ redesign reads them.
 ## 4. Phase 2 — the shortlist on existing data
 
 - Split `ShortlistView.vue` (741 lines) into `components/shortlist/`: `CandidateTable`,
-  `CandidateHeader`, `OverviewTab`, `RankingTab`, `EvidenceTab` (trials and literature),
-  `LineageTab`, `EvidenceInspector` (kit `Sheet`), `AssistantSheet` (hidden until Phase 7).
+  `CandidateHeader`, `OverviewTab`, `RankingTab` and `LineageTab`. `EvidenceTab` (trials and
+  literature) and `EvidenceInspector` (kit `Sheet`) are created in Phase 6 and `AssistantSheet` in
+  Phase 7, when they have records to show; until then the Trials and Literature tabs hold an empty
+  state and no empty shell ships.
 - Kit parts only: `Tabs`, `Sheet`, `Collapsible`, `Pagination`, `Badge`, `StatusBadge`, `Table`,
   `Skeleton`, `Alert`, `Textarea`. Remove the inline style colours (`seriesVar`) from the moved code.
 - `ActCard` stays, because `VisualGraphExplorerCard` wraps it: move its accent tints from computed
