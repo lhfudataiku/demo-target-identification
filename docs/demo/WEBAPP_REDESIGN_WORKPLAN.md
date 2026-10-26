@@ -7,7 +7,7 @@
 > [`WEBAPP_REDESIGN_SCOPE.md`](WEBAPP_REDESIGN_SCOPE.md) and are referenced here by their ids (D1–D15).
 
 **Status: DRAFT — 2026-10-25, revised 2026-10-26 (a second webapp, Phase 5 beside the old scoring
-chain, the flow migration decided separately). Not approved; no phase has started.**
+chain, the flow migration decided separately, Phase 3 preloaded from Part 1). Not approved; no phase has started.**
 
 ## 1. How the work runs
 
@@ -54,14 +54,15 @@ chain, the flow migration decided separately). Not approved; no phase has starte
 | 0 | decisions and documents | — |
 | 1 | navigation and the evidence page | — |
 | 2 | the shortlist on existing data | — |
-| 3 | HGNC identity | — |
+| 3 | HGNC identity | one new Part 1 recipe, a sync, a join (D16) |
 | 4 | drug lineage | new dataset and recipes |
 | 5 | top-5 SHAP | new recipes beside the old scoring chain |
 | 6 | trials and literature | managed folder, scenario |
 | 7 | evidence assistant | agent |
 | 8 | verification and switch-over | deploy |
 
-Phases 1–3 change no dataset or recipe and can ship to the second webapp as one release. Phases 4–6
+Phases 1 and 2 change no dataset or recipe; Phase 3 adds three objects and changes none. Phases 1–3
+ship to the second webapp as one release, once Phase 3's datasets are built. Phases 4–6
 each depend only on Phase 2's tabs; Phase 7 uses what 3–6 provide. The redesign is complete at
 Phase 8. The flow migration is not one of its phases: whether it runs is decided afterwards (§11).
 
@@ -95,7 +96,7 @@ runs, its M1 maps every remaining dataset and places each intermediate with its 
 | zone | serves | endpoint datasets |
 |---|---|---|
 | `40 Scoring & ranking` | both pages, as the shared core | `persona2_scored`, `persona2_scored_shap`, `top_candidates`, `target_candidates_2`, `candidates_annotated` |
-| `S1 Shortlist` | the shortlist | `dashboard_candidates`; `drug_evidence_records` (new, Phase 4); `persona2_scored_shap5` and `candidate_shap_top5` (new, Phase 5); the `act4_evidence_cache` folder (new, Phase 6) |
+| `S1 Shortlist` | the shortlist | `dashboard_candidates`; `candidate_identity` (new, Phase 3); `drug_evidence_records` (new, Phase 4); `persona2_scored_shap5` and `candidate_shap_top5` (new, Phase 5); the `act4_evidence_cache` folder (new, Phase 6) |
 | `S2 Evidence · graph` | section 1, what the model can see | `graph_node_type_counts`, `graph_relation_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence` |
 | `S3 Evidence · reconstruction` | section 2 | `validation_auc_by_disease`, `split_audit_2`, `disease_eligibility`, `hub_bias_meter`, `orthogonality_scatter`, `family_auc_by_family`, `persona_enrichment` |
 | `S4 Evidence · family panels` | section 3 | `demo_panel_config`, `family_panel`, `family_panel_metrics`, `family_panel_overlap`, `family_panel_programme`, `family_panel_top50` |
@@ -168,14 +169,40 @@ redesign reads them.
   land on the right sections; both §1 searches print nothing, which is when the last colour set
   through an inline style leaves the app.
 
-## 5. Phase 3 — HGNC identity
+## 5. Phase 3 — HGNC identity *(DSS: one Part 1 recipe, a sync, a join)*
 
-- `backend/services/hgnc.py`: fetch `/fetch/entrez_id/{ncbi_id}`, fall back to symbol and previous
-  symbol; 5 s timeout; in-process cache; respect HGNC's rate limit; record retrieval time.
-- The NCBI Gene ID is `graph_nodes.node_id` for the gene's `node_index` (ERBB2 = 2064), read once.
-- `GET /api/candidates/identity?gene=` feeds the header.
-- **Test first:** outbound internet from the DSS webapp backend. Fallback: a dated HGNC snapshot
-  dataset.
+**Preloaded, not fetched per click (D16).** Phase 3's first build looked each gene up live at the HGNC
+REST service (`backend/services/hgnc.py`, committed 2026-10-26). It is replaced once the dataset below
+exists; the header it feeds stays as built.
+
+- **Part 1 (`DEMO_KG_LS`).** A new zero-input Python recipe `compute_hgnc_identity` reads one dated HGNC
+  complete-set file (`hgnc/archive/archive/monthly/tsv/hgnc_complete_set_<date>.txt` on HGNC's public
+  download bucket; the newest on 2026-10-26 is `2026-10-06`) and writes `hgnc_identity`: `hgnc_id`,
+  `symbol`, `name`, `locus_type`, `location`, `alias_symbol`, `prev_symbol`, `gene_group`,
+  `date_modified`, `entrez_id`, `ensembl_gene_id`, `uniprot_ids`, and `source_file` naming the dated
+  file. Approved records with an NCBI Gene ID only, one row per ID, `entrez_id` written as a string to
+  match `graph_nodes.node_id`; list fields stay pipe-separated as HGNC ships them. Managed storage,
+  Parquet. Nothing in the graph build reads it.
+- **`gene_names` and `compute_gene_names` are not touched** (scope §3.6): `gene_names` feeds the graph
+  build, and its recipe is a live query, so even a rerun would change the graph's gene input.
+- **Into Part 2.** Expose `hgnc_identity` to `DEMO_TARGET_IDENTIFICATION` and sync it in zone
+  `00 Import · genes & interactome` with `compute_DEMO_KG_hgnc_identity_copy`, as the other Part 1
+  copies are.
+- **Zone `S1 Shortlist`.** A visual Join of `graph_nodes` (gene/protein rows, a pre-filter on the join)
+  with `hgnc_identity` on `node_id` = `entrez_id` writes `candidate_identity`: `gene_index`, the graph's
+  symbol, and the HGNC fields. A left join, so a graph gene with no HGNC record keeps its row with the
+  fields empty.
+- **Builds**, run by the user: `compute_hgnc_identity`, then one job in Part 2 with
+  `--target hgnc_identity --target candidate_identity`, each non-recursive, so nothing upstream rebuilds.
+- **Checks**, read-only: `candidate_identity` has one row per gene node (20,861 on 2026-10-26); the
+  share with an HGNC record is reported; for the HER2+ top 200 every field equals a live HGNC lookup run
+  locally with the first build's service, or each difference is explained by the file's date.
+- **Backend.** `GET /api/candidates/identity?gene=` reads `candidate_identity` through the dataset
+  cache. `services/hgnc.py` and the `graph_nodes` read go, so the backend reads only serving zones
+  (D14) and makes no outbound call. The header's source line names the dated file in place of a
+  retrieval time.
+- **Done when:** ERBB2 shows HGNC:3430 with the file's date; no request leaves the backend for HGNC;
+  `FLOW_MAP.md` lists no webapp read of `graph_nodes`.
 
 ## 6. Phase 4 — drug lineage *(DSS)*
 
@@ -232,7 +259,7 @@ webapp serves. Phase 5 builds beside it, in zone `S1 Shortlist` (D15):
 
 ### Step 1 — search, no LLM
 
-1. Build three queries per corpus from HGNC and the pair: `symbol + anchor_name`,
+1. Build three queries per corpus from `candidate_identity` (Phase 3) and the pair: `symbol + anchor_name`,
    `symbol + disease_name`, `symbol + up to two safe aliases + anchor_name`. Aliases shorter than four
    characters or matching a common word are excluded (*NEU*, *BRM*). A disease without an anchor uses
    `disease_name`.

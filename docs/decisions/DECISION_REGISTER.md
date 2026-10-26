@@ -439,3 +439,16 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Supersedes:** the fixed Act 1 → Act 4 order in [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md)
 - **Superseded by:** —
 - **Historical sources:** —
+
+## DEC-DATA-002 — Gene identity is preloaded from a dated HGNC file, beside the graph's gene input
+
+- **Date:** 2026-10-26
+- **Domain:** data
+- **Status:** accepted
+- **Decision:** The shortlist's HGNC gene identity comes from one dated HGNC complete-set file, read by a new zero-input recipe in `DEMO_KG_LS` (`compute_hgnc_identity` → `hgnc_identity`), synced into `DEMO_TARGET_IDENTIFICATION` and left-joined to the graph's gene nodes by NCBI Gene ID into `candidate_identity` (zone S1). The webapp reads only that dataset. `gene_names` and its live-query recipe `compute_gene_names` are not extended or rerun.
+- **Rationale:** `gene_names` feeds the graph build (`compute_kg_edges`) and, in Part 2, the zone-20 split key, and its recipe runs a live query, so extending or even rerunning it would change the frozen graph's gene input. Per-click calls to the HGNC REST service were built first and replaced: they depended on outbound internet from the webapp backend and gave different viewers different answers over time. A dated file rebuilds to the same rows.
+- **Evidence:** [`WEBAPP_REDESIGN_SCOPE.md`](../demo/WEBAPP_REDESIGN_SCOPE.md) §2 (scope decision D16) and §3.6; [`WEBAPP_REDESIGN_WORKPLAN.md`](../demo/WEBAPP_REDESIGN_WORKPLAN.md) Phase 3. Built 2026-10-26 from `hgnc_complete_set_2026-10-06.txt`: 44,477 records; 20,860 of 20,861 gene nodes matched; identical to a live HGNC lookup for the HER2+ top 200.
+- **Consequences:** `DEMO_KG_LS` exposes a 14th object (`PROJECT_CONTEXT.md` §4.3). Moving to a newer HGNC month is a deliberate rebuild of one recipe; the header names the file. The Phase 6 evidence searches take symbols and aliases from the same dataset.
+- **Supersedes:** per-request HGNC REST lookups from the webapp backend (built and replaced on 2026-10-26)
+- **Superseded by:** —
+- **Historical sources:** —

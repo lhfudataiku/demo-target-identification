@@ -13,7 +13,7 @@
 > python3 tools/build_flow_map.py
 > ```
 
-Live DSS: **91 datasets across 17 zones**, cross-referenced against the recipe graph (89 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
+Live DSS: **93 datasets across 18 zones**, cross-referenced against the recipe graph (91 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
 
 A dataset counts as **read** only when its name appears *quoted* in reader code. A bare
 mention is prose: `calibration.py` names the three DWPC feature datasets in a display
@@ -31,9 +31,9 @@ so zones A1-A4 are read by named routes rather than by an unbuilt UI.
 
 ## Summary
 
-- datasets: **91**
-- endpoints (read by a webapp route or a notebook): **41**
-- flow intermediates (consumed by a recipe, no direct reader): **48**
+- datasets: **93**
+- endpoints (read by a webapp route or a notebook): **42**
+- flow intermediates (consumed by a recipe, no direct reader): **49**
 - genuine orphans: **2** — `llm_hx`, `shap_driver_frequency`
 
 > Every orphan here is a deliberate decision, not a finding. See
@@ -49,13 +49,14 @@ one with it.
 of its outputs either read or consumed, so no recipe is load-bearing for a dataset that
 looks disposable.
 
-## 00 Import · genes & interactome  (1 datasets, 1 recipes)
+## 00 Import · genes & interactome  (2 datasets, 2 recipes)
 
-Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.gene_names`
+Foreign references in this zone (2), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.gene_names`, `DEMO_KG_LS.hgnc_identity`
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `gene_names` | — | `compute_DEMO_KG_gene_names_copy` | 2 | intermediate |
+| `hgnc_identity` | — | `compute_DEMO_KG_hgnc_identity_copy` | 1 | intermediate |
 
 ## 01 Import · diseases & phenotypes  (2 datasets, 2 recipes)
 
@@ -94,7 +95,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 |---|---|---|--:|---|
 | `edge_metadata` | — | `compute_DEMO_KG_edge_metadata_copy` | 3 | intermediate |
 | `graph_edges` | nb5 | `compute_DEMO_KG_graph_edges_copy` | 8 | notebook |
-| `graph_nodes` | nb5, nb6 | `compute_DEMO_KG_graph_nodes_copy` | 21 | notebook |
+| `graph_nodes` | nb5, nb6 | `compute_DEMO_KG_graph_nodes_copy` | 22 | notebook |
 | `llm_hx` | — | — *(source)* | 0 | **ORPHAN** |
 
 ## 10 Features - graph traversal (Cypher)  (10 datasets, 10 recipes)
@@ -235,4 +236,10 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.UBUlwwxT`
 
 _No datasets in this zone._
+
+## S1 Shortlist  (1 datasets, 1 recipes)
+
+| dataset | read by | producing recipe | recipe consumers | flag |
+|---|---|---|--:|---|
+| `candidate_identity` | **webapp:routes/candidates** | `join_candidate_identity` | 0 | webapp |
 

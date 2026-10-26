@@ -21,17 +21,17 @@ whose wording already flags them as historical are dropped.
 |---|--:|--:|--:|--:|
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 19 | 3 | 23 |
-| `docs/demo/WEBAPP_DESIGN.md` | 0 | 53 | 81 | 134 |
+| `docs/demo/WEBAPP_DESIGN.md` | 0 | 53 | 83 | 136 |
 | `docs/demo/panel_selection/README.md` | 0 | 3 | 21 | 24 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 140 | 140 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 14 | 19 |
 | `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 19 | 103 | 122 |
 | `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 16 | 49 | 65 |
-| **total** | **1** | **126** | **426** | **553** |
+| **total** | **1** | **126** | **428** | **555** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**95 rows.** Of 426 total orphans, these are the model-dependent ones: the numbers that move
+**95 rows.** Of 428 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -39,28 +39,28 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:104` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:113` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:115` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
-| `docs/demo/WEBAPP_DESIGN.md:443` | 4 | 0.8623 | \| The spread across 670 diseases \| up front · histogram, 20 bins \| macro **0.8230**, me |
-| `docs/demo/WEBAPP_DESIGN.md:443` | 4 | 0.1045 | \| The spread across 670 diseases \| up front · histogram, 20 bins \| macro **0.8230**, me |
-| `docs/demo/WEBAPP_DESIGN.md:443` | 4 | 0.9962 | \| The spread across 670 diseases \| up front · histogram, 20 bins \| macro **0.8230**, me |
-| `docs/demo/WEBAPP_DESIGN.md:445` | 4 | 19.2 | \| **Usefulness is not uniform** \| up front · the quartiles in prose, beside the selected |
-| `docs/demo/WEBAPP_DESIGN.md:445` | 4 | 28.2 | \| **Usefulness is not uniform** \| up front · the quartiles in prose, beside the selected |
-| `docs/demo/WEBAPP_DESIGN.md:445` | 4 | 59.2 | \| **Usefulness is not uniform** \| up front · the quartiles in prose, beside the selected |
-| `docs/demo/WEBAPP_DESIGN.md:488` | 4 | 0.9025 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
-| `docs/demo/WEBAPP_DESIGN.md:488` | 4 | 0.9337 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
-| `docs/demo/WEBAPP_DESIGN.md:488` | 4 | 0.8949 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
-| `docs/demo/WEBAPP_DESIGN.md:512` | 4 | 12,272 | \| The ranked list \| paged table, 15 rows a page \| 12,272 rows: rank, gene, class, tract |
-| `docs/demo/WEBAPP_DESIGN.md:613` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
-| `docs/demo/WEBAPP_DESIGN.md:613` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
-| `docs/demo/WEBAPP_DESIGN.md:615` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
-| `docs/demo/WEBAPP_DESIGN.md:719` | 6 | 0.9776 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
-| `docs/demo/WEBAPP_DESIGN.md:719` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
+| `docs/demo/WEBAPP_DESIGN.md:444` | 4 | 0.8623 | \| The spread across 670 diseases \| up front · histogram, 20 bins \| macro **0.8230**, me |
+| `docs/demo/WEBAPP_DESIGN.md:444` | 4 | 0.1045 | \| The spread across 670 diseases \| up front · histogram, 20 bins \| macro **0.8230**, me |
+| `docs/demo/WEBAPP_DESIGN.md:444` | 4 | 0.9962 | \| The spread across 670 diseases \| up front · histogram, 20 bins \| macro **0.8230**, me |
+| `docs/demo/WEBAPP_DESIGN.md:446` | 4 | 19.2 | \| **Usefulness is not uniform** \| up front · the quartiles in prose, beside the selected |
+| `docs/demo/WEBAPP_DESIGN.md:446` | 4 | 28.2 | \| **Usefulness is not uniform** \| up front · the quartiles in prose, beside the selected |
+| `docs/demo/WEBAPP_DESIGN.md:446` | 4 | 59.2 | \| **Usefulness is not uniform** \| up front · the quartiles in prose, beside the selected |
+| `docs/demo/WEBAPP_DESIGN.md:489` | 4 | 0.9025 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
+| `docs/demo/WEBAPP_DESIGN.md:489` | 4 | 0.9337 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
+| `docs/demo/WEBAPP_DESIGN.md:489` | 4 | 0.8949 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
+| `docs/demo/WEBAPP_DESIGN.md:513` | 4 | 12,272 | \| The ranked list \| paged table, 15 rows a page \| 12,272 rows: rank, gene, class, tract |
+| `docs/demo/WEBAPP_DESIGN.md:624` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/WEBAPP_DESIGN.md:624` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/WEBAPP_DESIGN.md:626` | 4 | 7.4 | \| Lift vs K, by ground truth \| approved 16.9× → 5.0× ; investigational 7.4× → 4.0×, deca |
+| `docs/demo/WEBAPP_DESIGN.md:730` | 6 | 0.9776 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
+| `docs/demo/WEBAPP_DESIGN.md:730` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
 | `docs/demo/panel_selection/README.md:75` | - | 0.350 | distance either way: Spearman −0.350 over the 148 shipped pairs. |
 | `docs/overview/PROJECT_CONTEXT.md:114` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
-| `docs/overview/PROJECT_CONTEXT.md:263` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `docs/overview/PROJECT_CONTEXT.md:263` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `docs/overview/PROJECT_CONTEXT.md:264` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `docs/overview/PROJECT_CONTEXT.md:264` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `docs/overview/PROJECT_CONTEXT.md:275` | 4.6 | 129,253 | solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying |
+| `docs/overview/PROJECT_CONTEXT.md:264` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
+| `docs/overview/PROJECT_CONTEXT.md:264` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
+| `docs/overview/PROJECT_CONTEXT.md:265` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
+| `docs/overview/PROJECT_CONTEXT.md:265` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
+| `docs/overview/PROJECT_CONTEXT.md:276` | 4.6 | 129,253 | solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.646 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.567 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.328 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
@@ -101,7 +101,7 @@ when the champion changes and that no notebook would catch.
 
 ## Decision indexes
 
-**33 current durable decisions.** Query `.index/decisions.tsv` by stable ID, domain or
+**34 current durable decisions.** Query `.index/decisions.tsv` by stable ID, domain or
 topic; open `docs/decisions/DECISION_REGISTER.md` only for the rationale and consequences.
 
 The retired log remains recoverable as **158 classified historical entries** in

@@ -262,6 +262,7 @@ These are demo requirements, not style preferences. They are enforced in
 | `connect() failed (111: Connection refused)` right after a restart | The proxy probing before Gunicorn is up. Harmless if `Application startup complete` follows. |
 | Blank page in DSS after a deploy | The webapp's html/js are not the plugin build (deployed from an older `deploy.sh`, or `dist/` built without the plugin). Check the definition (§4) and redeploy. |
 | An old link (`…/shortlist`) opens Act 1 | Act URLs are hash routes since 2026-10-15: use `…#/shortlist`. |
+| The candidate header says *gene identity unavailable* | The backend could not read `candidate_identity` (zone S1). Rebuild it from `hgnc_identity`; the identity is preloaded from a dated HGNC file, so no outbound internet is involved. |
 
 ## Dataset caching — the known staleness, and the fix
 

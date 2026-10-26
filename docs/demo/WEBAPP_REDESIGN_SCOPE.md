@@ -10,7 +10,7 @@
 > and [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented.
 
 **Status: DRAFT — 2026-10-25, revised 2026-10-26 (built beside what runs today; the flow migration
-decided separately). Not approved; nothing in DSS or the webapp has changed.** Supersedes
+decided separately; HGNC identity preloaded, D16). Not approved; nothing in DSS or the webapp has changed.** Supersedes
 the Act 4 evidence review plan of 2026-10-23 (in git history), whose content is split between this
 document and the workplan.
 
@@ -60,11 +60,13 @@ Agreed in discussion between 2026-10-23 and 2026-10-26.
 | D13 | **Whether the notebooks' supporting evidence moves to its own DSS project is decided after the release**, as the flow migration's step G. If it moves, it reads `DEMO_TARGET_IDENTIFICATION`'s zones 00–31 through exposed objects, recomputes what it needs, and runs the notebook assertions; **`breast_panel_metrics` moves with it**, as supporting evidence; datasets nothing reads are deleted | none before the decision. If it moves: a third project beside the two `ADR-001` bounds; the build-governance allowlist, the identity-recipe check and the `.index/_dead.json` keep entry change with it (flow migration M0) |
 | D14 | **The boundary rule.** Notebooks read only zones 00–31 and recompute anything downstream; the webapp backend reads only serving zones; no computed dataset is consumed by both | stated in workplan Phase 0, binding on every later phase; the flow migration, if it runs, enforces it on the existing flow |
 | D15 | **The flow after zone 40 is organised by the new webapp's functions**: a shared scoring and ranking core (`40`), then `S1 Shortlist`, `S2 Evidence · graph`, `S3 Evidence · reconstruction`, `S4 Evidence · family panels`. New objects go in these zones from the start; re-zoning the existing flow, including zone 20 into its three jobs without a rebuild, belongs to the flow migration decision | layout in workplan Phase 0; Phases 4–6 build into `S1`; if the migration runs in full, it rebuilds the rest beside the old zones and compares before retiring them, and otherwise the existing zones stay as they are |
+| D16 | **The gene's HGNC identity is preloaded, not fetched per click.** A new zero-input recipe in `DEMO_KG_LS` reads one **dated** HGNC complete-set file into `hgnc_identity`; Part 2 syncs it and joins it to the graph's genes in `S1`. `gene_names` and `compute_gene_names` are not touched (§3.6) | the first Part 1 change of the redesign, one new recipe nothing in the graph build reads; no outbound call from the webapp backend; Phase 3 becomes a DSS phase, and its first build's live lookups are replaced |
 
 D1, D4 and D5 need one register entry; D9–D11 need another, because they change lasting demo scope
 and order and could not be reconstructed from the code; D14 and D15 are recorded with them. If D13's
 move goes ahead, it changes project ownership, so it needs a successor ADR to `ADR-001` rather than a
-register line alone.
+register line alone. D16 adds a shared object to the Part 1 → Part 2 interface, so it needs a register
+entry and a line in `PROJECT_CONTEXT.md` §4.3.
 
 ## 3. Starting point (measured 2026-10-23)
 
@@ -161,6 +163,26 @@ the evidence page shows, with one gap: per-disease AUC for the shortlist's disea
 - **The graph counts 7 node sources**, one of which (`MONDO_grouped`) is the graph's own grouping of
   MONDO. The page says six public sources, matching the narrative.
 
+### 3.6 Gene identity in Part 1 (measured 2026-10-26)
+
+`compute_gene_names` (`DEMO_KG_LS`) writes `gene_names` from a **live** HGNC custom-download query:
+symbol, name, NCBI Gene ID, UniProt, OMIM and RefSeq. It lacks most of what the candidate header shows
+(HGNC ID, location, Ensembl ID, aliases, previous symbols, gene groups, locus type, modification date),
+and the aliases are what Phase 6 builds its searches from. It cannot be extended:
+
+- in Part 1, `gene_names` feeds `compute_kg_edges` (which writes `graph_nodes_unindexed`), `extract_ppi`,
+  `join_dp_genes` and `join_gd_genes`; in Part 2 it is synced and read by `compute_gene_crosswalk` (zone
+  20, never rebuilt) and `compute_known_drug_truth`;
+- its query is live, not a dated file, so even a rerun would change the graph's gene input. The recipe's
+  own comment says it should be frozen.
+
+HGNC publishes dated monthly copies of its complete set (111 files under
+`hgnc/archive/archive/monthly/tsv/` on its public download bucket; the newest,
+`hgnc_complete_set_2026-10-06.txt`, is about 17 MB) carrying every field the header shows. A dated file
+rebuilds to the same rows. The graph's 20,861 gene nodes all carry a numeric NCBI Gene ID
+(`graph_nodes.node_id`), and a live lookup of the HER2+ top 200 on 2026-10-26 matched all of them by that
+ID, none renamed.
+
 ## 4. The design
 
 ### 4.1 Navigation
@@ -232,7 +254,8 @@ is `nb4` §8.10 (HER2+ reconstruction and subtype separation), which follows `nb
 `breast_panel_metrics` into the evidence project. No serving dataset is retired before its rebuilt
 copy matches it.
 
-**Not in scope.** Changes to `KNOWLEDGE_GRAPH_PRIMEKG` or Part 1 recipes; ChEMBL IDs, mechanism text or
+**Not in scope.** Changes to `KNOWLEDGE_GRAPH_PRIMEKG` or to existing Part 1 recipes (D16 adds one new
+recipe that nothing in the graph build reads); ChEMBL IDs, mechanism text or
 source references for drugs (they need a Part 1 change); disease-hierarchy matching for drug links;
 any safety or toxicity claim; storing assistant conversations.
 
@@ -241,7 +264,8 @@ any safety or toxicity claim; storing assistant conversations.
 | document | change |
 |---|---|
 | [`DEMO_NARRATIVE.md`](DEMO_NARRATIVE.md) | act order and the four-acts table: the list first, the evidence on demand |
-| [`../decisions/DECISION_REGISTER.md`](../decisions/DECISION_REGISTER.md) | two entries: the evidence assistant, LLM role labels and DSS cache (D1, D4, D5); the list leads, one evidence page, one disease (D9–D11) |
+| [`../decisions/DECISION_REGISTER.md`](../decisions/DECISION_REGISTER.md) | two entries: the evidence assistant, LLM role labels and DSS cache (D1, D4, D5); the list leads, one evidence page, one disease (D9–D11). A third for the preloaded HGNC identity (D16) |
+| [`../overview/PROJECT_CONTEXT.md`](../overview/PROJECT_CONTEXT.md) | §4.3: `hgnc_identity` joins the shared objects Part 2 syncs from Part 1 (D16) |
 | [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) | §3.3 routes, §4 acts table and Acts 1–4 sections, §6 guardrail rows, §8 |
 | [`../../webapp/README.md`](../../webapp/README.md), [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) | the two-page structure; new settings (tool, agent, folder, model ids) and the pre-fill step |
 | [`../operations/FLOW_MAP.md`](../operations/FLOW_MAP.md), `.index/` | regenerate after the new datasets exist |
@@ -250,7 +274,10 @@ any safety or toxicity claim; storing assistant conversations.
 
 ## 7. Risks
 
-- **No internet from the DSS backend** blocks HGNC; fall back to a snapshot dataset.
+- **A dated identity lags HGNC** by up to a month. The header names the file's date; moving to a newer
+  file is a deliberate rebuild of one recipe, never a side effect.
+- **`gene_names` is load-bearing for the frozen graph** (§3.6). Phase 3 must not touch it or rerun
+  `compute_gene_names`, and builds in Part 1 stay non-recursive.
 - **Passages are untrusted text** going into an LLM. The selection pass returns only ids, enums and
   verified quotes, which bounds what an injected passage can do.
 - **PubMed is the open-access subset**; counts say "retrieved", never "all".

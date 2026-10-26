@@ -15,6 +15,7 @@ compute_DEMO_KG_edge_metadata_copy	sync	-	-		DSS-only	DEMO_KG_LS.edge_metadata	e
 compute_DEMO_KG_gene_names_copy	sync	-	-		DSS-only	DEMO_KG_LS.gene_names	gene_names
 compute_DEMO_KG_graph_edges_copy	sync	-	-		DSS-only	DEMO_KG_LS.graph_edges	graph_edges
 compute_DEMO_KG_graph_nodes_copy	sync	-	-		DSS-only	DEMO_KG_LS.graph_nodes	graph_nodes
+compute_DEMO_KG_hgnc_identity_copy	sync	-	-		DSS-only	DEMO_KG_LS.hgnc_identity	hgnc_identity
 compute_DEMO_KG_mondo_references_copy	sync	-	-		DSS-only	DEMO_KG_LS.mondo_references	mondo_references
 compute_DEMO_KG_raw_disease_disease_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_disease_disease	raw_disease_disease
 compute_DEMO_KG_raw_go_hierarchy_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_go_hierarchy	raw_go_hierarchy
@@ -77,6 +78,7 @@ filter_has_path_evidence	sampling	-	-		DSS-only	enriched_graph_features_1_family
 filter_persona_diseases	join	-	-		DSS-only	demo_panel_config,psplit_validation_set	validation_set_personas_2
 finalize_dashboard_candidates	shaker	-	-		DSS-only	candidates_annotated	dashboard_candidates
 group_family_auc	grouping	-	-		DSS-only	family_validation_ranked	family_auc_grouped
+join_candidate_identity	join	-	-		DSS-only	graph_nodes,hgnc_identity	candidate_identity
 join_dashboard_annotations	join	-	-		DSS-only	disease_pool_sizes,drug_evidence_pairs,target_candidates_2	candidates_annotated
 join_disease_family_id	join	-	-		DSS-only	disease_family_id,enriched_graph_features_1	enriched_graph_features_1_family
 join_disease_name	join	-	-		DSS-only	graph_nodes,top_annotated	target_candidates_2

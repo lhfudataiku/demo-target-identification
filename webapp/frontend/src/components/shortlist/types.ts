@@ -36,6 +36,18 @@ export interface Detail {
   missing_features: string[]
 }
 
+/** `/api/candidates/identity`: the gene's HGNC record, preloaded from one dated HGNC
+    complete-set file and joined to the graph by NCBI Gene ID (`candidate_identity`). */
+export interface Identity {
+  gene_index: number; found: boolean; source: string
+  /** The dated HGNC file the record came from; null when no record matched. */
+  source_file: string | null
+  ncbi_gene_id: string; graph_symbol: string
+  hgnc_id?: string; symbol?: string; name?: string; location?: string | null; ensembl_gene_id?: string | null
+  alias_symbol?: string[]; prev_symbol?: string[]; gene_group?: string[]; uniprot_ids?: string[]
+  locus_type?: string | null; date_modified?: string | null
+}
+
 export interface Driver { key: string; label: string | null; sign: string; value: string }
 
 /* `top_shap_drivers` is a rendered STRING, not structured data:

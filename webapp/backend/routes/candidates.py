@@ -3,6 +3,7 @@
   GET /api/candidates/diseases   the diseases that have a ranked list
   GET /api/candidates            one disease's ranked candidates, filtered
   GET /api/candidates/gene       one candidate, against its own disease's spread
+  GET /api/candidates/identity   one gene's HGNC identity, from the preloaded S1 dataset
 
 Backed by `dashboard_candidates` (zone 40; one row per disease-candidate pair,
 105,702 rows over 12 diseases when measured on 2026-10-23 -- /diseases serves the
@@ -256,3 +257,51 @@ def gene_detail(
         # Named, not silently omitted -- see MISSING_FEATURES.
         "missing_features": MISSING_FEATURES,
     }
+
+
+# The gene's HGNC identity, PRELOADED (redesign D16): `candidate_identity` (zone S1) is
+# the graph's gene nodes left-joined to one dated HGNC complete-set file, which Part 1's
+# compute_hgnc_identity reads and Part 2 syncs. Nothing is fetched per click, and the
+# backend reads only this serving dataset -- not graph_nodes (D14).
+IDENTITY = "candidate_identity"
+IDENTITY_COLS = ["node_index", "node_id", "node_name", "hgnc_id", "symbol", "name", "locus_type",
+                 "location", "alias_symbol", "prev_symbol", "gene_group", "date_modified",
+                 "ensembl_gene_id", "uniprot_ids", "source_file"]
+# HGNC ships these pipe-separated; the page shows them as lists.
+LIST_COLS = ("alias_symbol", "prev_symbol", "gene_group", "uniprot_ids")
+
+
+@functools.lru_cache(maxsize=2)
+def _identity_at(stamp: str) -> dict[int, dict[str, Any]]:
+    """gene_index -> its row. `stamp` is the cache key only."""
+    df = dataset_cache.frame(IDENTITY, IDENTITY_COLS)
+    out = {}
+    for r in df.to_dict("records"):
+        r = {k: (None if v is None or v != v or v == "" else v) for k, v in r.items()}
+        out[int(r["node_index"])] = r
+    return out
+
+
+@router.get("/identity")
+def gene_identity(gene: int = Query(..., description="gene_index")) -> dict[str, Any]:
+    """The candidate's HGNC record, for the header of the selected candidate.
+
+    `found: false` when the dated HGNC file has no record for the gene's NCBI Gene ID
+    (one gene node of 20,861 on the 2026-10-06 file, PGM5P1).
+    """
+    try:
+        ids = _identity_at(dataset_cache.build_stamp(IDENTITY))
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Could not read {IDENTITY}: {e}")
+    r = ids.get(gene)
+    if r is None:
+        raise HTTPException(status_code=404, detail=f"gene_index {gene} is not a gene node")
+    # Read back with pandas type inference, an all-digit ID arrives as a number.
+    base = {"gene_index": gene, "ncbi_gene_id": str(r["node_id"]), "graph_symbol": r["node_name"],
+            "source": "HGNC complete set", "source_file": r["source_file"]}
+    if not r["hgnc_id"]:
+        return {**base, "found": False}
+    return {**base, "found": True,
+            **{k: r[k] for k in ("hgnc_id", "symbol", "name", "locus_type", "location",
+                                 "date_modified", "ensembl_gene_id")},
+            **{k: (r[k].split("|") if r[k] else []) for k in LIST_COLS}}

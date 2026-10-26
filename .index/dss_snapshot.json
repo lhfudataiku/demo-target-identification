@@ -35,6 +35,27 @@
    "investigational_novel_lift50",
    "top10_novel_genes"
   ],
+  "candidate_identity": [
+   "node_id",
+   "node_type",
+   "node_name",
+   "node_source",
+   "node_index",
+   "hgnc_id",
+   "symbol",
+   "name",
+   "locus_type",
+   "location",
+   "alias_symbol",
+   "prev_symbol",
+   "gene_group",
+   "date_modified",
+   "entrez_id",
+   "ensembl_gene_id",
+   "uniprot_ids",
+   "source_file",
+   "source_sha256"
+  ],
   "candidates_annotated": [
    "gene_index",
    "disease_index",
@@ -861,6 +882,22 @@
   "hetionet_disease_slim": [
    "doid",
    "name"
+  ],
+  "hgnc_identity": [
+   "hgnc_id",
+   "symbol",
+   "name",
+   "locus_type",
+   "location",
+   "alias_symbol",
+   "prev_symbol",
+   "gene_group",
+   "date_modified",
+   "entrez_id",
+   "ensembl_gene_id",
+   "uniprot_ids",
+   "source_file",
+   "source_sha256"
   ],
   "hub_bias_meter": [
    "quintile",
@@ -1742,6 +1779,7 @@
   "compute_gene_localization",
   "compute_gene_names",
   "compute_go_terms",
+  "compute_hgnc_identity",
   "compute_high_neg_holdout_set_scored_filtered",
   "compute_high_neg_holdout_set_scored_labeled",
   "compute_hp_mondo_overlap",
@@ -2072,6 +2110,18 @@
   ],
   "outputs": [
    "graph_nodes"
+  ],
+  "type": "sync",
+  "visual": null
+ },
+ "compute_DEMO_KG_hgnc_identity_copy": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "DEMO_KG_LS.hgnc_identity"
+  ],
+  "outputs": [
+   "hgnc_identity"
   ],
   "type": "sync",
   "visual": null
@@ -3094,6 +3144,24 @@
   ],
   "type": "grouping",
   "visual": null
+ },
+ "join_candidate_identity": {
+  "code": null,
+  "cypher": null,
+  "inputs": [
+   "graph_nodes",
+   "hgnc_identity"
+  ],
+  "outputs": [
+   "candidate_identity"
+  ],
+  "type": "join",
+  "visual": {
+   "expressions": [
+    "node_type == \"gene/protein\""
+   ],
+   "values": []
+  }
  },
  "join_dashboard_annotations": {
   "code": null,
