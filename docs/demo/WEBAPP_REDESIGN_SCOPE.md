@@ -194,10 +194,14 @@ Drugs & graph tab already hosts the Explorer), *What drives the score* and *The 
 
 ### 4.4 The design review
 
-`docs/demo/design_review/` holds the agreed mockup, `shortlist-and-evidence-review.html`. The folder
-is git-ignored: the page is 1.4 MB and embeds retrieved passages. It is built with `bs-blueprint` and
-`@dataiku/ea-ui-kit`, passes the webapp's design lint and typecheck, and uses the live `ActTabs`
-and the live `ActMatrix` and `ActGeneGrid` with their colours moved to token classes (D12).
+`docs/demo/design_review/` holds the agreed mockup, `shortlist-and-evidence-review.html`, and its
+source in `source/`: the Vue components and pages (`source/design/`), the scripts that built the
+snapshot fixtures (`source/scripts/`), and a README with the rebuild and regeneration steps. The folder
+is git-ignored: the page is 1.4 MB and embeds retrieved passages, and the source carries the same
+snapshot data. It exists only on the machine where it was made; copy it before working elsewhere.
+The mockup is built with `bs-blueprint` and `@dataiku/ea-ui-kit`, passes the webapp's design lint and
+typecheck, and uses the live `ActTabs` and the live `ActMatrix` and `ActGeneGrid` with their colours
+moved to token classes (D12).
 
 **Design-rule compliance, checked 2026-10-25.** The design lint cannot see a colour set through a
 bound `:style`: its inline-colour rule matches only a static `style="…"`. The mockup was therefore

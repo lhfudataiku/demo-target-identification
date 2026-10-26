@@ -34,9 +34,11 @@
 - Phases marked **DSS** change the live project. Each needs the user's approval at the time; the user
   runs builds, scenarios and `make deploy`, and Claude verifies read-only afterwards.
 - Nothing is committed or pushed without the user's approval of a change summary.
-- The mockup's components (scope §4.4) are the reference for Phases 1 and 2. They were written against
+- The mockup's components are the reference for Phases 1 and 2. Their source is in the git-ignored
+  `docs/demo/design_review/source/` (scope §4.4; its README maps each file). They were written against
   the same kit, shell and lint, so they move into `webapp/frontend/src/` rather than being rewritten;
-  their snapshot data is replaced by API calls.
+  their snapshot data (`design/src/data/`) is replaced by API calls, and the content written for the
+  review (role labels, SHAP rows 3–5, assistant answers) is not carried over.
 
 | phase | what | DSS change |
 |---|---|---|
