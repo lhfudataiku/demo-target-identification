@@ -413,3 +413,29 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Supersedes:** the brand-palette theming described in `webapp/DEPLOYMENT.md` "Design system"
 - **Superseded by:** —
 - **Historical sources:** —
+
+## DEC-DEMO-004 — An evidence assistant, LLM role labels and a DSS cache enter the shortlist
+
+- **Date:** 2026-10-26
+- **Domain:** demo
+- **Status:** approved-not-executed
+- **Decision:** The shortlist gains an evidence assistant over the graph, CT.gov and PubMed search tools and HGNC, citing what it retrieves; a claim from the LLM's general knowledge is marked *not from a retrieved source* and never rendered as a citation. Trials and papers are retrieved on demand for the selected pair only, then one LLM selection pass assigns each record a role label that must carry a quote the backend verifies against the passage; a label that fails the check is dropped and the record stays, unlabelled. Results are cached per (disease, gene) pair in a DSS managed folder.
+- **Rationale:** A shortlist that shows only scores and flags leaves the scientist to look up every candidate's literature by hand. Keeping LLMs out entirely was the alternative; it protects the careful parts of the demo but leaves the evidence review unbuilt. Verified quotes and visibly marked general-knowledge lines keep every LLM-derived statement checkable against its source.
+- **Evidence:** [`WEBAPP_REDESIGN_SCOPE.md`](../demo/WEBAPP_REDESIGN_SCOPE.md) §2 (scope decisions D1, D3, D4 and D5) and §3.3 (the search tools as measured); [`WEBAPP_REDESIGN_WORKPLAN.md`](../demo/WEBAPP_REDESIGN_WORKPLAN.md) Phases 6–7.
+- **Consequences:** The first LLM-derived content and the first DSS writes in the app, confined to these surfaces. No conversation is stored. Retrieved counts say "retrieved", never "all", because PubMed is the open-access subset. Passages are untrusted input, so the selection pass returns only ids, enums and verified quotes.
+- **Supersedes:** [`WEBAPP_DESIGN.md`](../demo/WEBAPP_DESIGN.md) §8 "No LLM anything" and "No writes to DSS", for these surfaces only
+- **Superseded by:** —
+- **Historical sources:** —
+
+## DEC-DEMO-005 — The list leads, its evidence sits on one page, and one disease drives both
+
+- **Date:** 2026-10-26
+- **Domain:** demo
+- **Status:** approved-not-executed
+- **Decision:** The shortlist is the home route and first navigation item. Acts 1–3 become one page, *Why trust the list*, of three sections that keep every analysis, each with its headline answer up front and the rest under *Show the detail*. One disease selection drives both pages. With it go a boundary rule (notebooks read only zones 00–31, the webapp backend reads only serving zones, and no computed dataset is consumed by both) and a target zone layout after zone 40 organised by webapp function; new objects go in those zones from the start.
+- **Rationale:** In a short demo the presenter goes straight to the ranked list and skips Acts 1–3, so the fixed act order hid the evidence it was meant to build up to. Keeping three act pages ahead of the list was the alternative. *How do we know?* links from the shortlist carry the evidence into a short demo instead.
+- **Evidence:** [`WEBAPP_REDESIGN_SCOPE.md`](../demo/WEBAPP_REDESIGN_SCOPE.md) §2 (scope decisions D9–D11, D14 and D15) and §4; [`WEBAPP_REDESIGN_WORKPLAN.md`](../demo/WEBAPP_REDESIGN_WORKPLAN.md) Phase 0 (the boundary rule and zone layout) and Phases 1–2.
+- **Consequences:** [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md) changes its act order first, because `DEC-DEMO-002` holds; the act names stay as labels. `DEC-DEMO-001` holds in substance: the objections stay front-of-house, answered on demand rather than in sequence. The evidence page needs per-disease AUC for the shortlist's diseases. Whether the existing flow is migrated to the boundary rule and zone layout is decided separately, after the release.
+- **Supersedes:** the fixed Act 1 → Act 4 order in [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md)
+- **Superseded by:** —
+- **Historical sources:** —

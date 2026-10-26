@@ -70,8 +70,13 @@ Phase 8. The flow migration is not one of its phases: whether it runs is decided
 - Two register entries in `DECISION_REGISTER.md`: D1/D4/D5 (assistant, role labels, cache) and
   D9–D11 (the list leads, one evidence page, one disease). The boundary rule (D14) and the target
   zone layout (D15) below are recorded with the second.
-- `DEMO_NARRATIVE.md`: act order and the four-acts table.
-- `WEBAPP_DESIGN.md`: §3.3 routes, §4 acts table and Acts 1–4 sections, §6 guardrail rows, §8.
+  Both enter as `approved-not-executed`.
+- `DEMO_NARRATIVE.md`: act order and the four-acts table. The act names stay as labels, so the many
+  references to "act 2" or "act 4" across the documents keep their meaning.
+- `WEBAPP_DESIGN.md`: the status lines, the §4 acts table, the §6 guardrail rows and §8, each change
+  marked *planned*; the Act 4 funnel counts re-derived. The sections that describe the app as built
+  change with the phase that builds them: §3.3 and the Act 1–3 card tables in Phase 1, the Act 4 card
+  table in Phase 2.
 - **Done when:** the user approves the doc diff.
 
 **The boundary rule (D14).** It governs every phase from here on, whether or not the flow migration
@@ -128,6 +133,11 @@ redesign reads them.
   unlabelled `auc_values` and the `personas` list with its stale `is_current` stop being read.
 - `/api/evidence` and `/api/families/{id}` are used as they are.
 
+**Documents**
+
+- `WEBAPP_DESIGN.md`: the §3.3 route → view → data table for the two pages, and the Act 1–3 card
+  tables for the three sections; the *planned* marks this phase fulfils are removed.
+
 **Done when**
 
 - The root URL opens the shortlist; the sidebar shows two items and Settings.
@@ -151,6 +161,7 @@ redesign reads them.
   card and the drug flags until Phase 4.
 - *How do we know?* links (scope §4.1).
 - Correct the stale 13-disease and 129,253-row copy.
+- `WEBAPP_DESIGN.md`: the Act 4 card table for the split shortlist.
 - **Done when:** HER2+ renders live; no badge is a filter; every count shows its cut-off; the links
   land on the right sections; both §1 searches print nothing, which is when the last colour set
   through an inline style leaves the app.
@@ -290,6 +301,8 @@ failure shows inside its tab only; every rendered quote is a substring of its pa
 - After a grace period agreed with the user, the user deletes the second webapp and its
   `python/target_prioritizer_next/` library folder.
 - Regenerate `.index/` and `FLOW_MAP.md` once the new datasets exist.
+- `DEC-DEMO-004` and `DEC-DEMO-005` move to `accepted`; `WEBAPP_DESIGN.md` loses its remaining
+  *planned* marks.
 - **Done when:** the original webapp serves the redesign, and the second webapp and its library
   folder are gone.
 
