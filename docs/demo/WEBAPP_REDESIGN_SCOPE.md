@@ -227,7 +227,8 @@ or liability badges; no pooled AUC beside the macro one; no ablation ladder or h
 headline number without its spread; no language that prescribes research direction.
 
 **If the migration runs (D13–D15).** `llm_hx` stays where it is (held for Part 1). Every governed
-claim must resolve to the same value after the move, including `TI-VAL-009`, which follows `nb4` and
+claim must resolve to the same value after the move, including the breast-panel claim whose authority
+is `nb4` §8.10 (HER2+ reconstruction and subtype separation), which follows `nb4` and
 `breast_panel_metrics` into the evidence project. No serving dataset is retired before its rebuilt
 copy matches it.
 

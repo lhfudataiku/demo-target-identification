@@ -49,10 +49,11 @@
   import { Flow, ListNumbered, Microscope } from '@dataiku/vue-icons'
   import { seriesVar } from '@/utils/seriesColours'
   import { PageHeader } from 'bs-blueprint'
+  import { storeToRefs } from 'pinia'
+  import { useSelectionStore } from '@/stores/selection'
 
   defineOptions({ name: 'ShortlistView' })
 
-  interface Disease { disease_index: number; disease_name: string; n_candidates: number; n_known: number }
   interface Row {
     gene_index: number
     gene_name: string; rank_in_disease: number; rank_percentile: number | null
@@ -83,8 +84,10 @@
     missing_features: string[]
   }
 
-  const diseases = ref<Disease[]>([])
-  const selected = ref<number | undefined>()
+  // The disease is shared with "Why trust the list" (stores/selection.ts), so
+  // choosing it on either page changes it on the other.
+  const selection = useSelectionStore()
+  const { diseases, diseaseIndex: selected } = storeToRefs(selection)
   // SelectField models strings; disease_index is numeric.
   const selectedStr = computed<string | undefined>({
     get: () => (selected.value === undefined ? undefined : String(selected.value)),
@@ -304,17 +307,8 @@
   })
 
   async function loadDiseases() {
-    try {
-      const res = await fetch(apiUrl('/api/candidates/diseases'))
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      diseases.value = await res.json()
-      // The spine disease: a clinician recognises its top ranks on sight.
-      // Falls back to the largest pool if the name does not carry "HER2".
-      selected.value = (diseases.value.find((d) => /HER2/i.test(d.disease_name))
-        ?? diseases.value[0])?.disease_index
-    } catch (e) {
-      error.value = `Could not load diseases: ${e instanceof Error ? e.message : String(e)}`
-    }
+    await selection.ensureDiseases()
+    if (selection.error) error.value = selection.error
   }
 
   async function loadCandidates() {
@@ -336,7 +330,8 @@
   }
 
   onMounted(loadDiseases)
-  watch([selected, novelOnly, tractableOnly, excludeSecreted, maxRank], loadCandidates)
+  // Immediate: returning from the evidence page, the shared disease is already set.
+  watch([selected, novelOnly, tractableOnly, excludeSecreted, maxRank], loadCandidates, { immediate: true })
 
   // Only the DISEASE invalidates a selection. The view filters do not: the
   // percentiles are computed against the disease's whole pool, not the filtered
@@ -350,7 +345,7 @@
 
 <template>
   <div class="flex h-full flex-col">
-    <PageHeader title="Act 4 of 4 · The list" />
+    <PageHeader title="The shortlist" />
     <div class="min-h-0 flex-1 overflow-auto">
   <div class="flex flex-col gap-6 p-6">
     <header class="flex flex-col gap-1.5 border-b border-border pb-5">
@@ -562,7 +557,7 @@
             disease enters the <ActTerm t="candidate-pool">candidate pool</ActTerm>. The
             <ActTerm t="champion-model">champion model</ActTerm> scores each
             <ActTerm t="gene-disease-pair">gene–disease pair</ActTerm> from the 14 graph-structure
-            features listed in Act 2, and the genes are sorted by that score
+            features in the glossary, and the genes are sorted by that score
             <b class="text-foreground">within this disease</b>.</p>
           <p class="mt-1.5">The score is <ActTerm t="uncalibrated">uncalibrated</ActTerm> — it orders
             candidates correctly but is not a probability, so 0.8 does not mean an 80% chance of being

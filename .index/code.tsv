@@ -15,7 +15,7 @@ docs/operations/build-governance/machine-event.schema.json	docs	LIVE (referenced
 docs/operations/build-governance/pilot/phase5-breast-panel-accepted-baseline.json	docs	LIVE (referenced)	1	docs/operations/BUILD_GOVERNANCE.md
 docs/operations/build-governance/pilot/phase5-breast-panel-leaf-build-event.json	docs	LIVE (referenced)	1	docs/operations/BUILD_GOVERNANCE.md
 docs/operations/build-governance/review-packet.schema.json	docs	LIVE (referenced)	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
-docs/prioritizer/CLAIM_REGISTRY.json	docs	LIVE (referenced)	8	docs/README.md,docs/decisions/DECISION_REGISTER.md,docs/demo/WEBAPP_DESIGN.md,docs/prioritizer/TARGET_PRIORITIZER.md
+docs/prioritizer/CLAIM_REGISTRY.json	docs	LIVE (referenced)	9	docs/README.md,docs/decisions/DECISION_REGISTER.md,docs/demo/WEBAPP_DESIGN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md
 dss_lib/demo_identity.py	dss_lib	LIVE (referenced)	4	dss_recipes/compute_breast_panel.py,dss_recipes/compute_demo_panel_config.py,dss_recipes/compute_split_audit_2.py,tools/check_governed_values.py
 dss_recipes/attach_node_index.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_breast_panel.py	recipe-mirror	MIRROR	4	archive/DASHBOARD_BUILD_LOG.md,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V2.html,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V3.html,docs/operations/build-governance/POLICY.json
@@ -113,17 +113,17 @@ webapp/backend/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,w
 webapp/backend/app.py	webapp	LIVE (referenced)	4	archive/BLUEPRINT_ALIGNMENT_PLAN.md,tools/recipe_classes.json,webapp/DEPLOYMENT.md,webapp/README.md
 webapp/backend/config.py	webapp	LIVE (referenced)	3	webapp/README.md,webapp/app.env,webapp/dss_webapp/backend.py
 webapp/backend/dss_client.py	webapp	LIVE (referenced)	6	docs/demo/WEBAPP_DESIGN.md,harness/WEBAPP_OVERLAY.md,webapp/AGENTS.md,webapp/CLAUDE.md
-webapp/backend/feature_glossary.py	webapp	LIVE (referenced)	10	docs/demo/WEBAPP_DESIGN.md,tools/check_indexes.sh,tools/dataset_descriptions.json,tools/push_descriptions.py
+webapp/backend/feature_glossary.py	webapp	LIVE (referenced)	7	docs/demo/WEBAPP_DESIGN.md,tools/check_indexes.sh,tools/dataset_descriptions.json,tools/push_descriptions.py
 webapp/backend/routes/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
 webapp/backend/routes/calibration.py	webapp	LIVE (referenced)	5	docs/operations/FLOW_MAP.md,docs/prioritizer/CLAIM_REGISTRY.json,tools/build_flow_map.py,webapp/DEPLOYMENT.md
-webapp/backend/routes/candidates.py	webapp	LIVE (referenced)	4	docs/demo/WEBAPP_DESIGN.md,docs/demo/WEBAPP_REDESIGN_SCOPE.md,webapp/DEPLOYMENT.md,webapp/README.md
+webapp/backend/routes/candidates.py	webapp	LIVE (referenced)	5	docs/demo/WEBAPP_DESIGN.md,docs/demo/WEBAPP_REDESIGN_SCOPE.md,docs/demo/WEBAPP_REDESIGN_WORKPLAN.md,webapp/DEPLOYMENT.md
 webapp/backend/routes/evidence.py	webapp	LIVE (referenced)	2	webapp/DEPLOYMENT.md,webapp/README.md
 webapp/backend/routes/families.py	webapp	LIVE (referenced)	3	docs/prioritizer/CLAIM_REGISTRY.json,webapp/DEPLOYMENT.md,webapp/README.md
 webapp/backend/routes/system.py	webapp	LIVE (referenced)	1	webapp/README.md
 webapp/backend/services/__init__.py	webapp	LIVE (referenced)	2	tools/push_assertions.py,webapp/dss_webapp/deploy.sh
 webapp/backend/services/dataset_cache.py	webapp	LIVE (referenced)	2	webapp/README.md,webapp/backend/routes/candidates.py
 webapp/dss_webapp/backend.py	webapp	LIVE (referenced)	7	archive/flow-map-iterations/flow_map.html,tools/recipe_classes.json,webapp/README.md,webapp/app.env
-webapp/dss_webapp/deploy.sh	webapp	LIVE (referenced)	9	archive/BLUEPRINT_ALIGNMENT_PLAN.md,docs/demo/WEBAPP_DESIGN.md,dss_lib/demo_identity.py,webapp/DEPLOYMENT.md
+webapp/dss_webapp/deploy.sh	webapp	LIVE (referenced)	10	archive/BLUEPRINT_ALIGNMENT_PLAN.md,docs/demo/WEBAPP_DESIGN.md,docs/demo/WEBAPP_REDESIGN_WORKPLAN.md,dss_lib/demo_identity.py
 webapp/frontend/package-lock.json	webapp	LIVE (referenced)	1	webapp/Makefile
 webapp/frontend/package.json	webapp	LIVE (referenced)	3	docs/demo/WEBAPP_DESIGN.md,webapp/Makefile,webapp/README.md
 webapp/frontend/tsconfig.app.json	webapp	LIVE (referenced)	1	webapp/frontend/tsconfig.json

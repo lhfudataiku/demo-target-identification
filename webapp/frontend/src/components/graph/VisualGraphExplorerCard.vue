@@ -144,7 +144,7 @@
     </div>
 
     <!-- The card's footer slots belong to the caller, not to this wrapper:
-         act 1 and act 4 embed the same Explorer with different methodology. -->
+         the shortlist and the layout's preview harness supply their own methodology. -->
     <template v-if="$slots.note" #note><slot name="note" /></template>
     <template v-if="$slots.method" #method><slot name="method" /></template>
     <template v-if="$slots.presenter" #presenter><slot name="presenter" /></template>

@@ -87,7 +87,8 @@ every downstream number.
   (`allowed_targets`), and the 2026-08-31 pilot's three artifacts fingerprint its recipe;
 - `compute_breast_panel` is one of the three identity recipes in `tools/check_governed_values.py`
   (`DEC-OPS-006`), with `compute_demo_panel_config` and `compute_split_audit_2`;
-- governed claim `TI-VAL-009` takes its authority from `nb4` §8.10, so it moves with `nb4`;
+- the governed breast-panel claim (HER2+ reconstruction and subtype separation) takes its authority
+  from `nb4` §8.10, so it moves with `nb4`; find it in `CLAIM_REGISTRY.json` by that authority;
 - `.index/_dead.json` marks it "do not migrate", which D13 now reverses.
 
 `notebooks/README.md` still describes a `90 Validation evidence (asserted)` zone that no longer exists.

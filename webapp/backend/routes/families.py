@@ -125,6 +125,9 @@ def families() -> list[dict[str, Any]]:
                                       .auc_disease.mean()), 4)
                           if len(scored) else None),
             "n_leaves": int((g.act3_role == "leaf").sum()),
+            # The panel's own terms, so a page can find the family of the disease
+            # open on the shortlist from the panel config, not from a second rule.
+            "disease_indexes": sorted(int(v) for v in g.disease_index.dropna()),
             # kept under its old name too -- the frontend reads n_trustworthy
             "n_trustworthy": int(scored[scored.auc_trustworthy.astype(bool)].shape[0]),
         })

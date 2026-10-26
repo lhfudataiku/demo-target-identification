@@ -32,9 +32,9 @@ so zones A1-A4 are read by named routes rather than by an unbuilt UI.
 ## Summary
 
 - datasets: **91**
-- endpoints (read by a webapp route or a notebook): **42**
+- endpoints (read by a webapp route or a notebook): **41**
 - flow intermediates (consumed by a recipe, no direct reader): **48**
-- genuine orphans: **1** — `llm_hx`
+- genuine orphans: **2** — `llm_hx`, `shap_driver_frequency`
 
 > Every orphan here is a deliberate decision, not a finding. See
 > `.index/_dead.json` `keep_do_not_prune` for why each one survives.
@@ -173,7 +173,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `disease_pool_sizes` | — | `count_candidates_per_disease` | 1 | intermediate |
 | `persona2_scored` | — | `score_persona_candidates` | 1 | intermediate |
 | `persona2_scored_shap` | — | `compute_top_shap_drivers_1` | 1 | intermediate |
-| `shap_driver_frequency` | **webapp:routes/calibration** | `compute_shap_driver_frequency` | 0 | webapp |
+| `shap_driver_frequency` | — | `compute_shap_driver_frequency` | 0 | **ORPHAN** |
 | `shap_drivers_long` | — | `compute_shap_drivers_long` | 1 | intermediate |
 | `target_candidates_2` | — | `join_disease_name` | 3 | intermediate |
 | `top_annotated` | — | `decorate_target_candidates` | 1 | intermediate |
