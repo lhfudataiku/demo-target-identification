@@ -62,18 +62,18 @@ evidence and generated documents appear first; planning and historical material 
 
 | | |
 |---|---|
-| [`demo/WEBAPP_REDESIGN_SCOPE.md`](demo/WEBAPP_REDESIGN_SCOPE.md) | **Executed; live 2026-10-27.** What the webapp redesign changes and why: the shortlist leads, Acts 1–3 become one "Why trust the list" page, and the shortlist becomes an evidence review (HGNC identity, drug lineage, top-5 SHAP, cached CT.gov and PubMed retrieval, an evidence assistant), then a flow migration that gives the notebooks' supporting evidence its own project. Decisions D1–D15 and the measured starting point |
-| [`demo/WEBAPP_REDESIGN_WORKPLAN.md`](demo/WEBAPP_REDESIGN_WORKPLAN.md) | **Executed through Phase 8; switched over 2026-10-27.** The redesign's phases, technical design, measurements and acceptance records, from Phase 0 to release; §11 points to the flow migration. Moves to `archive/` with the scope once the preview webapp is deleted |
 | [`operations/FLOW_MIGRATION_WORKPLAN.md`](operations/FLOW_MIGRATION_WORKPLAN.md) | **Draft, 2026-10-26.** After the redesign: the notebooks' supporting evidence moves to its own DSS project reading only zones 00–31, and the flow after zone 40 is rebuilt by webapp function, compared with the old, then retired (M0–M5) |
 
-Completed plans move to [`../archive/`](../archive/): the most recent is the webapp's bs-blueprint
-alignment, implemented 2026-10-15 (`DEC-DEMO-003`).
+Completed plans move to [`../archive/`](../archive/): the most recent is the webapp redesign, live
+2026-10-27 (`DEC-DEMO-004`, `DEC-DEMO-005`; its scope and workplan are
+[`WEBAPP_REDESIGN_SCOPE.md`](../archive/WEBAPP_REDESIGN_SCOPE.md) and
+[`WEBAPP_REDESIGN_WORKPLAN.md`](../archive/WEBAPP_REDESIGN_WORKPLAN.md)).
 
 ## Historical material
 
 | | |
 |---|---|
-| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, the three dashboard mockups and their app-parity check, the retired hand-authored flow view, completed plans (the documentation restructure with its phase records, the Visual Graph Explorer integration scope, the bs-blueprint alignment), the 2026-09-03 graph-snapshot switch record, the `m3-f12`-era appendix snapshots and breast-annotation exports, and the unpublished DSS wiki drafts. Do not load by default; use only for an explicit history investigation |
+| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, the three dashboard mockups and their app-parity check, the retired hand-authored flow view, completed plans (the documentation restructure with its phase records, the Visual Graph Explorer integration scope, the bs-blueprint alignment, the webapp redesign scope and workplan), the 2026-09-03 graph-snapshot switch record, the `m3-f12`-era appendix snapshots and breast-annotation exports, and the unpublished DSS wiki drafts. Do not load by default; use only for an explicit history investigation |
 | [`../archive/decisions/`](../archive/decisions/) | Immutable retired decision chronology and its five-way triage; query `.index/decisions_history.tsv` before opening it |
 
 ## Not in this directory

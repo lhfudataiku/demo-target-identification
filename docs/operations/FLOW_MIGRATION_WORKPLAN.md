@@ -4,8 +4,8 @@
 > **Authority:** the sequence, method and acceptance criteria for separating the notebooks' supporting
 > evidence from the webapp's serving flow · **Update when:** a step is accepted or re-scoped, or a fact
 > in §2 is superseded · **Generated dependencies:** none · **Excludes:** the boundary rule and target
-> zone layout, decided in [`../demo/WEBAPP_REDESIGN_WORKPLAN.md`](../demo/WEBAPP_REDESIGN_WORKPLAN.md)
-> Phase 0, and the decisions in [`../demo/WEBAPP_REDESIGN_SCOPE.md`](../demo/WEBAPP_REDESIGN_SCOPE.md)
+> zone layout, decided in [`WEBAPP_REDESIGN_WORKPLAN.md`](../../archive/WEBAPP_REDESIGN_WORKPLAN.md)
+> Phase 0, and the decisions in [`WEBAPP_REDESIGN_SCOPE.md`](../../archive/WEBAPP_REDESIGN_SCOPE.md)
 > (D13–D15), which this plan carries out.
 
 **Status: DRAFT — 2026-10-26. Not approved; nothing in DSS has changed. Not part of the webapp

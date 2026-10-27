@@ -30,8 +30,8 @@ check, are historical material in
 [`../../archive/dashboard-mockup-iterations/`](../../archive/dashboard-mockup-iterations/).
 
 **The redesign, live since 2026-10-27** (`DEC-DEMO-004`, `DEC-DEMO-005`;
-[`WEBAPP_REDESIGN_SCOPE.md`](WEBAPP_REDESIGN_SCOPE.md) and
-[`WEBAPP_REDESIGN_WORKPLAN.md`](WEBAPP_REDESIGN_WORKPLAN.md)). The app opens on the shortlist (Act 4)
+[`WEBAPP_REDESIGN_SCOPE.md`](../../archive/WEBAPP_REDESIGN_SCOPE.md) and
+[`WEBAPP_REDESIGN_WORKPLAN.md`](../../archive/WEBAPP_REDESIGN_WORKPLAN.md)). The app opens on the shortlist (Act 4)
 and answers Acts 1–3 as the three sections of one page, *Why trust the list*, with one disease shared by
 both pages; the shortlist carries an evidence review and an evidence assistant. Built in phases on a
 preview webapp: the two-page navigation, the shared disease and *Why trust the list* (Phase 1); the

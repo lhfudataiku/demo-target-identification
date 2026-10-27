@@ -1,16 +1,17 @@
 # Webapp redesign — scope
 
-> **Lifecycle:** Planning (draft) · **Audience:** demo owners, webapp implementers and technical
+> **Lifecycle:** Historical · **Audience:** demo owners, webapp implementers and technical
 > reviewers · **Authority:** what the redesign changes and why: the agreed decisions, the measured
 > starting point, the target design and its boundaries · **Update when:** a decision in §2 changes, a
 > measurement in §3 is superseded, or the design in §4 is revised · **Generated dependencies:** none ·
 > **Excludes:** the phase sequence and acceptance criteria, which are
 > [`WEBAPP_REDESIGN_WORKPLAN.md`](WEBAPP_REDESIGN_WORKPLAN.md); current deployed behaviour, which stays
-> governed by [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md), [`../../webapp/README.md`](../../webapp/README.md)
-> and [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented.
+> governed by [`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md), [`../../webapp/README.md`](../webapp/README.md)
+> and [`../../webapp/DEPLOYMENT.md`](../webapp/DEPLOYMENT.md) until each phase is implemented.
 
-**Status: EXECUTED — the redesign went live on 2026-10-27** (drafted 2026-10-25, revised 2026-10-26: built
-beside what runs today; the flow migration decided separately; HGNC identity preloaded, D16). What was
+**Status: EXECUTED — the redesign went live on 2026-10-27. Retired to `archive/`.** The current authority for the app is
+`WEBAPP_DESIGN.md`; the decisions are `DEC-DEMO-004` and `DEC-DEMO-005` in the register. (Drafted 2026-10-25, revised 2026-10-26: built
+beside what runs today; the flow migration decided separately; HGNC identity preloaded, D16.) What was
 built, and where it departed from this scope, is in the workplan's phase records. Supersedes
 the Act 4 evidence review plan of 2026-10-23 (in git history), whose content is split between this
 document and the workplan.
@@ -35,7 +36,7 @@ makes that the app's own shape:
   its own DSS project, which reads only the upstream zones 00–31, and whether the main project's flow
   after zone 40 is rebuilt around the new pages' functions, is a separate decision taken after the
   release. That migration has its own workplan,
-  [`../operations/FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md).
+  [`../operations/FLOW_MIGRATION_WORKPLAN.md`](../docs/operations/FLOW_MIGRATION_WORKPLAN.md).
 
 The agreed design is a static mockup over a 2026-10-23 snapshot, kept out of git at
 `docs/demo/design_review/shortlist-and-evidence-review.html` (§4.4).
@@ -264,14 +265,14 @@ any safety or toxicity claim; storing assistant conversations.
 
 | document | change |
 |---|---|
-| [`DEMO_NARRATIVE.md`](DEMO_NARRATIVE.md) | act order and the four-acts table: the list first, the evidence on demand |
-| [`../decisions/DECISION_REGISTER.md`](../decisions/DECISION_REGISTER.md) | two entries: the evidence assistant, LLM role labels and DSS cache (D1, D4, D5); the list leads, one evidence page, one disease (D9–D11). A third for the preloaded HGNC identity (D16) |
-| [`../overview/PROJECT_CONTEXT.md`](../overview/PROJECT_CONTEXT.md) | §4.3: `hgnc_identity` joins the shared objects Part 2 syncs from Part 1 (D16) |
-| [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md) | §3.3 routes, §4 acts table and Acts 1–4 sections, §6 guardrail rows, §8 |
-| [`../../webapp/README.md`](../../webapp/README.md), [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) | the two-page structure; new settings (tool, agent, folder, model ids) and the pre-fill step |
-| [`../operations/FLOW_MAP.md`](../operations/FLOW_MAP.md), `.index/` | regenerate after the new datasets exist |
-| [`../operations/FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md) | the migration's own document changes (successor ADR, `PROJECT_CONTEXT.md` §4.3, build governance, notebooks README, agent instructions), listed in its §5 |
-| [`../README.md`](../README.md) | Planning section points to both documents while the work is open |
+| [`DEMO_NARRATIVE.md`](../docs/demo/DEMO_NARRATIVE.md) | act order and the four-acts table: the list first, the evidence on demand |
+| [`../decisions/DECISION_REGISTER.md`](../docs/decisions/DECISION_REGISTER.md) | two entries: the evidence assistant, LLM role labels and DSS cache (D1, D4, D5); the list leads, one evidence page, one disease (D9–D11). A third for the preloaded HGNC identity (D16) |
+| [`../overview/PROJECT_CONTEXT.md`](../docs/overview/PROJECT_CONTEXT.md) | §4.3: `hgnc_identity` joins the shared objects Part 2 syncs from Part 1 (D16) |
+| [`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) | §3.3 routes, §4 acts table and Acts 1–4 sections, §6 guardrail rows, §8 |
+| [`../../webapp/README.md`](../webapp/README.md), [`../../webapp/DEPLOYMENT.md`](../webapp/DEPLOYMENT.md) | the two-page structure; new settings (tool, agent, folder, model ids) and the pre-fill step |
+| [`../operations/FLOW_MAP.md`](../docs/operations/FLOW_MAP.md), `.index/` | regenerate after the new datasets exist |
+| [`../operations/FLOW_MIGRATION_WORKPLAN.md`](../docs/operations/FLOW_MIGRATION_WORKPLAN.md) | the migration's own document changes (successor ADR, `PROJECT_CONTEXT.md` §4.3, build governance, notebooks README, agent instructions), listed in its §5 |
+| [`../README.md`](../docs/README.md) | Planning section points to both documents while the work is open |
 
 ## 7. Risks
 

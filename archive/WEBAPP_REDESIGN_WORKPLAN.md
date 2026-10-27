@@ -1,14 +1,16 @@
 # Webapp redesign — workplan
 
-> **Lifecycle:** Planning (draft) · **Audience:** webapp implementers and technical reviewers ·
+> **Lifecycle:** Historical · **Audience:** webapp implementers and technical reviewers ·
 > **Authority:** the phase sequence, the technical design of each phase, and its acceptance criteria ·
 > **Update when:** a phase is accepted or re-scoped, or a budget in §8 is measured · **Generated
 > dependencies:** none · **Excludes:** the decisions, measurements and target design, which are
 > [`WEBAPP_REDESIGN_SCOPE.md`](WEBAPP_REDESIGN_SCOPE.md) and are referenced here by their ids (D1–D15).
 
-**Status: EXECUTED through Phase 8 — switched over 2026-10-27** (drafted 2026-10-25, revised 2026-10-26).
-The redesign serves the original webapp (`OlmPX9a`). The plan is done, and moves to `archive/`, once the
-user deletes the preview webapp (`Oo689ic`) and its library folder (§10).
+**Status: EXECUTED — all phases done 2026-10-27. Retired to `archive/`.** (Drafted 2026-10-25, revised
+2026-10-26.) The redesign serves the original webapp (`OlmPX9a`); the preview webapp and its library
+folder are deleted (§10). The current authority for the app is `WEBAPP_DESIGN.md`; this file is the dated
+record of how the redesign was built and measured. The flow migration that follows is
+`docs/operations/FLOW_MIGRATION_WORKPLAN.md`.
 
 ## 1. How the work runs
 
@@ -593,15 +595,16 @@ searches shown, the answer saying the graph could not be read).
   library, not run). The cache folder is shared and keyed by pair and versions, so the live webapp reads
   the 21 pre-filled pairs as they are.
 - `DEC-DEMO-004` and `DEC-DEMO-005` are `accepted`; `WEBAPP_DESIGN.md` describes the live app.
-- **Remaining:** after the grace period the user deletes `Oo689ic` and `python/target_prioritizer_next/`;
-  nothing else in DSS refers to that namespace. Rollback until then, and after: `make -C webapp deploy`
-  from `main`.
+- **Preview deleted, 2026-10-27:** the user deleted `Oo689ic` and `python/target_prioritizer_next/`
+  after a read-only check that nothing else in DSS referred to that namespace; afterwards the project
+  lists three webapps (`OlmPX9a`, Agent Hub, Graph Explorer) and `OlmPX9a` runs with no crashes. The
+  scope and this workplan moved to `archive/` the same day. Rollback: `make -C webapp deploy` from `main`.
 
 ## 11. After the redesign — the flow migration decision
 
 The flow migration is not part of the redesign, and no phase above depends on it. After Phase 8 the
 user decides whether it runs, in full, in part or not at all, from what the release has shown. Its
 plan, and the options that decision weighs, are in
-[`../operations/FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md) §1. Whatever
+[`../operations/FLOW_MIGRATION_WORKPLAN.md`](../docs/operations/FLOW_MIGRATION_WORKPLAN.md) §1. Whatever
 is decided, two things from Phase 0 hold: the boundary rule (D14) governs every new object, and new
 objects go in the target zones (D15).
