@@ -146,6 +146,8 @@ export interface Citation {
 
 export interface CheckedSentence {
   text: string; citations: Citation[]
+  /** The answer line the sentence came from; `item` when that line is a list item. */
+  block: number; item: boolean
   /** Cited ids that resolved to nothing; removed from the text. */
   unresolved: string[]
   /** Tagged [GK] by the model, or carrying no citation: rendered as not from a retrieved source (D1). */

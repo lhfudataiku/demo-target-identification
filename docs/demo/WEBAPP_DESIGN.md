@@ -546,8 +546,8 @@ is exact-node: lapatinib and neratinib act on ERBB2 but are recorded on *breast 
 not in HER2+'s table.
 
 **Trials and papers are retrieved for the selected pair only** (`DEC-DEMO-004`; scope D3–D6). Opening
-the Trials or Literature tab runs six Cortex searches, three queries on each corpus, each leading with the
-gene, and keeps a record only if the gene or a safe alias appears outside a citation. The records show at
+the Trials or Literature tab runs six Cortex searches, three queries on each corpus — the symbol with
+the disease family, the symbol with the disease, and the HGNC full name with the disease — and keeps a record only if the gene or a safe alias appears outside a citation. The records show at
 once; two LLM calls, one per corpus over the text around the gene's mentions, then pick up to five of each
 and label them. Every label carries a quote the backend finds in the record's full passage, or it is
 dropped and counted; the record stays, unlabelled. Search and selection are cached per pair in
@@ -558,13 +558,16 @@ ERBB2 × HER2+: 3.2 s of searches and 11.4 s of selection, inside the 4 s and 15
 **The assistant answers about the selected pair, and the backend checks every answer** (`DEC-DEMO-004`;
 scope D1). Each question is sent with the pair's identity, its top five drivers, its drug records and its
 cached trials and papers, each with a reference the model must cite. The model may search the graph,
-CT.gov and PubMed itself, at most 8 times in 45 s. When the answer is complete the backend resolves every
+CT.gov and PubMed itself, at most 8 times in 45 s; a search repeated unchanged reuses its first result. When the answer is complete the backend resolves every
 citation to a record or a search result from this answer, removes any that resolve to nothing, marks
 every uncited sentence *not from a retrieved source*, flags prescriptive phrases and attaches each graph
 search's Cypher. The check verifies that a citation exists, not that the sentence is true. Conversations
-live in the page and are lost on reload. Measured on ERBB2 and SMARCA2 × HER2+: 2.9–24.7 s per answer.
+live in the page and are lost on reload. Measured on ERBB2 and SMARCA2 × HER2+: 2.9–24.7 s per answer
+(Phase 7); a drug question over four pairs took 9–37 s (Phase 8), the model's own reasoning time being the
+main variable. The graph, search and wording rules the model follows are shared with the Agent Hub agent
+(`backend/services/agent_rules.py`).
 For open exploration, *Explore in Agent Hub* opens a separate Agent Hub webapp running the DSS agent
-`target_evidence_assistant` over the same three tools; it does not know the pair, its answers are not
+`target_evidence_agent` over the same three tools and rules; it does not know the pair, its answers are not
 checked, and it keeps its own conversation history.
 
 **Why this ranking? lists only the top five drivers** (scope D2). The tab shows the five features with

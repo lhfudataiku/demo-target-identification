@@ -40,7 +40,7 @@ TOOLS = {"trials": "4I2L6YL", "papers": "FNxhpfF"}  # Cortex - CTgov, Cortex - P
 MODEL = "openai:bs-llm-connection:gpt-5.6-terra"      # the model graph search already uses
 # "tools" records each tool's max_documents, which is set in DSS, not here: change it when a tool's
 # setting changes, or files cached under the old limit keep being served as current.
-VERSIONS = {"tools": "4I2L6YL@5,FNxhpfF@10", "queries": "1", "filter": "1", "prompt": "2", "model": MODEL}
+VERSIONS = {"tools": "4I2L6YL@5,FNxhpfF@10", "queries": "2", "filter": "1", "prompt": "2", "model": MODEL}
 SEARCH_TIMEOUT_S = 10
 MAX_PICKS = 5
 # Characters kept either side of each mention of the gene when trimming a passage for selection.
@@ -106,10 +106,16 @@ def context(disease: int, gene: int) -> dict[str, Any]:
 
 
 def queries(ctx: dict[str, Any]) -> list[str]:
-    """Gene first: the HER2+ disease name is itself a gene name and outweighs the candidate (§3.3)."""
+    """Gene first: the HER2+ disease name is itself a gene name and outweighs the candidate (§3.3).
+
+    The third query is the HGNC full name with the disease: it finds papers naming both that the
+    symbol queries miss (workplan Phase 6). Safe aliases still count as mentions when filtering.
+    """
     s, disease = ctx["symbol"], ctx["disease_name"]
     anchor = ctx["anchor_name"] or disease
-    qs = [f"{s} {anchor}", f"{s} {disease}", " ".join([s, *ctx["aliases"][:2], anchor])]
+    qs = [f"{s} {anchor}", f"{s} {disease}"]
+    if ctx["hgnc_name"]:
+        qs.append(f"{ctx['hgnc_name']} {disease}")
     return list(dict.fromkeys(qs))
 
 
@@ -181,7 +187,10 @@ def search_fresh(ctx: dict[str, Any]) -> dict[str, Any]:
     jobs = [(corpus, tid, q) for corpus, tid in TOOLS.items() for q in qs]
     raw: dict[str, list[dict[str, Any]]] = {c: [] for c in TOOLS}
     failures: dict[str, list[str]] = {c: [] for c in TOOLS}
-    with cf.ThreadPoolExecutor(len(jobs)) as ex:
+    # Not a `with` block: leaving one waits for every call, so a hung search would hold the tab past
+    # the timeout (2.7 s against a forced 1 s, Phase 8). Late calls finish in the background, unread.
+    ex = cf.ThreadPoolExecutor(len(jobs))
+    try:
         futs = {ex.submit(_search_one, tid, q): (corpus, q) for corpus, tid, q in jobs}
         done, pending = cf.wait(futs, timeout=SEARCH_TIMEOUT_S)
         for f in pending:
@@ -193,6 +202,8 @@ def search_fresh(ctx: dict[str, Any]) -> dict[str, Any]:
                 raw[corpus] += [dict(_record(corpus, r), query=q) for r in f.result()]
             except Exception as e:  # one failing call never fails the other corpus
                 failures[corpus].append(f"{q}: {e}")
+    finally:
+        ex.shutdown(wait=False, cancel_futures=True)
     out: dict[str, Any] = {"queries": qs, "retrieved_at": _now(),
                            "search_seconds": round(time.monotonic() - t0, 2)}
     for corpus in TOOLS:

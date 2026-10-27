@@ -304,14 +304,15 @@ pair (D3).
 
 ### Step 1 — search, no LLM
 
-1. Three queries per pair, each leading with the gene: `symbol + anchor`, `symbol + disease_name`,
-   `symbol + two safe aliases + anchor`. The anchor is the disease's family head, the nearest of 137
+1. Three queries per pair: `symbol + anchor`, `symbol + disease_name` and `HGNC name + disease_name`
+   (the third replaced `symbol + two safe aliases + anchor` on 2026-10-27; see the table below). The anchor is the disease's family head, the nearest of 137
    Hetionet DO-Slim terms up the MONDO hierarchy (`compute_disease_family_id`; *breast cancer* for HER2+
-   and TNBC). A disease without one uses `disease_name`. A safe alias, from HGNC's alias and previous
+   and TNBC). A disease without one uses `disease_name`, so its first two queries are the same and it runs two. A safe alias, from HGNC's alias and previous
    symbols, is at least four letters or digits once hyphens are removed and not an English word, which
    excludes *NEU* and *BRM*.
 2. The six calls run in parallel through the agent tools `4I2L6YL` (CT.gov, 5 results) and `FNxhpfF`
-   (PubMed, 10), each with a 10 s timeout. A failing call is reported for its corpus only.
+   (PubMed, 10), within 10 s together: a call still running then is reported as timed out and left to
+   finish unread (until Phase 8 the search waited for it). A failing call is reported for its corpus only.
 3. De-duplicated by NCT_ID or PMID, keeping the best reranker score. CT.gov chunks are JSON of study
    modules and are flattened to their text, so the model quotes and the check verifies the same text.
 4. A record is kept only if the symbol or a safe alias appears in its title, or in its passage outside a
@@ -323,7 +324,7 @@ adenocarcinoma; each returned record checked for the gene, the selected disease 
 | question | finding | outcome |
 |---|---|---|
 | Is `symbol + disease_name` the more accurate query? | most disease-specific (97% of papers name the disease) but least gene-specific (44% name the gene, against 82% for `symbol + anchor`); for HER2+ novel genes 0%, because the disease name contains a gene name. It still finds the most records naming both | all three queries kept: each finds records the others miss |
-| Does the HGNC full name help (`name + disease_name`)? | as accurate as `symbol + disease_name` alone, but finds different records: swapping it for the alias query raises papers naming gene and disease from 60 to 74 at six searches | **open**: not adopted pending a decision |
+| Does the HGNC full name help (`name + disease_name`)? | as accurate as `symbol + disease_name` alone, but finds different records: swapping it for the alias query raises papers naming gene and disease from 60 to 74 at six searches | **adopted 2026-10-27** in place of the alias query (query version 2); safe aliases still count as mentions in step 4. Re-run over the 21 pre-filled pairs: papers naming the disease 172 → 194, trials kept 72 → 61, papers kept 330 → 300, picks 43 → 36 trials and 94 → 89 papers. The alias query had found trials naming a gene by an older symbol: CTNNB1 lost all 3 trial picks, TP53 kept 2 trials of 5 |
 | Can Cortex filter natively? | the plugin tool exposes no filter. A Knowledge Bank over the existing service (DSS 15.0+) passes filters, but the services filter only on trial type, status, phase, sponsor, sex and bibliographic fields, all `TEXT` with no substring match | not used: nothing filters on gene or disease |
 | PubMed at 5 results per call? | results 6–10 are as relevant as 1–5 (68% name the gene in both), so 5 halves the relevant papers (14.6 → 7.8 per pair) and did not speed up ERBB2's selection | kept at 10 |
 
@@ -389,7 +390,8 @@ reads the pair's cache (§9).
 **Done when:** a cold ERBB2 or SMARCA2 selection meets both budgets — **met** (ERBB2 3.2 s + 11.4 s,
 2026-10-27); a warm one is instant — **met** (0.16 s); a tool failure shows inside its tab only — **by
 design**, not exercised live; every rendered quote is a substring of its passage — **met** (10 of 10 for
-ERBB2). Still to do: deploy, run the pre-fill, and decide the alias-versus-name query.
+ERBB2). Deployed and pre-filled 2026-10-27, and pre-filled again after the name query replaced the alias
+query (4 min 26 s for 21 pairs; search ≤ 2.7 s and selection ≤ 11.6 s per pair).
 
 ## 9. Phase 7 — evidence assistant *(DSS: an agent and an Agent Hub webapp)*
 
@@ -441,7 +443,11 @@ correct**, nothing extra or missing (counts, lists and a yes/no). Four behaviour
     model reads;
   - 25 s per search and 45 s per answer, after which the model answers with what it has, without tools;
   - graph searches run one at a time, because concurrent calls to `b6Rpbve` returned no output;
-  - the prompt asks for one relationship, or one chain, per graph search.
+  - the prompt asks for one relationship, or one chain, per graph search, and never one search per
+    item of an earlier result;
+  - a search repeated unchanged within an answer reuses the first result and does not count (Phase 8).
+  The graph, search and wording rules live in `backend/services/agent_rules.py`, which builds both this
+  prompt and the Agent Hub agent's (7b), so the two cannot drift apart.
   Every tool output is trimmed before the model reads it: graph search to its Cypher plus the distinct
   nodes by type and the row count (at most 50 names per type); a Cortex search to id, title and the text
   around the gene's mentions, as Phase 6 sends. A tool that returns no output counts as a failed call.
@@ -487,25 +493,28 @@ no search: they answered from the pair's context (drivers, drug records, cached 
 - In the SMARCA2 trials answer, a trial written as a list item with its NCT id in bold, not in brackets,
   was marked general knowledge: the check reads bracketed citations only.
 - The same answer that miscounted also ran one graph search twice, unchanged; searches are not
-  deduplicated within an answer.
+  deduplicated within an answer (they are since Phase 8).
 
 The assistant does not call Phase 6's selection pass as a tool; it reads the pair's cache, so an
 uncached pair gets no `T…` or `P…` references and searches CT.gov and PubMed itself.
 
 ### 7b — the DSS agent and Agent Hub
 
-- **Agent** `target_evidence_assistant` (`fPXQIUJr`) in `DEMO_TARGET_IDENTIFICATION`: a tool-using agent
-  with the three tools and `gpt-5.6-terra`, at most 6 iterations; its prompt carries the same graph
-  schema and asks for the same contract (cite NCT and PubMed ids, mark general knowledge, show the
-  Cypher). Interaction logging off. Tested in DSS on 2026-10-27: a graph question (which drugs act on
-  ERBB2) answered in 29 s with the 23 drugs `graph_edges` holds and its Cypher; a literature question
-  in 6 s with PubMed ids.
+- **Agent** `target_evidence_agent` (`QvUvQbzB`) in `DEMO_TARGET_IDENTIFICATION`: a visual agent
+  (`TOOLS_USING_AGENT`) with the three tools and `gpt-5.6-terra`, interaction logging off. Its prompt is
+  `agent_rules.agent_prompt()` — the in-app assistant's graph, search and wording rules, with NCT, PMID
+  and `[Graph]` citations — set with `python -m backend.services.agent_rules` and `dku agent
+  set-prompt`. Tested in DSS on 2026-10-27: a graph question in 14 s (one search, Cypher shown, every line
+  cited), a literature question in 19 s (3 PMIDs, and it said no HER2+-specific paper was found), and a
+  question naming no gene in 1.5 s (it asked for one). It replaced `target_evidence_assistant`
+  (`fPXQIUJr`), a structured agent whose one loop block added nothing to a visual agent, deleted the
+  same day.
 - **Agent Hub webapp** `bFyW6D2` in `DEMO_TARGET_IDENTIFICATION`, created from the `agent-hub` plugin.
   Inside a container Agent Hub refuses SQLite, so it stores its data, **conversations included**, in the
   PostgreSQL connection `local_dku_pg` under the table prefix `agenthub_`. The instance's plugin is now
   **1.7.2**, which carries the graph view (`GraphArtifactDisplay`) found in the source; whether it shows
-  graph search results as a graph is checked in the browser. The agent is enabled in Agent Hub's admin
-  settings by the user.
+  graph search results as a graph is checked in the browser. The user enables the agent in Agent Hub's
+  admin settings.
 - **Link**: *Explore in Agent Hub* on the candidate card opens the Agent Hub webapp in a new tab, at its
   home page; its address comes from `app.env` (`VITE_AGENT_HUB_PROJECT_KEY`, `VITE_AGENT_HUB_OBJECT_ID`
   = `bFyW6D2_agent-hub`), built as the Graph Explorer's is. Empty values hide the link.
@@ -517,7 +526,7 @@ uncached pair gets no `T…` or `P…` references and searches CT.gov and PubMed
   run 3 for tool failures); deployed to the preview webapp 2026-10-27, not yet tried in the browser.*
 - 7b: the agent answers a graph question and a literature question in Agent Hub, and the card's link
   opens it; whether graph results render as a graph is recorded for 1.7.2. *The agent answers both in
-  DSS; Agent Hub, the link and the graph view await the browser check.*
+  DSS and Agent Hub uses it; the link and the graph view await the browser check.*
 
 ## 10. Phase 8 — verification and switch-over *(DSS: deploy)*
 
@@ -536,6 +545,39 @@ uncached pair gets no `T…` or `P…` references and searches CT.gov and PubMed
   *planned* marks.
 - **Done when:** the original webapp serves the redesign, and the second webapp and its library
   folder are gone.
+
+### Verification, 2026-10-27
+
+A local run against the preview's datasets over four pairs: ERBB2 and SMARCA2 × HER2+ (pre-filled),
+NRAS × HER2+ (a novel gene at rank 21, outside the pre-fill) and JAK2 × rheumatoid arthritis (no family
+panel). Every route answered without error, and `npm run check` was clean.
+
+| pair | Trials and Literature, first visit | second visit | drug question (final run) |
+|---|---|---|---|
+| ERBB2 | pre-filled, 0.16 s | 0.13 s | 36.7 s, 2 searches |
+| SMARCA2 | pre-filled, 0.16 s | 0.14 s | 9.3 s, 1 search |
+| NRAS | 3.2 s search + 6.4 s selection | 0.16 s | 8.8 s, 1 search |
+| JAK2 × rheumatoid arthritis | 2.8 s + 9.2 s | 0.16 s | 10.0 s, 1 search |
+
+*Why trust the list* answered in under 6 s per route once the backend was warm; `/api/calibration`
+takes 17.5 s on a cold backend and 0.3 s after, and `/api/evidence` 5.7 s every time.
+
+**Forced failures:** one corpus's selection failing shows its error in its own tab and keeps the other's
+picks; every assistant search timing out (forced to 1 s) still completes the answer (32.9 s, 5 failed
+searches shown, the answer saying the graph could not be read).
+
+**Two defects found and fixed:**
+- **The search timeout did not bound the wait.** Leaving the thread pool's `with` block waited for every
+  call, so a forced 1 s timeout returned after 2.7 s and a hung search would have held the tab. The pool
+  now shuts down without waiting: 1.0 s against 1 s.
+- **Drug questions took 44–46 s** (ERBB2, JAK2): the model repeated its first graph search, then searched
+  once per drug until the 8-search budget ran out and the 45 s limit forced an answer. With repeats
+  reused and the per-item rule in the prompt, the same questions took 10–27 s with one or two searches.
+  The ERBB2 answer still varies (11.3, 11.7 and 48.2 s in three runs): in the slow run the model spent
+  17.5 s before its first search, then searched again for all 23 drugs because the drug-and-indication
+  chain returns only the 6 with an indication. The variance is the model's own reasoning time.
+
+**Still open before the switch-over:** the browser checks of the Agent Hub link and graph view.
 
 ## 11. After the redesign — the flow migration decision
 

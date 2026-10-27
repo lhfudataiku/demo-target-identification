@@ -32,7 +32,7 @@ from typing import Any
 
 from ..dss_client import get_project
 from ..routes import candidates
-from . import dataset_cache, pair_sources
+from . import agent_rules, dataset_cache, pair_sources
 
 MODEL = pair_sources.MODEL
 MAX_ROUNDS = 6
@@ -41,7 +41,7 @@ TIME_LIMIT_S = 45
 # (2026-10-27), and one exceeded DSS's 50 MB tool-output limit.
 TOOL_TIMEOUT_S = 25
 # Tool calls per answer; one per drug for 23 drugs took 95 s.
-MAX_TOOL_CALLS = 8
+MAX_TOOL_CALLS = agent_rules.MAX_SEARCHES
 _pool = cf.ThreadPoolExecutor(max_workers=4)
 # Graph searches run one at a time: four of eight concurrent graph searches returned no output
 # (2026-10-27). Cortex searches still run in parallel.
@@ -65,28 +65,30 @@ TOOLS = [
         "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]}}},
 ]
 
-SYSTEM = """You answer questions about ONE candidate gene for ONE disease, in a target-prioritization demo for scientists.
+SYSTEM = f"""You answer questions about ONE candidate gene for ONE disease, in a target-prioritization demo for scientists.
 
 Sources and citations:
 - The context below gives ids you may cite: M (the model's rank, score and SHAP drivers), D1.. (drug records), T1.. (trials), P1.. (papers).
-- A graph_search result is cited G1, G2.. in the order you called it. A trial or paper you retrieve yourself is cited by its id, e.g. [NCT01234567] or [PMID:12345678].
+- A graph search result is cited G1, G2.. in the order you called it. A trial or paper you retrieve yourself is cited by its id, e.g. [NCT01234567] or [PMID:12345678].
 - Put citations in square brackets at the end of the sentence they support, before the full stop: "... reduces growth [P2][G1]."
 - A sentence from your general knowledge, not from a cited source, must end with [GK].
 - Never cite an id you were not given or did not retrieve.
+- Prefer the graph for structure (interactions, pathways, drugs, associations), the trial and paper tools for evidence.
 
-Rules:
-- Search only when the context does not answer the question. Prefer graph_search for structure (interactions, pathways, drugs, associations), the trial and paper tools for evidence.
-- A trial's phase or status says nothing about whether it worked. Retrieved counts are what the search returned, never all that exist.
-- Do not recommend what to pursue, rank, or test next. Describe; do not prescribe.
-- Be brief: a few sentences or a short list.
+{agent_rules.GRAPH}
 
-The graph: node types protein (genes), disease, drug, pathway, biological_process, molecular_function. Protein-protein interactions are stored in both directions, so ask for DISTINCT partners. Ask graph_search for counts or named lists; it ignores "at most N".
-Ask graph_search ONE relationship, or one chain of relationships, per call: "Which drugs target ERBB2?", or for a list "Which diseases are the drugs that target ERBB2 indicated for?" (one call, not one per drug). Never branch into several kinds of things in one question (drugs AND pathways AND processes): such a question builds a query too large to run. You have at most 8 searches per answer."""
+{agent_rules.SEARCH}
+
+{agent_rules.WORDING}
+- Plain text: short paragraphs, or list items starting "- ". No headings, tables or bold.
+
+{agent_rules.LIMIT}"""
 
 CITE = re.compile(r"\[(GK|M|[TPDG]\d+|NCT\d{8}|PMID:\s?\d+)\]")
 ANY_BRACKET = re.compile(r"\[([^\[\]]{1,40})\]")
 PRESCRIPTIVE = re.compile(r"\b(you should|we recommend|i recommend|should be (pursued|prioriti[sz]ed|tested)|the next target|worth pursuing|must be targeted)\b", re.I)
 SENTENCE = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9*\-•])")
+LIST_ITEM = re.compile(r"^\s*(?:[-*•]|\d+[.)])\s+")
 
 
 # ── Context ────────────────────────────────────────────────────────────────────────────────────
@@ -163,6 +165,10 @@ def _graph_summary(out: dict[str, Any]) -> dict[str, Any]:
             "truncated": any(len(s) > MAX_GRAPH_NAMES for s in names.values())}
 
 
+def _search_key(name: str, args: dict[str, Any]) -> tuple[str, str]:
+    return name, " ".join(str(args.get("query", "")).lower().split())
+
+
 def _call(name: str, args: dict[str, Any]) -> dict[str, Any]:
     """The DSS tool call itself: the slow part, run in parallel with the round's other calls."""
     if name not in TOOL_IDS:
@@ -220,7 +226,7 @@ def answer(disease: int, gene: int, question: str, history: list[dict[str, str]]
     except Exception as e:
         yield {"type": "error", "message": str(e)}
         return
-    state: dict[str, Any] = {"pair": pair, "graph": {}, "retrieved": {}, "tool_errors": [], "calls": 0}
+    state: dict[str, Any] = {"pair": pair, "graph": {}, "retrieved": {}, "tool_errors": [], "calls": 0, "seen": {}}
     messages: list[dict[str, Any]] = [{"role": "system", "content": SYSTEM + "\n\nCONTEXT\n" + pair["text"]}]
     for h in history[-10:]:
         if h.get("role") in ("user", "assistant") and h.get("content"):
@@ -262,6 +268,13 @@ def answer(disease: int, gene: int, question: str, history: list[dict[str, str]]
             except ValueError:
                 args = {}
             yield {"type": "tool_call_started", "id": tc["id"], "name": name, "args": args}
+            # A search repeated within one answer reuses the first result and costs nothing: the model
+            # ran the same graph search twice in 3 of 4 drug answers (Phase 8, 2026-10-27).
+            key = _search_key(name, args)
+            if key in state["seen"]:
+                pending.append((tc, name, args, key))
+                continue
+            state["seen"][key] = None
             if state["calls"] >= MAX_TOOL_CALLS:
                 pending.append((tc, name, args, None))
                 continue
@@ -270,19 +283,29 @@ def answer(disease: int, gene: int, question: str, history: list[dict[str, str]]
         deadline = min(time.monotonic() + TOOL_TIMEOUT_S, t0 + TIME_LIMIT_S + TOOL_TIMEOUT_S)
         for tc, name, args, fut in pending:
             try:
-                if fut is None:
-                    raise RuntimeError(f"not run: this answer has used its {MAX_TOOL_CALLS} searches; answer with what you have")
-                try:
-                    res = fut.result(timeout=max(0.0, deadline - time.monotonic()))
-                except cf.TimeoutError:
-                    raise RuntimeError(f"no answer within {TOOL_TIMEOUT_S} s")
-                output, payload = register(name, args, res, state)
+                if isinstance(fut, tuple):  # a repeat: the key of the first call
+                    if not state["seen"].get(fut):
+                        raise RuntimeError("the same search failed earlier in this answer")
+                    first_output, first_payload = state["seen"][fut]
+                    output = "Same search as an earlier call; its result again: " + first_output
+                    payload = {**first_payload, "summary": "repeat of an earlier search"}
+                else:
+                    if fut is None:
+                        raise RuntimeError(f"not run: this answer has used its {MAX_TOOL_CALLS} searches; answer with what you have")
+                    try:
+                        res = fut.result(timeout=max(0.0, deadline - time.monotonic()))
+                    except cf.TimeoutError:
+                        raise RuntimeError(f"no answer within {TOOL_TIMEOUT_S} s")
+                    output, payload = register(name, args, res, state)
+                    state["seen"][_search_key(name, args)] = (output, payload)
                 ok = True
             except Exception as e:
                 output, payload, ok = f"Tool failed: {e}", {"summary": str(e)}, False
                 state["tool_errors"].append({"name": name, "error": str(e)})
             messages.append({"role": "tool", "toolOutputs": [{"callId": tc["id"], "output": output}]})
-            yield {"type": "tool_call_completed", "id": tc["id"], "name": name, "args": args, "ok": ok, **payload}
+            # payload's own "id" is the graph result's G id; it must not replace the call's id
+            yield {"type": "tool_call_completed", **payload, "id": tc["id"], "result": payload.get("id"),
+                   "name": name, "args": args, "ok": ok}
 
     yield {"type": "answer", **check(text, state), "seconds": round(time.monotonic() - t0, 1)}
 
@@ -307,11 +330,13 @@ def _resolve(token: str, state: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def check(text: str, state: dict[str, Any]) -> dict[str, Any]:
+    # Each line is a block the panel keeps: a paragraph, or a list item when it starts with a marker.
     sentences = []
-    for line in text.splitlines():
+    for block, line in enumerate(text.splitlines()):
         if not line.strip():
             continue
-        for s in SENTENCE.split(line.strip()):
+        item = bool(LIST_ITEM.match(line))
+        for s in SENTENCE.split(LIST_ITEM.sub("", line).strip()):
             tokens = ANY_BRACKET.findall(s)
             cites, unresolved, gk_tag = [], [], False
             for t in tokens:
@@ -324,7 +349,7 @@ def check(text: str, state: dict[str, Any]) -> dict[str, Any]:
                 (cites if r else unresolved).append(r or t)
             clean = CITE.sub("", s).strip()
             clean = re.sub(r"\s+([.,;:!?])", r"\1", clean)
-            sentences.append({"text": clean, "citations": cites, "unresolved": unresolved,
+            sentences.append({"text": clean, "block": block, "item": item, "citations": cites, "unresolved": unresolved,
                               "general_knowledge": gk_tag or not cites,
                               "prescriptive": bool(PRESCRIPTIVE.search(clean))})
     cited_graph = {c["ref"] for s in sentences for c in s["citations"] if c.get("kind") == "graph"}
