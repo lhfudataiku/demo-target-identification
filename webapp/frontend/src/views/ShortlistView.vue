@@ -19,8 +19,9 @@
   import { computed, nextTick, onMounted, ref, watch } from 'vue'
   import { storeToRefs } from 'pinia'
   import { Button, Card, CardContent, Tabs, TabsContent, TabsList, TabsTrigger } from '@dataiku/ea-ui-kit'
-  import { Microscope } from '@dataiku/vue-icons'
+  import { AiAgent, ArrowExternalLink, Microscope } from '@dataiku/vue-icons'
   import { EmptyState, PageHeader } from 'bs-blueprint'
+  import AssistantSheet from '@/components/shortlist/AssistantSheet.vue'
   import CandidateHeader from '@/components/shortlist/CandidateHeader.vue'
   import CandidateTable from '@/components/shortlist/CandidateTable.vue'
   import LineageTab from '@/components/shortlist/LineageTab.vue'
@@ -29,6 +30,7 @@
   import SourcesTab from '@/components/shortlist/SourcesTab.vue'
   import { TRUST_LINKS, type Detail, type Drivers, type Payload, type Row, type Selection, type SourcesDoc } from '@/components/shortlist/types'
   import { useSelectionStore } from '@/stores/selection'
+  import { agentHubUrl } from '@/utils/visualGraphExplorer'
   import { apiUrl } from '@/utils/api'
 
   defineOptions({ name: 'ShortlistView' })
@@ -127,19 +129,24 @@
     })
   }
 
+  // The evidence assistant for the selected pair (Phase 7a) and, for open exploration, Agent Hub
+  // (Phase 7b) in a new tab. Agent Hub cannot be handed the pair: the link opens its home page.
+  const assistantOpen = ref(false)
+  const hubUrl = agentHubUrl()
+
   // Trials and literature are searched ON DEMAND for the selected pair only (scope D3): nothing
   // runs when a row is clicked, only when the Trials or Literature tab is opened. The search
   // answers first and renders; the LLM selection pass fills in after. Both are cached per pair in
   // DSS, so a second visit reads the cache.
   const sources = ref<SourcesDoc | null>(null)
   const sourcesError = ref<string | null>(null)
-  const selection = ref<Selection | null>(null)
+  const pairSelection = ref<Selection | null>(null)
   const selectionError = ref<string | null>(null)
   const sourcesBusy = ref(false)
   let sourcesFor: number | null = null
 
   function resetSources() {
-    sources.value = null; sourcesError.value = null; selection.value = null; selectionError.value = null
+    sources.value = null; sourcesError.value = null; pairSelection.value = null; selectionError.value = null
     sourcesFor = null
   }
 
@@ -160,10 +167,10 @@
       const doc = await getJson(`/api/candidates/sources?${q}`)
       if (sourcesFor !== forGene) return
       sources.value = doc
-      if (doc.selection && !refresh) { selection.value = doc.selection; return }
+      if (doc.selection && !refresh) { pairSelection.value = doc.selection; return }
       try {
         const s = await getJson(`/api/candidates/sources/selection?${q}`)
-        if (sourcesFor === forGene) selection.value = s.selection
+        if (sourcesFor === forGene) pairSelection.value = s.selection
       } catch (e) {
         if (sourcesFor === forGene) selectionError.value = e instanceof Error ? e.message : String(e)
       }
@@ -234,6 +241,14 @@
                         description="Select any candidate in the list above to review its evidence here." />
             <template v-else>
               <CandidateHeader :row="sel" :detail="detail" :disease-name="diseaseName" />
+              <div class="flex flex-wrap gap-2">
+                <Button size="sm" @click="assistantOpen = true"><AiAgent class="size-4" /> Ask about {{ sel.gene_name }}</Button>
+                <Button v-if="hubUrl" variant="outline" size="sm" as-child>
+                  <a :href="hubUrl" target="_blank" rel="noopener">Explore in Agent Hub <ArrowExternalLink class="size-3" /></a>
+                </Button>
+              </div>
+              <AssistantSheet v-model:open="assistantOpen" :disease-index="diseaseIndex!" :gene-index="sel.gene_index"
+                              :gene="sel.gene_name" :disease-name="diseaseName" />
               <Tabs v-model="tab">
                 <TabsList>
                   <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -251,7 +266,7 @@
                 </TabsContent>
                 <TabsContent v-for="c in (['trials', 'literature'] as const)" :key="c" :value="c" class="pt-4">
                   <SourcesTab :corpus="c === 'trials' ? 'trials' : 'papers'" :doc="sources" :doc-error="sourcesError"
-                              :selection="selection" :selection-error="selectionError" :busy="sourcesBusy"
+                              :selection="pairSelection" :selection-error="selectionError" :busy="sourcesBusy"
                               @refresh="loadSources(true)" />
                 </TabsContent>
                 <TabsContent value="lineage" class="pt-4">

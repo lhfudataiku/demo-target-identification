@@ -136,3 +136,37 @@ export const ROLE_LABEL: Record<string, string> = {
 export const SUBTYPE_LABEL: Record<Pick['subtype_match'], string> = {
   exact: 'This disease', broader: 'Broader disease', other: 'Other disease',
 }
+
+/** `/api/assistant`: one cited source, resolved by the backend against the pair's context or a record
+    retrieved during the answer. */
+export interface Citation {
+  ref: string; kind: 'model' | 'drug' | 'trial' | 'paper' | 'graph'; label: string | null
+  id?: string; url?: string | null
+}
+
+export interface CheckedSentence {
+  text: string; citations: Citation[]
+  /** Cited ids that resolved to nothing; removed from the text. */
+  unresolved: string[]
+  /** Tagged [GK] by the model, or carrying no citation: rendered as not from a retrieved source (D1). */
+  general_knowledge: boolean
+  prescriptive: boolean
+}
+
+export interface GraphResult {
+  id: string; query: string | null; title: string | null; cypher: string; rows: number
+  distinct: Record<string, number>; names: Record<string, string[]>; truncated: boolean; cited: boolean
+}
+
+export interface CheckedAnswer {
+  sentences: CheckedSentence[]; graph: GraphResult[]
+  tool_errors: { name: string; error: string }[]
+  counts: { sentences: number; cited: number; general_knowledge: number; unresolved: number; prescriptive: number }
+  seconds: number
+}
+
+export interface ToolActivity { id: string; name: string; query: string; done: boolean; ok: boolean; summary: string }
+
+export const TOOL_LABEL: Record<string, string> = {
+  graph_search: 'Knowledge graph', trials_search: 'ClinicalTrials.gov', papers_search: 'PubMed',
+}

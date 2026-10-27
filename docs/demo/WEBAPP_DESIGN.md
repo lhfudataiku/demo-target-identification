@@ -35,12 +35,12 @@ check, are historical material in
 and answer Acts 1–3 as the three sections of one page, *Why trust the list*, with one disease shared by
 both pages; the shortlist gains an evidence review and an evidence assistant. The sections that state
 principles (§4, §6, §8) already carry it, each change marked *planned*. The sections that describe the
-app as built change with the phase that builds it. **Phases 1–6 are built on the preview webapp:** the
+app as built change with the phase that builds it. **Phases 1–7 are built on the preview webapp:** the
 two-page navigation, the shared disease and *Why trust the list* (Phase 1); the shortlist split into the
 list and a tabbed card for the selected candidate, with the *How do we know?* links (Phase 2); and the
 candidate's HGNC identity in that card's header (Phase 3); and the drug records behind the badges
-(Phase 4); the top five SHAP drivers in *Why this ranking?* (Phase 5); and the Trials and Literature
-tabs (Phase 6). §3.3
+(Phase 4); the top five SHAP drivers in *Why this ranking?* (Phase 5); the Trials and Literature
+tabs (Phase 6); and the evidence assistant, with a link to Agent Hub (Phase 7). §3.3
 and the act tables below describe them. The deployed webapp keeps the four act routes until the Phase 8
 switch-over.
 
@@ -189,7 +189,7 @@ a defect (§3.7).
 
 | act | route | view | backend route | backing datasets |
 |---|---|---|---|---|
-| 4 | `/shortlist` (home) | `ShortlistView` → `shortlist/CandidateTable`, `CandidateHeader`, `OverviewTab`, `RankingTab`, `LineageTab` | `GET /api/candidates{,/diseases,/gene,/identity,/drugs,/drivers}`; `GET /api/candidates/sources{,/selection}` | `dashboard_candidates`; from zone S1, `candidate_identity` for `/identity`, `drug_evidence_records` for `/drugs` and `candidate_shap_top5` for `/drivers`; `/sources` searches the CT.gov and PubMed agent tools and reads and writes the folder `act4_evidence_cache` |
+| 4 | `/shortlist` (home) | `ShortlistView` → `shortlist/CandidateTable`, `CandidateHeader`, `OverviewTab`, `RankingTab`, `LineageTab` | `GET /api/candidates{,/diseases,/gene,/identity,/drugs,/drivers}`; `GET /api/candidates/sources{,/selection}`; `POST /api/assistant` | `dashboard_candidates`; from zone S1, `candidate_identity` for `/identity`, `drug_evidence_records` for `/drugs` and `candidate_shap_top5` for `/drivers`; `/sources` searches the CT.gov and PubMed agent tools and reads and writes the folder `act4_evidence_cache`; `/assistant` reads the same sources and the folder, calls the three agent tools and stores nothing |
 | 1 | `/trust?section=graph` | `TrustView` → `trust/GraphSection` | `GET /api/evidence` | `graph_node_type_counts`, `graph_relation_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence` |
 | 2 | `/trust?section=reconstruction` | `TrustView` → `trust/ReconstructionSection` | `GET /api/calibration` | `validation_auc_by_disease`, `family_auc_by_family`, `split_audit_2`, `disease_eligibility`, `persona_enrichment`, `hub_bias_meter`, `orthogonality_scatter`, the `COUNT_RECORDS` metrics of `enriched_dwpc_{GGD,GPGD,GCD}`, + the live champion saved model |
 | 3 | `/trust?section=family` | `TrustView` → `trust/FamilySection` | `GET /api/families`, `/api/families/{id}` | `family_panel_metrics`, `family_panel_overlap`, `family_panel_top50`, `family_panel_programme`, `persona_enrichment`, `demo_panel_config` |
@@ -517,6 +517,7 @@ graph.
 | The drugs behind the badges | Drugs & graph tab · table under the badges | every drug that acts on the gene **and** is recorded for exactly this disease node: name, highest stage, action on the gene, DrugBank id, release. ERBB2 × HER2+: tucatinib (approval), poziotinib (phase 2). An empty table reads *no link in snapshot* |
 | Trials and papers that name the gene | Trials and Literature tabs, searched when either tab is first opened | the records the searches retrieved that name the gene, then up to five of each with a role, a subtype match, a reason and a quote found in the passage; the rest listed below. Counts say *retrieved*, never *all*; a trial's phase or status is never read as efficacy |
 | The mechanism, on the graph | Drugs & graph tab · shared Explorer card with five independent bounded presets | prepared interaction, pathway, molecular-function, biological-process and drug-context queries for the selected disease and gene |
+| Questions about the pair | *Ask about {gene}* under the card's header opens the assistant panel; *Explore in Agent Hub* beside it opens Agent Hub in a new tab | four starter questions and a free one, answered over the graph, CT.gov and PubMed; every sentence shows its citations or the *not from a retrieved source* mark, and every graph result its Cypher |
 | *How do we know?* | the intro row (all three sections); the Overview tab's model box (section 2) and association box (section 1) | links to *Why trust the list*, landing on the section |
 
 **Selection, not two pickers.** Clicking a row in the ranked list drives the header and every tab, and
@@ -553,6 +554,18 @@ dropped and counted; the record stays, unlabelled. Search and selection are cach
 `act4_evidence_cache`, so a second visit reads the file (0.16 s); **Refresh** re-runs it. Measured on
 ERBB2 × HER2+: 3.2 s of searches and 11.4 s of selection, inside the 4 s and 15 s budgets. The
 `prefill_evidence_cache` scenario fills the HER2+ top 20 and SMARCA2 before a demo.
+
+**The assistant answers about the selected pair, and the backend checks every answer** (`DEC-DEMO-004`;
+scope D1). Each question is sent with the pair's identity, its top five drivers, its drug records and its
+cached trials and papers, each with a reference the model must cite. The model may search the graph,
+CT.gov and PubMed itself, at most 8 times in 45 s. When the answer is complete the backend resolves every
+citation to a record or a search result from this answer, removes any that resolve to nothing, marks
+every uncited sentence *not from a retrieved source*, flags prescriptive phrases and attaches each graph
+search's Cypher. The check verifies that a citation exists, not that the sentence is true. Conversations
+live in the page and are lost on reload. Measured on ERBB2 and SMARCA2 × HER2+: 2.9–24.7 s per answer.
+For open exploration, *Explore in Agent Hub* opens a separate Agent Hub webapp running the DSS agent
+`target_evidence_assistant` over the same three tools; it does not know the pair, its answers are not
+checked, and it keeps its own conversation history.
 
 **Why this ranking? lists only the top five drivers** (scope D2). The tab shows the five features with
 the largest SHAP values, each with its sign and size and where this gene's value sits in this disease's
@@ -755,7 +768,7 @@ the pivot matters more than it looks.
 | A discovery-enrichment figure on a summary tile or opening screen | the narrative makes a **reconstruction** claim, not a discovery one; a headline number turns one into the other and the slide is not recoverable in the room | the enrichment lives below the fold in act 4, labelled as an observation, and appears on no tile |
 | A headline number typed into card copy | act 2 carried a literal `1.9%` positive rate and a literal `0.9776` accuracy while their neighbours read live from `data.champion`, so a retrain made one card contradict itself on screen. Two proposed subtitles asserted *"most PPIs are corroborated"* (16.6% are) and *"provenance features dominate"* (path features are collectively larger) — both written from intuition, both false, both plausible enough to survive an eyeball review | every figure in a title, subtitle or note is derived from the payload; a claim that cannot be derived is not made. Where a card figure has a canonical value here, the card matches this document's precision, not its own rounding |
 | Language that prescribes research direction — *"you should pursue…"*, *"the next target is…"* | we are a platform company, not a domain authority. Prescribing costs the room | the app ranks and explains; every verb in the copy is about evidence, never about what to do next |
-| *Planned* (`DEC-DEMO-004`): an assistant sentence from general knowledge rendered like a sourced one | the LLM's background knowledge reads as retrieved evidence, and the careful parts of the demo stop being trusted with it | every sourced sentence cites a record; a general-knowledge sentence is marked *not from a retrieved source* and is never a citation; a graph answer shows its Cypher |
+| *Built, preview webapp* (`DEC-DEMO-004`): an assistant sentence from general knowledge rendered like a sourced one | the LLM's background knowledge reads as retrieved evidence, and the careful parts of the demo stop being trusted with it | every sourced sentence cites a record; a general-knowledge sentence is marked *not from a retrieved source* and is never a citation; a graph answer shows its Cypher |
 | *Built, preview webapp* (`DEC-DEMO-004`): an LLM role label taken on trust | a label with no checkable basis is an unreviewed claim about a paper or trial | every label carries a quote the backend finds in the passage after whitespace normalisation; a label that fails is dropped and the record stays, unlabelled |
 | *Planned*: "no drug" inferred from a missing drug link | drug links are exact-node: lapatinib's and neratinib's approvals sit on *breast cancer*, not on the HER2+ subtype | the copy says *no link in snapshot*, never *no drug* |
 
@@ -779,14 +792,15 @@ the pivot matters more than it looks.
 - **No writes to DSS.** The one exception worth considering later is act 3's clinician review form
   (`breast_shortlist`), and it is out of scope until someone asks. **Exception, built on the preview
   webapp** (`DEC-DEMO-004`): retrieved trials and papers, with their selection, are cached per (disease,
-  gene) pair in the managed folder `act4_evidence_cache`. Assistant conversations are never stored.
+  gene) pair in the managed folder `act4_evidence_cache`. The in-app assistant's conversations are never stored; Agent Hub, a separate
+  webapp linked from the card, stores its own (`DEC-DEMO-004`).
 - **No LLM anything.** A chatbot over a ranked gene list is the kind of thing that makes a careful
   audience stop trusting the careful parts. The template's chat block, like its other optional blocks
   (wizard, charts, flow, documents), was never enabled and was deleted on 2026-10-15, together with the
   `ENABLE_*` flags ([`BLUEPRINT_ALIGNMENT_PLAN.md`](../../archive/BLUEPRINT_ALIGNMENT_PLAN.md), Phase 0). Every routed
   view is an act or Settings. **Exception** (`DEC-DEMO-004`): on the shortlist only, one LLM selection
   step (two calls, one per corpus) picks and labels retrieved trials and papers — built on the preview
-  webapp — and an evidence assistant, still planned, answers over the same sources, both on the terms §6
+  webapp — and an evidence assistant, also built there, answers over the same sources, both on the terms §6
   enforces. The reasoning above still holds everywhere else: no other
   surface uses an LLM.
 

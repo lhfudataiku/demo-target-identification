@@ -58,7 +58,7 @@ chain, the flow migration decided separately, Phase 3 preloaded from Part 1). No
 | 4 | drug lineage | a Group and a Join in S1, two datasets |
 | 5 | top-5 SHAP | two recipes beside the old scoring chain, two datasets |
 | 6 | trials and literature | managed folder, scenario |
-| 7 | evidence assistant | agent |
+| 7 | evidence assistant | a DSS agent and an Agent Hub webapp; the in-app assistant needs none |
 | 8 | verification and switch-over | deploy |
 
 Phases 1 and 2 change no dataset or recipe; Phase 3 adds three objects and changes none. Phases 1–3
@@ -151,10 +151,10 @@ redesign reads them.
 ## 4. Phase 2 — the shortlist on existing data
 
 - Split `ShortlistView.vue` (741 lines) into `components/shortlist/`: `CandidateTable`,
-  `CandidateHeader`, `OverviewTab`, `RankingTab` and `LineageTab`. `EvidenceTab` (trials and
-  literature) and `EvidenceInspector` (kit `Sheet`) are created in Phase 6 and `AssistantSheet` in
-  Phase 7, when they have records to show; until then the Trials and Literature tabs hold an empty
-  state and no empty shell ships.
+  `CandidateHeader`, `OverviewTab`, `RankingTab` and `LineageTab`. `SourcesTab` (the Trials and
+  Literature tabs) is created in Phase 6 and `AssistantSheet` (kit `Sheet`) in Phase 7, when they have
+  records to show; until then the Trials and Literature tabs hold an empty state and no empty shell
+  ships.
 - Kit parts only: `Tabs`, `Sheet`, `Collapsible`, `Pagination`, `Badge`, `StatusBadge`, `Table`,
   `Skeleton`, `Alert`, `Textarea`. Remove the inline style colours (`seriesVar`) from the moved code.
 - `ActCard` stays, because `VisualGraphExplorerCard` wraps it: move its accent tints from computed
@@ -359,8 +359,8 @@ The selection step alone fell from a median 12.2 s (max 18.3 s) to 6.4 s (max 10
 branch-per-query agent quoted raw CT.gov JSON that the check could not find, picked twice a record not
 naming the gene, and ranked nothing across branches; the one-LLM agent added its own runtime to the same
 call. Picks are themselves variable: the first build shared 55% of its picks with its own second run, and
-the adopted design 61% with the first build's. Whether Phase 7's assistant calls this selection as a tool
-is decided in Phase 7.
+the adopted design 61% with the first build's. Phase 7's assistant does not call this selection; it
+reads the pair's cache (§9).
 
 ### Cache and pre-fill
 
@@ -391,19 +391,133 @@ is decided in Phase 7.
 design**, not exercised live; every rendered quote is a substring of its passage — **met** (10 of 10 for
 ERBB2). Still to do: deploy, run the pre-fill, and decide the alias-versus-name query.
 
-## 9. Phase 7 — evidence assistant *(DSS: agent)*
+## 9. Phase 7 — evidence assistant *(DSS: an agent and an Agent Hub webapp)*
 
-- A DSS agent with tools `b6Rpbve`, `4I2L6YL` and `FNxhpfF`, called through the LLM Mesh
-  (`agent:<id>`) from `POST /api/assistant`, streaming.
-- Every call carries the selected pair, its HGNC identity, top-5 SHAP, drug records and the cached
-  evidence records, so most answers need no new search.
-- Answer contract: every sourced sentence cites a record (`T1`, `P2`, `D1`, `G`, `M`); a sentence from
-  general knowledge is rendered as *not from a retrieved source* (D1); graph answers show the generated
-  Cypher; no prescriptive language. No conversation is stored.
-- Before acceptance, run ten fixed graph questions and record where text-to-Cypher is directed, ignores
-  limits or returns implausible edges.
-- **Done when:** the starter questions answer with working citations on ERBB2 and SMARCA2, every
-  general-knowledge line is marked, and every graph answer shows its Cypher.
+**Revised 2026-10-27.** Two surfaces over the same three tools — graph search `b6Rpbve`, CT.gov `4I2L6YL`
+and PubMed `FNxhpfF` — for two jobs:
+
+| | in-app assistant (7a) | Agent Hub (7b) |
+|---|---|---|
+| job | answer questions about **the selected pair**, with every answer checked | open exploration of the graph and the literature |
+| where | a panel on the shortlist's candidate card | Agent Hub's own webapp, opened from the card in a new tab |
+| runs | a tool-calling loop in the webapp backend (bs-blueprint's `agent_loop.py` pattern) | a DSS tool-using agent, chatted with through Agent Hub |
+| knows the pair | yes: the backend sends it with every question | no: the user names the gene and disease |
+| answer contract (D1) | enforced by the backend after each answer | asked for in the agent's prompt only |
+| graph results | names and counts, with the generated Cypher | Agent Hub's graph view, if the installed version renders it |
+
+**Why not one DSS agent for both** (findings, 2026-10-27):
+- **Agent Hub cannot be embedded with the pair.** Its routes are its home page, the agent library,
+  `/conversations/:id`, its dashboard and its admin pages; nothing in the URL selects an agent, fills in a
+  question or passes context. Its "allowed embed origins" setting controls which links render *inside*
+  its answers, not who may embed it. Agent Hub renders its own answers, so the backend cannot check them.
+- **A DSS agent called from the backend** may not pass its tools' outputs (the generated Cypher, the
+  records it retrieved) through to the caller, and its tools' outputs cannot be trimmed: graph search
+  returned up to 191 KB per answer. A loop in the backend sees and trims every tool output.
+- **bs-blueprint builds assistants this way**: its starter's chat and Case manager blocks run the loop
+  in the backend over the LLM Mesh and have no Agent Hub integration.
+
+### Graph search, tested (ten fixed questions, 2026-10-27)
+
+Asked of `b6Rpbve` about ERBB2, SMARCA2 and HER2+, and checked against `graph_edges`: **all ten answers
+correct**, nothing extra or missing (counts, lists and a yes/no). Four behaviours shape both surfaces:
+- **No requested limit reaches the query** (0 of 4): "at most 5" returned 107 proteins.
+- **Interaction edges come back twice**, because they are stored both ways (214 rows for 107 partners).
+- **Seven of ten queries used `->`**, always in the direction the edge is stored, so they were correct; a
+  query against the stored direction would return no rows, which a yes/no question reads as "no".
+- Answers took 2.0–7.4 s and returned up to **191 KB** of nodes and edges. The tool's description is
+  "no description provided", so a model calling it learns nothing about the graph from the tool itself.
+
+### 7a — the in-app assistant
+
+- **`POST /api/assistant`**, streamed as server-sent events by FastAPI's own `StreamingResponse`
+  (`backend/routes/assistant.py`), so no SSE library is added: the body carries the pair, the question
+  and the conversation so far. **Nothing is stored**: the page holds the history and loses it on reload
+  or when another pair is selected.
+- **The loop** (`backend/services/assistant.py`): the LLM Mesh model `gpt-5.6-terra` through the LLM
+  Mesh's native tool calling (`dataiku` completion with `tools` set, streamed), calling the three DSS
+  agent tools directly; no LangChain. Each round's tool calls run in parallel. Limits, set after the
+  tests below:
+  - at most 6 tool rounds and 8 searches per answer; a search past the budget returns an error the
+    model reads;
+  - 25 s per search and 45 s per answer, after which the model answers with what it has, without tools;
+  - graph searches run one at a time, because concurrent calls to `b6Rpbve` returned no output;
+  - the prompt asks for one relationship, or one chain, per graph search.
+  Every tool output is trimmed before the model reads it: graph search to its Cypher plus the distinct
+  nodes by type and the row count (at most 50 names per type); a Cortex search to id, title and the text
+  around the gene's mentions, as Phase 6 sends. A tool that returns no output counts as a failed call.
+- **What the model is told with every question**: the pair, its HGNC identity, its top-5 SHAP drivers
+  (`M`), its drug records (`D1…`), the Phase 6 trials and papers from the cache (`T1…`, `P1…`; none if the
+  pair is not cached), a short graph schema (node labels, edge tables, which are stored both ways), and
+  the answer contract.
+- **The answer contract, checked by the backend when the answer is complete:**
+  - a sourced sentence cites `T…`, `P…`, `D…`, `M`, a graph result `G1…` from this answer, or an NCT or
+    PubMed id retrieved during this answer;
+  - a citation that resolves to nothing is removed and its sentence marked;
+  - a sentence tagged `[GK]`, or with no citation, renders as *not from a retrieved source* (D1);
+  - every graph result shows its Cypher;
+  - prescriptive phrases (*"you should"*, *"we recommend"*, *"the next target"*) are flagged.
+- **Events**: text as it arrives, each tool call as it starts and ends, then one checked answer that
+  replaces the streamed text.
+- **Panel** (`AssistantSheet`, a kit `Sheet` opened from the candidate card): four starter questions
+  built from the pair — what is known about the gene in this disease; which drugs act on it and for which
+  diseases; how it connects in the graph to the genes already linked to the disease; which trials select
+  patients by it — and a free question box. Each sentence shows its citations (trials and papers link
+  out), the *not from a retrieved source* mark, or an unresolved or prescriptive flag; each graph result
+  opens to its names and its Cypher.
+- No new dependency: the loop uses the `dataiku` client and FastAPI already in the code env.
+
+**Measured, 2026-10-27** (the four starter questions on ERBB2 and SMARCA2 × HER2+, run through the
+service, four runs as the limits were set):
+
+| run | change before it | slowest answer | what went wrong |
+|---|---|---|---|
+| 1 | first build | 111 s | compound graph queries: one returned 609 rows and exceeded the tool's output limit |
+| 2 | one relationship per graph search | 95 s | one answer made 24 searches, one per drug, in sequence |
+| 3 | parallel calls, 8-search budget, time limits | 28.8 s | 20 of those 24 calls refused by the budget, answer still completed; concurrent graph searches returned no output |
+| 4 | graph searches one at a time | **24.7 s** | none |
+
+Run 4: answers took 2.9–24.7 s, with 0 to 4 searches each; 0 tool failures, 0 unresolved citations and
+0 prescriptive flags over 25 sentences, of which 4 were marked general knowledge. Two answers needed
+no search: they answered from the pair's context (drivers, drug records, cached trials and papers).
+**The check verifies citations, not truth.** Three cases from run 4:
+- In the ERBB2 drug answer, "the graph identifies six ERBB2-targeting drugs" read a query that kept only
+  drugs with a recorded indication, so it left out poziotinib, which the next sentence names from the
+  drug records. The sentence cited nothing, so it was marked general knowledge although it came from the
+  graph.
+- In the SMARCA2 trials answer, a trial written as a list item with its NCT id in bold, not in brackets,
+  was marked general knowledge: the check reads bracketed citations only.
+- The same answer that miscounted also ran one graph search twice, unchanged; searches are not
+  deduplicated within an answer.
+
+The assistant does not call Phase 6's selection pass as a tool; it reads the pair's cache, so an
+uncached pair gets no `T…` or `P…` references and searches CT.gov and PubMed itself.
+
+### 7b — the DSS agent and Agent Hub
+
+- **Agent** `target_evidence_assistant` (`fPXQIUJr`) in `DEMO_TARGET_IDENTIFICATION`: a tool-using agent
+  with the three tools and `gpt-5.6-terra`, at most 6 iterations; its prompt carries the same graph
+  schema and asks for the same contract (cite NCT and PubMed ids, mark general knowledge, show the
+  Cypher). Interaction logging off. Tested in DSS on 2026-10-27: a graph question (which drugs act on
+  ERBB2) answered in 29 s with the 23 drugs `graph_edges` holds and its Cypher; a literature question
+  in 6 s with PubMed ids.
+- **Agent Hub webapp** `bFyW6D2` in `DEMO_TARGET_IDENTIFICATION`, created from the `agent-hub` plugin.
+  Inside a container Agent Hub refuses SQLite, so it stores its data, **conversations included**, in the
+  PostgreSQL connection `local_dku_pg` under the table prefix `agenthub_`. The instance's plugin is now
+  **1.7.2**, which carries the graph view (`GraphArtifactDisplay`) found in the source; whether it shows
+  graph search results as a graph is checked in the browser. The agent is enabled in Agent Hub's admin
+  settings by the user.
+- **Link**: *Explore in Agent Hub* on the candidate card opens the Agent Hub webapp in a new tab, at its
+  home page; its address comes from `app.env` (`VITE_AGENT_HUB_PROJECT_KEY`, `VITE_AGENT_HUB_OBJECT_ID`
+  = `bFyW6D2_agent-hub`), built as the Graph Explorer's is. Empty values hide the link.
+
+**Done when:**
+- 7a: the four starter questions on ERBB2 and SMARCA2 × HER2+ answer with citations that all resolve;
+  every uncited sentence is marked; every graph result shows its Cypher; a tool failure shows in the
+  panel and the answer still completes; answers stay under 30 s. *Met in the service test (run 4, and
+  run 3 for tool failures); deployed to the preview webapp 2026-10-27, not yet tried in the browser.*
+- 7b: the agent answers a graph question and a literature question in Agent Hub, and the card's link
+  opens it; whether graph results render as a graph is recorded for 1.7.2. *The agent answers both in
+  DSS; Agent Hub, the link and the graph view await the browser check.*
 
 ## 10. Phase 8 — verification and switch-over *(DSS: deploy)*
 

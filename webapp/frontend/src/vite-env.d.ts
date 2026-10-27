@@ -15,6 +15,8 @@ interface ImportMetaEnv {
   readonly VITE_VISUAL_GRAPH_PROJECT_KEY?: string
   readonly VITE_VISUAL_GRAPH_WEBAPP_ID?: string
   readonly VITE_VISUAL_GRAPH_OBJECT_ID?: string
+  readonly VITE_AGENT_HUB_PROJECT_KEY?: string
+  readonly VITE_AGENT_HUB_OBJECT_ID?: string
 }
 
 interface ImportMeta {
