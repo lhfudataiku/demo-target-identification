@@ -88,3 +88,51 @@ export const TRUST_LINKS = [
   { section: 'reconstruction', label: '2 · How well it reconstructs this disease' },
   { section: 'family', label: '3 · Does it hold across the family' },
 ] as const
+
+/** `/api/candidates/sources`: what the six searches returned for the pair, after de-duplication
+    and the mention filter. No LLM has touched it. */
+export type Corpus = 'trials' | 'papers'
+
+export interface SourceRecord {
+  id: string; title: string | null; url: string | null; score: number | null; query: string
+  /** Where the gene's symbol or a safe alias was found. */
+  mention: 'title' | 'passage'
+  passage: string
+  status?: string | null; phases?: string | null; study_type?: string | null
+  conditions?: string | null; sponsor?: string | null
+}
+
+export interface CorpusResult {
+  records: SourceRecord[]; retrieved: number
+  dropped: { no_mention: number; reference_only: number }
+  /** Set when every call to this corpus failed. */
+  error: string | null
+  partial_failures: string[]
+}
+
+export interface SourcesDoc {
+  context: { symbol: string; aliases: string[]; disease_name: string; anchor_name: string | null }
+  search: { queries: string[]; retrieved_at: string; search_seconds: number; trials: CorpusResult; papers: CorpusResult }
+  cached: boolean
+}
+
+/** One label from the selection pass, already checked by the backend: the id is a retrieved
+    record, the enums are valid and the quote is in that record's passage (scope D4). */
+export interface Pick { id: string; role: string; subtype_match: 'exact' | 'broader' | 'other'; reason: string; quote: string }
+
+export interface Selection {
+  trials: Pick[]; papers: Pick[]
+  dropped: { corpus: Corpus; id: string | null; reason: string }[]
+  /** Trials and papers are selected by two separate calls; a corpus whose call failed is named here. */
+  errors?: Partial<Record<Corpus, string>>
+  selected_at: string; model: string; select_seconds: number; note?: string
+}
+
+export const ROLE_LABEL: Record<string, string> = {
+  intended_target: 'Intended target', selection_biomarker: 'Selection biomarker',
+  functional_evidence: 'Functional evidence', association: 'Association',
+  conflicting_finding: 'Conflicting finding', contextual_mention: 'Mentioned',
+}
+export const SUBTYPE_LABEL: Record<Pick['subtype_match'], string> = {
+  exact: 'This disease', broader: 'Broader disease', other: 'Other disease',
+}

@@ -28,6 +28,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from .routes.candidates import router as candidates_router
+from .routes.sources import router as sources_router
 from .routes.evidence import router as evidence_router
 from .routes.calibration import router as calibration_router
 from .routes.families import router as families_router
@@ -86,6 +87,7 @@ def configure(app: FastAPI) -> None:
     )
 
     app.include_router(system_router)
+    app.include_router(sources_router)
     app.include_router(candidates_router)
     app.include_router(evidence_router)
     app.include_router(families_router)

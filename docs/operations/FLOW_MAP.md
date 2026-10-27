@@ -170,7 +170,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `candidates_annotated` | — | `join_dashboard_annotations` | 1 | intermediate |
-| `dashboard_candidates` | nb6, nb7, **webapp:routes/candidates** | `finalize_dashboard_candidates` | 1 | webapp |
+| `dashboard_candidates` | nb6, nb7, **webapp:prefill**, **webapp:routes/candidates**, **webapp:services/pair_sources** | `finalize_dashboard_candidates` | 1 | webapp |
 | `disease_pool_sizes` | — | `count_candidates_per_disease` | 1 | intermediate |
 | `persona2_scored` | — | `score_persona_candidates` | 1 | intermediate |
 | `persona2_scored_shap` | — | `compute_top_shap_drivers_1` | 1 | intermediate |
@@ -241,7 +241,7 @@ _No datasets in this zone._
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
-| `candidate_identity` | **webapp:routes/candidates** | `join_candidate_identity` | 0 | webapp |
+| `candidate_identity` | **webapp:routes/candidates**, **webapp:services/pair_sources** | `join_candidate_identity` | 0 | webapp |
 | `candidate_shap_top5` | **webapp:routes/candidates** | `compute_shap_top5` | 0 | webapp |
 | `drug_evidence_records` | **webapp:routes/candidates** | `join_drug_evidence_records` | 0 | webapp |
 | `drug_protein_actions` | — | `group_drug_protein_actions` | 1 | intermediate |

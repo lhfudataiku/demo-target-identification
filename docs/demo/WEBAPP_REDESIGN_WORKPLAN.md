@@ -295,51 +295,101 @@ which sets every rank. Its `top_shap_drivers` string reaches `dashboard_candidat
 
 ## 8. Phase 6 — trials and literature *(DSS: cache folder, pre-fill scenario)*
 
+**Built 2026-10-26/27 on the preview webapp; not yet deployed or pre-filled.** The code is
+`backend/services/pair_sources.py` (search, selection, cache), `backend/routes/sources.py`
+(`GET /api/candidates/sources` and `/sources/selection`), `backend/prefill.py` and
+`frontend/src/components/shortlist/SourcesTab.vue`, which serves both the Trials and the Literature tab.
+Nothing runs when a row is clicked: the search starts when one of the two tabs is first opened for the
+pair (D3).
+
 ### Step 1 — search, no LLM
 
-1. Build three queries per corpus from `candidate_identity` (Phase 3) and the pair: `symbol + anchor_name`,
-   `symbol + disease_name`, `symbol + up to two safe aliases + anchor_name`. Aliases shorter than four
-   characters or matching a common word are excluded (*NEU*, *BRM*). A disease without an anchor uses
-   `disease_name`.
-2. Run the six calls in parallel through the DSS agent-tool API (`get_project()`), each with a timeout.
-3. De-duplicate by NCT_ID or PMID, keeping the best-scoring chunk.
-4. Keep a record only if the symbol or an approved alias appears in its passage or title, and drop it
-   when the only mention is in a reference list.
-5. Return records at once, with `selection: pending`.
+1. Three queries per pair, each leading with the gene: `symbol + anchor`, `symbol + disease_name`,
+   `symbol + two safe aliases + anchor`. The anchor is the disease's family head, the nearest of 137
+   Hetionet DO-Slim terms up the MONDO hierarchy (`compute_disease_family_id`; *breast cancer* for HER2+
+   and TNBC). A disease without one uses `disease_name`. A safe alias, from HGNC's alias and previous
+   symbols, is at least four letters or digits once hyphens are removed and not an English word, which
+   excludes *NEU* and *BRM*.
+2. The six calls run in parallel through the agent tools `4I2L6YL` (CT.gov, 5 results) and `FNxhpfF`
+   (PubMed, 10), each with a 10 s timeout. A failing call is reported for its corpus only.
+3. De-duplicated by NCT_ID or PMID, keeping the best reranker score. CT.gov chunks are JSON of study
+   modules and are flattened to their text, so the model quotes and the check verifies the same text.
+4. A record is kept only if the symbol or a safe alias appears in its title, or in its passage outside a
+   citation (no *et al.*, DOI, PMID or journal-volume pattern within 150 characters of the mention).
 
-### Step 2 — one selection pass (LLM Mesh)
+**What was tested and not adopted** (search only, no LLM; 9 pairs over HER2+, TNBC and lung
+adenocarcinoma; each returned record checked for the gene, the selected disease and the anchor):
 
-- Input: pair context (symbol, HGNC name, aliases, disease, anchor) and the filtered records (id,
-  title, passage, metadata). Passages are wrapped as data, never as instructions.
-- Output, schema-validated JSON: up to 5 trials and 5 papers, each with `id`, `role`, `subtype_match`
-  (`exact` / `broader` / `other`), a reason of at most 25 words, and `quote`.
-- Roles. Trials: `intended_target`, `selection_biomarker`, `contextual_mention`. Papers:
-  `functional_evidence`, `association`, `conflicting_finding`, `contextual_mention`.
-- Prompt rules: choose only from the given records; quote verbatim; prefer the selected subtype, then
-  the anchor disease; never infer efficacy from phase or status; never recommend research direction.
-- Backend checks: `id` in the candidate set; enums valid; `quote` a substring of the whole passage
-  after whitespace normalisation, never of a sentence split. A failing label is dropped (D4).
+| question | finding | outcome |
+|---|---|---|
+| Is `symbol + disease_name` the more accurate query? | most disease-specific (97% of papers name the disease) but least gene-specific (44% name the gene, against 82% for `symbol + anchor`); for HER2+ novel genes 0%, because the disease name contains a gene name. It still finds the most records naming both | all three queries kept: each finds records the others miss |
+| Does the HGNC full name help (`name + disease_name`)? | as accurate as `symbol + disease_name` alone, but finds different records: swapping it for the alias query raises papers naming gene and disease from 60 to 74 at six searches | **open**: not adopted pending a decision |
+| Can Cortex filter natively? | the plugin tool exposes no filter. A Knowledge Bank over the existing service (DSS 15.0+) passes filters, but the services filter only on trial type, status, phase, sponsor, sex and bibliographic fields, all `TEXT` with no substring match | not used: nothing filters on gene or disease |
+| PubMed at 5 results per call? | results 6–10 are as relevant as 1–5 (68% name the gene in both), so 5 halves the relevant papers (14.6 → 7.8 per pair) and did not speed up ERBB2's selection | kept at 10 |
+
+### Step 2 — selection (LLM Mesh)
+
+- **Two calls in parallel**, one for the trials and one for the papers, each over the passages trimmed to
+  500 characters either side of every gene mention (excerpts joined by " … "; a record kept for a title
+  mention sends its first 1,000 characters). Model `openai:bs-llm-connection:gpt-5.6-terra`, the one
+  graph search uses; strict JSON schema output.
+- Output per corpus: up to 5 records, each with `id`, `role`, `subtype_match` (`exact` / `broader` /
+  `other`), a reason (cut to 25 words) and `quote`. Roles as planned: trials `intended_target`,
+  `selection_biomarker`, `contextual_mention`; papers `functional_evidence`, `association`,
+  `conflicting_finding`, `contextual_mention`.
+- Prompt rules as planned, plus: a quote comes from within one excerpt. Records are wrapped in
+  `<record>` tags as data.
+- Backend checks, unchanged: `id` among the records sent; enums valid; no duplicate; `quote` a
+  substring of the record's **full** passage after whitespace normalisation. A failing label is dropped
+  and counted on the page. A corpus whose call fails is named in `errors` and its records shown
+  unlabelled; the other corpus keeps its labels.
+
+**Why two calls, not one, and not an agent** (2026-10-27; ERBB2 and SMARCA2 × HER2+, EGFR × lung
+adenocarcinoma, RAD50 × TNBC; two runs each; end-to-end time; every option's picks through the same
+backend check):
+
+| design | median | slowest | runs over 15 s | picks passing the check |
+|---|--:|--:|--:|--:|
+| one call over whole passages (first build) | 14.9 s | 21.0 s | 4 of 8 | 54 of 59 |
+| **two calls in parallel over trimmed passages (adopted)** | **8.9 s** | **13.2 s** | **0 of 8** | 54 of 61 |
+| structured agent: 6 branches of search → LLM, merged in Python | 12.4 s | 17.2 s | 1 of 8 | 50 of 67 |
+| structured agent: 6 searches → Python filter → one LLM | 17.9 s | 26.4 s | 6 of 8 | 48 of 56 |
+
+The selection step alone fell from a median 12.2 s (max 18.3 s) to 6.4 s (max 10.5 s). The
+branch-per-query agent quoted raw CT.gov JSON that the check could not find, picked twice a record not
+naming the gene, and ranked nothing across branches; the one-LLM agent added its own runtime to the same
+call. Picks are themselves variable: the first build shared 55% of its picks with its own second run, and
+the adopted design 61% with the first build's. Whether Phase 7's assistant calls this selection as a tool
+is decided in Phase 7.
 
 ### Cache and pre-fill
 
-- Folder `act4_evidence_cache` in zone `S1 Shortlist` (D15), one JSON file per pair:
-  `{disease_index}/{gene_index}.json`, holding the queries, raw and filtered records, the selection,
-  `retrieved_at` and `selected_at`.
-- Versions inside the file (tool config, query builder, prompt, model id); any mismatch is a miss.
-- One uvicorn worker (bs-blueprint rule), so a per-pair in-process lock prevents duplicate runs.
-- A **Refresh** control re-runs the pair.
-- Pre-fill scenario for the HER2+ top 20: 120 Cortex calls (six per pair) and 20 selection calls.
+- Folder `act4_evidence_cache` (`CB9xqCGg`) in zone `S1 Shortlist` (D15), managed storage, one JSON file
+  per pair at `{disease_index}/{gene_index}.json`: context, queries, the records by corpus, the
+  selection, `retrieved_at` and `selected_at`.
+- `VERSIONS` in the file (each tool's `max_documents`, query rules, filter, prompt, model); any
+  difference is a miss. `max_documents` is set in DSS, so the stamp must change by hand when it does.
+- A per-pair lock stops two requests running the same pair (one uvicorn worker). **Refresh** re-runs the
+  search and the selection and overwrites the file.
+- Scenario `prefill_evidence_cache`, inactive, no trigger: one Python step that imports
+  `backend/prefill.py` from the **preview** webapp's library code (`target_prioritizer_next`) and fills
+  HER2+ ranks 1–20 as the shortlist opens, plus SMARCA2 (ERBB2 is rank 14): 21 pairs. A pair with a
+  current file is read, not re-run; a failure is reported per pair and turns the run red. It runs only
+  after a deploy that carries `prefill.py`, and at the Phase 8 switch-over its `LIB_NS` and `APP_PREFIX`
+  must follow the live webapp's.
 
-### Budgets
+### Budgets, measured
 
-| step | budget | basis |
+| step | budget | measured |
 |---|--:|---|
-| searches (6 in parallel) | ≤ 4 s | 2.2 s tool time each, measured |
-| selection pass | ≤ 15 s | not yet measured; this phase measures it |
-| warm read | ≤ 0.5 s | not yet measured |
+| searches (6 in parallel) | ≤ 4 s | 2.4–3.9 s over 26 runs; one cold run 8.4 s |
+| selection | ≤ 15 s | ERBB2 6.3, 8.1, 11.4 s; SMARCA2 5.0, 5.5 s; slowest of the 8 comparison runs 10.5 s |
+| warm read | ≤ 0.5 s | 0.12–0.16 s from the folder |
 
-**Done when:** a cold ERBB2 or SMARCA2 selection meets both budgets; a warm one is instant; a tool
-failure shows inside its tab only; every rendered quote is a substring of its passage.
+**Done when:** a cold ERBB2 or SMARCA2 selection meets both budgets — **met** (ERBB2 3.2 s + 11.4 s,
+2026-10-27); a warm one is instant — **met** (0.16 s); a tool failure shows inside its tab only — **by
+design**, not exercised live; every rendered quote is a substring of its passage — **met** (10 of 10 for
+ERBB2). Still to do: deploy, run the pre-fill, and decide the alias-versus-name query.
 
 ## 9. Phase 7 — evidence assistant *(DSS: agent)*
 

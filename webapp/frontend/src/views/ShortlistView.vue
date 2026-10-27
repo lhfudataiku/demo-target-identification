@@ -14,20 +14,20 @@
    *  - every count carries its rank cut-off;
    *  - the app ranks and explains; no copy recommends what to pursue.
    *
-   * Trials and literature (Phase 6), per-drug records (Phase 4), HGNC identity
-   * (Phase 3) and the evidence assistant (Phase 7) join these tabs later.
+   * The evidence assistant (Phase 7) joins these tabs later.
    */
   import { computed, nextTick, onMounted, ref, watch } from 'vue'
   import { storeToRefs } from 'pinia'
   import { Button, Card, CardContent, Tabs, TabsContent, TabsList, TabsTrigger } from '@dataiku/ea-ui-kit'
-  import { Microscope, News, Pulse } from '@dataiku/vue-icons'
+  import { Microscope } from '@dataiku/vue-icons'
   import { EmptyState, PageHeader } from 'bs-blueprint'
   import CandidateHeader from '@/components/shortlist/CandidateHeader.vue'
   import CandidateTable from '@/components/shortlist/CandidateTable.vue'
   import LineageTab from '@/components/shortlist/LineageTab.vue'
   import OverviewTab from '@/components/shortlist/OverviewTab.vue'
   import RankingTab from '@/components/shortlist/RankingTab.vue'
-  import { TRUST_LINKS, type Detail, type Drivers, type Payload, type Row } from '@/components/shortlist/types'
+  import SourcesTab from '@/components/shortlist/SourcesTab.vue'
+  import { TRUST_LINKS, type Detail, type Drivers, type Payload, type Row, type Selection, type SourcesDoc } from '@/components/shortlist/types'
   import { useSelectionStore } from '@/stores/selection'
   import { apiUrl } from '@/utils/api'
 
@@ -83,12 +83,14 @@
   // percentiles are computed against the disease's whole pool, not the filtered one.
   watch(diseaseIndex, () => {
     sel.value = null; detail.value = null; detailError.value = null; drivers.value = null; driversError.value = null
+    resetSources()
   })
 
   async function select(r: Row) {
     if (diseaseIndex.value === undefined) return
     sel.value = r
     tab.value = 'overview'
+    resetSources()
     detail.value = null
     detailError.value = null
     detailBusy.value = true
@@ -124,6 +126,54 @@
       pane.value.scrollTop += card.getBoundingClientRect().top - pane.value.getBoundingClientRect().top - 16
     })
   }
+
+  // Trials and literature are searched ON DEMAND for the selected pair only (scope D3): nothing
+  // runs when a row is clicked, only when the Trials or Literature tab is opened. The search
+  // answers first and renders; the LLM selection pass fills in after. Both are cached per pair in
+  // DSS, so a second visit reads the cache.
+  const sources = ref<SourcesDoc | null>(null)
+  const sourcesError = ref<string | null>(null)
+  const selection = ref<Selection | null>(null)
+  const selectionError = ref<string | null>(null)
+  const sourcesBusy = ref(false)
+  let sourcesFor: number | null = null
+
+  function resetSources() {
+    sources.value = null; sourcesError.value = null; selection.value = null; selectionError.value = null
+    sourcesFor = null
+  }
+
+  async function getJson(path: string) {
+    const res = await fetch(apiUrl(path))
+    const body = await res.json().catch(() => null)
+    if (!res.ok) throw new Error(body?.detail ?? `HTTP ${res.status}`)
+    return body
+  }
+
+  async function loadSources(refresh = false) {
+    if (!sel.value || diseaseIndex.value === undefined) return
+    const forGene = sel.value.gene_index
+    if (!refresh && sourcesFor === forGene) return
+    resetSources(); sourcesFor = forGene; sourcesBusy.value = true
+    const q = new URLSearchParams({ disease: String(diseaseIndex.value), gene: String(forGene), refresh: String(refresh) })
+    try {
+      const doc = await getJson(`/api/candidates/sources?${q}`)
+      if (sourcesFor !== forGene) return
+      sources.value = doc
+      if (doc.selection && !refresh) { selection.value = doc.selection; return }
+      try {
+        const s = await getJson(`/api/candidates/sources/selection?${q}`)
+        if (sourcesFor === forGene) selection.value = s.selection
+      } catch (e) {
+        if (sourcesFor === forGene) selectionError.value = e instanceof Error ? e.message : String(e)
+      }
+    } catch (e) {
+      if (sourcesFor === forGene) sourcesError.value = e instanceof Error ? e.message : String(e)
+    } finally {
+      if (sourcesFor === forGene) sourcesBusy.value = false
+    }
+  }
+  watch(tab, (t) => { if (t === 'trials' || t === 'literature') loadSources() })
 
   // The top-5 SHAP drivers are their own request (a second scoring run, scope D2): if it fails,
   // the Overview and Ranking tabs say so and everything else still works. Both tabs read this one
@@ -199,13 +249,10 @@
                 <TabsContent value="ranking" class="pt-4">
                   <RankingTab :drivers="drivers" :pool-size="detail?.pool_size ?? null" :busy="driversBusy" :error="driversError" />
                 </TabsContent>
-                <TabsContent value="trials" class="pt-4">
-                  <EmptyState :icon="Pulse" title="Clinical trials are not retrieved yet"
-                              :description="`Trials that mention ${sel.gene_name} will be listed here with their source and the passage that names the gene.`" />
-                </TabsContent>
-                <TabsContent value="literature" class="pt-4">
-                  <EmptyState :icon="News" title="Literature is not retrieved yet"
-                              :description="`Papers that mention ${sel.gene_name} will be listed here with their source and the passage that names the gene.`" />
+                <TabsContent v-for="c in (['trials', 'literature'] as const)" :key="c" :value="c" class="pt-4">
+                  <SourcesTab :corpus="c === 'trials' ? 'trials' : 'papers'" :doc="sources" :doc-error="sourcesError"
+                              :selection="selection" :selection-error="selectionError" :busy="sourcesBusy"
+                              @refresh="loadSources(true)" />
                 </TabsContent>
                 <TabsContent value="lineage" class="pt-4">
                   <LineageTab :row="sel" :disease-index="diseaseIndex" :disease-name="diseaseName" />
