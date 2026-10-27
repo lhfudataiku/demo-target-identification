@@ -231,7 +231,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `known_drug_truth` | nb2, nb4 | `compute_known_drug_truth` | 2 | notebook |
 | `pool_reachability` | nb2 | `compute_pool_reachability` | 0 | notebook |
 
-## Default  (0 datasets, 0 recipes)
+## Agent  (0 datasets, 0 recipes)
 
 Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.UBUlwwxT`
 

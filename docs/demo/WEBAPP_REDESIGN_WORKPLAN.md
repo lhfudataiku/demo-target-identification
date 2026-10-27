@@ -6,8 +6,9 @@
 > dependencies:** none · **Excludes:** the decisions, measurements and target design, which are
 > [`WEBAPP_REDESIGN_SCOPE.md`](WEBAPP_REDESIGN_SCOPE.md) and are referenced here by their ids (D1–D15).
 
-**Status: DRAFT — 2026-10-25, revised 2026-10-26 (a second webapp, Phase 5 beside the old scoring
-chain, the flow migration decided separately, Phase 3 preloaded from Part 1). Not approved; no phase has started.**
+**Status: EXECUTED through Phase 8 — switched over 2026-10-27** (drafted 2026-10-25, revised 2026-10-26).
+The redesign serves the original webapp (`OlmPX9a`). The plan is done, and moves to `archive/`, once the
+user deletes the preview webapp (`Oo689ic`) and its library folder (§10).
 
 ## 1. How the work runs
 
@@ -246,7 +247,8 @@ existing flags and `compute_drug_evidence_pairs` are not touched.
 - **Tab.** Drugs & graph lists drug, highest stage for this disease, action on the gene and DrugBank id,
   under the badges; its request is its own, so a failure leaves the badges and the Explorer working.
 - **Done:** ERBB2 × HER2+ lists tucatinib (approval, inhibitor) and poziotinib (phase 2, inhibitor),
-  read through the route against the live dataset; the check passes over every pair. Not yet deployed.
+  read through the route against the live dataset; the check passes over every pair. Live since the
+  Phase 8 switch-over.
 
 ## 7. Phase 5 — top-5 SHAP *(DSS: two recipes beside the old chain)*
 
@@ -291,11 +293,11 @@ which sets every rank. Its `top_shap_drivers` string reaches `dashboard_candidat
 - **Done:** predictions equal on every pair; no existing recipe or dataset changed; ERBB2 × HER2+ shows
   five drivers, with SHAP and percentile within HER2+: `dwpc_GBGD` +1.30 (99.7), `dwpc_GPGD` +1.13
   (99.1), `ppi_multi_source_frac` +0.71 (70.8), `dwpc_GFGD` +0.67 (98.9), `ppi_adamic_adar` +0.60 (99.3).
-  Not yet deployed.
+  Live since the Phase 8 switch-over.
 
 ## 8. Phase 6 — trials and literature *(DSS: cache folder, pre-fill scenario)*
 
-**Built 2026-10-26/27 on the preview webapp; not yet deployed or pre-filled.** The code is
+**Built 2026-10-26/27 on the preview webapp; live since the Phase 8 switch-over.** The code is
 `backend/services/pair_sources.py` (search, selection, cache), `backend/routes/sources.py`
 (`GET /api/candidates/sources` and `/sources/selection`), `backend/prefill.py` and
 `frontend/src/components/shortlist/SourcesTab.vue`, which serves both the Trials and the Literature tab.
@@ -373,11 +375,11 @@ reads the pair's cache (§9).
 - A per-pair lock stops two requests running the same pair (one uvicorn worker). **Refresh** re-runs the
   search and the selection and overwrites the file.
 - Scenario `prefill_evidence_cache`, inactive, no trigger: one Python step that imports
-  `backend/prefill.py` from the **preview** webapp's library code (`target_prioritizer_next`) and fills
+  `backend/prefill.py` from the live webapp's library code (`target_prioritizer`; it read the preview's
+  `target_prioritizer_next` until the Phase 8 switch-over) and fills
   HER2+ ranks 1–20 as the shortlist opens, plus SMARCA2 (ERBB2 is rank 14): 21 pairs. A pair with a
   current file is read, not re-run; a failure is reported per pair and turns the run red. It runs only
-  after a deploy that carries `prefill.py`, and at the Phase 8 switch-over its `LIB_NS` and `APP_PREFIX`
-  must follow the live webapp's.
+  after a deploy that carries `prefill.py`; its `LIB_NS` and `APP_PREFIX` follow `app.env`.
 
 ### Budgets, measured
 
@@ -523,10 +525,11 @@ uncached pair gets no `T…` or `P…` references and searches CT.gov and PubMed
 - 7a: the four starter questions on ERBB2 and SMARCA2 × HER2+ answer with citations that all resolve;
   every uncited sentence is marked; every graph result shows its Cypher; a tool failure shows in the
   panel and the answer still completes; answers stay under 30 s. *Met in the service test (run 4, and
-  run 3 for tool failures); deployed to the preview webapp 2026-10-27, not yet tried in the browser.*
+  run 3 for tool failures); live since the Phase 8 switch-over and checked in the browser there.*
 - 7b: the agent answers a graph question and a literature question in Agent Hub, and the card's link
   opens it; whether graph results render as a graph is recorded for 1.7.2. *The agent answers both in
-  DSS and Agent Hub uses it; the link and the graph view await the browser check.*
+  DSS, Agent Hub uses it, and the link was checked with the live webapp. How 1.7.2 renders graph results
+  is not recorded here.*
 
 ## 10. Phase 8 — verification and switch-over *(DSS: deploy)*
 
@@ -577,7 +580,22 @@ searches shown, the answer saying the graph could not be read).
   17.5 s before its first search, then searched again for all 23 drugs because the drug-and-indication
   chain returns only the 6 with an indication. The variance is the model's own reasoning time.
 
-**Still open before the switch-over:** the browser checks of the Agent Hub link and graph view.
+### Switch-over, 2026-10-27
+
+- `app.env` returned to `main`'s identity values (`LIB_NS=target_prioritizer`, `VITE_APP_NAME=Target
+  Prioritizer`, `WEBAPP_ID=OlmPX9a`), keeping the Agent Hub link values; the user committed it and ran
+  `make deploy`.
+- Verified read-only: `python/target_prioritizer/backend/` holds exactly the repository's 19 files with
+  identical contents, so nothing of the four-act app is left; the backend started cleanly; the bundle
+  carries the app name without *(next)* and the Agent Hub link; the preview `Oo689ic` still runs on
+  `target_prioritizer_next`. The user then checked the live webapp in the browser.
+- The scenario `prefill_evidence_cache` was repointed to `target_prioritizer` (checked by reading the
+  library, not run). The cache folder is shared and keyed by pair and versions, so the live webapp reads
+  the 21 pre-filled pairs as they are.
+- `DEC-DEMO-004` and `DEC-DEMO-005` are `accepted`; `WEBAPP_DESIGN.md` describes the live app.
+- **Remaining:** after the grace period the user deletes `Oo689ic` and `python/target_prioritizer_next/`;
+  nothing else in DSS refers to that namespace. Rollback until then, and after: `make -C webapp deploy`
+  from `main`.
 
 ## 11. After the redesign — the flow migration decision
 

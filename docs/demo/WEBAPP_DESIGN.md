@@ -29,20 +29,18 @@ current artefact. The three mockup iterations it was derived from, including the
 check, are historical material in
 [`../../archive/dashboard-mockup-iterations/`](../../archive/dashboard-mockup-iterations/).
 
-**The redesign, built in phases on a preview webapp** (`DEC-DEMO-004`, `DEC-DEMO-005`;
+**The redesign, live since 2026-10-27** (`DEC-DEMO-004`, `DEC-DEMO-005`;
 [`WEBAPP_REDESIGN_SCOPE.md`](WEBAPP_REDESIGN_SCOPE.md) and
-[`WEBAPP_REDESIGN_WORKPLAN.md`](WEBAPP_REDESIGN_WORKPLAN.md)). The app will open on the shortlist (Act 4)
-and answer Acts 1–3 as the three sections of one page, *Why trust the list*, with one disease shared by
-both pages; the shortlist gains an evidence review and an evidence assistant. The sections that state
-principles (§4, §6, §8) already carry it, each change marked *planned*. The sections that describe the
-app as built change with the phase that builds it. **Phases 1–7 are built on the preview webapp:** the
-two-page navigation, the shared disease and *Why trust the list* (Phase 1); the shortlist split into the
-list and a tabbed card for the selected candidate, with the *How do we know?* links (Phase 2); and the
-candidate's HGNC identity in that card's header (Phase 3); and the drug records behind the badges
-(Phase 4); the top five SHAP drivers in *Why this ranking?* (Phase 5); the Trials and Literature
-tabs (Phase 6); and the evidence assistant, with a link to Agent Hub (Phase 7). §3.3
-and the act tables below describe them. The deployed webapp keeps the four act routes until the Phase 8
-switch-over.
+[`WEBAPP_REDESIGN_WORKPLAN.md`](WEBAPP_REDESIGN_WORKPLAN.md)). The app opens on the shortlist (Act 4)
+and answers Acts 1–3 as the three sections of one page, *Why trust the list*, with one disease shared by
+both pages; the shortlist carries an evidence review and an evidence assistant. Built in phases on a
+preview webapp: the two-page navigation, the shared disease and *Why trust the list* (Phase 1); the
+shortlist split into the list and a tabbed card for the selected candidate, with the *How do we know?*
+links (Phase 2); the candidate's HGNC identity in that card's header (Phase 3); the drug records behind
+the badges (Phase 4); the top five SHAP drivers in *Why this ranking?* (Phase 5); the Trials and
+Literature tabs (Phase 6); and the evidence assistant, with a link to Agent Hub (Phase 7). At the Phase 8
+switch-over the redesign replaced the four act routes in the original webapp (`OlmPX9a`), so its URL is
+unchanged. §3.3 and the act tables below describe the app as it runs.
 
 **Where the rest lives.** [`FLOW_MAP.md`](../operations/FLOW_MAP.md) is the generated flow authority. Historical
 native-dashboard evaluation is in [`../../archive/NATIVE_DASHBOARD_EVALUATION.md`](../../archive/NATIVE_DASHBOARD_EVALUATION.md),
@@ -178,8 +176,8 @@ mockup implements it as a `dataset · recipe` footer on every card.
 ### 3.3 Route → view → data map
 
 The shortlist leads (`DEC-DEMO-005`): `/shortlist` is the home route and `order` 1, *Why trust the
-list* is `order` 2, and Settings sits in the footer. Built in Phase 1 of the redesign on 2026-10-26; the
-deployed webapp still serves the four act routes until the Phase 8 switch-over.
+list* is `order` 2, and Settings sits in the footer. Built in Phase 1 of the redesign on 2026-10-26 and
+live since the Phase 8 switch-over on 2026-10-27.
 
 Corrected 2026-09-03 against the shipped app. This table had drifted on every column: it named
 routes and views from the migration plan rather than the ones that were built, and its data column
@@ -355,7 +353,7 @@ restates the other.
 
 ## 4. The four acts, and the talk track
 
-**Built in Phase 1, not yet deployed** (`DEC-DEMO-005`): the app opens on act 4, and acts 1–3 are the
+**Live since 2026-10-27** (`DEC-DEMO-005`): the app opens on act 4, and acts 1–3 are the
 three sections of *Why trust the list*, reached from the list's *How do we know?* links (Phase 2).
 The act numbers stay as labels. What each act establishes does not depend on the order, so the third
 column says what it answers rather than why it comes first.
@@ -504,7 +502,7 @@ TNBC's 8 known targets on screen *before* act 6 claims anything about it.
 
 ### Act 4 — The shortlist
 
-*The shortlist*, the home page (built in Phase 2, not yet deployed): the ranked list, then one card for
+*The shortlist*, the home page (built in Phase 2): the ranked list, then one card for
 the selected candidate with five tabs — Overview, *Why this ranking?*, Trials, Literature, and Drugs &
 graph.
 
@@ -762,7 +760,7 @@ the pivot matters more than it looks.
 | Let the drug badges be filterable | the discovery lift is measured *against those labels* — filtering makes it circular | rendered as badges; no filter control, and a tooltip saying why |
 | Let the liability flag be filterable | it would delete ERBB2 from its own disease's list | same, plus act 6 shows the cost |
 | `AVG(lift_top10)` in a chart | Sjögren is 252.4× and the notebook drops infinities first | the aggregate carries mean, **median** and **n**, inf-drop explicit, distribution shown beside it |
-| Open with the AUC | answers a question they did not ask | act 2 leads with the distribution; no single number stands alone. **Planned** (`DEC-DEMO-005`): the app opens on the list, which shows no AUC |
+| Open with the AUC | answers a question they did not ask | act 2 leads with the distribution; no single number stands alone. **Live** (`DEC-DEMO-005`): the app opens on the list, which shows no AUC |
 | One "enrichment" series | approved and investigational mean different things | never OR'd, never merged, separately labelled |
 | Report pooled AUC because it is bigger | pooled overstates by ~7 points | macro only, never adjacent to a pooled figure |
 | Quote a filtered count without its rank cut-off | how the obesity landing count acquired two values (§10.3) | every funnel count renders its cut-off in the same component |
@@ -771,9 +769,9 @@ the pivot matters more than it looks.
 | A discovery-enrichment figure on a summary tile or opening screen | the narrative makes a **reconstruction** claim, not a discovery one; a headline number turns one into the other and the slide is not recoverable in the room | the enrichment lives below the fold in act 4, labelled as an observation, and appears on no tile |
 | A headline number typed into card copy | act 2 carried a literal `1.9%` positive rate and a literal `0.9776` accuracy while their neighbours read live from `data.champion`, so a retrain made one card contradict itself on screen. Two proposed subtitles asserted *"most PPIs are corroborated"* (16.6% are) and *"provenance features dominate"* (path features are collectively larger) — both written from intuition, both false, both plausible enough to survive an eyeball review | every figure in a title, subtitle or note is derived from the payload; a claim that cannot be derived is not made. Where a card figure has a canonical value here, the card matches this document's precision, not its own rounding |
 | Language that prescribes research direction — *"you should pursue…"*, *"the next target is…"* | we are a platform company, not a domain authority. Prescribing costs the room | the app ranks and explains; every verb in the copy is about evidence, never about what to do next |
-| *Built, preview webapp* (`DEC-DEMO-004`): an assistant sentence from general knowledge rendered like a sourced one | the LLM's background knowledge reads as retrieved evidence, and the careful parts of the demo stop being trusted with it | every sourced sentence cites a record; a general-knowledge sentence is marked *not from a retrieved source* and is never a citation; a graph answer shows its Cypher |
-| *Built, preview webapp* (`DEC-DEMO-004`): an LLM role label taken on trust | a label with no checkable basis is an unreviewed claim about a paper or trial | every label carries a quote the backend finds in the passage after whitespace normalisation; a label that fails is dropped and the record stays, unlabelled |
-| *Planned*: "no drug" inferred from a missing drug link | drug links are exact-node: lapatinib's and neratinib's approvals sit on *breast cancer*, not on the HER2+ subtype | the copy says *no link in snapshot*, never *no drug* |
+| *Live* (`DEC-DEMO-004`): an assistant sentence from general knowledge rendered like a sourced one | the LLM's background knowledge reads as retrieved evidence, and the careful parts of the demo stop being trusted with it | every sourced sentence cites a record; a general-knowledge sentence is marked *not from a retrieved source* and is never a citation; a graph answer shows its Cypher |
+| *Live* (`DEC-DEMO-004`): an LLM role label taken on trust | a label with no checkable basis is an unreviewed claim about a paper or trial | every label carries a quote the backend finds in the passage after whitespace normalisation; a label that fails is dropped and the record stays, unlabelled |
+| *Live*: "no drug" inferred from a missing drug link | drug links are exact-node: lapatinib's and neratinib's approvals sit on *breast cancer*, not on the HER2+ subtype | the copy says *no link in snapshot*, never *no drug* |
 
 ---
 
@@ -793,18 +791,17 @@ the pivot matters more than it looks.
 
 - **No login, no user management, no persistence.** This is a demo surface over read-only flow output.
 - **No writes to DSS.** The one exception worth considering later is act 3's clinician review form
-  (`breast_shortlist`), and it is out of scope until someone asks. **Exception, built on the preview
-  webapp** (`DEC-DEMO-004`): retrieved trials and papers, with their selection, are cached per (disease,
+  (`breast_shortlist`), and it is out of scope until someone asks. **Exception**
+  (`DEC-DEMO-004`): retrieved trials and papers, with their selection, are cached per (disease,
   gene) pair in the managed folder `act4_evidence_cache`. The in-app assistant's conversations are never stored; Agent Hub, a separate
   webapp linked from the card, stores its own (`DEC-DEMO-004`).
 - **No LLM anything.** A chatbot over a ranked gene list is the kind of thing that makes a careful
   audience stop trusting the careful parts. The template's chat block, like its other optional blocks
   (wizard, charts, flow, documents), was never enabled and was deleted on 2026-10-15, together with the
   `ENABLE_*` flags ([`BLUEPRINT_ALIGNMENT_PLAN.md`](../../archive/BLUEPRINT_ALIGNMENT_PLAN.md), Phase 0). Every routed
-  view is an act or Settings. **Exception** (`DEC-DEMO-004`): on the shortlist only, one LLM selection
-  step (two calls, one per corpus) picks and labels retrieved trials and papers — built on the preview
-  webapp — and an evidence assistant, also built there, answers over the same sources, both on the terms §6
-  enforces. The reasoning above still holds everywhere else: no other
+  view is the shortlist, *Why trust the list* or Settings. **Exception** (`DEC-DEMO-004`): on the
+  shortlist only, one LLM selection step (two calls, one per corpus) picks and labels retrieved trials and
+  papers, and an evidence assistant answers over the same sources, both on the terms §6 enforces. The reasoning above still holds everywhere else: no other
   surface uses an LLM.
 
 ---

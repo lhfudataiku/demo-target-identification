@@ -9,8 +9,9 @@
 > governed by [`WEBAPP_DESIGN.md`](WEBAPP_DESIGN.md), [`../../webapp/README.md`](../../webapp/README.md)
 > and [`../../webapp/DEPLOYMENT.md`](../../webapp/DEPLOYMENT.md) until each phase is implemented.
 
-**Status: DRAFT — 2026-10-25, revised 2026-10-26 (built beside what runs today; the flow migration
-decided separately; HGNC identity preloaded, D16). Not approved; nothing in DSS or the webapp has changed.** Supersedes
+**Status: EXECUTED — the redesign went live on 2026-10-27** (drafted 2026-10-25, revised 2026-10-26: built
+beside what runs today; the flow migration decided separately; HGNC identity preloaded, D16). What was
+built, and where it departed from this scope, is in the workplan's phase records. Supersedes
 the Act 4 evidence review plan of 2026-10-23 (in git history), whose content is split between this
 document and the workplan.
 
