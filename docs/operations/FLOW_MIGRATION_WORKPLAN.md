@@ -303,10 +303,29 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
 
 ### M2 — the evidence project *(DSS)*
 
-- **Set up the local run first.** Add the wrapper and the local environment (M0).
-- **Take a baseline.** Run every notebook script locally against the main project, unchanged, and
-  record each script's check count and stale count. The scenario has not run since 2026-09-03, so
-  this is the reference M2 is accepted against.
+- **Set up the local run first. Done 2026-10-28.**
+  - `tools/run_notebooks.py` runs each assertion script through `runner.run()` with a chosen
+    default project, and reports every script even when one fails.
+  - `notebooks/pyproject.toml` pins the environment to the DSS code env `demo_kg-drug-discovery`:
+    Python 3.13, pandas 2.3.3, numpy 2.3.5, scipy 1.16.3, matplotlib 3.11.2, seaborn 0.13.2,
+    IPython 8.12.3, and the instance's dataiku client.
+  - `nb5_data_exploration` is not run, as `push_assertions.py` never ran it: it defines no check.
+- **Take a baseline. Done 2026-10-28** against `DEMO_TARGET_IDENTIFICATION`, with the scripts
+  unchanged: **all 7 pass, 150 checks executed, 0 stale**, in about 15 minutes.
+
+  | script | checks executed | stale |
+  |---|--:|--:|
+  | `nb1_features_and_config` | 6 | 0 |
+  | `nb2_splitting_and_pool` | 19 | 0 |
+  | `nb3_validation_and_plots` | 9 | 0 |
+  | `nb3b_hub_bias_meter` | 7 | 0 |
+  | `nb4_results_three_axes` | 24 | 0 |
+  | `nb6_interrogation_and_close` | 34 | 0 |
+  | `nb7_panel_selection` | 51 | 0 |
+
+  The run's record is in `data/assertion_runs/2026-10-28_baseline_main.json`, which is not
+  committed. M2 is accepted against these executed counts. They differ from the per-script entry
+  counts in `.index/assertions.tsv`, which counts parsed expectations, not executed calls.
 - **Create the project.** Expose the zone 00–31 objects M1 listed. Use them directly as recipe
   inputs, or sync them in if M0 chose copies. New datasets use managed storage and Parquet, and joins
   are visual Join recipes.

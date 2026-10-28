@@ -221,7 +221,8 @@ The traced closure of the notebook reads was 28 recipes. The design drops 7 of t
 
 ## 6. Running the notebooks locally
 
-- **A wrapper:** `tools/run_notebooks.py`, proposed. It:
+- **A wrapper:** `tools/run_notebooks.py`, built 2026-10-28, which ran the baseline (workplan M2).
+  It skips `nb5`, which asserts nothing. It:
   - takes credentials the way `webapp/backend/dss_client.py` does (`DKU_URL` and `DKU_API_KEY`, as
     `dku auth export-env` emits them);
   - calls `dataiku.set_remote_dss` and `dataiku.set_default_project_key(<evidence key>)`;
