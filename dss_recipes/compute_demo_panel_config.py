@@ -67,7 +67,14 @@ A4 = [tuple(x) for x in _panel["act4"]]
 
 # ── derive ───────────────────────────────────────────────────────────────────
 fp = dataiku.Dataset("family_panel").get_dataframe()
-names = dataiku.Dataset("persona_enrichment").get_dataframe()[["disease_index", "disease"]]
+# Disease names come from graph_nodes, the panel's own name source (M0, 2026-10-28). They equal
+# persona_enrichment's on all 670 family_panel diseases, and reading them here drops the panel's
+# dependency on the persona chain.
+names = (dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes")
+         .get_dataframe(columns=["node_index", "node_name", "node_type"])
+         .query("node_type == 'disease'")
+         .rename(columns={"node_index": "disease_index", "node_name": "disease"})
+         [["disease_index", "disease"]])
 fp = fp.merge(names, on="disease_index", how="left")
 
 rows = {}

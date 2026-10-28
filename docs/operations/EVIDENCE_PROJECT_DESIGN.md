@@ -188,6 +188,11 @@ The traced closure of the notebook reads was 28 recipes. The design drops 7 of t
 
   `tools/check_governed_values.py` should check both projects' copies against the one `dss_recipes/`
   mirror, and both projects' variables against each other.
+- **Python copies read their upstream inputs by qualified name** (found 2026-10-28, when the build
+  was prepared). Inside a recipe, the dataiku client resolves `dataiku.Dataset(name)` only against
+  the declared inputs, and a foreign input is declared as `DEMO_TARGET_IDENTIFICATION.<name>`.
+  - `tools/build_evidence_flow.py` qualifies each copy's own upstream inputs in its code.
+  - The library names `DEMO_TARGET_IDENTIFICATION.graph_nodes`, which resolves in both projects.
 - **Recipe names repeat across the two projects.** `.index/recipes.tsv` and
   `tools/build_recipe_index.py` key on the recipe name alone. `tools/build_flow_map.py` matches a
   notebook read as `"<dataset>"`, so a qualified read `"DEMO_TARGET_IDENTIFICATION.<dataset>"` no

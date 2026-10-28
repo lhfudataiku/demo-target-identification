@@ -329,6 +329,109 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
 - **Create the project.** Expose the zone 00–31 objects M1 listed. Use them directly as recipe
   inputs, or sync them in if M0 chose copies. New datasets use managed storage and Parquet, and joins
   are visual Join recipes.
+  - **Prepared 2026-10-28: `tools/setup_evidence_project.py`.** It is a dry run unless given
+    `--apply`. In order, it:
+    1. creates `DEMO_TI_EVIDENCE`;
+    2. sets its default Python env to `demo_kg-drug-discovery`;
+    3. copies the main project's 8 standard variables verbatim;
+    4. writes `/python/demo_identity.py` from `dss_lib/` (checked equal to the main project's copy);
+    5. adds the 18 exposure rules to `DEMO_TARGET_IDENTIFICATION`'s settings.
+
+    It then reads everything back. Each step is idempotent, so a re-run resumes.
+  - **The dry run of 2026-10-28 showed:** the key is free, all 18 inputs exist, and no exposure is
+    present yet.
+  - **Applied 2026-10-28 by the user (`--apply`, read back OK).** A separate read-only check
+    confirmed:
+    - the project label and the code env;
+    - variables equal to the main project's;
+    - the library file identical to `dss_lib/demo_identity.py`;
+    - 18 exposures, the main project's only exposed objects;
+    - 0 datasets and 0 recipes in the evidence project;
+    - a qualified read of `DEMO_TARGET_IDENTIFICATION.disease_family_id` working with
+      `DEMO_TI_EVIDENCE` as the default project.
+  - **The one change to the main project is the exposure rules, and they are additive.** Nothing is
+    built, moved or removed.
+  - **The instance-wide dataset defaults list CSV formats first,** so each evidence recipe sets
+    managed storage and Parquet on its output explicitly.
+- **Build the evidence flow: prepared 2026-10-28 as `tools/build_evidence_flow.py`.** It covers the
+  two bullets below and the shortlist. It is a dry run unless given a flag. No flag builds anything.
+  - **What `--apply` does.** It writes only to `DEMO_TI_EVIDENCE`. It creates 25 recipes and 25
+    empty Parquet datasets on managed storage, in zones E1–E4:
+    - 21 recipes are recreated from the main project's live definitions. DSS cannot copy a recipe
+      into another project from the API.
+    - 4 recipes make up the slim shortlist: join and filter, window *rank*, decorating join, and a
+      prepare. The prepare fills `approved_for_disease` with 0, as the served table does.
+  - **A design gap it closes.** A Python recipe reads a foreign input only by its qualified name. The
+    dataiku client matches `dataiku.Dataset(name)` against the declared inputs, and a foreign input
+    is declared as `DEMO_TARGET_IDENTIFICATION.<name>`.
+    - Each copy's code is therefore the main project's live code with its own upstream inputs
+      qualified. Each diff was checked line by line against `dss_recipes/`.
+    - `dss_lib/demo_identity.py` now names `DEMO_TARGET_IDENTIFICATION.graph_nodes`. That name
+      also resolves in the main project.
+    - `setup_evidence_project.py`'s check that the library equals the main project's copy fails
+      until `--main-identity` runs.
+  - **What `--main-identity` does.** It aligns the main project, without building:
+    - it writes the same library file;
+    - it sets `compute_split_audit_2` and `compute_demo_panel_config` to the evidence code;
+    - it drops `persona_enrichment` from the panel recipe's inputs (M0).
+
+    `build_recipe_index.py --refresh` then mirrors these changes into `dss_recipes/`.
+  - **Checked read-only before writing.**
+    - On all 670 `family_panel` diseases, `graph_nodes` names equal `persona_enrichment`'s, and
+      every config name matches.
+    - Every join key in the shortlist is unique.
+    - The graph names equal the served `gene_name` and `disease_name` on all 105,702 rows.
+    - The 126 approved pairs reproduce.
+    - `target_candidates_2` and `dashboard_candidates` hold the same 105,702 pairs and ranks, so
+      `compute_filter_three_axes` loses nothing by switching inputs.
+    - `family_validation_scored` has `scored_champion`'s schema exactly.
+  - **Applied 2026-10-28 by the user (`--apply`, in three runs; read back OK).** Two faults were
+    fixed between runs:
+    - DSS reads a Prepare recipe's input files when creating it, and nothing was built yet, so
+      Prepare recipes are now created in raw mode;
+    - a new join writes the output columns DSS generated when the recipe was created, not the
+      per-input selection, so the script now sets that list itself.
+
+    A separate read-only check confirmed:
+    - 25 recipes and 25 datasets, in zones E1 12, E2 5, E3 4 and E4 4;
+    - every visual copy's payload equal to the main project's;
+    - `dashboard_candidates` carrying the 12 required columns;
+    - the shortlist: the `in_act4` pre-filter, an inner join, *rank* (not dense) partitioned by
+      disease and ordered by `proba_1` descending, and the fill step;
+    - the main project unchanged: 95 recipes and 18 exposures.
+
+  - **Built 2026-10-28 by the user, and compared read-only with the main project.** Three faults
+    surfaced in the build:
+    - The main project's `gene_crosswalk` had no files. It is *virtualizable*, so recursive builds
+      passed it in memory and never wrote it, while its cached metrics still showed 20,861 rows.
+      The user rebuilt it on its own. Its 17 sibling shared datasets keep the flag, so a later
+      recursive main-project build can drop one again.
+    - This instance marks every new dataset virtualizable, so the shortlist chain was never written
+      either. `--apply` now clears the flag on each evidence output, and read-back checks it.
+    - Raw creation left the new Prepare recipe without engine settings (an NPE on `engineType`), so
+      it now takes the copied Prepare recipes' settings.
+
+    A non-recursive job with several targets runs them side by side, not in dependency order, so
+    the outputs with no files were built in four ordered jobs.
+
+    Compare (canonical sort, floats to 9 places; the two ~4M-row window outputs on keys, `proba_1`
+    and `rank` only):
+    - all 21 copies are identical to the main project's, `filter_three_axes` included, although it
+      now reads the slim shortlist;
+    - `dashboard_candidates` has the served table's 105,702 pairs, and every value column and the
+      score are equal;
+    - 3,611 ranks changed, all on tied scores and none on untied ones, and every rank is the
+      competition rank (1, 2, 2, 4).
+
+  - **`--main-identity` applied 2026-10-28 by the user (read back OK), with no build.** The main
+    project's library and its `compute_split_audit_2` and `compute_demo_panel_config` code now equal
+    the evidence copies, which built to identical outputs. `compute_demo_panel_config` reads
+    `family_panel` and `graph_nodes` only. A read-only check found 95 recipes and 18 exposures, as
+    before. `build_recipe_index.py --refresh` mirrored the two recipes; the refresh also first saw
+    the `target_evidence_agent` LLM agent, now recorded in `tools/model_registry.json` as not a
+    prioritizer model.
+  - **The window column trims are not applied yet.** The copies are verbatim. Trim after the M2
+    compare, as M0 allows.
 - **Move the four notebook-only recipes and their datasets** (§2).
   - DSS cannot move a recipe between projects, so copy it (copy subflow to another project, or
     recreate it), then delete the main-project original once M2 is accepted.

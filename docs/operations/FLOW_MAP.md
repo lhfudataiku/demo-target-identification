@@ -205,7 +205,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `novel_discovery_eval` | nb4, nb6 | `compute_novel_discovery_eval` | 1 | notebook |
 | `orthogonality_scatter` | **webapp:routes/calibration** | `join_orthogonality` | 0 | webapp |
 | `persona_candidates` | nb4 | `compute_persona_candidates` | 1 | notebook |
-| `persona_enrichment` | nb7, **webapp:routes/calibration**, **webapp:routes/families** | `compute_persona_enrichment` | 1 | webapp |
+| `persona_enrichment` | nb7, **webapp:routes/calibration**, **webapp:routes/families** | `compute_persona_enrichment` | 0 | webapp |
 | `split_audit_2` | nb2, **webapp:routes/calibration** | `compute_split_audit_2` | 0 | webapp |
 | `validation_auc_by_disease` | nb3, nb5, nb6, **webapp:routes/calibration** | `compute_validation_auc_by_disease` | 3 | webapp |
 | `validation_auc_ci` | — | `compute_validation_auc_ci` | 1 | intermediate |

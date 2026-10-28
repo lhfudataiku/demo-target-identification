@@ -22,7 +22,7 @@ compute_DEMO_KG_raw_go_hierarchy_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_go_hiera
 compute_DEMO_KG_raw_ot_druggability_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_ot_druggability	raw_ot_druggability
 compute_DEMO_KG_raw_ot_safety_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_ot_safety	raw_ot_safety
 compute_breast_panel	python	-	-		dss_recipes/compute_breast_panel.py	drug_disease_edges,drug_protein_edges,graph_nodes,scored_champion	breast_panel_metrics
-compute_demo_panel_config	python	-	-		dss_recipes/compute_demo_panel_config.py	family_panel,graph_nodes,persona_enrichment	demo_panel_config
+compute_demo_panel_config	python	-	-		dss_recipes/compute_demo_panel_config.py	family_panel,graph_nodes	demo_panel_config
 compute_disease_eligibility	python	-	-		dss_recipes/compute_disease_eligibility.py	enriched_module_size_1,graph_node_type_counts	disease_eligibility
 compute_disease_family_id	python	-	-		dss_recipes/compute_disease_family_id.py	enriched_graph_features_1,graph_nodes,hetionet_disease_slim,mondo_references,raw_disease_disease	disease_family_id
 compute_drug_classified	shaker	-	-		DSS-only	drug_joined	drug_classified

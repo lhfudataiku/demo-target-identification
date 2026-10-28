@@ -17,9 +17,9 @@ COLS = ["disease_index", "disease_split_key", "disease_family_id", "split_key_na
 # 2026-08-17 but this code was not, so every build since has failed with "Dataset
 # enriched_train_full_2 cannot be used" and `split_audit_2` sat empty. TARGET_PRIORITIZER section 5.4
 # was quoting a pre-migration run. The leakage guarantee is only real if this recipe builds.
-SETS = {"train": "psplit_train_set",
-        "validation": "psplit_validation_set",
-        "test": "psplit_test_set"}
+SETS = {"train": "DEMO_TARGET_IDENTIFICATION.psplit_train_set",
+        "validation": "DEMO_TARGET_IDENTIFICATION.psplit_validation_set",
+        "test": "DEMO_TARGET_IDENTIFICATION.psplit_test_set"}
 # personas + the pair that motivated the elevated key
 # Indices remapped 2026-08-17 for the DEMO_KG_LS graph, resolved through
 # (node_id, node_type, node_source) -- see index_remap.json. node_index is DETERMINISTIC in that

@@ -65,6 +65,7 @@ depth_a	compute_family_panel_overlap	-	-
 depth_b	compute_family_panel_overlap	-	-		
 depth_gap	compute_family_panel_overlap	-	-		
 disease	compute_breast_panel	-	-		
+disease	compute_demo_panel_config	-	-		
 disease	compute_filter_three_axes	-	-		
 disease	compute_novel_discovery_eval	-	-		
 disease	compute_pool_reachability	-	-		
