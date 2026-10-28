@@ -21,10 +21,10 @@ The counts below are for the main project.
 
 | | today | after the evidence project, **re-zoned** | after the evidence project, **rebuilt by function** |
 |---|--:|--:|--:|
-| recipes after zone 31, plus `compute_breast_panel` | 47 | 41 | 32–33 |
-| datasets, same scope | 47 | 41 | 32–33 |
+| recipes after zone 31, plus `compute_breast_panel` | 47 | 41 | 32 |
+| datasets, same scope | 47 | 41 | 32 |
 | of which served to the webapp | 21 | 21 | 20 |
-| of which intermediate | 20 | 20 | 12–13 |
+| of which intermediate | 20 | 20 | 12 |
 | of which notebook-only or unread | 6 | 0 | 0 |
 | scoring runs of the champion over the shortlist | 2 | 2 | 1 |
 | webapp code changes | — | none | two routes read one dataset instead of another |
@@ -32,7 +32,7 @@ The counts below are for the main project.
 - **The notebook-only objects leave the main project**, whichever plan is chosen (§3): 6 recipes and
   6 datasets. Four move to the evidence project and two unread ones are deleted. Everything else
   after zone 31 lies on a path to a webapp read.
-- **Rebuilding removes 8–9 more recipes and 8–9 more datasets** (§4.2): one of the two identical
+- **Rebuilding removes 9 more recipes and 9 more datasets** (§4.2, settled in §6.1): one of the two identical
   scoring runs, a 297 MB pass-through copy of `scored_champion`, and a three-recipe chain that feeds
   `persona_enrichment` with columns the webapp never reads.
   - Three of the removed datasets are read by the notebooks: `novel_discovery_eval`,
@@ -193,13 +193,13 @@ rebuilt `dashboard_candidates` chain joins them in S1, reading S1's scoring run.
 
 | function | today (after §3) | rebuilt | what changes |
 |---|--:|--:|---|
-| shortlist (40 + S1) | 14 / 14 | 9–10 / 9–10 | below |
+| shortlist (40 + S1) | 14 / 14 | 9 / 9 | below |
 | evidence §1 (S2) | 5 / 5 | 5 / 5 | none |
 | evidence §2 (S3) | 16 / 16 | 12 / 12 | below |
 | evidence §3 (S4) | 6 / 6 | 6 / 6 | inputs repointed only |
-| **total** | **41 / 41** | **32–33 / 32–33** | **−8 to −9 of each** |
+| **total** | **41 / 41** | **32 / 32** | **−9 of each** (settled in §6.1) |
 
-**Shortlist, from 14 to 9 (or 10) recipes.**
+**Shortlist, from 14 to 9 recipes.**
 
 | step | today | rebuilt |
 |---|---|---|
@@ -207,7 +207,7 @@ rebuilt `dashboard_candidates` chain joins them in S1, reading S1's scoring run.
 | score | `score_persona_candidates` (3 explanations) **and** `score_persona_candidates_shap5` (5 explanations), identical probabilities | the five-explanation run only |
 | driver string | `compute_top_shap_drivers_1` (`top_shap_drivers`, which the webapp does not read) | removed |
 | rank | `rank_per_disease` (row number by `proba_1`) | a window over the five-explanation output: the rank with ties (§5.1), and the pool size as a count over the partition |
-| pool size | `count_candidates_per_disease` → `disease_pool_sizes`, then a join | folded into the window; if one window recipe cannot give both an ordered rank and a whole-partition count, this group stays (hence 10) |
+| pool size | `count_candidates_per_disease` → `disease_pool_sizes`, then a join | folded into the window: a count over its unbounded frame (§6.1) |
 | annotate | `decorate_target_candidates`, then `join_disease_name`, then `join_dashboard_annotations` (three joins) | one join: druggability, safety, gene name, disease name, drug flags |
 | finalize | `finalize_dashboard_candidates` (rename, fill, `rank_percentile`) | same, without the rename |
 | top-5 drivers, drug records, identity | `compute_shap_top5`; `group_drug_protein_actions` + `join_drug_evidence_records`; `join_candidate_identity` | same |
@@ -293,7 +293,112 @@ The core depends on the family panels: `validation_auc_ci` (S3) → `family_pane
 the flow draws arrows backwards from S4 into 40. Placing `family_panel` and `demo_panel_config` with
 the core, as the panel definition both pages use, keeps the arrows one way. This is a D15 amendment.
 
-## 6. Method
+## 6. M1 results: the serving side (2026-10-28)
+
+These are the serving half of [`FLOW_MIGRATION_WORKPLAN.md`](FLOW_MIGRATION_WORKPLAN.md) M1, for
+approval. The evidence half is [`EVIDENCE_PROJECT_DESIGN.md`](EVIDENCE_PROJECT_DESIGN.md). The live
+flow was re-checked on 2026-10-28 and is unchanged since the 2026-10-27 measurement.
+
+### 6.1 One window recipe gives the rank and the pool size: 32 recipes
+
+**The flow ends at 32 recipes and 32 datasets, not 33.**
+
+- All three window recipes in the flow have frame limits off (`enableLimits: false`) with ordering
+  on. The `dku` window builder documents that setting as unbounded on both sides
+  (`--frame-unbounded`).
+- So in the rebuilt shortlist window, ordered by `proba_1`, *rank* gives the rank with ties, and a
+  *count* aggregation over the same unbounded frame gives the whole disease partition: the pool
+  size.
+- `count_candidates_per_disease`, `disease_pool_sizes` and their join are not needed.
+- M4's compare confirms the count against the stored `disease_pool_size`.
+- The builder's `--keep-columns` option also covers the optional column trims on the AUC windows.
+
+### 6.2 Zone 20 splits into three zones, but not along the planned job lines
+
+Split by job name, drug annotation and gene annotation depend on each other in both directions:
+
+- gene → drug: `gene_crosswalk` feeds `compute_ot_drug_mapped`, and `enriched_gene_localization`
+  feeds `compute_drug_joined`;
+- drug → gene: `drug_classified` feeds `compute_enriched_gene_druggability_v2`.
+
+That is a zone cycle, the kind rejected on 2026-09-03. Placing the druggability output with the drug
+chain that computes it makes the split one-way:
+
+| zone | datasets | reads from zone 20 |
+|---|---|---|
+| gene annotation | `gene_crosswalk`, `enriched_gene_localization`, `gene_safety_joined`, `enriched_gene_safety_v2` | — |
+| druggability and drug evidence | `ot_drug_mapped`, `drug_joined`, `drug_classified`, `enriched_gene_druggability_v2`, `drug_evidence_pairs` | gene annotation only |
+| disease family and split key | `hetionet_disease_slim`, `disease_family_id` | — (it reads zone 12's `enriched_graph_features_1`; zone 30 reads it) |
+
+Every move is `dku flow move`, which changes zone membership only; nothing is built.
+
+### 6.3 Moving and describing zones
+
+- **`dku flow move`** moves datasets, recipes, folders and models to a named zone, creating it if
+  needed. M3's moves need no UI work.
+- **`dku flow set-zone`** renames a zone and writes its `shortDesc` (`--short-desc`). M6's
+  description rewrite no longer needs a scenario using the Python API.
+
+### 6.4 The M1 table: every dataset after zone 31, plus `breast_panel_metrics`
+
+"Copy" means the evidence project builds its own dataset of the same name ([`EVIDENCE_PROJECT_DESIGN.md`](EVIDENCE_PROJECT_DESIGN.md) §3).
+"Rebuilt" means a new chain replaces the old one in M4, and M6 retires the old one. The rebuild also
+adds one intermediate not listed here: the disease-name join in S3 (§4.2).
+
+| dataset | zone | webapp route | notebooks | recipe consumers | evidence project (M2) | zone after M3 | after M4–M6 |
+|---|---|---|---|---|---|---|---|
+| `breast_panel_metrics` | 31 | — | nb4 | — | moved | — | evidence project |
+| `candidates_annotated` | 40 | — | — | `finalize_dashboard_candidates` | — | 40 | rebuilt, S1 |
+| `dashboard_candidates` | 40 | candidates, sources, assistant, prefill | nb6, nb7 | `compute_shap_drivers_long` | new: a slim copy of the same name | S1 | S1 (rebuilt) |
+| `disease_pool_sizes` | 40 | — | — | `join_dashboard_annotations` | — | 40 | removed (M6) |
+| `persona2_scored` | 40 | — | — | `compute_top_shap_drivers_1` | — | 40 | removed (M6) |
+| `persona2_scored_shap` | 40 | — | — | `rank_per_disease` | — | 40 | removed (M6) |
+| `shap_driver_frequency` | 40 | — | — | — | — | — | deleted (M2) |
+| `shap_drivers_long` | 40 | — | — | `compute_shap_driver_frequency` | — | — | deleted (M2) |
+| `target_candidates_2` | 40 | — | — | `compute_filter_three_axes`, `join_dashboard_annotations`, `count_candidates_per_disease` | — | 40 | removed (M6) |
+| `top_annotated` | 40 | — | — | `join_disease_name` | — | 40 | removed (M6) |
+| `top_candidates` | 40 | — | — | `decorate_target_candidates` | — | 40 | rebuilt, S1 |
+| `validation_set_personas_2` | 40 | — | — | `score_persona_candidates_shap5`, `score_persona_candidates` | — | 40 | 40 |
+| `candidate_identity` | S1 | candidates, sources, assistant | — | — | — | S1 | S1 |
+| `candidate_shap_top5` | S1 | candidates, assistant | — | — | — | S1 | S1 |
+| `drug_evidence_records` | S1 | candidates, assistant | — | — | — | S1 | S1 |
+| `drug_protein_actions` | S1 | — | — | `join_drug_evidence_records` | — | S1 | S1 |
+| `persona2_scored_shap5` | S1 | — | — | `compute_shap_top5` | — | S1 | S1 |
+| `graph_label_evidence` | A1 | evidence | — | — | — | S2 | S2 |
+| `graph_node_source_counts` | A1 | evidence | — | — | — | S2 | S2 |
+| `graph_node_type_counts` | A1 | evidence | — | `compute_disease_eligibility` | — | S2 | S2 |
+| `graph_ppi_provenance` | A1 | evidence | — | — | — | S2 | S2 |
+| `graph_relation_counts` | A1 | evidence | — | — | — | S2 | S2 |
+| `disease_eligibility` | A2 | calibration | — | — | — | S3 | S3 |
+| `drug_target_benchmark` | A2 | — | nb3, nb6 | `compute_persona_candidates`, `join_orthogonality` | copy | S3 | S3 |
+| `family_auc_by_family` | A2 | calibration | nb3 | — | copy | S3 | S3 |
+| `family_auc_grouped` | A2 | — | — | `compute_family_auc` | copy | S3 | S3 |
+| `family_validation_ranked` | A2 | — | — | `group_family_auc` | copy | S3 | S3 (rebuilt: reads scored_champion) |
+| `family_validation_scored` | A2 | — | — | `window_family_rank` | — | S3 | removed (M6) |
+| `hub_bias_meter` | A2 | calibration | — | — | — | S3 | S3 |
+| `novel_discovery_eval` | A2 | — | nb4, nb6 | `compute_persona_candidates` | copy | S3 | removed (M6) |
+| `orthogonality_scatter` | A2 | calibration | — | — | — | S3 | S3 |
+| `persona_candidates` | A2 | — | nb4 | `compute_persona_enrichment` | copy | S3 | removed (M6) |
+| `persona_enrichment` | A2 | calibration, families | nb7 | `compute_demo_panel_config` | copy | S3 | removed (M6) |
+| `split_audit_2` | A2 | calibration | nb2 | — | copy | S3 | S3 |
+| `validation_auc_by_disease` | A2 | calibration | nb3, nb5, nb6 | `compute_validation_auc_ci`, `compute_persona_candidates`, `join_orthogonality` | copy | S3 | S3 (rebuilt, wider) |
+| `validation_auc_ci` | A2 | — | — | `compute_family_panel` | copy | S3 | removed (M6) |
+| `validation_set_scored_grouped` | A2 | — | — | `compute_validation_auc_by_disease` | copy | S3 | S3 |
+| `validation_set_scored_windows` | A2 | — | — | `compute_validation_set_scored_grouped` | copy | S3 | S3 |
+| `demo_panel_config` | A3 | families | nb7 | `compute_family_panel_metrics`, `compute_family_panel_top50`, `compute_family_panel_programme`, `filter_persona_diseases`, `compute_family_panel_overlap` | copy | 40 | 40 |
+| `family_panel` | A3 | — | nb7 | `compute_family_panel_metrics`, `compute_demo_panel_config` | copy | 40 | 40 |
+| `family_panel_metrics` | A3 | families | — | — | — | S4 | S4 |
+| `family_panel_overlap` | A3 | families | nb4, nb6, nb7 | — | copy | S4 | S4 |
+| `family_panel_programme` | A3 | families | nb7 | — | copy | S4 | S4 |
+| `family_panel_top50` | A3 | families | — | `compute_family_panel_programme`, `compute_family_panel_overlap` | copy | S4 | S4 |
+| `filter_three_axes` | A4 | — | nb4 | — | moved | — | evidence project |
+| `known_drug_truth` | A4 | — | nb2, nb4 | `compute_filter_three_axes`, `compute_pool_reachability` | moved | — | evidence project |
+| `pool_reachability` | A4 | — | nb2 | — | moved | — | evidence project |
+
+**Totals after M6:** 3 datasets in 40, 8 in S1, 5 in S2, 12 in S3 (with the new name join) and 4 in
+S4, which is 32. Two are deleted in M2, four move to the evidence project, and ten are removed in M6.
+
+## 7. Method
 
 Read-only, 2026-10-27:
 

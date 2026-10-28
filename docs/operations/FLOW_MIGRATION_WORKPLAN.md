@@ -54,7 +54,7 @@ was chosen; the other two are kept for the record.
 
 | option | steps | main-project recipes / datasets | leaves |
 |---|---|--:|---|
-| **full (chosen)** | M0–M6 | 47 → 41 after M2 → 32–33 after M6 | notebooks independent of every serving zone; the serving flow organised by function, carrying only what the webapp reads; one scoring run; ranks with ties |
+| **full (chosen)** | M0–M6 | 47 → 41 after M2 → 32 after M6 | notebooks independent of every serving zone; the serving flow organised by function, carrying only what the webapp reads; one scoring run; ranks with ties |
 | evidence project and re-zone | M0–M3, the M6 tidy | 47 → 41 | as above, but the serving flow keeps both scoring runs and the intermediates the notebooks still need. These are duplicated in the evidence project |
 | evidence project only | M0–M2 | 47 → 41 | the notebooks independent; serving zones still named A1–A3 and 40 |
 
@@ -170,12 +170,14 @@ until the rebuild (M4) removes the last two, and the evidence project carries it
 2026-10-27. Two insights remain, and neither reads a dataset: `ZZ_TMP_probe_webapp` and the Visual
 Graph plugin's `published_kg_ls`.
 
-**Zone 20 does three unrelated jobs:**
+**Zone 20 does three unrelated jobs.** Split by name, drug and gene annotation would depend on each
+other in both directions, a zone cycle. M1 (map §6.2) places the druggability output with the drug
+chain that computes it, which makes the split one-way:
 
-| job | datasets |
+| zone | datasets |
 |---|---|
-| drug annotation | `ot_drug_mapped`, `drug_joined`, `drug_classified`, `drug_evidence_pairs` |
-| gene annotation | `gene_crosswalk`, `enriched_gene_druggability_v2`, `enriched_gene_localization`, `gene_safety_joined`, `enriched_gene_safety_v2` |
+| gene annotation | `gene_crosswalk`, `enriched_gene_localization`, `gene_safety_joined`, `enriched_gene_safety_v2` |
+| druggability and drug evidence (reads gene annotation) | `ot_drug_mapped`, `drug_joined`, `drug_classified`, `enriched_gene_druggability_v2`, `drug_evidence_pairs` |
 | disease family and split key | `hetionet_disease_slim`, `disease_family_id` |
 
 It carries the leakage-control split key, so it is **re-zoned, never rebuilt**. Recomputing it would
@@ -290,14 +292,14 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
   restricted to the 12 shortlist diseases, ranked with ties. **Checked 2026-10-28:** that
   restriction holds exactly the 105,702 served pairs, with `proba_1` equal to the served `score`
   (maximum difference 0) and the same `is_target`.
-- **The serving flow:** start from [`WEBAPP_DATASET_MAP.md`](WEBAPP_DATASET_MAP.md) §2–4.
-  - Map every dataset after zone 31 to its zone under M3 and its fate under M4.
-  - Confirm that one window recipe can give both the ordered rank and a whole-partition count. That
-    decides 32 or 33 recipes.
-  - Confirm that each rebuilt dataset carries every field in map §2.
-- **Zone 20:** confirm the three-job split and that every recipe moves without a rebuild.
-- **Done when:** the user approves one table: every dataset, its readers today and after, and its
-  project, zone or fate.
+- **The serving flow, drafted 2026-10-28** in [`WEBAPP_DATASET_MAP.md`](WEBAPP_DATASET_MAP.md) §6:
+  - every dataset after zone 31 mapped to its zone under M3 and its fate under M4–M6 (§6.4);
+  - one window recipe gives both the rank with ties and the pool size, so the rebuild ends at 32
+    recipes (§6.1);
+  - each rebuilt dataset's fields are taken from map §2.
+- **Zone 20, drafted 2026-10-28** (map §6.2): every move is `dku flow move`, which builds nothing.
+  The planned job split was corrected, because it made a zone cycle.
+- **Done when:** the user approves the two tables, map §6.4 and the evidence design's §2–3.
 
 ### M2 — the evidence project *(DSS)*
 
@@ -404,8 +406,8 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
     `persona_enrichment` and `validation_auc_ci`. Their evidence-project copies stay.
 - **Re-zone zone 20** into its three zones, moves only.
 - **Rewrite `Refresh_serving_layer`** around the final zones, S1 included. Do not run it.
-- **Rewrite every zone `shortDesc`.** There is no CLI verb, so it needs a scenario using the Python
-  API, run by the user.
+- **Rewrite every zone `shortDesc`** with `dku flow set-zone --short-desc`, which the CLI now
+  supports (map §6.3).
 - **Teach the index and flow-map tools the second project**, then regenerate `FLOW_MAP.md` and
   `.index/`.
 - **Done when:**
