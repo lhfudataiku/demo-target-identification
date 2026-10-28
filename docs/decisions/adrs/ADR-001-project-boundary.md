@@ -1,7 +1,9 @@
 # ADR-001 — Separate graph and prioritizer projects
 
 > **Lifecycle:** Decision · **Status:** Accepted · **Date:** 2026-08-17 · **Owner:** architecture ·
-> **Update when:** the shared-object contract or project ownership changes.
+> **Update when:** the shared-object contract or project ownership changes. · **Extended by:**
+> [ADR-003](ADR-003-evidence-project.md), proposed 2026-10-28: a third project for the supporting
+> evidence, reading Part 2's zones 00–31. The Part 1 / Part 2 boundary here is unchanged.
 
 ## Context
 

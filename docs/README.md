@@ -63,6 +63,7 @@ evidence and generated documents appear first; planning and historical material 
 | | |
 |---|---|
 | [`operations/FLOW_MIGRATION_WORKPLAN.md`](operations/FLOW_MIGRATION_WORKPLAN.md) | **Draft, revised 2026-10-28; full option chosen.** The notebooks stay in the repository and run locally, and `validate_notebooks` is dropped. Their supporting evidence moves to its own DSS project reading only zones 00–31 (M2). The serving flow is then re-zoned (M3) and rebuilt by webapp function with tied ranks (M4–M6) |
+| [`operations/EVIDENCE_PROJECT_DESIGN.md`](operations/EVIDENCE_PROJECT_DESIGN.md) | **Draft, 2026-10-28.** The evidence half of the migration's M1: how the supporting evidence project provides each notebook read, its 24–25 recipes and 18 exposed inputs, and the per-script notebook revisions |
 | [`operations/WEBAPP_DATASET_MAP.md`](operations/WEBAPP_DATASET_MAP.md) | **Draft, 2026-10-27.** What the released webapp reads, field by field and with row scope, and the recipe and dataset counts of re-zoning versus rebuilding the serving flow once the notebook components leave it |
 
 Completed plans move to [`../archive/`](../archive/): the most recent is the webapp redesign, live

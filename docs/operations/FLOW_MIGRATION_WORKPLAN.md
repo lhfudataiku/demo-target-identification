@@ -111,13 +111,14 @@ with fields and row scope. Two kinds of read already break D14's "serving zones 
 - **From `dashboard_candidates`, the notebooks read 8 columns:** `disease_index`, `gene_index`,
   `disease_name`, `gene_name`, `rank_in_disease`, `is_target`, `has_safety_liability`,
   `approved_for_disease`.
-- **The notebooks also read 11 objects in zones 00–31 directly:** `scored_champion` (in six of the
-  scripts), `graph_nodes`, `graph_edges`, `drug_protein_edges`, `drug_disease_edges`,
-  `raw_ot_known_drug`, `raw_disease_disease`, `enriched_gene_druggability_v2`,
-  `enriched_gene_safety_v2`, `enriched_graph_features_candidate_psplit` and `psplit_train_set`.
-- **The recipes the evidence project takes on need about 7 more:** the other two split tables, two
-  DWPC feature datasets, `gene_names`, `gene_crosswalk` and `disease_family_id`. M1 confirms the
-  list.
+- **The notebooks also read 14 objects in zones 00–31 directly**, at 29 read sites:
+  `scored_champion` (in six of the scripts), `graph_nodes`, `graph_edges`, `drug_protein_edges`,
+  `drug_disease_edges`, `raw_ot_known_drug`, `raw_disease_disease`,
+  `enriched_gene_druggability_v2`, `enriched_gene_safety_v2`,
+  `enriched_graph_features_candidate_psplit`, `psplit_train_set`, and the three DWPC feature
+  datasets.
+- **The evidence project's recipes read 18 exposed objects in all.**
+  [`EVIDENCE_PROJECT_DESIGN.md`](EVIDENCE_PROJECT_DESIGN.md) §3.1 lists them.
 
 **Notebook-only objects in the main project**, which nothing the webapp reads depends on:
 
@@ -225,53 +226,45 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
 
 ### M0 — decisions
 
-- **A successor ADR to `ADR-001` for the third project.** It records:
-  - what the project owns: the notebook-only recipes and the evidence copies;
-  - that it reads only exposed objects from the main project's zones 00–31;
-  - that no build crosses the boundary, and nothing in the main project reads it;
-  - its key and name, an open item since D13;
-  - the correction to `DEC-ARCH-001`'s sync count.
-- **How the notebooks run (decided 2026-10-28: locally).** They run from the repository through
-  `runner.run()`, with the dataiku client set to the evidence project as the default project. This
-  needs:
-  - a wrapper under `tools/` and a local environment (Python 3.13 to match DSS, the dataiku client,
-    `pandas`, `numpy`, `matplotlib`, `seaborn`, `IPython`);
-  - and it retires the DSS library copy: `/python/nb_assertions/`, `push_assertions.py` and its
-    drift check in `check_indexes.sh`.
+**Drafted 2026-10-28, awaiting approval.** The draft is an uncommitted diff:
 
-  Nothing runs on a schedule. Assertions run when evidence work or a validation calls for it.
-- **How the evidence project and the notebooks read upstream objects.**
-  - *Recommended now that the notebooks may be revised:* the evidence project's recipes take the
-    exposed main-project objects directly as inputs, as the main project already does with
-    `DEMO_KG_LS`'s. The notebooks read zone 00–31 objects by project-qualified name
-    (`DEMO_TARGET_IDENTIFICATION.scored_champion`), and evidence datasets by bare name. There are no
-    copies, and the notebooks always see the current model.
-  - *Alternative:* local sync copies in the evidence project, as Part 2 keeps of Part 1's. This
-    freezes a snapshot for validation work and leaves the notebooks' names unchanged, at about 1.15 GB
-    for `scored_champion`, the three split tables and `enriched_graph_features_candidate_psplit`.
-- **Build governance (`DEC-OPS-005`).** `breast_panel_metrics` becomes the evidence project's governed
-  target, under a new key in `allowed_targets`. The stale `breast_panel_overlap` entry goes. The
-  2026-08-31 pilot artifacts stay as history of the main-project recipe.
-- **Identity recipes (`DEC-OPS-006`).**
-  - `compute_breast_panel` moves, so the check learns the evidence project.
-  - `compute_demo_panel_config` and `compute_split_audit_2` will exist in both projects. The check
-    should assert that both copies match the one `dss_recipes/` mirror.
-  - Under the rebuild, the serving copy of `compute_demo_panel_config` reads its disease names from
-    `validation_auc_by_disease` instead of `persona_enrichment`. Decide whether the evidence copy
-    changes with it, so that the two copies stay identical.
-- **D14 and D15 amendments.**
-  - D14 names its metadata exceptions: the zone-10 metrics, the saved model and the Kuzu folder.
-  - D15 places `family_panel` and `demo_panel_config` with the zone-40 core, as the panel definition
-    both pages use.
-  - Under the rebuild, the `dashboard_candidates` chain moves into S1 beside the scoring run it reads,
-    and zone 40 keeps only the panel definition and `validation_set_personas_2`.
-- **The shortlist ranks with ties (decided 2026-10-28).**
-  - Tied scores share the lowest rank of their group, and the next rank skips (1, 2, 2, 4). This is
-    the window recipe's *rank*, which the per-disease AUC window already uses.
-  - It applies to the serving shortlist (M4) and the evidence-side shortlist (M2) alike, and to
-    `nb6`'s own recompute, which numbers rows 1..n today.
-  - The backend sorts tied rows by `gene_name`, so the table's order within a tie is stable.
-  - Record it in the register, with the measured effect in §2.
+- [ADR-003](../decisions/adrs/ADR-003-evidence-project.md), which extends `ADR-001` to three projects;
+- four new register entries, `DEC-ARCH-006`, `DEC-OPS-007`, `DEC-MEAS-005` and `DEC-ARCH-007`, each
+  `approved-not-executed`, a status that takes effect on approval;
+- dated consequence notes on `DEC-ARCH-001` (whose sync count is corrected from 12 to 13),
+  `DEC-OPS-003`, `DEC-OPS-005`, `DEC-OPS-006` and `DEC-DEMO-005`;
+- a pointer to ADR-003 in `ADR-001`'s header.
+
+| decision | where | content |
+|---|---|---|
+| the evidence project | ADR-003, `DEC-ARCH-006` | key `DEMO_TI_EVIDENCE`, name "Target Identification — Supporting Evidence"; it owns the notebook-only recipes and the evidence copies; it reads exposed zone 00–31 objects directly, with no sync copies; nothing reads it, and no build crosses the boundary; its datasets keep their main-project names |
+| how the notebooks run | `DEC-OPS-007` | locally, through `runner.run()` and a wrapper, with qualified literal reads of zones 00–31; the scenario, the library copy and `push_assertions.py` are retired |
+| ranking with ties | `DEC-MEAS-005` | lowest rank of the tie group, the next rank skipping (1, 2, 2, 4); `gene_name` sets the display order within a tie |
+| the serving flow | `DEC-ARCH-007` | re-zone, then rebuild with S1 as the pattern; amends D14 (the backend's metadata reads outside the serving zones) and D15 (the panel definition sits in the zone-40 core) |
+| build governance | `DEC-OPS-005` note | `breast_panel_metrics` allowlisted under `DEMO_TI_EVIDENCE`; `breast_panel_overlap` removed; the pilot artifacts stay as history |
+| identity recipes and variables | `DEC-OPS-006` note | both copies of `compute_demo_panel_config` and `compute_split_audit_2` are checked against one mirror, and both projects' variables against each other |
+
+**Proposed answers to the open items** in
+[`EVIDENCE_PROJECT_DESIGN.md`](EVIDENCE_PROJECT_DESIGN.md) §7 and earlier in this plan:
+
+- **Project key and name:** `DEMO_TI_EVIDENCE`, "Target Identification — Supporting Evidence".
+- **The evidence shortlist keeps the name `dashboard_candidates`.** The project boundary
+  disambiguates it, and `nb6` and `nb7` change nothing.
+- **The window column trims are accepted** on one condition: the grouped outputs match the main
+  project's exactly (M2 compare).
+- **Variables are copied once at creation.** The governed-values check then asserts the two projects
+  are equal. The variables change rarely (`DEC-OPS-006`), so no sync script is needed.
+- **`compute_demo_panel_config` takes its disease names from `graph_nodes`**, already one of its
+  inputs, instead of `persona_enrichment`, in both projects. The two copies stay identical, and the
+  panel no longer depends on the persona chain. Its output is unchanged, because both name sources
+  are the graph's disease node names.
+- **`nb6`'s lung-family ranking stays as it is.** It prints, asserts nothing, and is not the
+  shortlist. `DEC-MEAS-005` covers the two shortlists only.
+- **The rebuild's switch method:** repoint the backend's one constant per dataset in M5. In M4,
+  try renaming one small managed dataset. If the rename keeps its data and recipe links, M6 renames
+  the new datasets back to the original names with a second deploy; otherwise the new names stay.
+
+**Done when:** the user approves this diff.
 - **The rebuild's switch method:** repoint the backend's constants to suffixed names, or delete the old
   datasets and rename the new ones to the old names. Check rename behaviour on one small managed
   dataset first.
@@ -281,6 +274,9 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
 
 - Refresh the snapshot and the map: `python3 tools/build_recipe_index.py --refresh`, then
   `python3 tools/build_flow_map.py`.
+- **The evidence half is drafted** in [`EVIDENCE_PROJECT_DESIGN.md`](EVIDENCE_PROJECT_DESIGN.md)
+  (2026-10-28): every notebook read, the 24–25 recipes, the 18 exposed inputs, and the per-script
+  revisions.
 - **For each notebook read** in §2, decide how the evidence project provides it from zones 00–31:
   - a recipe moved from the main project;
   - a recipe copied from the main project;
@@ -289,12 +285,11 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
   It is never a read of a serving zone.
 - **For each notebook script**, list the revisions M2 makes:
   - which reads become project-qualified and which point at evidence datasets;
-  - `nb6`'s rank recompute changed to ranking with ties;
   - anything that assumed the DSS library or the scenario.
 - **`compute_filter_three_axes`** gets its ranked shortlist from the evidence side: `scored_champion`
-  restricted to the 12 shortlist diseases, ranked with ties. Before relying on it, check
-  that `scored_champion.proba_1` equals the served `score` on all 105,702 pairs. The two shortlist
-  scoring runs agree with each other, but this third comparison has not been made.
+  restricted to the 12 shortlist diseases, ranked with ties. **Checked 2026-10-28:** that
+  restriction holds exactly the 105,702 served pairs, with `proba_1` equal to the served `score`
+  (maximum difference 0) and the same `is_target`.
 - **The serving flow:** start from [`WEBAPP_DATASET_MAP.md`](WEBAPP_DATASET_MAP.md) §2–4.
   - Map every dataset after zone 31 to its zone under M3 and its fate under M4.
   - Confirm that one window recipe can give both the ordered rank and a whole-partition count. That
@@ -326,9 +321,10 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
   - the three family-panel scripts;
   - an evidence-side shortlist carrying the 8 columns `nb6` and `nb7` read, ranked with ties.
 
-  This is an estimated 20–25 recipes, plus one sync per upstream object if M0 chose copies.
-- **Revise the notebooks** as M1 listed. The revision changes where a script reads and how `nb6`
-  ranks; it never changes an assertion's expected value. A value that moves is investigated (§4).
+  This is 24–25 recipes ([`EVIDENCE_PROJECT_DESIGN.md`](EVIDENCE_PROJECT_DESIGN.md) §3), plus one
+  sync per upstream object if M0 chose copies.
+- **Revise the notebooks** as M1 listed. The revision changes where a script reads; it never changes
+  an assertion's expected value. A value that moves is investigated (§4).
 - **Point the tooling at the evidence project:** the runner wrapper, `POLICY.json` and
   `IDENTITY_RECIPES` as M0 decided. Retire `push_assertions.py` and its call in `check_indexes.sh`.
 - **Main-project changes:**

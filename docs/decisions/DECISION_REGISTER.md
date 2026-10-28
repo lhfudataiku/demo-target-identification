@@ -68,10 +68,10 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Date:** 2026-08-17
 - **Domain:** architecture
 - **Status:** accepted
-- **Decision:** `DEMO_KG_LS` owns graph construction; `DEMO_TARGET_IDENTIFICATION` consumes 12 synced datasets plus one direct-read Kuzu folder through an explicit shared-object contract and owns modeling, validation and serving.
+- **Decision:** `DEMO_KG_LS` owns graph construction; `DEMO_TARGET_IDENTIFICATION` consumes 13 synced datasets plus one direct-read Kuzu folder through an explicit shared-object contract and owns modeling, validation and serving. (Corrected 2026-10-28 from 12: `DEC-DATA-002` added `hgnc_identity`.)
 - **Rationale:** Separating graph construction protects the accepted graph from recursive model-side builds and gives the two parts a stable contract.
 - **Evidence:** [ADR-001](adrs/ADR-001-project-boundary.md), [`PROJECT_CONTEXT.md` §4](../overview/PROJECT_CONTEXT.md)
-- **Consequences:** Graph-derived inputs cross only through the declared shared-object interface; non-graph modeling sources stay with Part 2.
+- **Consequences:** Graph-derived inputs cross only through the declared shared-object interface; non-graph modeling sources stay with Part 2. From 2026-10-28 the supporting evidence moves to a third project that reads Part 2's zones 00–31 (`DEC-ARCH-006`, [ADR-003](adrs/ADR-003-evidence-project.md)); this boundary is unchanged.
 - **Supersedes:** the single-project layout
 - **Superseded by:** —
 - **Historical sources:** lines 39, 40
@@ -331,7 +331,7 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Decision:** Make notebooks the computational authority for every governed documented number.
 - **Rationale:** Prose drifts; assertion-first review turns discrepancies into a bounded worklist.
 - **Evidence:** [`VALIDATION.md` §§1, 7](../prioritizer/VALIDATION.md), [`CLAIM_REGISTRY.json`](../prioritizer/CLAIM_REGISTRY.json)
-- **Consequences:** A headline without an assertion is not governed evidence; assertion failures are investigated before prose is edited.
+- **Consequences:** A headline without an assertion is not governed evidence; assertion failures are investigated before prose is edited. From 2026-10-28 the assertions run locally, on demand, against the evidence project (`DEC-OPS-007`); this decision holds.
 - **Supersedes:** prose-first metric maintenance
 - **Superseded by:** —
 - **Historical sources:** lines 96
@@ -357,7 +357,7 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Decision:** Classify governed DSS builds deterministically against an explicitly accepted baseline; keep no-change and refresh-only events machine-readable, and request targeted review only for claim, contract or incident deltas.
 - **Rationale:** Sending every routine dataset or recipe operation through an agent repeats unchanged context, burns tokens and recreates documentation drift without adding review value.
 - **Evidence:** [`BUILD_GOVERNANCE.md`](../operations/BUILD_GOVERNANCE.md), [`DOC_RESTRUCTURE_PLAN.md` §8](../../archive/doc-restructure-2026-08-28/DOC_RESTRUCTURE_PLAN.md)
-- **Consequences:** Build events never write prose directly; live execution uses explicit target and evidence contracts, and scenario creation or a pilot build remains separately authorized.
+- **Consequences:** Build events never write prose directly; live execution uses explicit target and evidence contracts, and scenario creation or a pilot build remains separately authorized. From 2026-10-28 (`DEC-ARCH-006`) the governed target `breast_panel_metrics` lives in `DEMO_TI_EVIDENCE` and is allowlisted under that key. The stale `breast_panel_overlap` entry, deleted from DSS on 2026-09-03, leaves the allowlist. The 2026-08-31 pilot artifacts stay as history of the main-project recipe.
 - **Supersedes:** per-operation agent review and turn-by-turn Markdown build logging
 - **Superseded by:** —
 - **Historical sources:** —
@@ -396,7 +396,7 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Decision:** Demo-panel identity and the reporting thresholds move to project variables — `demo_panel` (names only, with `node_index` resolved from `graph_nodes` at run time) and the flat scalars `trust_n_pos`, `panel_n_pos`, `near_dup`, `ks`, `topn`. The ten seed-gated recipes keep their gate as a literal and are deliberately excluded, even though `module_size_gate` exists as a variable.
 - **Rationale:** Pinned `node_index` values fail silently — a graph rebuild renumbers them and the recipe selects a different disease with no error — so identity belongs in a variable resolved by name and asserted unique. The seed gates are the opposite case: `DEC-PH3-001` commits to changing them only inside a duplicated project with predictions declared in advance, and making the gate a one-command edit would erode that pre-registration. Convenience is the wrong property for a value whose change requires a controlled experiment.
 - **Evidence:** [`PHASE3_PREREGISTRATION.md` §2](../prioritizer/PHASE3_PREREGISTRATION.md) for the Class 1 / Class 2 split, `tools/recipe_classes.json` for the hand-recorded classification, `.index/recipes.tsv` (`gate` and `class` columns) for the live inventory, and `dss_recipes/visual/` for the mirrored visual formulas.
-- **Consequences:** A future seed change touches **ten** recipes and no variable. Nine are Class 1 (pure NULL-fill): `compute_enriched_disease_context_1`, `compute_enriched_dwpc_GCD`, `compute_enriched_dwpc_GGD`, `compute_enriched_dwpc_GPGD`, `compute_enriched_guilt_by_association_1`, `compute_enriched_module_size_1`, `compute_enriched_shared_pathway_count_1` (all `module_size >= 20`, Cypher via the visual-graph plugin), plus `compute_enriched_prox_closest` (`MIN_SEEDS 5; POOL_MIN 20`) and `compute_enriched_rwr_score_1` (`MIN_SEEDS 20`), both Python. The tenth, `compute_dwpc_go_metapaths` (`MIN_MODULE 20`), is Class 2 and **holds at 20**. Query the live list with `awk -F'\t' '$3!="-"' .index/recipes.tsv` rather than trusting this paragraph, which is a snapshot.
+- **Consequences:** A future seed change touches **ten** recipes and no variable. Nine are Class 1 (pure NULL-fill): `compute_enriched_disease_context_1`, `compute_enriched_dwpc_GCD`, `compute_enriched_dwpc_GGD`, `compute_enriched_dwpc_GPGD`, `compute_enriched_guilt_by_association_1`, `compute_enriched_module_size_1`, `compute_enriched_shared_pathway_count_1` (all `module_size >= 20`, Cypher via the visual-graph plugin), plus `compute_enriched_prox_closest` (`MIN_SEEDS 5; POOL_MIN 20`) and `compute_enriched_rwr_score_1` (`MIN_SEEDS 20`), both Python. The tenth, `compute_dwpc_go_metapaths` (`MIN_MODULE 20`), is Class 2 and **holds at 20**. Query the live list with `awk -F'\t' '$3!="-"' .index/recipes.tsv` rather than trusting this paragraph, which is a snapshot. From 2026-10-28 (`DEC-ARCH-006`) the variables and the identity recipes exist in two projects: `compute_breast_panel` only in `DEMO_TI_EVIDENCE`, and `compute_demo_panel_config` and `compute_split_audit_2` in both. `tools/check_governed_values.py` checks both copies against the one `dss_recipes/` mirror and both projects' variables against each other.
 - **Supersedes:** —
 - **Superseded by:** —
 - **Historical sources:** —
@@ -435,7 +435,7 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Decision:** The shortlist is the home route and first navigation item. Acts 1–3 become one page, *Why trust the list*, of three sections that keep every analysis, each with its headline answer up front and the rest under *Show the detail*. One disease selection drives both pages. With it go a boundary rule (notebooks read only zones 00–31, the webapp backend reads only serving zones, and no computed dataset is consumed by both) and a target zone layout after zone 40 organised by webapp function; new objects go in those zones from the start.
 - **Rationale:** In a short demo the presenter goes straight to the ranked list and skips Acts 1–3, so the fixed act order hid the evidence it was meant to build up to. Keeping three act pages ahead of the list was the alternative. *How do we know?* links from the shortlist carry the evidence into a short demo instead.
 - **Evidence:** [`WEBAPP_REDESIGN_SCOPE.md`](../../archive/WEBAPP_REDESIGN_SCOPE.md) §2 (scope decisions D9–D11, D14 and D15) and §4; [`WEBAPP_REDESIGN_WORKPLAN.md`](../../archive/WEBAPP_REDESIGN_WORKPLAN.md) Phase 0 (the boundary rule and zone layout) and Phases 1–2.
-- **Consequences:** [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md) changes its act order first, because `DEC-DEMO-002` holds; the act names stay as labels. `DEC-DEMO-001` holds in substance: the objections stay front-of-house, answered on demand rather than in sequence. The evidence page needs per-disease AUC for the shortlist's diseases. Whether the existing flow is migrated to the boundary rule and zone layout is decided separately, after the release. **Progress (2026-10-27):** the act order is changed, and the shortlist as home, *Why trust the list* and the shared disease are built on the preview webapp (workplan Phases 1–2), with every new dataset placed in zone `S1 Shortlist`. **Executed 2026-10-27:** live in the original webapp (`OlmPX9a`) at the Phase 8 switch-over, which replaced the four act pages. The flow migration decision (the boundary rule applied to the existing flow) remains separate, per [`FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md).
+- **Consequences:** [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md) changes its act order first, because `DEC-DEMO-002` holds; the act names stay as labels. `DEC-DEMO-001` holds in substance: the objections stay front-of-house, answered on demand rather than in sequence. The evidence page needs per-disease AUC for the shortlist's diseases. Whether the existing flow is migrated to the boundary rule and zone layout is decided separately, after the release. **Progress (2026-10-27):** the act order is changed, and the shortlist as home, *Why trust the list* and the shared disease are built on the preview webapp (workplan Phases 1–2), with every new dataset placed in zone `S1 Shortlist`. **Executed 2026-10-27:** live in the original webapp (`OlmPX9a`) at the Phase 8 switch-over, which replaced the four act pages. The flow migration decision (the boundary rule applied to the existing flow) remains separate, per [`FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md). **Decided 2026-10-28:** the migration runs in full (`DEC-ARCH-006`, `DEC-ARCH-007`). `DEC-ARCH-007` amends this decision: it names the backend's metadata reads outside the serving zones, and it places the panel definition in the zone-40 core.
 - **Supersedes:** the fixed Act 1 → Act 4 order in [`DEMO_NARRATIVE.md`](../demo/DEMO_NARRATIVE.md)
 - **Superseded by:** —
 - **Historical sources:** —
@@ -450,5 +450,59 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Evidence:** [`WEBAPP_REDESIGN_SCOPE.md`](../../archive/WEBAPP_REDESIGN_SCOPE.md) §2 (scope decision D16) and §3.6; [`WEBAPP_REDESIGN_WORKPLAN.md`](../../archive/WEBAPP_REDESIGN_WORKPLAN.md) Phase 3. Built 2026-10-26 from `hgnc_complete_set_2026-10-06.txt`: 44,477 records; 20,860 of 20,861 gene nodes matched; identical to a live HGNC lookup for the HER2+ top 200.
 - **Consequences:** `DEMO_KG_LS` exposes a 14th object (`PROJECT_CONTEXT.md` §4.3). Moving to a newer HGNC month is a deliberate rebuild of one recipe; the header names the file. The Phase 6 evidence searches take symbols and aliases from the same dataset.
 - **Supersedes:** per-request HGNC REST lookups from the webapp backend (built and replaced on 2026-10-26)
+- **Superseded by:** —
+- **Historical sources:** —
+
+## DEC-ARCH-006 — Supporting evidence lives in a third DSS project
+
+- **Date:** 2026-10-28
+- **Domain:** architecture
+- **Status:** approved-not-executed
+- **Decision:** A third project, `DEMO_TI_EVIDENCE`, owns the supporting evidence for model development. It holds the four notebook-only recipes moved from `DEMO_TARGET_IDENTIFICATION` (`compute_known_drug_truth`, `compute_pool_reachability`, `compute_filter_three_axes`, `compute_breast_panel`), copies of the recipes behind every other dataset the notebooks read, and a slim shortlist ranked from `scored_champion`. It reads `DEMO_TARGET_IDENTIFICATION` only through objects exposed from zones 00–31, used directly as recipe inputs. Nothing reads it, and no build crosses the boundary. Its datasets keep their main-project names.
+- **Rationale:** The notebooks read 15 computed datasets after zone 31, eight of which the webapp also reads, so a demo change could move a documented number and an evidence change could move the demo. Reading the main project's computed datasets is reasonable for model evidence, but the project clean-up prefers a clean separation. The alternatives were to leave the reads in place, or to drop the evidence datasets with the `validate_notebooks` scenario; future development and validation need them.
+- **Evidence:** [ADR-003](adrs/ADR-003-evidence-project.md); [`EVIDENCE_PROJECT_DESIGN.md`](../operations/EVIDENCE_PROJECT_DESIGN.md) (24–25 recipes, 18 exposed inputs; `scored_champion` restricted to the 12 shortlist diseases equals the served scores exactly, checked 2026-10-28); [`FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md) M2.
+- **Consequences:** `compute_demo_panel_config` and `compute_split_audit_2` exist in both projects, as do the `demo_identity` module and seven project variables; the governed-values check covers both. `breast_panel_metrics` becomes the evidence project's governed build target. The repository's index, flow-map, description and build-governance tools learn a second project. No live project is changed by this approval; the workplan's M2 executes it.
+- **Supersedes:** scope decision D13's deferral in [`WEBAPP_REDESIGN_SCOPE.md`](../../archive/WEBAPP_REDESIGN_SCOPE.md); the notebooks reading `DEMO_TARGET_IDENTIFICATION`'s computed datasets
+- **Superseded by:** —
+- **Historical sources:** —
+
+## DEC-OPS-007 — Notebook assertions run locally, on demand
+
+- **Date:** 2026-10-28
+- **Domain:** operations
+- **Status:** approved-not-executed
+- **Decision:** The notebooks stay in the repository and run locally through `tools/nb_assertions/runner.py`, with the dataiku client's default project set to the evidence project. Their reads of zones 00–31 name `DEMO_TARGET_IDENTIFICATION` as literals (`"DEMO_TARGET_IDENTIFICATION.scored_champion"`). The `validate_notebooks` scenario, the DSS library copy under `/python/nb_assertions/`, `tools/push_assertions.py` and its drift check are retired.
+- **Rationale:** The scenario has had no steps since 2026-10-05 and last ran green on 2026-09-03, so the DSS copy was already not what ran. One copy, run from the repository, cannot drift from itself. The alternatives were a scenario in the evidence project, which keeps a second copy and runs only when something schedules it, or name mapping inside the run wrapper, which hides where a read goes.
+- **Evidence:** [`EVIDENCE_PROJECT_DESIGN.md`](../operations/EVIDENCE_PROJECT_DESIGN.md) §§5–6 (29 read sites in 8 files; a qualified read tested from a local run on 2026-10-28); [`FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md) M0 and M2.
+- **Consequences:** `DEC-OPS-003` holds: the notebooks remain the computational authority, but nothing runs them on a schedule, so a serving change can move a documented number until the next local run. A wrapper (`tools/run_notebooks.py`) and a pinned Python 3.13 environment with `matplotlib`, `seaborn` and `IPython` make that run one command. No check line changes; `.index/assertions.tsv` keeps its expected values.
+- **Supersedes:** execution of the assertion scripts by the `validate_notebooks` scenario from the project library
+- **Superseded by:** —
+- **Historical sources:** —
+
+## DEC-MEAS-005 — Shortlist ranks share a value when scores tie
+
+- **Date:** 2026-10-28
+- **Domain:** measurement
+- **Status:** approved-not-executed
+- **Decision:** `rank_in_disease` gives tied scores the lowest rank of their group, and the next rank skips (1, 2, 2, 4), in the served shortlist and in the evidence project's shortlist alike. `rank_percentile` follows from it. Display order within a tie is `gene_name`.
+- **Rationale:** Today a row-number window numbers 4,514 tied rows (903 groups of up to 160) in arbitrary order, so any rebuild reorders them; re-ranking already reorders 3,156. A rank that depends on row order is not a measurement. Dense ranking (1, 2, 2, 3) was rejected because it shifts 92,909 untied rows; a deterministic tie-breaker such as `gene_index` was rejected because it ranks genes the model cannot tell apart.
+- **Evidence:** [`FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md) §2 and [`WEBAPP_DATASET_MAP.md`](../operations/WEBAPP_DATASET_MAP.md) §5.1, measured on the served list on 2026-10-27/28: 3,611 ranks and 2,155 percentiles change, all on tied rows; no tie group straddles rank 15, 20, 50 or 200.
+- **Consequences:** The rebuild's compare predicts every new rank exactly, as the lowest old rank in its tie group. The backend's and the notebooks' top-N cut-offs select the same rows. The 21 pre-filled HER2+ pairs do not change. `WEBAPP_DESIGN.md` states that tied scores share a rank.
+- **Supersedes:** row-number ranking in `rank_per_disease`
+- **Superseded by:** —
+- **Historical sources:** —
+
+## DEC-ARCH-007 — The serving flow is re-zoned, then rebuilt by webapp function
+
+- **Date:** 2026-10-28
+- **Domain:** architecture
+- **Status:** approved-not-executed
+- **Decision:** The flow after zone 31 is migrated in full. It is first re-zoned (A1→S2, A2→S3, A3→S4, `dashboard_candidates` to S1, A4 removed), then rebuilt chain by chain with zone `S1 Shortlist` as the pattern: each served dataset is built from zones 00–31 and the panel definition with visual recipes, one scoring run serves the shortlist, and `persona_enrichment`'s fields fold into `validation_auc_by_disease`. Two amendments apply to `DEC-DEMO-005`'s boundary rule and zone layout:
+  - the backend may read three kinds of metadata outside the serving zones: the zone-10 DWPC `COUNT_RECORDS` metrics, the saved model's metrics, and the Kuzu folder behind the graph tool;
+  - the panel definition (`family_panel`, `demo_panel_config`) sits in the zone-40 core, which after the rebuild holds only it and `validation_set_personas_2`.
+- **Rationale:** The shortlist's scope comes from `demo_panel_config.in_act4`, so the real build order is the family panels, then zone 40, then S1; placing the panel definition in the core keeps the arrows one way. Re-zoning is metadata only and goes first. The rebuild removes 8–9 more recipes and datasets, one of two identical scoring runs, and a 297 MB pass-through copy. The alternatives were deletions only, or re-zoning without the rebuild.
+- **Evidence:** [`WEBAPP_DATASET_MAP.md`](../operations/WEBAPP_DATASET_MAP.md) §§1–4 (47 → 41 → 32–33 recipes and datasets); [`FLOW_MIGRATION_WORKPLAN.md`](../operations/FLOW_MIGRATION_WORKPLAN.md) §1, M3–M6, with the full option chosen on 2026-10-28.
+- **Consequences:** Two webapp routes read `disease` and `rank_enrichment` from `validation_auc_by_disease`. The identity recipe `compute_demo_panel_config` takes its disease names from `graph_nodes`, already one of its inputs, instead of `persona_enrichment`, in both projects, so the two copies stay identical (`DEC-OPS-006`). `Refresh_serving_layer` is rewritten around the final zones. Zone 20 is re-zoned into its three jobs and never rebuilt. No live project is changed by this approval; the workplan's M3–M6 execute it.
+- **Supersedes:** the act-numbered zones A1–A4; the "shared core first" order in `DEC-DEMO-005`'s zone layout
 - **Superseded by:** —
 - **Historical sources:** —

@@ -232,8 +232,9 @@ adds 1 (the name join). `calibration.py` and `families.py` would read `disease` 
 
 **Evidence §3.** It keeps its 6 recipes. `compute_family_panel` would read
 `validation_auc_by_disease` instead of `validation_auc_ci`. `compute_demo_panel_config` would read its
-disease names from `validation_auc_by_disease` instead of `persona_enrichment`. That second change
-alters an identity recipe, so it goes through `DEC-OPS-006`.
+disease names from `graph_nodes`, already one of its inputs, instead of `persona_enrichment`, in both
+projects. That second change alters an identity recipe, so it goes through `DEC-OPS-006`
+(`DEC-ARCH-007`, proposed 2026-10-28).
 
 ### 4.3 Trims that remove rows or columns but no recipes
 
