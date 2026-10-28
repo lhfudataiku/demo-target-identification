@@ -62,7 +62,8 @@ evidence and generated documents appear first; planning and historical material 
 
 | | |
 |---|---|
-| [`operations/FLOW_MIGRATION_WORKPLAN.md`](operations/FLOW_MIGRATION_WORKPLAN.md) | **Draft, 2026-10-26.** After the redesign: the notebooks' supporting evidence moves to its own DSS project reading only zones 00–31, and the flow after zone 40 is rebuilt by webapp function, compared with the old, then retired (M0–M5) |
+| [`operations/FLOW_MIGRATION_WORKPLAN.md`](operations/FLOW_MIGRATION_WORKPLAN.md) | **Draft, revised 2026-10-28; full option chosen.** The notebooks stay in the repository and run locally, and `validate_notebooks` is dropped. Their supporting evidence moves to its own DSS project reading only zones 00–31 (M2). The serving flow is then re-zoned (M3) and rebuilt by webapp function with tied ranks (M4–M6) |
+| [`operations/WEBAPP_DATASET_MAP.md`](operations/WEBAPP_DATASET_MAP.md) | **Draft, 2026-10-27.** What the released webapp reads, field by field and with row scope, and the recipe and dataset counts of re-zoning versus rebuilding the serving flow once the notebook components leave it |
 
 Completed plans move to [`../archive/`](../archive/): the most recent is the webapp redesign, live
 2026-10-27 (`DEC-DEMO-004`, `DEC-DEMO-005`; its scope and workplan are
