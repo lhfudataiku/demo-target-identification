@@ -90,6 +90,16 @@ FIRST_AFTER_SHORTLIST = "compute_known_drug_truth"
 # The identity recipes that exist in both projects (DEC-OPS-006 note); --main-identity aligns them.
 SHARED_IDENTITY = ("compute_split_audit_2", "compute_demo_panel_config")
 
+# The window column trims (M0, design §3.2): each window keeps its partition key and the columns
+# its group aggregates (gene_index, is_target, rank) plus proba_1 to order by; the main copies keep
+# all 45 columns of scored_champion. group_family_auc reads disease_index too.
+WINDOW_TRIMS = {
+    "compute_validation_set_scored_windows": ["disease_index", "gene_index", "is_target", "proba_1"],
+    "window_family_rank": ["disease_family_id", "disease_index", "gene_index", "is_target", "proba_1"],
+}
+# The per-disease group lists every input column as an inactive value; those must exist after the trim.
+TRIMMED_GROUPS = {"compute_validation_set_scored_grouped": "compute_validation_set_scored_windows"}
+
 # The columns nb6 and nb7 read, plus those compute_filter_three_axes reads (design §2.1, §3.4).
 SHORTLIST_COLUMNS = {"disease_index", "gene_index", "disease_name", "gene_name", "rank_in_disease",
                      "is_target", "has_safety_liability", "approved_for_disease", "ot_sm_tractable",
@@ -232,10 +242,28 @@ def shortlist_recipes(window_template: dict, prepare_template: dict, prepare_par
     ]
 
 
+def trim_window(payload: dict, keep: list[str], types: dict) -> dict:
+    """Retrieve only `keep`: in EXPLICIT mode a window outputs the values marked `value`."""
+    payload = copy.deepcopy(payload)
+    payload["retrievedColumnsSelectionMode"] = "EXPLICIT"
+    payload["values"] = [{"column": col, "type": types[col], "value": True} for col in keep]
+    payload["postFilter"] = no_filter()
+    return payload
+
+
+def trim_group(payload: dict, keep: list[str]) -> dict:
+    """Drop the inactive value entries of columns the trimmed window no longer outputs."""
+    payload = copy.deepcopy(payload)
+    payload["values"] = [v for v in payload["values"] if "customExpr" in v or v["column"] in keep]
+    payload["postFilter"] = no_filter()
+    return payload
+
+
 def plan(main_p) -> list[dict]:
     """Every recipe to create, in build order, read from the main project's live definitions."""
     items = []
     window_template = prepare_template = prepare_params = None
+    types = {c["name"]: c["type"] for c in main_p.get_dataset("scored_champion").get_schema()["columns"]}
     for name, zone, changes in COPIES:
         if name == FIRST_AFTER_SHORTLIST:
             for s in shortlist_recipes(window_template, prepare_template, prepare_params):
@@ -258,6 +286,10 @@ def plan(main_p) -> list[dict]:
                 prepare_template = copy.deepcopy(item["payload"])
                 prepare_params = copy.deepcopy(raw["params"])
                 prepare_params["engineParams"]["spark"]["readParams"]["map"] = {}
+            if name in WINDOW_TRIMS:
+                item["payload"] = trim_window(item["payload"], WINDOW_TRIMS[name], types)
+            if name in TRIMMED_GROUPS:
+                item["payload"] = trim_group(item["payload"], WINDOW_TRIMS[TRIMMED_GROUPS[name]] + ["rank"])
         missing = [x for x in changes if changes[x] is not None and x not in main_inputs]
         assert not missing, (name, missing)
         items.append(item)
@@ -327,10 +359,14 @@ def configure(ev, recipe, item):
     if item["type"] == "shaker" and not item["copy"]:
         # Filling empty cells keeps the columns, so the output schema is the input's.
         ev.get_dataset(item["output"]).set_schema(ev.get_dataset(item["inputs"][0]).get_schema())
-    elif not item["copy"]:
+    elif not item["copy"] or item["name"] in WINDOW_TRIMS:
         # Applied unconditionally: narrowing an existing output is not an "action required".
         recipe.compute_schema_updates().apply()
     return recipe
+
+
+def trimmed(item) -> bool:
+    return item["name"] in WINDOW_TRIMS or item["name"] in TRIMMED_GROUPS
 
 
 def zone_by_name(ev):
@@ -364,8 +400,11 @@ def read_back(ev, items) -> list[str]:
             problems.append("%s: in zone %r, expected %r" % (out, zone.name, ZONES[item["zone"]]))
         if ds.get("flowOptions", {}).get("virtualizable") is not False:
             problems.append("%s: virtualizable" % out)
-        if not ev.get_dataset(out).get_schema()["columns"]:
+        columns = [c["name"] for c in ev.get_dataset(out).get_schema()["columns"]]
+        if not columns:
             problems.append("%s: empty schema" % out)
+        if name in WINDOW_TRIMS and sorted(columns) != sorted(WINDOW_TRIMS[name] + ["rank"]):
+            problems.append("%s: columns %s, expected the trim" % (out, columns))
     cols = {c["name"] for c in ev.get_dataset("dashboard_candidates").get_schema()["columns"]}
     if SHORTLIST_COLUMNS - cols:
         problems.append("dashboard_candidates lacks %s" % sorted(SHORTLIST_COLUMNS - cols))
@@ -444,6 +483,8 @@ def main() -> int:
     print("%s zones    %s" % (act, ", ".join(ZONES.values())))
     for item in items:
         state = "exists, kept" if item["name"] in have_recipes else ("copy" if item["copy"] else "new")
+        if item["name"] in have_recipes and trimmed(item):
+            state = "exists, trim"
         inputs = ", ".join(("%s.%s" % (MAIN, x)) if x in UPSTREAM else x for x in item["inputs"])
         print("%s %-2s %-38s %-8s %-12s -> %s   [%s]" % (act, item["zone"], item["name"], item["type"],
                                                          state, item["output"], inputs))
@@ -464,7 +505,7 @@ def main() -> int:
         store_output(ev, item["output"])
         if item["name"] not in have_recipes:
             create_recipe(ev, item)
-        elif not item["copy"]:
+        elif not item["copy"] or trimmed(item):
             configure(ev, ev.get_recipe(item["name"]), item)
         zones[item["zone"]].add_item(ev.get_dataset(item["output"]))
 

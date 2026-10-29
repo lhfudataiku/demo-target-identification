@@ -430,8 +430,19 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
     before. `build_recipe_index.py --refresh` mirrored the two recipes; the refresh also first saw
     the `target_evidence_agent` LLM agent, now recorded in `tools/model_registry.json` as not a
     prioritizer model.
-  - **The window column trims are not applied yet.** The copies are verbatim. Trim after the M2
-    compare, as M0 allows.
+  - **The window column trims, applied and accepted 2026-10-29** (the user ran `--apply` and the
+    rebuild; read back OK). Only the evidence copies are trimmed; the main project's keep all 46
+    columns.
+    - `compute_validation_set_scored_windows` retrieves `disease_index`, `gene_index`, `is_target`
+      and `proba_1`, and `window_family_rank` also `disease_family_id`; both add `rank`. The
+      per-disease group lost its inactive entries for the dropped columns, and kept its six
+      aggregates. `group_family_auc` needed no change.
+    - The builder holds the trims as data (`WINDOW_TRIMS`). Read-back fails if a window's output has
+      any other column.
+    - The four-stage non-recursive rebuild of the evidence AUC chain was compared read-only with the
+      main project: both windows (3,958,921 rows, on the kept columns), both groups, and
+      `validation_auc_by_disease`, `family_auc_by_family` and `validation_auc_ci` are identical. M0's
+      condition holds.
 - **Move the four notebook-only recipes and their datasets** (§2).
   - DSS cannot move a recipe between projects, so copy it (copy subflow to another project, or
     recreate it), then delete the main-project original once M2 is accepted.
