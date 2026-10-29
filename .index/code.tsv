@@ -84,7 +84,7 @@ notebooks/nb7_panel_selection.py	notebook	LIVE (tripwire)	2	docs/demo/panel_sele
 reference_baseline.json	root-script	LIVE (referenced)	4	archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md,docs/graph/GRAPH_BUILDING.md
 scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
-tools/build_evidence_flow.py	tool	LIVE	2	docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md
+tools/build_evidence_flow.py	tool	LIVE	3	docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/check_governed_values.py
 tools/build_flow_map.py	tool	LIVE	4	docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MAP.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/check_indexes.sh
 tools/build_governance.py	tool	LIVE	3	docs/operations/BUILD_GOVERNANCE.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/tests/test_build_governance.py
 tools/build_index.py	tool	LIVE	10	archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/decisions/README.md
@@ -94,7 +94,7 @@ tools/capture_build_governance.py	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.m
 tools/capture_webapp_payloads.py	tool	LIVE	1	docs/operations/FLOW_MIGRATION_WORKPLAN.md
 tools/check_claim_registry.py	tool	LIVE	4	docs/operations/FLOW_MIGRATION_WORKPLAN.md,docs/prioritizer/VALIDATION.md,tools/check_indexes.sh,tools/index_manifest.json
 tools/check_freshness.py	tool	LIVE	2	archive/DASHBOARD_BUILD_LOG.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md
-tools/check_governed_values.py	tool	LIVE	6	docs/decisions/DECISION_REGISTER.md,docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,docs/operations/WEBAPP_DATASET_MAP.md
+tools/check_governed_values.py	tool	LIVE	7	docs/decisions/DECISION_REGISTER.md,docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,docs/operations/WEBAPP_DATASET_MAP.md
 tools/check_harness.py	tool	LIVE	3	docs/operations/FLOW_MIGRATION_WORKPLAN.md,harness/README.md,tools/check_indexes.sh
 tools/check_indexes.sh	tool	LIVE	13	.github/workflows/checks.yml,README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/decisions/DECISIONS_2026-08-31.md
 tools/check_links.py	tool	LIVE	7	archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/doc-restructure-2026-08-28/PHASE_0_BASELINE_2026-08-28.md
@@ -109,6 +109,7 @@ tools/nb_assertions/derive.py	tool	LIVE	3	docs/operations/EVIDENCE_PROJECT_DESIG
 tools/nb_assertions/runner.py	tool	LIVE	7	archive/notebooks-dss-2026-09-03/README.md,docs/decisions/DECISION_REGISTER.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,harness/skills/target-id/references/number-update.md
 tools/push_descriptions.py	tool	LIVE	3	docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/check_indexes.sh,tools/dataset_descriptions.json
 tools/recipe_classes.json	tool	LIVE	6	archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md,docs/prioritizer/PHASE3_PREREGISTRATION.md
+tools/retire_serving_m6.py	tool	LIVE	1	docs/operations/FLOW_MIGRATION_WORKPLAN.md
 tools/run_notebooks.py	tool	LIVE	7	docs/decisions/DECISION_REGISTER.md,docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,harness/skills/target-id/references/number-update.md
 tools/setup_evidence_project.py	tool	LIVE	1	docs/operations/FLOW_MIGRATION_WORKPLAN.md
 tools/sync_harness.py	tool	LIVE	10	AGENTS.md,CLAUDE.md,README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md
@@ -120,7 +121,7 @@ tools/tests/test_index_manifest.py	tool	LIVE	0	-
 webapp/.claude/settings.json	webapp	LIVE (referenced)	4	.gitignore,archive/BLUEPRINT_ALIGNMENT_PLAN.md,harness/README.md,tools/build_recipe_index.py
 webapp/backend/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
 webapp/backend/app.py	webapp	LIVE (referenced)	4	archive/BLUEPRINT_ALIGNMENT_PLAN.md,tools/recipe_classes.json,webapp/DEPLOYMENT.md,webapp/README.md
-webapp/backend/config.py	webapp	LIVE (referenced)	5	docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,webapp/README.md,webapp/app.env
+webapp/backend/config.py	webapp	LIVE (referenced)	6	docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/retire_serving_m6.py,webapp/README.md
 webapp/backend/dss_client.py	webapp	LIVE (referenced)	8	docs/demo/WEBAPP_DESIGN.md,docs/operations/EVIDENCE_PROJECT_DESIGN.md,harness/WEBAPP_OVERLAY.md,tools/run_notebooks.py
 webapp/backend/feature_glossary.py	webapp	LIVE (referenced)	7	archive/WEBAPP_REDESIGN_WORKPLAN.md,docs/demo/WEBAPP_DESIGN.md,dss_recipes/compute_shap_top5.py,tools/check_indexes.sh
 webapp/backend/prefill.py	webapp	LIVE (referenced)	2	archive/WEBAPP_REDESIGN_WORKPLAN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md

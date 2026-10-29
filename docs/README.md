@@ -48,6 +48,7 @@ evidence and generated documents appear first; planning and historical material 
 | [`platform/DSS_CHEATSHEET.md`](platform/DSS_CHEATSHEET.md) | DSS behaviours and CLI patterns. **Read §1 before trusting any output** — those failures produce plausible results rather than errors |
 | [`operations/BUILD_GOVERNANCE.md`](operations/BUILD_GOVERNANCE.md) | Deterministic Part 2 build-event, accepted-baseline and targeted-review contract; read before designing or operating the approved DSS pilot |
 | [`operations/FLOW_MAP.md`](operations/FLOW_MAP.md) | Every dataset by zone, its producing recipe and its consuming act or notebook — generated from live DSS. **Read before pruning anything**: a reference check alone flags the whole serving layer |
+| [`operations/FLOW_MAP_EVIDENCE.md`](operations/FLOW_MAP_EVIDENCE.md) | The same map for the evidence project `DEMO_TI_EVIDENCE`, whose datasets the notebooks read; generated from live DSS. `.index/recipes_evidence.tsv` says which of its recipes are identity recipes, checked copies or evidence-only |
 | [`reference/RESEARCH_NOTE.md`](reference/RESEARCH_NOTE.md) | Evidence base behind the modelling choices. **Unvalidated corpus — verify before client-facing use** |
 | [`reference/DISCOVERY_LANDSCAPE.md`](reference/DISCOVERY_LANDSCAPE.md) | The wider discovery chain (stages 1–6). A **separate framework** from the target-identification work above |
 

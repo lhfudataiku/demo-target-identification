@@ -18,6 +18,7 @@ Regenerate after editing any doc or recipe: `./tools/check_indexes.sh` verifies,
 | "what happened historically around X" | `grep -i 'X' .index/decisions_history.tsv \| head -n 20` → classified archived-log line |
 | "which recipe makes feature F, is it gated" | `awk -F'\t' '$1=="dwpc_GBGD"' .index/features.tsv` |
 | "which recipes carry a seed gate, and are they safe to widen" | `awk -F'\t' '$3!="-"' .index/recipes.tsv \| head -n 30` |
+| "which notebook dataset comes from which evidence recipe" | `cut -f1,3,4,6 .index/recipes_evidence.tsv \| column -t -s$'\t'` |
 | "is this documented number guarded by a notebook" | `awk -F'\t' '$4=="0.8230"' .index/claims.tsv \| head -n 20` — `status` + `guarded_by` are fields 5-6 |
 | "what is unguarded and could drift" | `.index/SUMMARY.md`, "Risk surface" section |
 | "which entry points consume the champion" | `awk -F'\t' '$3=="yes"{print $16}' .index/models.tsv` |

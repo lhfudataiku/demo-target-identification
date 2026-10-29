@@ -29,6 +29,13 @@ Usage:
     python3 tools/build_recipe_index.py --refresh     # hits DSS, rewrites snapshot + cypher mirror
     python3 tools/build_recipe_index.py               # offline, rebuilds indexes from the snapshot
     python3 tools/build_recipe_index.py --check       # non-zero if indexes or classes are stale
+
+The evidence project (DEMO_TI_EVIDENCE, ADR-003) gets its own snapshot,
+`.index/dss_snapshot_evidence.json`, and index, `.index/recipes_evidence.tsv`: it reuses 21 of this
+project's recipe names, so its recipes cannot share the main snapshot, which is keyed by name. Each
+evidence recipe is classed as an identity recipe (DEC-OPS-006), a copy (the main project runs a
+recipe of the same name) or evidence-only. check_governed_values.py holds the copies to the main
+project's mirrors.
 """
 
 import json
@@ -40,6 +47,7 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, ".index")
 SNAP = os.path.join(INDEX, "dss_snapshot.json")
+EV_SNAP = os.path.join(INDEX, "dss_snapshot_evidence.json")
 CYPHER_DIR = os.path.join(ROOT, "dss_recipes", "cypher")
 VISUAL_DIR = os.path.join(ROOT, "dss_recipes", "visual")
 
@@ -102,9 +110,9 @@ def evidence_snapshot():
             "owned_code": {n: code[n] for n in EVIDENCE_OWNED}, "variables": variables}
 
 
-def refresh():
-    """Snapshot every recipe's settings and mirror any Cypher into the repo."""
-    listing = sh(["dku", "recipe", "list", "-P", PROJECT]).split("\n")
+def capture_recipes(project):
+    """{recipe: {code, type, inputs, outputs, cypher, visual}} for every recipe of `project`."""
+    listing = sh(["dku", "recipe", "list", "-P", project]).split("\n")
     names = []
     for ln in listing:
         parts = ln.split("\t") if "\t" in ln else ln.split()
@@ -112,7 +120,7 @@ def refresh():
             names.append(parts[0])
     snap = {}
     for i, n in enumerate(names, 1):
-        raw = sh(["dku", "recipe", "get-settings", n, "-P", PROJECT])
+        raw = sh(["dku", "recipe", "get-settings", n, "-P", project])
         m = re.search(r"\{.*\}", raw, re.S)
         if not m:
             print("  WARN no settings for %s" % n, file=sys.stderr)
@@ -135,7 +143,7 @@ def refresh():
                 cy = mm.group(1).encode().decode("unicode_escape")
         code = None
         if d.get("type") in ("python", "shell", "r", "sql_query", "sql_script"):
-            raw_code = sh(["dku", "recipe", "get-code", n, "-P", PROJECT])
+            raw_code = sh(["dku", "recipe", "get-code", n, "-P", project])
             if raw_code and "has no code payload" not in raw_code:
                 code = raw_code
         snap[n] = {
@@ -150,6 +158,26 @@ def refresh():
         }
         if i % 15 == 0:
             print("  ... %d/%d" % (i, len(names)))
+    return snap
+
+
+def evidence_full_snapshot():
+    """The evidence project's recipes, and the zone of each recipe and dataset."""
+    from check_governed_values import EVIDENCE_PROJECT
+    recipes = capture_recipes(EVIDENCE_PROJECT)
+    zones = json.loads(sh(["dku", "--format", "json", "flow", "zones", "-P", EVIDENCE_PROJECT]) or "[]")
+    zone_of = {}
+    for z in zones:
+        for item in z.get("items", []):
+            if item.get("objectType") in ("RECIPE", "DATASET") and "." not in item["objectId"]:
+                zone_of.setdefault(item["objectId"], z["name"])
+    print("evidence recipes: %d" % len(recipes))
+    return {"project": EVIDENCE_PROJECT, "recipes": recipes, "zones": zone_of}
+
+
+def refresh():
+    """Snapshot every recipe's settings and mirror any Cypher into the repo."""
+    snap = capture_recipes(PROJECT)
     # Dataset schemas, so emitted columns can be derived as (output cols - input cols) instead of
     # by regexing each recipe's source. The regex missed dwpc_GBGD/dwpc_GFGD and two ppi_* features
     # because not every python recipe builds its output from a dict literal.
@@ -203,6 +231,7 @@ def refresh():
 
     os.makedirs(INDEX, exist_ok=True)
     json.dump(snap, open(SNAP, "w"), indent=1, sort_keys=True)
+    json.dump(evidence_full_snapshot(), open(EV_SNAP, "w"), indent=1, sort_keys=True)
 
     # A python recipe that is not mirrored in dss_recipes/ is invisible to review AND was invisible
     # to this scan until the snapshot started carrying `code`. compute_enriched_rwr_score_1 carries a
@@ -595,6 +624,23 @@ def main():
         crows.append({"path": f, "kind": kind, "status": status,
                       "n_refs": len(refs), "referenced_by": ",".join(refs[:4]) or "-"})
 
+    from check_governed_values import IDENTITY_RECIPES
+    ev_rows = []
+    if os.path.exists(EV_SNAP):
+        ev = json.load(open(EV_SNAP))
+        main_names = {n for n in snap if not n.startswith("_")}
+        for name, rec in sorted(ev["recipes"].items()):
+            # "copy": a Python recipe both projects run, held to the main mirror by
+            # check_governed_values.py rule 5. "same name": a visual recipe whose main namesake M4
+            # rebuilt, so the two now differ by design.
+            relation = ("identity" if name in IDENTITY_RECIPES
+                        else ("copy" if rec.get("type") == "python" else "same name")
+                        if name in main_names else "evidence-only")
+            ev_rows.append({"recipe": name, "type": rec.get("type", ""),
+                            "zone": ev["zones"].get(name, "-"), "relation": relation,
+                            "inputs": ",".join(rec.get("inputs") or []) or "-",
+                            "outputs": ",".join(rec.get("outputs") or []) or "-"})
+
     def tsv(rr, cols):
         return "\n".join(["\t".join(cols)] +
                          ["\t".join(str(r[c]).replace("\t", " ") for c in cols) for r in rr]) + "\n"
@@ -613,6 +659,7 @@ def main():
                             "inputs", "outputs"]),
         "features.tsv": tsv(sorted(feats, key=lambda r: (r["in_champion"] == "", r["feature"])),
                             ["feature", "produced_by", "gate", "class", "in_champion", "note"]),
+        "recipes_evidence.tsv": tsv(ev_rows, ["recipe", "type", "zone", "relation", "inputs", "outputs"]),
     }
 
     if "--check" in sys.argv:
@@ -634,8 +681,8 @@ def main():
                 print("UNCLASSIFIED gated recipes (add to tools/recipe_classes.json): %s"
                       % ", ".join(unclassified))
             return 1
-        print("recipe index up to date (%d recipes, %d gated)"
-              % (len(rows), sum(1 for r in rows if r["gate"] != "-")))
+        print("recipe index up to date (%d recipes, %d gated; %d evidence recipes)"
+              % (len(rows), sum(1 for r in rows if r["gate"] != "-"), len(ev_rows)))
         return 0
 
     os.makedirs(INDEX, exist_ok=True)
@@ -645,8 +692,9 @@ def main():
     orph = [r for r in crows if r["status"].startswith("ORPHAN")]
     stale = [r for r in crows if r["status"].startswith("STALE")]
     print("wrote .index/recipes.tsv (%d recipes, %d gated), features.tsv (%d columns), "
-          "models.tsv (%d models), code.tsv (%d files: %d orphan, %d stale mirror)"
-          % (len(rows), len(gated), len(feats), len(mrows), len(crows), len(orph), len(stale)))
+          "models.tsv (%d models), code.tsv (%d files: %d orphan, %d stale mirror), "
+          "recipes_evidence.tsv (%d recipes)"
+          % (len(rows), len(gated), len(feats), len(mrows), len(crows), len(orph), len(stale), len(ev_rows)))
     if drift:
         print("\n!! CHAMPION METRICS WITH NO MATCHING NOTEBOOK ASSERTION: %s\n"
               "   The registry is hand-transcribed; an unguarded metric there can drift exactly the\n"

@@ -13,6 +13,8 @@
 > python3 tools/build_flow_map.py
 > ```
 
+Project `DEMO_TARGET_IDENTIFICATION`. The other Part 2 project is mapped in [`FLOW_MAP_EVIDENCE.md`](FLOW_MAP_EVIDENCE.md): the evidence project, which the notebooks read and nothing here reads.
+
 Live DSS: **83 datasets across 20 zones**, cross-referenced against the recipe graph (81 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
 
 A dataset counts as **read** only when its name appears *quoted* in reader code. A bare

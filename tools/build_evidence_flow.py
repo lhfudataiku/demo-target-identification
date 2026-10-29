@@ -1,5 +1,10 @@
 """Create the evidence project's recipes and datasets (EVIDENCE_PROJECT_DESIGN.md §3, workplan M2).
 
+DONE, KEPT AS THE RECORD: it builds each copy from the main project's live recipe of the same
+name, and M6 (2026-10-29) deleted five of those and gave three names to rebuilt recipes, so a dry
+run now fails. The evidence copies are the source for their own recipes; check_governed_values.py
+holds the Python copies to the main project's mirrors.
+
 DRY RUN BY DEFAULT: it reads both projects and prints every object it would create. Nothing is
 written to DSS without --apply or --main-identity, and each needs the user's approval at the time.
 Neither builds anything: the datasets are created empty, and the user runs the build.

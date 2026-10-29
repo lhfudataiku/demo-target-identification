@@ -12,6 +12,10 @@ A stale middle link is invisible until something rebuilds through it. This makes
     ./tools/check_freshness.py                 # whole project
     ./tools/check_freshness.py --zone A4       # one zone, by name prefix
     ./tools/check_freshness.py --quiet         # exit code only, for a pre-build gate
+    ./tools/check_freshness.py --project DEMO_TI_EVIDENCE   # the evidence project (ADR-003)
+
+In the evidence project only local parents are compared: its main-project inputs belong to the
+main project's own run of this check.
 
 Exit 1 if any dataset is stale relative to a parent. Run it BEFORE a migration rebuild, not after.
 """
@@ -61,6 +65,13 @@ def parents_of(snap: dict) -> dict[str, list[str]]:
     return out
 
 
+def _use(project: str) -> None:
+    global PROJECT, SNAP
+    PROJECT = project
+    if project == "DEMO_TI_EVIDENCE":
+        SNAP = os.path.join(ROOT, ".index", "dss_snapshot_evidence.json")
+
+
 def zone_of(name: str) -> str:
     out = sh(["dku", "dataset", "zone", name, "-P", PROJECT])
     m = re.search(r"is in zone '(.*)' \(ID:", out)
@@ -71,9 +82,13 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--zone", help="only datasets whose zone name starts with this")
     ap.add_argument("--quiet", action="store_true", help="exit code only")
+    ap.add_argument("--project", default=PROJECT, help="DEMO_TARGET_IDENTIFICATION (default) or DEMO_TI_EVIDENCE")
     args = ap.parse_args()
+    _use(args.project)
 
     snap = json.load(open(SNAP))
+    if "recipes" in snap and "project" in snap:   # the evidence snapshot's shape
+        snap = snap["recipes"]
     parents = parents_of(snap)
     # Recipe inputs/outputs also carry SAVED MODEL ids (a scoring recipe takes a model as an input),
     # and a model has no last_build, so it reads as "never built" and pollutes the report. Keep only

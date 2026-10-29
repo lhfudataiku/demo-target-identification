@@ -25,8 +25,9 @@ python3 tools/check_links.py
 # Set REQUIRE_DSS_CHECKS=1 to make a missing `dku` an error instead -- use that
 # in a pre-commit hook, where the CLI is expected to be there.
 if command -v dku >/dev/null 2>&1; then
-  # FLOW_MAP.md is generated from live DSS, so --check queries DSS.
+  # FLOW_MAP.md and FLOW_MAP_EVIDENCE.md are generated from live DSS, so --check queries DSS.
   python3 tools/build_flow_map.py --check
+  python3 tools/build_flow_map.py --project DEMO_TI_EVIDENCE --check
   # Dataset and column descriptions live in tools/dataset_descriptions.json, not only in DSS, so a
   # stale one is visible in review. Feature wording comes from webapp/backend/feature_glossary.py.
   python3 tools/push_descriptions.py --check
@@ -34,7 +35,7 @@ elif [ "${REQUIRE_DSS_CHECKS:-0}" = "1" ]; then
   echo "REQUIRE_DSS_CHECKS=1, but 'dku' is not on PATH" >&2
   exit 1
 else
-  echo "SKIPPED, no 'dku' on PATH: FLOW_MAP.md, assertion library, dataset descriptions"
+  echo "SKIPPED, no 'dku' on PATH: FLOW_MAP.md, FLOW_MAP_EVIDENCE.md, dataset descriptions"
   echo "  These query live DSS. Run tools/check_indexes.sh locally before merging a change"
   echo "  to the flow, notebooks/*.py or tools/dataset_descriptions.json."
 fi

@@ -784,7 +784,28 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
       levels are unchanged. S1 stays whole: its three chains (ranked list, drug records, gene
       identity) all serve the shortlist page. The webapp now reads S1-S5, plus the zone-10 DWPC
       metrics and `demo_panel_config` in 40, the exceptions `DEC-ARCH-007` names.
-    - **Still to do:** teach the index and flow-map tools the second project, the last done-when.
+    - **The index and map tools know both projects (done, repository only; `DEMO_KG_LS` kept out
+      at the user's word).**
+      - `build_recipe_index.py --refresh` also snapshots the evidence project into
+        `.index/dss_snapshot_evidence.json` (its 25 recipes and their zones; it reuses 21 main recipe
+        names, so it cannot share the main snapshot), and writes `.index/recipes_evidence.tsv`,
+        classing each recipe as identity (3), copy (4: the Python recipes both projects run), same
+        name (7: visual recipes whose main namesakes M4 rebuilt) or evidence-only (11).
+      - `check_governed_values.py` rule 5: each copy must equal the main project's mirror once its
+        main-project reads are qualified. All 4 pass.
+      - `build_flow_map.py --project DEMO_TI_EVIDENCE` writes `FLOW_MAP_EVIDENCE.md`: 25 datasets,
+        16 read by notebooks, 9 intermediate, no orphan; the 18 main-project inputs show as foreign
+        references. In that project a notebook's bare name is a read and the webapp reads nothing.
+        The two maps link to each other.
+      - `check_indexes.sh` checks the evidence map too; `check_freshness.py --project`;
+        `build_evidence_flow.py` is marked done (its main-project sources were deleted or rebuilt
+        in M6, so a dry run now fails); `docs/README.md` and the target-id skill route to the
+        evidence map and index.
+      - `check_freshness.py` finds two stale links in the evidence project (`family_panel` and
+        `persona_candidates`, older than inputs rebuilt for the window trims, whose data M4 showed
+        identical) and one in the main project (`validation_set_scored_windows`, built 2026-09-01
+        from a `scored_champion` rebuilt 2026-09-03; its AUCs equal the evidence project's, built
+        from the current scores). None changes a value.
 
 ## 4. Risks
 
