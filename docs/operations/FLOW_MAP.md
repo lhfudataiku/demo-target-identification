@@ -32,8 +32,8 @@ so zones A1-A4 are read by named routes rather than by an unbuilt UI.
 ## Summary
 
 - datasets: **91**
-- endpoints (read by a webapp route or a notebook): **40**
-- flow intermediates (consumed by a recipe, no direct reader): **50**
+- endpoints (read by a webapp route or a notebook): **35**
+- flow intermediates (consumed by a recipe, no direct reader): **55**
 - genuine orphans: **1** — `llm_hx`
 
 > Every orphan here is a deliberate decision, not a finding. See
@@ -135,7 +135,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
-| `disease_family_id` | nb6, nb7 | `compute_disease_family_id` | 2 | notebook |
+| `disease_family_id` | — | `compute_disease_family_id` | 2 | intermediate |
 | `drug_classified` | — | `compute_drug_classified` | 1 | intermediate |
 | `drug_evidence_pairs` | — | `compute_drug_evidence_pairs` | 1 | intermediate |
 | `drug_joined` | — | `compute_drug_joined` | 1 | intermediate |
@@ -169,7 +169,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `candidates_annotated` | — | `join_dashboard_annotations` | 1 | intermediate |
-| `dashboard_candidates` | nb6, nb7, **webapp:prefill**, **webapp:routes/candidates**, **webapp:services/pair_sources** | `finalize_dashboard_candidates` | 0 | webapp |
+| `dashboard_candidates` | **webapp:prefill**, **webapp:routes/candidates**, **webapp:services/pair_sources** | `finalize_dashboard_candidates` | 0 | webapp |
 | `disease_pool_sizes` | — | `count_candidates_per_disease` | 1 | intermediate |
 | `persona2_scored` | — | `score_persona_candidates` | 1 | intermediate |
 | `persona2_scored_shap` | — | `compute_top_shap_drivers_1` | 1 | intermediate |
@@ -193,18 +193,18 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `disease_eligibility` | **webapp:routes/calibration** | `compute_disease_eligibility` | 0 | webapp |
-| `drug_target_benchmark` | nb3, nb6 | `compute_drug_target_benchmark` | 2 | notebook |
-| `family_auc_by_family` | nb3, **webapp:routes/calibration** | `compute_family_auc` | 0 | webapp |
+| `drug_target_benchmark` | — | `compute_drug_target_benchmark` | 2 | intermediate |
+| `family_auc_by_family` | **webapp:routes/calibration** | `compute_family_auc` | 0 | webapp |
 | `family_auc_grouped` | — | `group_family_auc` | 1 | intermediate |
 | `family_validation_ranked` | — | `window_family_rank` | 1 | intermediate |
 | `family_validation_scored` | — | `compute_family_validation_scored` | 1 | intermediate |
 | `hub_bias_meter` | **webapp:routes/calibration** | `compute_hub_bias_meter` | 0 | webapp |
-| `novel_discovery_eval` | nb4, nb6 | `compute_novel_discovery_eval` | 1 | notebook |
+| `novel_discovery_eval` | — | `compute_novel_discovery_eval` | 1 | intermediate |
 | `orthogonality_scatter` | **webapp:routes/calibration** | `join_orthogonality` | 0 | webapp |
-| `persona_candidates` | nb4 | `compute_persona_candidates` | 1 | notebook |
-| `persona_enrichment` | nb7, **webapp:routes/calibration**, **webapp:routes/families** | `compute_persona_enrichment` | 0 | webapp |
-| `split_audit_2` | nb2, **webapp:routes/calibration** | `compute_split_audit_2` | 0 | webapp |
-| `validation_auc_by_disease` | nb3, nb5, nb6, **webapp:routes/calibration** | `compute_validation_auc_by_disease` | 3 | webapp |
+| `persona_candidates` | — | `compute_persona_candidates` | 1 | intermediate |
+| `persona_enrichment` | **webapp:routes/calibration**, **webapp:routes/families** | `compute_persona_enrichment` | 0 | webapp |
+| `split_audit_2` | **webapp:routes/calibration** | `compute_split_audit_2` | 0 | webapp |
+| `validation_auc_by_disease` | **webapp:routes/calibration** | `compute_validation_auc_by_disease` | 3 | webapp |
 | `validation_auc_ci` | — | `compute_validation_auc_ci` | 1 | intermediate |
 | `validation_set_scored_grouped` | — | `compute_validation_set_scored_grouped` | 1 | intermediate |
 | `validation_set_scored_windows` | — | `compute_validation_set_scored_windows` | 1 | intermediate |
@@ -213,11 +213,11 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
-| `demo_panel_config` | nb7, **webapp:routes/families** | `compute_demo_panel_config` | 5 | webapp |
-| `family_panel` | nb7 | `compute_family_panel` | 2 | notebook |
+| `demo_panel_config` | **webapp:routes/families** | `compute_demo_panel_config` | 5 | webapp |
+| `family_panel` | — | `compute_family_panel` | 2 | intermediate |
 | `family_panel_metrics` | **webapp:routes/families** | `compute_family_panel_metrics` | 0 | webapp |
-| `family_panel_overlap` | nb4, nb6, nb7, **webapp:routes/families** | `compute_family_panel_overlap` | 0 | webapp |
-| `family_panel_programme` | nb7, **webapp:routes/families** | `compute_family_panel_programme` | 0 | webapp |
+| `family_panel_overlap` | **webapp:routes/families** | `compute_family_panel_overlap` | 0 | webapp |
+| `family_panel_programme` | **webapp:routes/families** | `compute_family_panel_programme` | 0 | webapp |
 | `family_panel_top50` | **webapp:routes/families** | `compute_family_panel_top50` | 2 | webapp |
 
 ## A4 Shortlist (serving)  (0 datasets, 0 recipes)

@@ -7,7 +7,7 @@ project is the dataiku client's default; the main-project inputs are read by qua
 failure contract the `validate_notebooks` scenario used to provide.
 
     uv sync --project notebooks
-    uv run --project notebooks python tools/run_notebooks.py --project DEMO_TARGET_IDENTIFICATION
+    uv run --project notebooks python tools/run_notebooks.py --out data/assertion_runs/<date>.json
     uv run --project notebooks python tools/run_notebooks.py --only nb3_validation_and_plots
 
 Credentials come from DKU_URL + DKU_API_KEY (as `dku auth export-env` emits them), or DSS_URL +
@@ -44,7 +44,8 @@ ORDER = [
     "nb7_panel_selection",
 ]
 
-# The evidence project (ADR-003). --project DEMO_TARGET_IDENTIFICATION reruns M2's baseline.
+# The evidence project (ADR-003). The main project can no longer run the scripts: the datasets
+# they read by bare name left it on 2026-10-29 (M2).
 DEFAULT_PROJECT = "DEMO_TI_EVIDENCE"
 
 

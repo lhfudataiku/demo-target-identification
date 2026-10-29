@@ -28,10 +28,13 @@ PROJECT = "DEMO_TARGET_IDENTIFICATION"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "docs", "operations", "FLOW_MAP.md")
 SNAPSHOT = os.path.join(ROOT, ".index", "dss_snapshot.json")
-# A quoted dataset name is a real read; a bare occurrence is usually prose. The notebooks read this
-# project's datasets by qualified name (`"DEMO_TARGET_IDENTIFICATION.scored_champion"`, workplan M2),
-# so the project prefix is optional.
+# A quoted dataset name is a real read; a bare occurrence is usually prose. The webapp backend's
+# default project is this one, so a bare name reads here. The notebooks run with DEMO_TI_EVIDENCE
+# as their default (workplan M2), so only their qualified reads
+# (`"DEMO_TARGET_IDENTIFICATION.scored_champion"`) are reads of this project; a bare one reads the
+# evidence copy of the same name.
 QUOTED = r'''["'](?:%s\.)?{}["']''' % re.escape(PROJECT)
+QUALIFIED = r'''["']%s\.{}["']''' % re.escape(PROJECT)
 
 
 def dku_json(args):
@@ -121,8 +124,10 @@ def build():
     texts = readers()
     reads = {}
     for d in datasets:
-        pat = re.compile(QUOTED.format(re.escape(d)))
-        hits = sorted({label for text, label in texts if pat.search(text)})
+        bare_or_qualified = re.compile(QUOTED.format(re.escape(d)))
+        qualified = re.compile(QUALIFIED.format(re.escape(d)))
+        hits = sorted({label for text, label in texts
+                       if (bare_or_qualified if label.startswith("webapp:") else qualified).search(text)})
         if hits:
             reads[d] = hits
 

@@ -522,9 +522,28 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
       `--push` 2026-10-29 (47 datasets, 567 column descriptions), and the check is clean.
     - `_dead.json` lists the four under `moved_to_evidence_project`, and `breast_panel_metrics`
       leaves `keep_do_not_prune`.
+  - **Checked after both stages, 2026-10-29:**
+    - **Notebooks:** a local run against `DEMO_TI_EVIDENCE` passes all 7 scripts with 150 checks
+      executed and 0 stale, the same per-script counts as 2026-10-28. The record is in
+      `data/assertion_runs/2026-10-29_evidence.json`, not committed.
+    - **Webapp:** every read route handler, called locally against the main project, returns
+      without error: 163 calls over 3 families, 12 diseases and 23 genes. The sources routes (an
+      external search and a cache write on a miss) and the assistant were left out. No dataset
+      the backend reads was built after 2026-10-26, before M2 began, so M2 cannot have changed a
+      payload. The payloads are in `data/webapp_payloads/2026-10-29.json`, not committed, as M5's
+      "before".
+    - **The map:** `build_flow_map.py` now counts only a notebook's qualified reads against the
+      main project; a bare name reads the evidence copy. The main map's notebook readers are the 14
+      upstream datasets in zones 00–31, none in a serving zone. Endpoints fell from 40 to 35, and
+      `disease_family_id`, which nb6 and nb7 quote only as a column, is no longer miscounted.
 - **Repository changes:** `_dead.json` loses its keep entry; `dataset_descriptions.json` drops the
   entries for the moved datasets, or `push_descriptions.py` learns the second project;
   `notebooks/README.md` is rewritten.
+  - **Done 2026-10-29.** `_dead.json` and the descriptions are recorded with stage 2 above.
+    `notebooks/README.md` is rewritten for the local run: how to run it, where each script reads in
+    each project, and the history, with the zone-90 tables dropped. `run_notebooks.py`'s docstring no
+    longer suggests `--project DEMO_TARGET_IDENTIFICATION`, which stopped working when the
+    originals were deleted.
 - **Done when:**
   - every script runs green locally against the evidence project, with the baseline's check counts,
     and `.index/assertions.tsv` lists the same expected values;
