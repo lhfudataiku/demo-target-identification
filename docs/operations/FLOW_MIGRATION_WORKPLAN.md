@@ -660,7 +660,27 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
     rounds halves to even where GREL rounds them up (4 exact halves).
   - The new datasets' declared type of `prox_closest` is `bigint` (`double` before); the values
     compare equal.
-  - **Still to do in M4:** the rename test on one small dataset, which settles M5's switch method.
+  - **Rename test, 2026-10-29, on `disease_pool_sizes_m4` (run by the user, checked read-only).**
+    Renamed to `disease_pool_sizes_m4_rt`, then back:
+    - kept: the data (12 rows, same values), the zone, the schema, the storage path, the
+      producing recipe's output and the reading join's input (virtual inputs and selection
+      intact). A non-recursive build of the join against the renamed input gave the same 105,702
+      rows, every column equal.
+    - not kept: the last build date. DSS keys build history by name: it read as never built under
+      the new name, and came back on renaming back.
+    - the storage path stays pinned to the original name (`.../disease_pool_sizes_m4`).
+
+    **So M0's switch method holds:** M5 repoints the backend to the `_m4` names; M6 deletes the old
+    datasets, renames the `_m4` ones to the original names, and deploys the backend's original names
+    again. Three consequences for M6:
+    - each renamed dataset's files stay under its `_m4` path, so no dataset may later be created
+      under a vacated `_m4` name;
+    - a renamed dataset shows whatever build history is recorded under its new name, possibly the
+      deleted old dataset's (not tested: the test deleted nothing); a non-recursive rebuild of each
+      after the rename makes it truthful;
+    - the evidence project's `dashboard_candidates` and the main project's are separate datasets,
+      unaffected by either rename.
+  - **M4 is done:** every served dataset matches, and the switch method is settled.
 
 ### M5 — switch the webapp *(DSS: deploy)*
 

@@ -88,7 +88,8 @@ tools/build_evidence_flow.py	tool	LIVE	2	docs/operations/EVIDENCE_PROJECT_DESIGN
 tools/build_flow_map.py	tool	LIVE	4	docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MAP.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/check_indexes.sh
 tools/build_governance.py	tool	LIVE	3	docs/operations/BUILD_GOVERNANCE.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/tests/test_build_governance.py
 tools/build_index.py	tool	LIVE	10	archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/decisions/README.md
-tools/build_recipe_index.py	tool	LIVE	39	README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md
+tools/build_recipe_index.py	tool	LIVE	42	README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md
+tools/build_serving_m4.py	tool	LIVE	1	docs/operations/FLOW_MIGRATION_WORKPLAN.md
 tools/capture_build_governance.py	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md
 tools/check_claim_registry.py	tool	LIVE	4	docs/operations/FLOW_MIGRATION_WORKPLAN.md,docs/prioritizer/VALIDATION.md,tools/check_indexes.sh,tools/index_manifest.json
 tools/check_freshness.py	tool	LIVE	2	archive/DASHBOARD_BUILD_LOG.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md
@@ -98,6 +99,7 @@ tools/check_indexes.sh	tool	LIVE	13	.github/workflows/checks.yml,README.md,archi
 tools/check_links.py	tool	LIVE	7	archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/doc-restructure-2026-08-28/PHASE_0_BASELINE_2026-08-28.md
 tools/check_shap_top5.py	tool	LIVE	2	archive/WEBAPP_REDESIGN_WORKPLAN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md
 tools/clean_main_project.py	tool	LIVE	1	docs/operations/FLOW_MIGRATION_WORKPLAN.md
+tools/compare_serving_m4.py	tool	LIVE	1	docs/operations/FLOW_MIGRATION_WORKPLAN.md
 tools/dataset_descriptions.json	tool	LIVE	4	.github/workflows/checks.yml,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/check_indexes.sh,tools/push_descriptions.py
 tools/index_manifest.json	tool	LIVE	4	archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/doc-restructure-2026-08-28/PHASE_6_ACCEPTANCE_2026-08-31.md,docs/README.md,tools/build_index.py
 tools/model_registry.json	tool	LIVE	9	archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,docs/decisions/DECISION_REGISTER.md
