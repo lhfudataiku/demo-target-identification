@@ -36,7 +36,7 @@ makes that the app's own shape:
   its own DSS project, which reads only the upstream zones 00–31, and whether the main project's flow
   after zone 40 is rebuilt around the new pages' functions, is a separate decision taken after the
   release. That migration has its own workplan,
-  [`../operations/FLOW_MIGRATION_WORKPLAN.md`](../docs/operations/FLOW_MIGRATION_WORKPLAN.md).
+  [`FLOW_MIGRATION_WORKPLAN.md`](FLOW_MIGRATION_WORKPLAN.md).
 
 The agreed design is a static mockup over a 2026-10-23 snapshot, kept out of git at
 `docs/demo/design_review/shortlist-and-evidence-review.html` (§4.4).
@@ -271,7 +271,7 @@ any safety or toxicity claim; storing assistant conversations.
 | [`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) | §3.3 routes, §4 acts table and Acts 1–4 sections, §6 guardrail rows, §8 |
 | [`../../webapp/README.md`](../webapp/README.md), [`../../webapp/DEPLOYMENT.md`](../webapp/DEPLOYMENT.md) | the two-page structure; new settings (tool, agent, folder, model ids) and the pre-fill step |
 | [`../operations/FLOW_MAP.md`](../docs/operations/FLOW_MAP.md), `.index/` | regenerate after the new datasets exist |
-| [`../operations/FLOW_MIGRATION_WORKPLAN.md`](../docs/operations/FLOW_MIGRATION_WORKPLAN.md) | the migration's own document changes (successor ADR, `PROJECT_CONTEXT.md` §4.3, build governance, notebooks README, agent instructions), listed in its §5 |
+| [`FLOW_MIGRATION_WORKPLAN.md`](FLOW_MIGRATION_WORKPLAN.md) | the migration's own document changes (successor ADR, `PROJECT_CONTEXT.md` §4.3, build governance, notebooks README, agent instructions), listed in its §5 |
 | [`../README.md`](../docs/README.md) | Planning section points to both documents while the work is open |
 
 ## 7. Risks

@@ -28,8 +28,7 @@
     "prefixes": ["archive/", "harness/", ".claude/", ".codex/", ".index/"],
     "files": [
       "README.md", "AGENTS.md", "CLAUDE.md", "docs/README.md",
-      "docs/operations/FLOW_MIGRATION_WORKPLAN.md", "docs/operations/WEBAPP_DATASET_MAP.md",
-      "docs/operations/EVIDENCE_PROJECT_DESIGN.md",
+      "docs/operations/WEBAPP_DATASET_MAP.md",
       "docs/decisions/DECISION_REGISTER.md", "docs/decisions/adrs/ADR-001-project-boundary.md",
       "docs/decisions/adrs/ADR-002-candidate-and-evaluation-boundary.md",
       "docs/decisions/adrs/ADR-003-evidence-project.md",

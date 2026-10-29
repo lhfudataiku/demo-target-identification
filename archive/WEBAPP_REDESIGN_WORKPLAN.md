@@ -10,7 +10,7 @@
 2026-10-26.) The redesign serves the original webapp (`OlmPX9a`); the preview webapp and its library
 folder are deleted (§10). The current authority for the app is `WEBAPP_DESIGN.md`; this file is the dated
 record of how the redesign was built and measured. The flow migration that follows is
-`docs/operations/FLOW_MIGRATION_WORKPLAN.md`.
+`docs/operations/FLOW_MIGRATION_WORKPLAN.md` (archived 2026-10-29 as [`FLOW_MIGRATION_WORKPLAN.md`](FLOW_MIGRATION_WORKPLAN.md)).
 
 ## 1. How the work runs
 
@@ -605,6 +605,6 @@ searches shown, the answer saying the graph could not be read).
 The flow migration is not part of the redesign, and no phase above depends on it. After Phase 8 the
 user decides whether it runs, in full, in part or not at all, from what the release has shown. Its
 plan, and the options that decision weighs, are in
-[`../operations/FLOW_MIGRATION_WORKPLAN.md`](../docs/operations/FLOW_MIGRATION_WORKPLAN.md) §1. Whatever
+[`FLOW_MIGRATION_WORKPLAN.md`](FLOW_MIGRATION_WORKPLAN.md) §1. Whatever
 is decided, two things from Phase 0 hold: the boundary rule (D14) governs every new object, and new
 objects go in the target zones (D15).

@@ -34,7 +34,7 @@ CORS_ORIGINS: list[str] = [
     if o.strip()
 ]
 
-# The served datasets the flow migration rebuilt (docs/operations/FLOW_MIGRATION_WORKPLAN.md M4-M6).
+# The served datasets the flow migration rebuilt (archive/FLOW_MIGRATION_WORKPLAN.md M4-M6).
 # They carried the `_m4` suffix beside the old chains until M6 deleted those and renamed these to the
 # original names.
 SHORTLIST: str = "dashboard_candidates"

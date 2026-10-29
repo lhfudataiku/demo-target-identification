@@ -1,17 +1,21 @@
 # Evidence project — design
 
-> **Lifecycle:** Planning (draft) · **Audience:** DSS flow maintainers and reviewers of the notebook
+> **Lifecycle:** Historical · **Audience:** DSS flow maintainers and reviewers of the notebook
 > revision · **Authority:** how the supporting evidence project provides every dataset the notebooks
 > read, which recipes it moves, copies or adds, what it reads from the main project, and the
 > per-script notebook revisions (the evidence half of
 > [`FLOW_MIGRATION_WORKPLAN.md`](FLOW_MIGRATION_WORKPLAN.md) M1) · **Update when:** a notebook's reads
 > change, or a recipe in §3 changes in either project · **Generated dependencies:** none (measured by
 > hand, §8) · **Excludes:** the serving flow and what the webapp reads, in
-> [`WEBAPP_DATASET_MAP.md`](WEBAPP_DATASET_MAP.md); the sequence and acceptance of the work, in the
+> [`WEBAPP_DATASET_MAP.md`](../docs/operations/WEBAPP_DATASET_MAP.md); the sequence and acceptance of the work, in the
 > workplan's M2.
 
-**Status: DRAFT — measured 2026-10-28, read-only. For approval as part of M1's table. Nothing in DSS
-or the notebooks has changed.**
+**Status: EXECUTED — built in M2, 2026-10-28; retired to `archive/` with the workplan on 2026-10-29.**
+(Measured 2026-10-28, read-only, for approval as part of M1's table.) The evidence project holds 25
+recipes. M6 then retired the main project's copies of the persona chain and `validation_auc_ci`, so
+the evidence project owns them now. The current record is generated:
+[`FLOW_MAP_EVIDENCE.md`](../docs/operations/FLOW_MAP_EVIDENCE.md) and `.index/recipes_evidence.tsv`.
+This file is the dated design.
 
 ## 1. Summary
 

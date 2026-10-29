@@ -1,7 +1,7 @@
 # ADR-003 — Supporting evidence lives in its own project
 
 > **Lifecycle:** Decision · **Status:** Proposed — becomes Accepted when the user approves the M0
-> diff of [`FLOW_MIGRATION_WORKPLAN.md`](../../operations/FLOW_MIGRATION_WORKPLAN.md) · **Date:**
+> diff of [`FLOW_MIGRATION_WORKPLAN.md`](../../../archive/FLOW_MIGRATION_WORKPLAN.md) · **Date:**
 > 2026-10-28 · **Owner:** architecture · **Update when:** the evidence project's ownership, its
 > inputs from the main project, or the way the notebooks run changes. Extends
 > [ADR-001](ADR-001-project-boundary.md) from two projects to three.
@@ -63,4 +63,4 @@ being dropped. The notebooks stay in the repository as the evidence for model de
 - **Repository tools learn a second project:** the recipe index, the flow map, the governed-values
   check, the description push and build-governance capture.
 - **The design and the per-script notebook revisions** are in
-  [`EVIDENCE_PROJECT_DESIGN.md`](../../operations/EVIDENCE_PROJECT_DESIGN.md).
+  [`EVIDENCE_PROJECT_DESIGN.md`](../../../archive/EVIDENCE_PROJECT_DESIGN.md).

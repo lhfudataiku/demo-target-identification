@@ -68,7 +68,7 @@ The evidence project's zones: **E1** rebuilds the validation metrics (per-diseas
 the split audit, the benchmarks, the personas); **E2** the family panels; **E3** a slim shortlist, the
 12 shortlist diseases ranked with ties; **E4** the drug ground truth, pool reachability, the three-axis
 filter and the breast panel.
-[`EVIDENCE_PROJECT_DESIGN.md`](../docs/operations/EVIDENCE_PROJECT_DESIGN.md) lists every read.
+[`EVIDENCE_PROJECT_DESIGN.md`](../archive/EVIDENCE_PROJECT_DESIGN.md) lists every read.
 
 ⚠ **`nb1` spans two stages that the split sits between.** Its §4 half analyses features on the training
 set (stage 2, pre-split); its §6 half chooses the operating threshold (stage 4, post-split). Reading it
@@ -134,6 +134,6 @@ OOM-killed (exit 137). A quarter resolves null rates to ~0.1 pp, far finer than 
   and the datasets only they read had been deleted. The scripts then ran in DSS through the
   `validate_notebooks` scenario.
 - **2026-10-28 and 10-29, the scripts moved to a local run against the evidence project**
-  ([workplan](../docs/operations/FLOW_MIGRATION_WORKPLAN.md) M2). The datasets only they read left the
+  ([workplan](../archive/FLOW_MIGRATION_WORKPLAN.md) M2). The datasets only they read left the
   main project, and the scenario and library copy were deleted. Every script kept its checks and
   counts.

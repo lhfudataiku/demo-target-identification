@@ -1,18 +1,32 @@
 # Flow migration — workplan
 
-> **Lifecycle:** Planning (draft) · **Audience:** DSS flow maintainers and technical reviewers ·
+> **Lifecycle:** Historical · **Audience:** DSS flow maintainers and technical reviewers ·
 > **Authority:** the sequence, method and acceptance criteria for moving the notebooks' supporting
 > evidence into its own DSS project and reorganising the webapp's serving flow by function · **Update
 > when:** a step is accepted or re-scoped, or a fact in §2 is superseded · **Generated dependencies:**
 > none · **Excludes:** what the webapp reads and the serving-flow counts, in
-> [`WEBAPP_DATASET_MAP.md`](WEBAPP_DATASET_MAP.md); the boundary rule and target zone layout (D14,
+> [`WEBAPP_DATASET_MAP.md`](../docs/operations/WEBAPP_DATASET_MAP.md); the boundary rule and target zone layout (D14,
 > D15) and the evidence project's mandate (D13), in
-> [`WEBAPP_REDESIGN_SCOPE.md`](../../archive/WEBAPP_REDESIGN_SCOPE.md) and
-> [`WEBAPP_REDESIGN_WORKPLAN.md`](../../archive/WEBAPP_REDESIGN_WORKPLAN.md) Phase 0, which M0 amends.
+> [`WEBAPP_REDESIGN_SCOPE.md`](WEBAPP_REDESIGN_SCOPE.md) and
+> [`WEBAPP_REDESIGN_WORKPLAN.md`](WEBAPP_REDESIGN_WORKPLAN.md) Phase 0, which M0 amends.
 
-**Status: DRAFT — revised 2026-10-28. Step G is decided: the full option (M0–M6), chosen by the
-user on 2026-10-28. Two M0 decisions are also taken: the notebooks run locally from the repository,
-and the shortlist ranks with ties. The rest of M0 is not approved, and nothing in DSS has changed.**
+**Status: EXECUTED — M0–M6 done 2026-10-29. Retired to `archive/`.** (Drafted 2026-10-27, revised
+2026-10-28.) The full option ran: the notebooks run locally against the evidence project
+`DEMO_TI_EVIDENCE`, the serving flow is re-zoned into S1–S5 and rebuilt by webapp function with tied
+ranks, and the old chains are retired. This file is the dated record of how it was done and measured;
+§3 holds each step's record. The current authorities are
+[`FLOW_MAP.md`](../docs/operations/FLOW_MAP.md) and
+[`FLOW_MAP_EVIDENCE.md`](../docs/operations/FLOW_MAP_EVIDENCE.md) for the flows,
+[ADR-003](../docs/decisions/adrs/ADR-003-evidence-project.md) and `DEC-ARCH-006`, `DEC-OPS-007`,
+`DEC-MEAS-005` and `DEC-ARCH-007` for the decisions,
+[`notebooks/README.md`](../notebooks/README.md) for running the evidence, and
+[`WEBAPP_DATASET_MAP.md`](../docs/operations/WEBAPP_DATASET_MAP.md) §2 for what the webapp reads. Its
+companion, the evidence project's design, is [`EVIDENCE_PROJECT_DESIGN.md`](EVIDENCE_PROJECT_DESIGN.md).
+
+The status as drafted, kept for the record: "DRAFT — revised 2026-10-28. Step G is decided: the full
+option (M0–M6), chosen by the user on 2026-10-28. Two M0 decisions are also taken: the notebooks run
+locally from the repository, and the shortlist ranks with ties. The rest of M0 is not approved, and
+nothing in DSS has changed."
 
 ## 1. Purpose and premise
 
@@ -49,7 +63,7 @@ recipes, managed storage and Parquet. It stays as it is.
 | M6 | retire and tidy | deletions, zone 20 moves, descriptions, scenario |
 
 **The options at G**, with counts for the main project's flow after zone 31 (plus
-`compute_breast_panel`) taken from [`WEBAPP_DATASET_MAP.md`](WEBAPP_DATASET_MAP.md). The full option
+`compute_breast_panel`) taken from [`WEBAPP_DATASET_MAP.md`](../docs/operations/WEBAPP_DATASET_MAP.md). The full option
 was chosen; the other two are kept for the record.
 
 | option | steps | main-project recipes / datasets | leaves |
@@ -86,7 +100,7 @@ A4 (3). The `act4_evidence_cache` folder (`CB9xqCGg`) is in no zone. S1's recipe
 model `hJLGoYn4`), except that `score_persona_candidates_shap5` reads `validation_set_personas_2`
 from zone 40.
 
-**What the webapp reads** is in [`WEBAPP_DATASET_MAP.md`](WEBAPP_DATASET_MAP.md) §2, route by route,
+**What the webapp reads** is in [`WEBAPP_DATASET_MAP.md`](../docs/operations/WEBAPP_DATASET_MAP.md) §2, route by route,
 with fields and row scope. Two kinds of read already break D14's "serving zones only":
 
 - `dashboard_candidates`, which is still in zone 40;
@@ -230,7 +244,7 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
 
 **Drafted 2026-10-28, awaiting approval.** The draft is an uncommitted diff:
 
-- [ADR-003](../decisions/adrs/ADR-003-evidence-project.md), which extends `ADR-001` to three projects;
+- [ADR-003](../docs/decisions/adrs/ADR-003-evidence-project.md), which extends `ADR-001` to three projects;
 - four new register entries, `DEC-ARCH-006`, `DEC-OPS-007`, `DEC-MEAS-005` and `DEC-ARCH-007`, each
   `approved-not-executed`, a status that takes effect on approval;
 - dated consequence notes on `DEC-ARCH-001` (whose sync count is corrected from 12 to 13),
@@ -292,7 +306,7 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
   restricted to the 12 shortlist diseases, ranked with ties. **Checked 2026-10-28:** that
   restriction holds exactly the 105,702 served pairs, with `proba_1` equal to the served `score`
   (maximum difference 0) and the same `is_target`.
-- **The serving flow, drafted 2026-10-28** in [`WEBAPP_DATASET_MAP.md`](WEBAPP_DATASET_MAP.md) §6:
+- **The serving flow, drafted 2026-10-28** in [`WEBAPP_DATASET_MAP.md`](../docs/operations/WEBAPP_DATASET_MAP.md) §6:
   - every dataset after zone 31 mapped to its zone under M3 and its fate under M4–M6 (§6.4);
   - one window recipe gives both the rank with ties and the pool size, so the rebuild ends at 32
     recipes (§6.1);
@@ -851,11 +865,11 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
 
 | document | change |
 |---|---|
-| `ADR-001` successor, [`../decisions/DECISION_REGISTER.md`](../decisions/DECISION_REGISTER.md) | M0: the third project; build governance and identity recipes; D14/D15 amendments; `DEC-ARCH-001`'s sync count |
-| [`../overview/PROJECT_CONTEXT.md`](../overview/PROJECT_CONTEXT.md) | §4.3: the objects the evidence project reads from the main project |
-| [`BUILD_GOVERNANCE.md`](BUILD_GOVERNANCE.md) | the governed target moves to the evidence project; the pilot stays as history |
-| [`../../notebooks/README.md`](../../notebooks/README.md) | M2: the scripts run locally against the evidence project (the wrapper, the environment, the revised reads); the library copy and the scenario retired; the zone-90 section removed |
-| [`WEBAPP_DESIGN.md`](../demo/WEBAPP_DESIGN.md) | M5: shortlist ranks share a value when scores tie |
-| [`WEBAPP_DATASET_MAP.md`](WEBAPP_DATASET_MAP.md) | re-measured in M1; retired with this plan once M6 is accepted |
-| [`FLOW_MAP.md`](FLOW_MAP.md), `.index/` | regenerated after M2, M3 and M6 |
+| `ADR-001` successor, [`../decisions/DECISION_REGISTER.md`](../docs/decisions/DECISION_REGISTER.md) | M0: the third project; build governance and identity recipes; D14/D15 amendments; `DEC-ARCH-001`'s sync count |
+| [`../overview/PROJECT_CONTEXT.md`](../docs/overview/PROJECT_CONTEXT.md) | §4.3: the objects the evidence project reads from the main project |
+| [`BUILD_GOVERNANCE.md`](../docs/operations/BUILD_GOVERNANCE.md) | the governed target moves to the evidence project; the pilot stays as history |
+| [`../../notebooks/README.md`](../notebooks/README.md) | M2: the scripts run locally against the evidence project (the wrapper, the environment, the revised reads); the library copy and the scenario retired; the zone-90 section removed |
+| [`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) | M5: shortlist ranks share a value when scores tie |
+| [`WEBAPP_DATASET_MAP.md`](../docs/operations/WEBAPP_DATASET_MAP.md) | re-measured in M1; retired with this plan once M6 is accepted |
+| [`FLOW_MAP.md`](../docs/operations/FLOW_MAP.md), `.index/` | regenerated after M2, M3 and M6 |
 | agent instructions (`harness/`) | the project map gains the third project; `tools/sync_harness.py --write` |

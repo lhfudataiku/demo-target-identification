@@ -1,20 +1,21 @@
 # Webapp dataset map and serving-flow options
 
-> **Lifecycle:** Planning (draft) · **Audience:** DSS flow maintainers deciding the flow migration ·
-> **Authority:** what the released webapp reads, field by field, and the recipe and dataset counts of
-> re-zoning versus rebuilding the serving flow once the notebook components leave it · **Update
-> when:** a backend route changes the datasets or columns it reads, or the flow after zone 31 changes ·
+> **Lifecycle:** Canonical for §2; §§1, 3–6 are the dated analysis behind the flow migration ·
+> **Audience:** webapp and DSS flow maintainers · **Authority:** what the released webapp reads, field
+> by field (§2); the recipe and dataset counts of re-zoning versus rebuilding the serving flow, as
+> measured for the migration (§§1, 3–6) · **Update when:** a backend route changes the datasets or
+> columns it reads (§2); the analysis sections are not maintained ·
 > **Generated dependencies:** none (measured by hand, §6) · **Excludes:** the boundary rule and target
 > zones (D14, D15, in [`WEBAPP_REDESIGN_SCOPE.md`](../../archive/WEBAPP_REDESIGN_SCOPE.md)) and the
-> migration's sequence, in [`FLOW_MIGRATION_WORKPLAN.md`](FLOW_MIGRATION_WORKPLAN.md), whose M1
-> inventory this feeds.
+> migration's sequence, in [`FLOW_MIGRATION_WORKPLAN.md`](../../archive/FLOW_MIGRATION_WORKPLAN.md)
+> (executed and archived 2026-10-29), whose M1 inventory this fed.
 
 **Status: measured 2026-10-27; executed by the migration's M3–M6 (2026-10-29).** §2 describes the
 webapp as it reads today; §§1, 3–6 keep the analysis that led there, with dated corrections.
 
 Premise: the notebooks stay in the repository, and the `validate_notebooks` scenario is dropped. A
 supporting evidence project reads this project's zones 00–31 and recomputes what the notebooks need
-([`FLOW_MIGRATION_WORKPLAN.md`](FLOW_MIGRATION_WORKPLAN.md) M2). Notebook-only objects therefore
+([`FLOW_MIGRATION_WORKPLAN.md`](../../archive/FLOW_MIGRATION_WORKPLAN.md) M2). Notebook-only objects therefore
 leave the main project: they move to the evidence project, or are deleted when nothing reads them.
 The counts below are for the main project.
 
@@ -300,8 +301,8 @@ the core, as the panel definition both pages use, keeps the arrows one way. This
 
 ## 6. M1 results: the serving side (2026-10-28)
 
-These are the serving half of [`FLOW_MIGRATION_WORKPLAN.md`](FLOW_MIGRATION_WORKPLAN.md) M1, for
-approval. The evidence half is [`EVIDENCE_PROJECT_DESIGN.md`](EVIDENCE_PROJECT_DESIGN.md). The live
+These are the serving half of [`FLOW_MIGRATION_WORKPLAN.md`](../../archive/FLOW_MIGRATION_WORKPLAN.md) M1, for
+approval. The evidence half is [`EVIDENCE_PROJECT_DESIGN.md`](../../archive/EVIDENCE_PROJECT_DESIGN.md). The live
 flow was re-checked on 2026-10-28 and is unchanged since the 2026-10-27 measurement.
 
 ### 6.1 One window recipe gives the rank and the pool size: 32 recipes
@@ -356,7 +357,7 @@ rebuilt datasets carry the names in the first column, and the map in [`FLOW_MAP.
 is the current record. One change from the table: S1 also holds `disease_pool_sizes`, built by a group
 recipe (§6.1, corrected), so the flow ends at 33 datasets.
 
-"Copy" means the evidence project builds its own dataset of the same name ([`EVIDENCE_PROJECT_DESIGN.md`](EVIDENCE_PROJECT_DESIGN.md) §3).
+"Copy" means the evidence project builds its own dataset of the same name ([`EVIDENCE_PROJECT_DESIGN.md`](../../archive/EVIDENCE_PROJECT_DESIGN.md) §3).
 "Rebuilt" means a new chain replaces the old one in M4, and M6 retires the old one. The rebuild also
 adds one intermediate not listed here: the disease-name join in S3 (§4.2).
 
