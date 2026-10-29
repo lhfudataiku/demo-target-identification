@@ -495,6 +495,33 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
   - then delete those two recipes and datasets;
   - delete the `validate_notebooks` scenario and the `/python/nb_assertions/` library folder;
   - after acceptance, delete the four moved originals.
+
+  `tools/clean_main_project.py` does both stages (dry run by default). Before writing, it refuses
+  any delete whose dataset has a reader outside the set, is exposed, or is named by a scenario; stage
+  2 (`--originals`) also requires each evidence copy to hold stored rows.
+  - **Stage 1 applied 2026-10-29 by the user (read back OK).** `Refresh_serving_layer`'s zone-40
+    step went from 11 builds to 9; the two SHAP recipes and datasets, `validate_notebooks` and the
+    library folder are gone. The main project has 93 recipes, 95 datasets and 18 exposures. The
+    refresh removed the `compute_shap_drivers_long` mirror; `_dead.json` lists the pair as deleted,
+    and `dataset_descriptions.json` no longer describes it. `check_harness.py` now skips a tracked
+    file deleted in the working tree, which the removed mirror had crashed.
+  - **Stage 2 applied 2026-10-29 by the user (read back OK).** The four originals are gone; the main
+    project has 89 recipes and 91 datasets, and zone A4 is empty (M3 deletes it). Repository
+    follow-ups:
+    - `build_recipe_index.py` mirrors the four moved Python recipes from their evidence copies
+      (`EVIDENCE_OWNED`) and reports them as evidence mirrors, not stale ones. The mirrors changed
+      only in their qualified reads, and `compute_filter_three_axes` in its input.
+    - `check_governed_values.py` checks every identity recipe's evidence copy against its mirror;
+      `compute_breast_panel` now has one source, like the other two.
+    - Build governance moved to `DEMO_TI_EVIDENCE`: `POLICY.json` allows only that project;
+      `capture_build_governance.py` captures there and accepts inputs qualified by the main
+      project's key (checked read-only against the live recipe); the test fixtures' project key
+      moved with it, and the 11 tests pass. The 2026-08-31 pilot artifacts stay as history.
+    - `dataset_descriptions.json` gives the four datasets `"project": "DEMO_TI_EVIDENCE"`, and
+      `push_descriptions.py` checks and pushes each dataset in its own project. The user ran
+      `--push` 2026-10-29 (47 datasets, 567 column descriptions), and the check is clean.
+    - `_dead.json` lists the four under `moved_to_evidence_project`, and `breast_panel_metrics`
+      leaves `keep_do_not_prune`.
 - **Repository changes:** `_dead.json` loses its keep entry; `dataset_descriptions.json` drops the
   entries for the moved datasets, or `push_descriptions.py` learns the second project;
   `notebooks/README.md` is rewritten.

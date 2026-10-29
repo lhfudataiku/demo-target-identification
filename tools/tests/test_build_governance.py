@@ -110,7 +110,7 @@ class BuildGovernanceTest(unittest.TestCase):
                 packet = self.classify(mutate)
                 self.assertEqual(expected, packet["classification"])
                 self.assertEqual(review_required, packet["review_required"])
-                self.assertEqual("DEMO_TARGET_IDENTIFICATION", packet["project_key"])
+                self.assertEqual("DEMO_TI_EVIDENCE", packet["project_key"])
                 self.assertEqual(["breast_panel_metrics"], packet["targets"])
 
     def test_claim_and_contract_packets_name_only_mapped_consumers(self):

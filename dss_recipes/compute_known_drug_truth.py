@@ -10,14 +10,14 @@ import dataiku
 import numpy as np
 import pandas as pd
 
-kd = dataiku.Dataset("raw_ot_known_drug").get_dataframe()
-nid = dataiku.Dataset("graph_nodes").get_dataframe(
+kd = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.raw_ot_known_drug").get_dataframe()
+nid = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes").get_dataframe(
     columns=["node_index", "node_id", "node_name", "node_type"], infer_with_pandas=False)
 nid["node_index"] = nid.node_index.astype(int)
 nid["node_id"] = nid.node_id.astype(str)
 G = nid[nid.node_type == "gene/protein"]
 D = nid[nid.node_type == "disease"]
-gn = dataiku.Dataset("gene_names").get_dataframe(columns=["symbol", "entrez_id"])
+gn = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.gene_names").get_dataframe(columns=["symbol", "entrez_id"])
 
 # symbol -> entrez -> gene_index, the same crosswalk the druggability chain uses
 gn = gn.dropna(subset=["entrez_id"]).copy()
@@ -41,8 +41,8 @@ print(f"  unresolved: {kd.mondo_bare.isna().sum():,} non-MONDO disease ids, "
 
 # ---- calibrate against the join-based truth ----------------------------------
 dmap = dict(zip(D.node_id, D.node_index)); gmap = dict(zip(G.node_id, G.node_index))
-dd = dataiku.Dataset("drug_disease_edges").get_dataframe(infer_with_pandas=False)
-dp = dataiku.Dataset("drug_protein_edges").get_dataframe(infer_with_pandas=False)
+dd = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_disease_edges").get_dataframe(infer_with_pandas=False)
+dp = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_protein_edges").get_dataframe(infer_with_pandas=False)
 gc, tc = ("x_id", "y_id") if (dp.x_type == "drug").any() else ("y_id", "x_id")
 dp["drug"] = dp[gc].astype(str); dp["gene_index"] = dp[tc].astype(str).map(gmap)
 dp = dp.dropna(subset=["gene_index"])[["drug", "gene_index"]]

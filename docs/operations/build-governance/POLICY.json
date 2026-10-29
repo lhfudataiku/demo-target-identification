@@ -1,23 +1,11 @@
 {
   "schema_version": 1,
   "scope": "Repository-side policy for a future safe Part 2 leaf-build pilot. Presence here does not approve a live build or scenario.",
-  "allowed_projects": ["DEMO_TARGET_IDENTIFICATION", "DEMO_TI_EVIDENCE"],
+  "allowed_projects": ["DEMO_TI_EVIDENCE"],
   "allowed_targets": {
-    "DEMO_TARGET_IDENTIFICATION": ["breast_panel_metrics"],
     "DEMO_TI_EVIDENCE": ["breast_panel_metrics"]
   },
   "target_requirements": {
-    "DEMO_TARGET_IDENTIFICATION": {
-      "breast_panel_metrics": {
-        "recipe_settings": ["compute_breast_panel"],
-        "schemas": ["breast_panel_metrics"],
-        "data": ["breast_panel_metrics"],
-        "refresh_state": ["breast_panel_metrics"],
-        "metrics": ["breast_panel_metrics.row_count"],
-        "claim_values": ["TI-VAL-009"],
-        "assertions": ["TI-VAL-009", "breast-panel-contract"]
-      }
-    },
     "DEMO_TI_EVIDENCE": {
       "breast_panel_metrics": {
         "recipe_settings": ["compute_breast_panel"],

@@ -33,21 +33,21 @@ import pandas as pd
 
 TOPN = [20, 50, 200]
 
-nid = dataiku.Dataset("graph_nodes").get_dataframe(
+nid = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes").get_dataframe(
     columns=["node_index", "node_id", "node_type"], infer_with_pandas=False)
 nid["node_index"] = nid.node_index.astype(int); nid["node_id"] = nid.node_id.astype(str)
 D = nid[nid.node_type == "disease"]; G = nid[nid.node_type == "gene/protein"]
 dmap = dict(zip(D.node_id, D.node_index)); gmap = dict(zip(G.node_id, G.node_index))
 
 # ---- outcome 1: demonstrated tractability (gene-level, uninflated) --------------
-dp = dataiku.Dataset("drug_protein_edges").get_dataframe(infer_with_pandas=False)
+dp = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_protein_edges").get_dataframe(infer_with_pandas=False)
 gc, tc = ("x_id", "y_id") if (dp.x_type == "drug").any() else ("y_id", "x_id")
 dp["drug"] = dp[gc].astype(str); dp["gene_index"] = dp[tc].astype(str).map(gmap)
 dp2 = dp.dropna(subset=["gene_index"])[["drug", "gene_index"]]
 demo_genes = set(dp2.gene_index.astype(int))
 
 # ---- outcomes 2-4: therapeutic, three ground truths ----------------------------
-dd = dataiku.Dataset("drug_disease_edges").get_dataframe(infer_with_pandas=False)
+dd = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_disease_edges").get_dataframe(infer_with_pandas=False)
 
 
 def joined(rel):
@@ -63,7 +63,7 @@ KD08 = set(map(tuple, kd[kd.score >= 0.8][["disease_index", "gene_index"]].astyp
 AP, IV = joined("indication"), joined("drug_investigated_for")
 print(f"ground truths -- known_drug>=0.8 {len(KD08):,} | approved {len(AP):,} | investigational {len(IV):,}")
 
-c = dataiku.Dataset("target_candidates_2").get_dataframe(
+c = dataiku.Dataset("dashboard_candidates").get_dataframe(
     columns=["disease_index", "disease_name", "gene_index", "rank_in_disease", "is_target",
              "ot_sm_tractable", "ot_ab_tractable", "druggability_class", "safety_flag"])
 keys = list(zip(c.disease_index.astype(int), c.gene_index.astype(int)))

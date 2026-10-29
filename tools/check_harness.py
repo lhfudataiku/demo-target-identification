@@ -69,8 +69,9 @@ def reference_tokens(text: str) -> str:
 
 def tracked(prefix: str, suffix: str) -> list[Path]:
     out = subprocess.run(["git", "ls-files"], cwd=ROOT, text=True, capture_output=True).stdout
+    # A tracked file deleted in the working tree (a refreshed mirror, before commit) is not counted.
     return [ROOT / f for f in out.split("\n")
-            if f.strip() and f.startswith(prefix) and f.endswith(suffix)]
+            if f.strip() and f.startswith(prefix) and f.endswith(suffix) and (ROOT / f).exists()]
 
 
 def unconditional_reads(text: str) -> list[str]:

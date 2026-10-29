@@ -55,16 +55,16 @@ DISTINCT_PAIRS = (("trust_n_pos", "panel_n_pos"),)
 EVIDENCE_PROJECT = "DEMO_TI_EVIDENCE"
 
 # Recipes whose disease identity is resolved by name (DEC-OPS-006). Adding a recipe
-# here after converting it is what keeps the guarantee from rotting. All three have a
-# copy in EVIDENCE_PROJECT. The SHARED ones run identical code in both projects;
-# compute_breast_panel moved there (its copy reads main-project inputs by qualified name),
-# and its main-project original goes once M2 is accepted.
+# here after converting it is what keeps the guarantee from rotting. Every one has a
+# copy in EVIDENCE_PROJECT equal to its dss_recipes/ mirror. compute_demo_panel_config
+# and compute_split_audit_2 also run, identically, in the main project;
+# compute_breast_panel moved to the evidence project (M2, 2026-10-29), which its mirror
+# now follows.
 IDENTITY_RECIPES = (
     "compute_demo_panel_config",
     "compute_breast_panel",
     "compute_split_audit_2",
 )
-SHARED_IDENTITY = ("compute_demo_panel_config", "compute_split_audit_2")
 
 # The observed disease node_index range, widened a little. Bare integers in this band
 # inside an identity recipe are almost certainly a pinned index.
@@ -225,10 +225,9 @@ def check_evidence(fail):
             fail.append(f"{name}: no copy in {EVIDENCE_PROJECT}")
             continue
         bare_indices(f"{EVIDENCE_PROJECT}.{name}", code.splitlines(), fail)
-        if (name in SHARED_IDENTITY and os.path.exists(path)
-                and code.rstrip() != "\n".join(read_lines(path)).rstrip()):
+        if os.path.exists(path) and code.rstrip() != "\n".join(read_lines(path)).rstrip():
             fail.append(f"{name}: the {EVIDENCE_PROJECT} copy differs from dss_recipes/{name}.py. "
-                        f"Both projects run one identity recipe (DEC-OPS-006).")
+                        f"Each identity recipe has one source (DEC-OPS-006).")
     main_vars = snap.get("_variables") or {}
     for key in sorted(set(main_vars) | set(ev.get("variables") or {})):
         a, b = main_vars.get(key), (ev.get("variables") or {}).get(key)

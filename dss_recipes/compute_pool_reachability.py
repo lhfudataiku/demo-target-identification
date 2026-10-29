@@ -34,7 +34,7 @@ import pandas as pd
 
 SCORE_MIN = 0.8   # the curated therapeutic label threshold adopted in §8.1
 
-nodes = dataiku.Dataset("graph_nodes").get_dataframe(
+nodes = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes").get_dataframe(
     columns=["node_index", "node_name", "node_type"], infer_with_pandas=False)
 nodes["node_index"] = nodes.node_index.astype(int)
 G = nodes[nodes.node_type == "gene/protein"]
@@ -44,7 +44,7 @@ dname = dict(zip(D.node_index, D.node_name))
 gene_nodes = set(G.node_index)
 
 # ---- the pool, as actually used for training/scoring -----------------------------------
-pool = dataiku.Dataset("enriched_graph_features_candidate_psplit").get_dataframe(
+pool = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.enriched_graph_features_candidate_psplit").get_dataframe(
     columns=["gene_index", "disease_index", "disease_family_id"])
 pool["gene_index"] = pool.gene_index.astype(int)
 pool["disease_index"] = pool.disease_index.astype(int)
@@ -59,7 +59,7 @@ print(f"pool: {len(pool):,} pairs | {len(eligible)} diseases | "
       f"{len(gene_reachable_any):,} distinct genes reachable somewhere")
 
 # ---- PPI degree for every gene, including ones the pool never sees ---------------------
-edges = dataiku.Dataset("graph_edges").get_dataframe(
+edges = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_edges").get_dataframe(
     columns=["relation", "x_index", "y_index"], infer_with_pandas=False)
 edges["x_index"] = edges.x_index.astype(int)
 edges["y_index"] = edges.y_index.astype(int)
@@ -77,19 +77,19 @@ print(f"curated pairs at score>={SCORE_MIN} on eligible diseases: {len(kd):,} "
       f"over {kd.disease_index.nunique()} diseases")
 
 # ---- 4. is the pool circular? does GCD look drug-mediated? -----------------------------
-gcd = dataiku.Dataset("enriched_dwpc_GCD").get_dataframe(columns=["gene_index", "disease_index"])
+gcd = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.enriched_dwpc_GCD").get_dataframe(columns=["gene_index", "disease_index"])
 gcd["gene_index"] = gcd.gene_index.astype(int)
 gcd["disease_index"] = gcd.disease_index.astype(int)
 gcd_pairs = set(map(tuple, gcd[["disease_index", "gene_index"]].values))
-dd = dataiku.Dataset("drug_disease_edges").get_dataframe(infer_with_pandas=False)
-dp = dataiku.Dataset("drug_protein_edges").get_dataframe(infer_with_pandas=False)
+dd = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_disease_edges").get_dataframe(infer_with_pandas=False)
+dp = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_protein_edges").get_dataframe(infer_with_pandas=False)
 gc_, tc_ = ("x_id", "y_id") if (dp.x_type == "drug").any() else ("y_id", "x_id")
 gid = dict(zip(G.node_name.astype(str), G.node_index))  # unused; kept for clarity
 dp2 = dp.copy()
 dp2["drug"] = dp2[gc_].astype(str)
 nid_by_id = dict(zip(nodes.node_index, nodes.node_index))  # placeholder
 # map drug->gene via node_id, mirroring the other recipes
-nodes_id = dataiku.Dataset("graph_nodes").get_dataframe(
+nodes_id = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes").get_dataframe(
     columns=["node_index", "node_id", "node_type"], infer_with_pandas=False)
 nodes_id["node_index"] = nodes_id.node_index.astype(int)
 nodes_id["node_id"] = nodes_id.node_id.astype(str)
@@ -113,7 +113,7 @@ print(f"  dwpc_GCD pairs: {len(gcd_pairs):,} | drug-mediated (disease,gene) pair
 print(f"  overlap: {inter:,} = {100*inter/max(len(gcd_pairs),1):.1f}% of GCD")
 print("  If that share were near 100%, C would be Compound and every drug-based metric in section 8")
 print("  would be partly circular with the pool. Read the number, do not assume it.")
-gcd_only = gcd_pairs - (set(map(tuple, dataiku.Dataset("enriched_dwpc_GGD")
+gcd_only = gcd_pairs - (set(map(tuple, dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.enriched_dwpc_GGD")
                                .get_dataframe(columns=["disease_index", "gene_index"])
                                .astype(int).values)))
 print(f"  GCD pairs not also carried by GGD: {len(gcd_only):,}")
@@ -149,7 +149,7 @@ for k, v in rc.items():
     print(f"  {k:52s} {v:6,d}  ({100*v/len(miss):5.1f}%)")
 
 # ---- 3. modality bias ------------------------------------------------------------------
-dr = dataiku.Dataset("enriched_gene_druggability_v2").get_dataframe()
+dr = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.enriched_gene_druggability_v2").get_dataframe()
 keep = [c for c in ["gene_index", "ot_sm_tractable", "ot_ab_tractable", "ot_class_l1",
                     "druggability_class"] if c in dr.columns]
 dr = dr[keep].copy()

@@ -18,7 +18,7 @@ docs/operations/build-governance/review-packet.schema.json	docs	LIVE (referenced
 docs/prioritizer/CLAIM_REGISTRY.json	docs	LIVE (referenced)	8	docs/README.md,docs/decisions/DECISION_REGISTER.md,docs/demo/WEBAPP_DESIGN.md,docs/prioritizer/TARGET_PRIORITIZER.md
 dss_lib/demo_identity.py	dss_lib	LIVE (referenced)	8	docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,dss_recipes/compute_breast_panel.py,dss_recipes/compute_demo_panel_config.py
 dss_recipes/attach_node_index.py	recipe-mirror	MIRROR (graph-build project)	0	-
-dss_recipes/compute_breast_panel.py	recipe-mirror	MIRROR	4	archive/DASHBOARD_BUILD_LOG.md,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V2.html,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V3.html,docs/operations/build-governance/POLICY.json
+dss_recipes/compute_breast_panel.py	recipe-mirror	MIRROR (evidence project)	4	archive/DASHBOARD_BUILD_LOG.md,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V2.html,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V3.html,docs/operations/build-governance/POLICY.json
 dss_recipes/compute_demo_panel_config.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_eligibility.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_disease_family_id.py	recipe-mirror	MIRROR	0	-
@@ -33,7 +33,7 @@ dss_recipes/compute_enriched_rwr_score_1.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_family_panel_overlap.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_family_panel_programme.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_family_panel_top50.py	recipe-mirror	MIRROR	0	-
-dss_recipes/compute_filter_three_axes.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_filter_three_axes.py	recipe-mirror	MIRROR (evidence project)	0	-
 dss_recipes/compute_gene_druggability.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_gene_localization.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_gene_names.py	recipe-mirror	MIRROR (graph-build project)	0	-
@@ -41,12 +41,12 @@ dss_recipes/compute_hgnc_identity.py	recipe-mirror	MIRROR (graph-build project)	
 dss_recipes/compute_hub_bias_meter.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_kg.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_kg_edges.py	recipe-mirror	MIRROR (graph-build project)	0	-
-dss_recipes/compute_known_drug_truth.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_known_drug_truth.py	recipe-mirror	MIRROR (evidence project)	0	-
 dss_recipes/compute_lung_granularity_check.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_model_comparison.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_novel_discovery_eval.py	recipe-mirror	MIRROR	1	dss_recipes/compute_drug_evidence_pairs.py
 dss_recipes/compute_persona_candidates.py	recipe-mirror	MIRROR	1	docs/demo/WEBAPP_DESIGN.md
-dss_recipes/compute_pool_reachability.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_pool_reachability.py	recipe-mirror	MIRROR (evidence project)	0	-
 dss_recipes/compute_ppi_cn_zscore.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_ppi_evidence_depth.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_shap_top5.py	recipe-mirror	MIRROR	0	-
@@ -88,12 +88,12 @@ tools/build_evidence_flow.py	tool	LIVE	2	docs/operations/EVIDENCE_PROJECT_DESIGN
 tools/build_flow_map.py	tool	LIVE	4	docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MAP.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/check_indexes.sh
 tools/build_governance.py	tool	LIVE	3	docs/operations/BUILD_GOVERNANCE.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/tests/test_build_governance.py
 tools/build_index.py	tool	LIVE	10	archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/decisions/README.md
-tools/build_recipe_index.py	tool	LIVE	40	README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md
+tools/build_recipe_index.py	tool	LIVE	39	README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md
 tools/capture_build_governance.py	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md
 tools/check_claim_registry.py	tool	LIVE	4	docs/operations/FLOW_MIGRATION_WORKPLAN.md,docs/prioritizer/VALIDATION.md,tools/check_indexes.sh,tools/index_manifest.json
 tools/check_freshness.py	tool	LIVE	2	archive/DASHBOARD_BUILD_LOG.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md
 tools/check_governed_values.py	tool	LIVE	6	docs/decisions/DECISION_REGISTER.md,docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,docs/operations/WEBAPP_DATASET_MAP.md
-tools/check_harness.py	tool	LIVE	2	harness/README.md,tools/check_indexes.sh
+tools/check_harness.py	tool	LIVE	3	docs/operations/FLOW_MIGRATION_WORKPLAN.md,harness/README.md,tools/check_indexes.sh
 tools/check_indexes.sh	tool	LIVE	13	.github/workflows/checks.yml,README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/decisions/DECISIONS_2026-08-31.md
 tools/check_links.py	tool	LIVE	7	archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/doc-restructure-2026-08-28/PHASE_0_BASELINE_2026-08-28.md
 tools/check_shap_top5.py	tool	LIVE	2	archive/WEBAPP_REDESIGN_WORKPLAN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md

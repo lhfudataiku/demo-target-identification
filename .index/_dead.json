@@ -24,15 +24,17 @@
   "graph_ppi_provenance": "webapp/backend/routes/evidence.py (Act 1)",
   "graph_label_evidence": "webapp/backend/routes/evidence.py (Act 1)",
   "disease_eligibility": "webapp/backend/routes/calibration.py (Act 2)",
-  "shap_driver_frequency": "webapp/backend/routes/calibration.py + feature_glossary.py (Act 2)",
-  "shap_drivers_long": "compute_shap_driver_frequency -- live intermediate, not a leaf",
   "persona_enrichment": "webapp/backend/routes/families.py (Act 3) + routes/calibration.py + nb7 + compute_demo_panel_config",
   "family_panel": "notebooks/nb7_panel_selection.py + compute_demo_panel_config + compute_family_panel_metrics",
-  "validation_auc_ci": "compute_family_panel -- live intermediate, not a leaf",
-  "breast_panel_metrics": "DO NOT MIGRATE OR PRUNE, despite being zone-90 notebook evidence like the other two. Three independent systems depend on it: it is the entire build-governance allowed_targets allowlist with three immutable pilot artifacts fingerprinting its recipe settings, schema, data and metrics; it backs governed claim TI-VAL-009, whose authority is nb4 section 8.10 '8.10 HER2+ AUC'; and compute_breast_panel is one of three IDENTITY_RECIPES under DEC-OPS-006, whose check fails if the dss_recipes/ mirror is missing."
+  "validation_auc_ci": "compute_family_panel -- live intermediate, not a leaf"
+ },
+ "moved_to_evidence_project": {
+  "_note": "Deleted from DEMO_TARGET_IDENTIFICATION 2026-10-29 with user approval (FLOW_MIGRATION_WORKPLAN M2), after their DEMO_TI_EVIDENCE copies built to identical outputs. They live on there, not as prune candidates: breast_panel_metrics is the build-governance target and backs TI-VAL-009, and compute_breast_panel stays an IDENTITY_RECIPE whose dss_recipes/ mirror follows the evidence copy. Do not recreate them in the main project.",
+  "datasets": ["breast_panel_metrics", "filter_three_axes", "known_drug_truth", "pool_reachability"],
+  "recipes": ["compute_breast_panel", "compute_filter_three_axes", "compute_known_drug_truth", "compute_pool_reachability"]
  },
  "already_deleted": {
-  "_note": "Removed from live DSS. Retained so a future session does not re-flag them as findings. The top50_* and pairwise_* branches were superseded by the family_panel_* datasets in zone A3. `dashboard_persona_trust` and `join_trust_for_personas` were deleted 2026-09-03 with user approval as the release flow-freeze; both inputs of that join (persona_candidates, disease_pool_sizes) survived with other consumers, and zone A4 dropped from 3 datasets to 2. `tractability_axis` and `compute_tractability_axis` were deleted 2026-09-03 after their logic moved into tools/nb_assertions/derive.py: equality was verified first (same 1,336x48 shape, max absolute difference 2.8e-14) and the full assertion suite then passed with 150 checks and 0 stale. Zone 90 was dissolved in the same pass -- breast_panel_metrics went to 31 beside scored_champion, pool_reachability to A4 beside known_drug_truth. Folding both into 31 was measured and rejected: it created three zone cycles.",
+  "_note": "Removed from live DSS. Retained so a future session does not re-flag them as findings. The top50_* and pairwise_* branches were superseded by the family_panel_* datasets in zone A3. `dashboard_persona_trust` and `join_trust_for_personas` were deleted 2026-09-03 with user approval as the release flow-freeze; both inputs of that join (persona_candidates, disease_pool_sizes) survived with other consumers, and zone A4 dropped from 3 datasets to 2. `tractability_axis` and `compute_tractability_axis` were deleted 2026-09-03 after their logic moved into tools/nb_assertions/derive.py: equality was verified first (same 1,336x48 shape, max absolute difference 2.8e-14) and the full assertion suite then passed with 150 checks and 0 stale. Zone 90 was dissolved in the same pass -- breast_panel_metrics went to 31 beside scored_champion, pool_reachability to A4 beside known_drug_truth. Folding both into 31 was measured and rejected: it created three zone cycles. `shap_drivers_long` and `shap_driver_frequency`, with their recipes, were deleted 2026-10-29 with user approval (FLOW_MIGRATION_WORKPLAN M2): the webapp had stopped reading them, and no notebook or recipe read them.",
   "datasets": [
    "dashboard_persona_trust",
    "disease_hierarchy_annotation",
@@ -43,6 +45,8 @@
    "scored_m1",
    "scored_m2",
    "scored_m3",
+   "shap_driver_frequency",
+   "shap_drivers_long",
    "top50_membership",
    "top50_membership_b",
    "top50_pairs",
@@ -54,6 +58,8 @@
    "compute_disease_hierarchy_annotation",
    "compute_pairwise_overlap",
    "compute_pairwise_pairs",
+   "compute_shap_driver_frequency",
+   "compute_shap_drivers_long",
    "compute_top50_membership",
    "compute_top50_pairs",
    "compute_top50_slim_a",

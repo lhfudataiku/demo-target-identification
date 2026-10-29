@@ -75,13 +75,19 @@ def sh(args):
     return subprocess.run(args, cwd=ROOT, capture_output=True, text=True).stdout
 
 
+# Python recipes the evidence project owns outright: moved out of the main project in M2
+# (2026-10-29). Their dss_recipes/ mirrors come from the evidence copies.
+EVIDENCE_OWNED = ("compute_breast_panel", "compute_filter_three_axes", "compute_known_drug_truth",
+                  "compute_pool_reachability")
+
+
 def evidence_snapshot():
-    """The evidence project's copies of the identity recipes, and its variables (DEC-OPS-006 note,
-    2026-10-28). check_governed_values.py checks both projects against the one dss_recipes/ mirror,
-    and it reads only the repo, so the evidence side is snapshotted here."""
+    """The evidence project's copies of the identity recipes and of the recipes it owns, and its
+    variables (DEC-OPS-006 note, 2026-10-28). check_governed_values.py checks both projects against
+    the one dss_recipes/ mirror, and it reads only the repo, so the evidence side is snapshotted here."""
     from check_governed_values import EVIDENCE_PROJECT, IDENTITY_RECIPES
     code = {}
-    for n in IDENTITY_RECIPES:
+    for n in sorted(set(IDENTITY_RECIPES) | set(EVIDENCE_OWNED)):
         raw = sh(["dku", "recipe", "get-code", n, "-P", EVIDENCE_PROJECT])
         code[n] = raw if raw and "has no code payload" not in raw else None
     raw_vars = sh(["dku", "project", "get-variables", "-P", EVIDENCE_PROJECT, "--format", "json"])
@@ -90,7 +96,8 @@ def evidence_snapshot():
     except (ValueError, AttributeError):
         print("  WARN could not read %s variables" % EVIDENCE_PROJECT, file=sys.stderr)
         variables = {}
-    return {"project": EVIDENCE_PROJECT, "identity_code": code, "variables": variables}
+    return {"project": EVIDENCE_PROJECT, "identity_code": {n: code[n] for n in IDENTITY_RECIPES},
+            "owned_code": {n: code[n] for n in EVIDENCE_OWNED}, "variables": variables}
 
 
 def refresh():
@@ -214,8 +221,18 @@ def refresh():
             unmirrored.append(n)
         elif open(mp).read() != r["code"]:
             drifted.append(n)
+    owned = snap["_evidence"]["owned_code"]
+    for n in EVIDENCE_OWNED:
+        mp = os.path.join(ROOT, "dss_recipes", n + ".py")
+        if owned.get(n) is None:
+            print("  WARN no %s code for %s" % (snap["_evidence"]["project"], n), file=sys.stderr)
+        elif not os.path.exists(mp):
+            unmirrored.append(n)
+        elif open(mp).read() != owned[n]:
+            drifted.append(n)
     for n in unmirrored + drifted:
-        open(os.path.join(ROOT, "dss_recipes", n + ".py"), "w").write(snap[n]["code"])
+        code = owned[n] if n in EVIDENCE_OWNED else snap[n]["code"]
+        open(os.path.join(ROOT, "dss_recipes", n + ".py"), "w").write(code)
     if unmirrored:
         print("mirrored %d previously-unversioned python recipes: %s"
               % (len(unmirrored), ", ".join(unmirrored)))
@@ -315,6 +332,11 @@ def mirror_status(stem, own, sibling, snap=None, path=None):
     This used to test only whether a live recipe of that NAME existed anywhere, so "0 stale mirror"
     was reported while twelve mirrors held m3-era code. Name-existence and content-freshness are
     different questions; DRIFTED MIRROR answers the second."""
+    if stem in EVIDENCE_OWNED:
+        live = ((snap or {}).get("_evidence") or {}).get("owned_code", {}).get(stem)
+        if path and live is not None and open(path).read() != live:
+            return "DRIFTED MIRROR (content differs from the evidence project)"
+        return "MIRROR (evidence project)"
     if stem in own:
         if snap and path and os.path.exists(path):
             live = (snap.get(stem) or {}).get("code")
