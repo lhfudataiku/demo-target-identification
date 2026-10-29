@@ -85,10 +85,10 @@ reference_baseline.json	root-script	LIVE (referenced)	4	archive/decisions/DECISI
 scripts/create_vg_webapp.py	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 scripts/filter_mrconso.sh	scripts	LIVE (referenced)	1	tools/recipe_classes.json
 tools/build_evidence_flow.py	tool	LIVE	3	docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/check_governed_values.py
-tools/build_flow_map.py	tool	LIVE	4	docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MAP.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/check_indexes.sh
+tools/build_flow_map.py	tool	LIVE	5	docs/operations/EVIDENCE_PROJECT_DESIGN.md,docs/operations/FLOW_MAP.md,docs/operations/FLOW_MAP_EVIDENCE.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md
 tools/build_governance.py	tool	LIVE	3	docs/operations/BUILD_GOVERNANCE.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,tools/tests/test_build_governance.py
 tools/build_index.py	tool	LIVE	10	archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/decisions/README.md
-tools/build_recipe_index.py	tool	LIVE	38	README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md
+tools/build_recipe_index.py	tool	LIVE	39	README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DASHBOARD_BUILD_LOG.md,archive/decisions/DECISIONS_2026-08-31.md
 tools/build_serving_m4.py	tool	LIVE	1	docs/operations/FLOW_MIGRATION_WORKPLAN.md
 tools/capture_build_governance.py	tool	LIVE	2	docs/operations/BUILD_GOVERNANCE.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md
 tools/capture_webapp_payloads.py	tool	LIVE	1	docs/operations/FLOW_MIGRATION_WORKPLAN.md
@@ -127,7 +127,7 @@ webapp/backend/feature_glossary.py	webapp	LIVE (referenced)	7	archive/WEBAPP_RED
 webapp/backend/prefill.py	webapp	LIVE (referenced)	2	archive/WEBAPP_REDESIGN_WORKPLAN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md
 webapp/backend/routes/__init__.py	webapp	LIVE (referenced)	1	webapp/dss_webapp/deploy.sh
 webapp/backend/routes/assistant.py	webapp	LIVE (referenced)	1	archive/WEBAPP_REDESIGN_WORKPLAN.md
-webapp/backend/routes/calibration.py	webapp	LIVE (referenced)	7	docs/operations/FLOW_MAP.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,docs/operations/WEBAPP_DATASET_MAP.md,docs/prioritizer/CLAIM_REGISTRY.json
+webapp/backend/routes/calibration.py	webapp	LIVE (referenced)	8	docs/operations/FLOW_MAP.md,docs/operations/FLOW_MAP_EVIDENCE.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,docs/operations/WEBAPP_DATASET_MAP.md
 webapp/backend/routes/candidates.py	webapp	LIVE (referenced)	6	archive/WEBAPP_REDESIGN_SCOPE.md,docs/demo/WEBAPP_DESIGN.md,docs/operations/FLOW_MIGRATION_WORKPLAN.md,dss_recipes/compute_shap_top5.py
 webapp/backend/routes/evidence.py	webapp	LIVE (referenced)	2	webapp/DEPLOYMENT.md,webapp/README.md
 webapp/backend/routes/families.py	webapp	LIVE (referenced)	5	docs/operations/FLOW_MIGRATION_WORKPLAN.md,docs/operations/WEBAPP_DATASET_MAP.md,docs/prioritizer/CLAIM_REGISTRY.json,webapp/DEPLOYMENT.md

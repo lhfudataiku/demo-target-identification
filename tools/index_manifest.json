@@ -10,6 +10,7 @@
     {"path": "docs/demo/DEMO_NARRATIVE.md", "index": "heuristic"},
     {"path": "docs/demo/WEBAPP_DESIGN.md", "index": "heuristic"},
     {"path": "docs/operations/FLOW_MAP.md", "index": "heuristic"},
+    {"path": "docs/operations/FLOW_MAP_EVIDENCE.md", "index": "heuristic"},
     {"path": "docs/demo/BREAST_SURGEON_BRIEFING.md", "index": "heuristic"},
     {"path": "docs/demo/panel_selection/README.md", "index": "heuristic"}
   ],

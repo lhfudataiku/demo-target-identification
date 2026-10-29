@@ -806,6 +806,23 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
         identical) and one in the main project (`validation_set_scored_windows`, built 2026-09-01
         from a `scored_champion` rebuilt 2026-09-03; its AUCs equal the evidence project's, built
         from the current scores). None changes a value.
+      - **Evidence staleness cleared, 2026-10-29 (the user's choice: evidence only).** The user
+        rebuilt the 12 datasets downstream of `family_panel` and `persona_candidates` in 7
+        non-recursive stages. Before it, three E3 intermediates (`shortlist_scored`,
+        `shortlist_ranked`, `shortlist_joined`) were found without files although DSS recorded
+        their builds: most likely the window-trims re-apply of `build_evidence_flow.py`, whose
+        `configure()` applies a schema update unconditionally and so drops the output's files,
+        the fault fixed in the M4 builder. The notebooks read only `dashboard_candidates`, which
+        kept its files. After the rebuild the 9 saved datasets are identical, the three hold
+        their 105,702 rows, and `check_freshness.py --project DEMO_TI_EVIDENCE` finds no stale
+        link in 25 datasets.
+      - **The main project's stale window stays, by the user's decision.** Clearing it reruns
+        the S1 scoring, whose Shapley explanations draw a 100-row background from the scored set,
+        so the shown top-5 drivers could shift. Its AUCs equal the evidence project's, which were
+        built from the current scores.
+- **M6 is done.** Every done-when holds: the old chains are retired, the main map shows no
+  notebook reader in a serving zone and no orphan beyond the keep list (`llm_hx`), the webapp
+  reads S1-S5 plus the named exceptions, and `tools/check_indexes.sh` passes for both projects.
 
 ## 4. Risks
 
