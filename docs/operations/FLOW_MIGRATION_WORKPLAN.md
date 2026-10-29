@@ -565,6 +565,18 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
   - the map shows the webapp reading only S1–S4 plus the exceptions M0 named;
   - every dataset's last build date is unchanged;
   - the routes return the same payloads.
+- **Done 2026-10-29, applied by the user with six `dku flow` commands.** `DEC-ARCH-007` placed the
+  panel definition in zone 40, so the conditional move ran.
+  - A before/after read of every zone placement and every dataset's last build shows exactly the
+    planned change: A1–A3 renamed by id, A4 deleted, and 7 objects moved
+    (`finalize_dashboard_candidates`, `dashboard_candidates` and the `CB9xqCGg` cache folder to S1;
+    `compute_family_panel`, `family_panel`, `compute_demo_panel_config` and `demo_panel_config` to
+    40). No dataset's last build changed; 17 zones remain.
+  - The refreshed map shows the webapp reading S1–S4 plus the three zone-10 DWPC datasets (their
+    metrics only) and `demo_panel_config` in 40, both named by `DEC-ARCH-007`.
+  - All 163 route calls return the same payloads as before M3, compared by hash against
+    `data/webapp_payloads/2026-10-29.json`.
+  - The zone `shortDesc` texts still describe acts; M6 rewrites them.
 
 ### M4 — rebuild the serving flow beside the old *(DSS)*
 

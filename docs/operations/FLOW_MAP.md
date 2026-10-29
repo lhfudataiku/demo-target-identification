@@ -13,7 +13,7 @@
 > python3 tools/build_flow_map.py
 > ```
 
-Live DSS: **91 datasets across 18 zones**, cross-referenced against the recipe graph (89 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
+Live DSS: **91 datasets across 17 zones**, cross-referenced against the recipe graph (89 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
 
 A dataset counts as **read** only when its name appears *quoted* in reader code. A bare
 mention is prose: `calibration.py` names the three DWPC feature datasets in a display
@@ -164,13 +164,14 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `scored_champion` | nb1, nb2, nb3, nb3b, nb4, nb6 | `sync_scored_champion` | 6 | notebook |
 | `scored_m7` | — | `score_psplit_validation_m7` | 1 | intermediate |
 
-## 40 Candidate ranking (shared by acts)  (9 datasets, 9 recipes)
+## 40 Candidate ranking (shared by acts)  (10 datasets, 10 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `candidates_annotated` | — | `join_dashboard_annotations` | 1 | intermediate |
-| `dashboard_candidates` | **webapp:prefill**, **webapp:routes/candidates**, **webapp:services/pair_sources** | `finalize_dashboard_candidates` | 0 | webapp |
+| `demo_panel_config` | **webapp:routes/families** | `compute_demo_panel_config` | 5 | webapp |
 | `disease_pool_sizes` | — | `count_candidates_per_disease` | 1 | intermediate |
+| `family_panel` | — | `compute_family_panel` | 2 | intermediate |
 | `persona2_scored` | — | `score_persona_candidates` | 1 | intermediate |
 | `persona2_scored_shap` | — | `compute_top_shap_drivers_1` | 1 | intermediate |
 | `target_candidates_2` | — | `join_disease_name` | 2 | intermediate |
@@ -178,7 +179,24 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `top_candidates` | — | `rank_per_disease` | 1 | intermediate |
 | `validation_set_personas_2` | — | `filter_persona_diseases` | 2 | intermediate |
 
-## A1 Evidence base (serving)  (5 datasets, 5 recipes)
+## Agent  (0 datasets, 0 recipes)
+
+Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.UBUlwwxT`
+
+_No datasets in this zone._
+
+## S1 Shortlist  (6 datasets, 6 recipes)
+
+| dataset | read by | producing recipe | recipe consumers | flag |
+|---|---|---|--:|---|
+| `candidate_identity` | **webapp:routes/candidates**, **webapp:services/pair_sources** | `join_candidate_identity` | 0 | webapp |
+| `candidate_shap_top5` | **webapp:routes/candidates** | `compute_shap_top5` | 0 | webapp |
+| `dashboard_candidates` | **webapp:prefill**, **webapp:routes/candidates**, **webapp:services/pair_sources** | `finalize_dashboard_candidates` | 0 | webapp |
+| `drug_evidence_records` | **webapp:routes/candidates** | `join_drug_evidence_records` | 0 | webapp |
+| `drug_protein_actions` | — | `group_drug_protein_actions` | 1 | intermediate |
+| `persona2_scored_shap5` | — | `score_persona_candidates_shap5` | 1 | intermediate |
+
+## S2 Evidence · graph  (5 datasets, 5 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
@@ -188,7 +206,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `graph_ppi_provenance` | **webapp:routes/evidence** | `compute_graph_ppi_provenance` | 0 | webapp |
 | `graph_relation_counts` | **webapp:routes/evidence** | `compute_graph_relation_counts` | 0 | webapp |
 
-## A2 Calibration (serving)  (16 datasets, 16 recipes)
+## S3 Evidence · reconstruction  (16 datasets, 16 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
@@ -209,34 +227,12 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `validation_set_scored_grouped` | — | `compute_validation_set_scored_grouped` | 1 | intermediate |
 | `validation_set_scored_windows` | — | `compute_validation_set_scored_windows` | 1 | intermediate |
 
-## A3 Therapeutic area (serving)  (6 datasets, 6 recipes)
+## S4 Evidence · family panels  (4 datasets, 4 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
-| `demo_panel_config` | **webapp:routes/families** | `compute_demo_panel_config` | 5 | webapp |
-| `family_panel` | — | `compute_family_panel` | 2 | intermediate |
 | `family_panel_metrics` | **webapp:routes/families** | `compute_family_panel_metrics` | 0 | webapp |
 | `family_panel_overlap` | **webapp:routes/families** | `compute_family_panel_overlap` | 0 | webapp |
 | `family_panel_programme` | **webapp:routes/families** | `compute_family_panel_programme` | 0 | webapp |
 | `family_panel_top50` | **webapp:routes/families** | `compute_family_panel_top50` | 2 | webapp |
-
-## A4 Shortlist (serving)  (0 datasets, 0 recipes)
-
-_No datasets in this zone._
-
-## Agent  (0 datasets, 0 recipes)
-
-Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.UBUlwwxT`
-
-_No datasets in this zone._
-
-## S1 Shortlist  (5 datasets, 5 recipes)
-
-| dataset | read by | producing recipe | recipe consumers | flag |
-|---|---|---|--:|---|
-| `candidate_identity` | **webapp:routes/candidates**, **webapp:services/pair_sources** | `join_candidate_identity` | 0 | webapp |
-| `candidate_shap_top5` | **webapp:routes/candidates** | `compute_shap_top5` | 0 | webapp |
-| `drug_evidence_records` | **webapp:routes/candidates** | `join_drug_evidence_records` | 0 | webapp |
-| `drug_protein_actions` | — | `group_drug_protein_actions` | 1 | intermediate |
-| `persona2_scored_shap5` | — | `score_persona_candidates_shap5` | 1 | intermediate |
 
