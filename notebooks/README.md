@@ -5,27 +5,45 @@
 > claim or execution dependency changes · **Generated dependencies:** none — these files are the source
 > · **Excludes:** modelling rationale and narrative interpretation.
 
-**These files are the source of truth, not a mirror.** They run on the **`demo_kg-drug-discovery`** code env (Python 3.13), the project default.
-`tools/push_assertions.py --push` copies them into the DSS project library under
-`/python/nb_assertions/`, and the `validate_notebooks` scenario executes them there through
-`nb_assertions/runner.py` — one two-line step per script. `tools/check_indexes.sh` fails on any
-repo/library drift, and `.index/assertions.tsv` is parsed from these files, so the index describes
-exactly the code that runs.
+**These files are the source of truth, not a mirror.** Each script re-derives the numbers the
+documentation quotes from live DSS data and prints `PASS` or `STALE` beside each one, so a number that
+drifts fails loudly instead of rotting silently. `.index/assertions.tsv` is parsed from these files,
+so the index describes exactly the code that runs.
 
-**They are assertion-first.** Every value the documentation quotes is compared against live data and
-printed `PASS` or `STALE`, so drift fails loudly instead of rotting silently. The failure contract
-lives in the runner, not here: six of the seven scripts only *print* their stale count and return
-normally, so run bare they would report success over stale numbers. `runner.py` inspects each
-script's own `FAIL` list afterwards and raises. Do not "fix" that by editing the script tails — the
-index parses their assertion text and values.
+## Running them
 
-> **The DSS notebooks were retired on 2026-09-03**, archived in
-> [`../archive/notebooks-dss-2026-09-03/`](../archive/notebooks-dss-2026-09-03/). They were previously
-> the primary copy and `tools/pull_notebooks.py` pulled DSS → repo; both are gone. Retiring them
-> removed broken code, not work: three had drifted, and every dataset read only by the DSS side
-> (`pool_selection_bias`, `breast_panel_overlap`, `lung_granularity_check`, `safety_lift`,
-> `tractability_lift`) has since been deleted, while every dataset read only by these scripts still
-> exists, so they could no longer run.
+They run on your machine, against the evidence project `DEMO_TI_EVIDENCE` (`DEC-OPS-007`,
+[ADR-003](../docs/decisions/adrs/ADR-003-evidence-project.md)):
+
+```bash
+uv sync --project notebooks
+eval "$(dku auth export-env)"
+uv run --project notebooks python tools/run_notebooks.py --out data/assertion_runs/<date>.json
+```
+
+- **About 15 minutes for all seven.** `--only nb3_validation_and_plots` runs one script.
+- **Green means every script passes.** On 2026-10-29: 7 scripts, 150 checks, 0 stale. The exit code
+  is non-zero if any script has a stale check, and `--out` records the per-script counts. Keep that
+  file under `data/`, which is never committed.
+- **`nb5` is not in the run.** It explores the data and asserts nothing, and the runner refuses a
+  script without checks. Run it directly when you want its output.
+- **Nothing in DSS runs them.** There is no scenario and no DSS copy: the `validate_notebooks`
+  scenario and the `/python/nb_assertions/` library folder were deleted on 2026-10-29. So a change
+  to the flow can move a quoted number until someone runs them; run them after a model, graph or
+  recipe change.
+- **After a champion change, rebuild the evidence flow first.** Its datasets are copies, and they
+  only see the new champion once rebuilt.
+
+**Where the scripts read.** `tools/run_notebooks.py` makes the evidence project the default, so a
+bare name such as `"dashboard_candidates"` reads the evidence copy. The main project's upstream
+datasets — the graph, the features, the split and `scored_champion` — are read by qualified name,
+such as `"DEMO_TARGET_IDENTIFICATION.scored_champion"`. No script reads a main-project serving zone.
+
+**The failure contract lives in the runner, not in the scripts.** Six of the seven scripts only
+*print* their stale count and return normally, so run bare they would report success over stale
+numbers. `tools/nb_assertions/runner.py` inspects each script's own `FAIL` list afterwards and
+raises. Do not "fix" that by editing the script tails: the index parses their assertion text and
+values.
 
 ---
 
@@ -34,17 +52,23 @@ index parses their assertion text and values.
 The filenames follow `TARGET_PRIORITIZER.md`'s section numbers (§3–§8), which is **not** the order the
 work happens in. A reviewer coming to this cold should follow the lifecycle:
 
-| # | lifecycle stage | notebook | backs | reads from |
-|--:|---|---|---|---|
-| 1 | **Data understanding** | `nb5_data_exploration` | §3 | zones 00–04 — the imported graph |
-| 2 | **Feature engineering** | `nb1_features_and_config` *(first half)* | §4.1, §4.2 | zone 30 — `psplit_train_set` |
-| 3 | **Split & leakage control** | `nb2_splitting_and_pool` | §5, §5.2.1, §5.4 | zone 30, A2 |
-| 4 | **Model selection & config** | `nb1_features_and_config` *(second half)* | §6.1, §6.3 | zone 31 — `scored_champion` |
-| 5 | **Offline evaluation** | `nb3_validation_and_plots` | §6.4, §7.1, §7.3, §7.4 | zone 31, A2 |
-| 6 | **Robustness / bias audit** | `nb3b_hub_bias_meter` | §7.2 | zone 31 |
-| 7 | **Impact validation** | `nb4_results_three_axes` | §8 | zone 31, A2, A4 |
-| 8 | **Communication** | `nb6_interrogation_and_close` | demo acts 5–6 | zone 31, A4 |
-| 9 | **Demo panel selection** | `nb7_panel_selection` | which families and diseases the demo carries | zone 31, A2, A4 |
+| # | lifecycle stage | notebook | backs | main project (qualified) | evidence project |
+|--:|---|---|---|---|---|
+| 1 | **Data understanding** | `nb5_data_exploration` | §3 | graph, features | E1 |
+| 2 | **Feature engineering** | `nb1_features_and_config` *(first half)* | §4.1, §4.2 | `psplit_train_set` | — |
+| 3 | **Split & leakage control** | `nb2_splitting_and_pool` | §5, §5.2.1, §5.4 | features, `scored_champion` | E1, E4 |
+| 4 | **Model selection & config** | `nb1_features_and_config` *(second half)* | §6.1, §6.3 | `scored_champion` | — |
+| 5 | **Offline evaluation** | `nb3_validation_and_plots` | §6.4, §7.1, §7.3, §7.4 | `scored_champion` | E1 |
+| 6 | **Robustness / bias audit** | `nb3b_hub_bias_meter` | §7.2 | `scored_champion` | — |
+| 7 | **Impact validation** | `nb4_results_three_axes` | §8 | `scored_champion`, drug imports | E1, E2, E4 |
+| 8 | **Communication** | `nb6_interrogation_and_close` | demo acts 5–6 | graph, drugs, annotations, `scored_champion` | E1, E2, E3 |
+| 9 | **Demo panel selection** | `nb7_panel_selection` | which families and diseases the demo carries | — | E1, E2, E3 |
+
+The evidence project's zones: **E1** rebuilds the validation metrics (per-disease and per-family AUC,
+the split audit, the benchmarks, the personas); **E2** the family panels; **E3** a slim shortlist, the
+12 shortlist diseases ranked with ties; **E4** the drug ground truth, pool reachability, the three-axis
+filter and the breast panel.
+[`EVIDENCE_PROJECT_DESIGN.md`](../archive/EVIDENCE_PROJECT_DESIGN.md) lists every read.
 
 ⚠ **`nb1` spans two stages that the split sits between.** Its §4 half analyses features on the training
 set (stage 2, pre-split); its §6 half chooses the operating threshold (stage 4, post-split). Reading it
@@ -59,51 +83,26 @@ demo; `nb3b` remains the canonical artifact until acts 5–6 are signed off.
 
 ---
 
-## The notebook rule, and how far each notebook is from it
+## The notebook rule
 
 > Read the **most upstream** dataset that still carries the number and recompute in code. Reading a
 > derived table and asserting its contents proves the recipe still runs, not that the number is right.
 
-Zone `90` was framed as a **staging area for deletion**, on the reasoning that a script still reading
-from it had not yet been converted. Recomputed from live DSS on 2026-09-03 — every dataset below
-exists, and **no script reads a dataset that does not**:
+`nb3b` is the exemplar: it reads only `scored_champion` and has no recipe, so the script is its own
+artifact. `nb4` and `nb6` get the tractability axis from `tools/nb_assertions/derive.py`, which
+recomputes it from four upstream datasets; its dataset was deleted on 2026-09-03 once the two agreed.
 
-| script | dataset reads | of which in zone 90 |
-|---|--:|---|
-| `nb1` | 2 | — |
-| `nb3b` | 1 | — *(exemplar: it has no recipe, so this script IS its artifact)* |
-| `nb5` | 5 | — |
-| `nb7` | 6 | — |
-| `nb2` | 5 | `pool_reachability` |
-| `nb3` | 4 | — *(`family_auc_by_family` moved to A2)* |
-| `nb6` | 12 | `tractability_axis` |
-| `nb4` | 9 | `breast_panel_metrics`, `tractability_axis` |
-
-All three remaining zone-90 datasets are read by a script. The `family_auc_by_family` chain —
-including its `family_auc_grouped`, `family_validation_ranked` and `family_validation_scored`
-intermediates — moved to A2, because the webapp reads its endpoint and A2 is where its consumer's
-data belongs.
-
-**The old blocker is cleared, and the zone has been renamed.** `safety_lift` and `tractability_lift`
-were named as the acute case — carrying the act-6 punch line, gating any pruning, and requiring `nb6`
-to run green first. Both datasets have since been deleted and `nb6` now runs green (34 checks, 0
-stale). On 2026-09-03 the zone became **`90 Validation evidence (asserted)`**: the `family_auc_*`
-chain moved to A2, where the webapp reads its endpoint, and what remains is the three tables above —
-permanent unless an assertion stops reading them, not staging for deletion.
-
-`nb7` is the one script with a repository dependency: it compares live DSS data against frozen
+`nb7` is the one script with a repository dependency: it compares live data against frozen
 expectations in `docs/demo/panel_selection/analysis/eyeball_test.csv`, and guards every figure in
 `docs/demo/panel_selection.html`. Run it after any graph rebuild, gate move, champion change or
-persona-filter repoint. `tools/push_assertions.py` uploads that CSV alongside the scripts so the
-relative path resolves in DSS.
+persona-filter repoint.
 
 ---
 
 ## Figures — and where they went
 
-The plotting code is still here and still runs headless under the `Agg` backend, but **a scenario
-step has nowhere to render to**, so these figures are no longer viewable anywhere. The last rendered
-copies are archived in
+The plotting code still runs, but the runner sets the `Agg` backend, so a run draws nothing on screen.
+The last rendered copies are archived in
 [`../archive/notebooks-dss-2026-09-03/`](../archive/notebooks-dss-2026-09-03/):
 
 | script | figure | still shown to the audience? |
@@ -123,14 +122,18 @@ line, so if that act is ever shown from a screen rather than a talk track it nee
 `nb1` samples 25% of `psplit_train_set`. The full 2.19M × 31 frame plus a Spearman matrix gets
 OOM-killed (exit 137). A quarter resolves null rates to ~0.1 pp, far finer than any claim.
 
-## What the first run found (2026-08-19)
+## History
 
-- **`split_audit_2` did not exist.** Its recipe had been failing since the migration because the code
-  still named the pre-migration datasets, so the leakage guarantee behind every AUC was unverified.
-- **§7.2's central claim was refuted** — the champion is *worse* on hub bias than its predecessor.
-- **§6 failed on six values**, including train/test sizes that summed to nothing.
-- **The gene-popularity shortcut reaches the association axis**: `gene_n_diseases` alone scores 0.8567.
-- **§3.3's thesis was backwards** — over 259 parent-child pairs the more specific term wins 56.4%.
-
-All fixed or recorded — see the
-[historical decision index](../.index/decisions_history.tsv), 2026-08-19.
+- **2026-08-19, the first run** found that `split_audit_2` did not exist, so the leakage guarantee
+  behind every AUC was unverified; that §7.2's central claim was refuted (the champion is *worse* on
+  hub bias than its predecessor); that §6 failed on six values; that `gene_n_diseases` alone scores
+  0.8567 on the association axis; and that §3.3's thesis was backwards. All were fixed or recorded in
+  the [historical decision index](../.index/decisions_history.tsv).
+- **2026-09-03, the DSS notebooks were retired** and archived in
+  [`../archive/notebooks-dss-2026-09-03/`](../archive/notebooks-dss-2026-09-03/). Three had drifted,
+  and the datasets only they read had been deleted. The scripts then ran in DSS through the
+  `validate_notebooks` scenario.
+- **2026-10-28 and 10-29, the scripts moved to a local run against the evidence project**
+  ([workplan](../archive/FLOW_MIGRATION_WORKPLAN.md) M2). The datasets only they read left the
+  main project, and the scenario and library copy were deleted. Every script kept its checks and
+  counts.

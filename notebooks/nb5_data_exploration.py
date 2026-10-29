@@ -6,7 +6,7 @@
 import dataiku, numpy as np, pandas as pd
 from collections import defaultdict
 
-nodes=dataiku.Dataset("graph_nodes").get_dataframe(
+nodes=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes").get_dataframe(
     columns=["node_index","node_id","node_name","node_type"], infer_with_pandas=False)
 nodes["node_index"]=nodes.node_index.astype(int); nodes["node_id"]=nodes.node_id.astype(str)
 D=nodes[nodes.node_type=="disease"]; G=nodes[nodes.node_type=="gene/protein"]
@@ -14,12 +14,12 @@ dname=dict(zip(D.node_index,D.node_name)); did=dict(zip(D.node_id,D.node_index))
 print(f"NODES|diseases={len(D):,} genes={len(G):,}")
 
 # ==== 3.1  the association label is study-biased ====
-nodes=dataiku.Dataset("graph_nodes").get_dataframe(
+nodes=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes").get_dataframe(
     columns=["node_index","node_type"], infer_with_pandas=False)
 nodes["node_index"]=nodes.node_index.astype(int)
 dset=set(nodes[nodes.node_type=="disease"].node_index)
 gset=set(nodes[nodes.node_type=="gene/protein"].node_index)
-e=dataiku.Dataset("graph_edges").get_dataframe(
+e=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_edges").get_dataframe(
     columns=["relation","x_index","y_index"], infer_with_pandas=False)
 dp=e[e.relation.astype(str).str.contains("disease_protein",case=False,na=False)].copy()
 dp["x_index"]=dp.x_index.astype(int); dp["y_index"]=dp.y_index.astype(int)
@@ -38,12 +38,12 @@ for lbl,ser in [("per disease",canon.groupby("d").size()),("per gene",canon.grou
 
 
 # ==== 3.2  no clean partition of the ontology exists ====
-hh=dataiku.Dataset("raw_disease_disease").get_dataframe()
+hh=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.raw_disease_disease").get_dataframe()
 hh["p"]=hh.parent_id.astype(str).map(did); hh["c"]=hh.child_id.astype(str).map(did)
 hh=hh.dropna(subset=["p","c"]).astype({"p":int,"c":int})
 print(f"ONTO|hierarchy edges resolving onto graph: {len(hh):,}")
 nparents=hh.groupby("c").p.nunique()
-elig=set(dataiku.Dataset("enriched_graph_features_candidate_psplit")
+elig=set(dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.enriched_graph_features_candidate_psplit")
          .get_dataframe(columns=["disease_index"]).disease_index.astype(int).unique())
 print(f"ONTO|eligible diseases (in pool): {len(elig):,}")
 ne=nparents[nparents.index.isin(elig)]

@@ -1,0 +1,9 @@
+# MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
+# this file is a copy for review and grep. The live payload is in the DSS recipe.
+# recipe: join_drug_evidence_records (join)
+# inputs: drug_disease_edges, drug_protein_actions, graph_nodes
+# outputs: drug_evidence_records
+
+expression: node_type == "disease"
+expression: node_type == "drug"
+expression: node_type == "gene/protein"

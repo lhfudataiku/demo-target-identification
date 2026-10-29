@@ -36,7 +36,7 @@ FOCUS = {"non-small cell lung carcinoma", "lung adenocarcinoma", "lung cancer",
 WATCH = ["MAPK3", "PTPN6", "SMARCA2", "CRKL", "STAT5B", "STAT1", "GSK3B", "IRS1", "IRS2",
          "PIK3R2", "CDKN2B", "MRE11", "HDAC3", "ZAP70", "PLCG2", "IL6R", "PDPK1", "EGR1"]
 
-nid = dataiku.Dataset("graph_nodes").get_dataframe(
+nid = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes").get_dataframe(
     columns=["node_index", "node_id", "node_name", "node_type"], infer_with_pandas=False)
 nid["node_index"] = nid.node_index.astype(int)
 nid["node_id"] = nid.node_id.astype(str)
@@ -49,8 +49,8 @@ gmap = dict(zip(G.node_id, G.node_index))
 
 # Dataset DEMO_KG_LS.drug_disease_edges renamed to DEMO_KG_drug_disease_edges_copy by liheng.fu@dataiku.com on 2026-08-18 09:42:00
 # Dataset DEMO_KG_drug_disease_edges_copy renamed to drug_disease_edges by liheng.fu@dataiku.com on 2026-08-18 09:57:52
-dd = dataiku.Dataset("drug_disease_edges").get_dataframe(infer_with_pandas=False)
-dp = dataiku.Dataset("drug_protein_edges").get_dataframe(infer_with_pandas=False)
+dd = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_disease_edges").get_dataframe(infer_with_pandas=False)
+dp = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_protein_edges").get_dataframe(infer_with_pandas=False)
 gc, tc = ("x_id", "y_id") if (dp.x_type == "drug").any() else ("y_id", "x_id")
 dp["drug"] = dp[gc].astype(str)
 dp["gene_index"] = dp[tc].astype(str).map(gmap)
@@ -75,7 +75,7 @@ TRUTHS = {"approved": approved, "investigational": investig, "any": approved | i
 for k, v in TRUTHS.items():
     print(f"  {k:16s} {len(v):>7,} (disease, gene) pairs")
 
-sc = dataiku.Dataset("scored_champion").get_dataframe(
+sc = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", "proba_1"])
 sc["disease"] = sc.disease_index.map(dname)
 keys = list(zip(sc.disease_index.astype(int), sc.gene_index.astype(int)))

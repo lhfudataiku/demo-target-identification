@@ -20,7 +20,10 @@ import build_governance as governance
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT = "DEMO_TARGET_IDENTIFICATION"
+# The pilot ran in the main project (2026-08-31); compute_breast_panel moved to the evidence
+# project in M2 (2026-10-29), where it reads its main-project inputs by qualified name.
+PROJECT = "DEMO_TI_EVIDENCE"
+UPSTREAM = "DEMO_TARGET_IDENTIFICATION"
 TARGET = "breast_panel_metrics"
 RECIPE = "compute_breast_panel"
 BASELINE_ID = "phase5-pilot-breast-panel-20260831"
@@ -55,7 +58,7 @@ def semantic_recipe(recipe):
     refs = [item["ref"] for item in definition.get("inputs", {}).get("main", {}).get("items", [])]
     outputs = [item["ref"] for item in definition.get("outputs", {}).get("main", {}).get("items", [])]
     if (definition.get("projectKey") != PROJECT or definition.get("name") != RECIPE or
-            sorted(refs) != sorted(set(refs)) or any("." in ref for ref in refs) or
+            sorted(refs) != sorted(set(refs)) or any("." in ref and not ref.startswith(UPSTREAM + ".") for ref in refs) or
             outputs != [TARGET] or "compute_kg" in governance.canonical_json(recipe).decode("utf-8")):
         raise governance.PolicyViolation("pilot topology is not the approved local leaf recipe")
     return {

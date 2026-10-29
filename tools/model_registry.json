@@ -146,6 +146,10 @@
    "lab_session": "s12",
    "lab_id": "A-DEMO_TARGET_IDENTIFICATION-I2csfIX2-krJwswcb-s12-pp2-m1"
   },
+  "QvUvQbzB": {
+   "name": "target_evidence_agent",
+   "verdict": "NOT A PRIORITIZER MODEL. An LLM_GENERIC_RAW visual agent: the shortlist's evidence assistant in Agent Hub, over the graph, CT.gov and PubMed search tools (DEC-DEMO-004; WEBAPP_DESIGN.md). It has no prioritizer metrics. Recorded 2026-10-28 when an index refresh first saw it."
+  },
   "SybkzSdu": {
    "name": "graph_explorer",
    "verdict": "NOT A PRIORITIZER MODEL, and DELETED 2026-09-03. It was an LLM_GENERIC_RAW agent object left behind when Wave 6 removed the Act 1 graph agent path: the code went, the object stayed. Verified unused before deletion -- the Target Prioritizer has no /api/graph/* route, the Graph Explorer webapp reaches an LLM directly via config.llm_id rather than through an agent, and no recipe or scenario referenced it. Retained as a row here so the ladder history stays complete; it never had prioritizer metrics."

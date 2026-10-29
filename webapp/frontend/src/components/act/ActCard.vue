@@ -4,8 +4,9 @@
    *
    * Information contract from DASHBOARD_MOCKUP_V3.html's `card()` — title,
    * description, chips, body, source footer. Visual treatment from the
-   * bs-blueprint idiom (KpiCard / ChartsView): an accent-tinted gradient
-   * surface, a per-card accent colour, rounded-xl, shadow-sm.
+   * bs-blueprint idiom (KpiCard / ChartsView): a primary-tinted gradient
+   * surface, rounded-xl, shadow-sm. The tints are token classes, not inline
+   * styles, so the design lint can check them.
    *
    * The `src` footer is a guardrail, not decoration: the design doc requires
    * every number to name the dataset it came from.
@@ -48,12 +49,10 @@
       /** Source dataset names, rendered as a provenance footer */
       src?: string[]
       icon?: Component
-      /** Any CSS colour; defaults to the brand accent. */
-      accent?: string
       /** Label on the collapsed methodology disclosure. */
       methodLabel?: string
     }>(),
-    { span: 'col-span-12', accent: 'var(--primary)', methodLabel: 'How this is computed' },
+    { span: 'col-span-12', methodLabel: 'How this is computed' },
   )
 
   const slots = useSlots()
@@ -66,31 +65,23 @@
   const hasFooter = computed(() =>
     hasNote.value || hasMethod.value || showPresenter.value || Boolean(props.src?.length))
 
-  // Mirrors the template's KpiCard: a wash of the accent at the top edge that
-  // resolves into the card surface, plus a border tinted the same way.
-  const cardStyle = computed(() => ({
-    borderColor: `color-mix(in oklab, ${props.accent} 22%, var(--border))`,
-    background:
-      `linear-gradient(180deg, color-mix(in oklab, ${props.accent} 9%, var(--card)) 0%, var(--card) 26%)`,
-  }))
-  const iconStyle = computed(() => ({
-    backgroundColor: `color-mix(in oklab, ${props.accent} 20%, var(--card))`,
-    color: `color-mix(in oklab, ${props.accent} 70%, var(--foreground))`,
-  }))
-  const edgeStyle = computed(() => ({
-    borderColor: `color-mix(in oklab, ${props.accent} 14%, var(--border))`,
-  }))
+  // Mirrors the template's KpiCard: a wash of the primary at the top edge that
+  // resolves into the card surface, plus a border tinted the same way. Every
+  // card used the default accent, so the per-card colour prop went with the
+  // inline styles (2026-10-26).
+  const edge = 'border-primary/15'
 
   const DSS = 'https://design.solutions.dataiku-dss.io/projects/DEMO_TARGET_IDENTIFICATION/datasets'
 </script>
 
 <template>
-  <section :class="span" :style="cardStyle"
-           class="flex flex-col overflow-hidden rounded-xl border shadow-sm">
+  <section :class="span"
+           class="flex flex-col overflow-hidden rounded-xl border border-primary/20 bg-linear-to-b
+                  from-primary/10 to-card to-25% shadow-sm">
     <header class="flex flex-wrap items-start justify-between gap-2 px-5 pt-4 pb-2">
       <div class="flex items-start gap-3">
-        <span v-if="icon" :style="iconStyle"
-              class="mt-0.5 grid size-8 flex-none place-items-center rounded-lg">
+        <span v-if="icon"
+              class="mt-0.5 grid size-8 flex-none place-items-center rounded-lg bg-primary/20 text-primary">
           <component :is="icon" class="size-4" />
         </span>
         <div class="flex flex-col gap-0.5">
@@ -116,13 +107,13 @@
 
     <footer v-if="hasFooter" class="mt-auto flex flex-col">
       <!-- The insight that did not fit in one sentence. Always visible. -->
-      <div v-if="hasNote" class="border-t px-5 py-2.5 text-xs leading-relaxed" :style="edgeStyle">
+      <div v-if="hasNote" class="border-t px-5 py-2.5 text-xs leading-relaxed" :class="edge">
         <slot name="note" />
       </div>
 
       <!-- Methodology, collapsed. The disclosure is the whole point: a client
            never has to read it, and a data scientist is one click from it. -->
-      <Collapsible v-if="hasMethod" v-model:open="open" class="border-t" :style="edgeStyle">
+      <Collapsible v-if="hasMethod" v-model:open="open" class="border-t" :class="edge">
         <CollapsibleTrigger
           class="flex w-full items-center gap-1.5 px-5 py-2 text-left font-mono text-2xs
                  uppercase tracking-wide text-muted-foreground transition-colors
@@ -140,13 +131,13 @@
       <div v-if="showPresenter"
            class="flex items-start gap-2 border-t bg-secondary/60 px-5 py-2.5 text-xs
                   leading-relaxed"
-           :style="edgeStyle">
+           :class="edge">
         <Comment class="mt-0.5 size-3.5 flex-none text-muted-foreground" />
         <div><slot name="presenter" /></div>
       </div>
 
       <div v-if="src?.length"
-           class="flex flex-wrap items-center gap-2 border-t px-5 py-2" :style="edgeStyle">
+           class="flex flex-wrap items-center gap-2 border-t px-5 py-2" :class="edge">
         <span class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">src</span>
         <a v-for="s in src" :key="s" :href="`${DSS}/${s}/explore/`" target="_blank" rel="noopener"
            class="font-mono text-2xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">{{ s }}</a>

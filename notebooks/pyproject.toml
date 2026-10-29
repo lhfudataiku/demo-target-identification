@@ -1,0 +1,25 @@
+# Local environment for running the assertion scripts from the repository (DEC-OPS-007).
+# Pinned to the DSS code env they ran on, `demo_kg-drug-discovery` (Python 3.13), as read with
+# `dku code-env get demo_kg-drug-discovery` on 2026-10-28. Change a pin only together with that env.
+#
+#   uv sync --project notebooks
+#   uv run --project notebooks python tools/run_notebooks.py --project DEMO_TARGET_IDENTIFICATION
+[project]
+name = "target-id-notebooks"
+version = "0.1.0"
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    "pandas==2.3.3",
+    "numpy==2.3.5",
+    "scipy==1.16.3",
+    "matplotlib==3.11.2",
+    "seaborn==0.13.2",
+    "ipython==8.12.3",
+    "dataiku-api-client>=14.4.0",
+    # The in-DSS `dataiku` package, version-matched to the instance and served by it, as in
+    # webapp/pyproject.toml. Dataset reads go through it.
+    "dataiku-internal-client @ https://design.solutions.dataiku-dss.io/public/packages/dataiku-internal-client.tar.gz",
+]
+
+[tool.uv]
+package = false

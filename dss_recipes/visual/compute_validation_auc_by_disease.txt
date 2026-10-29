@@ -1,8 +1,14 @@
 # MIRRORED FROM DSS by tools/build_recipe_index.py --refresh. Do not edit here:
 # this file is a copy for review and grep. The live payload is in the DSS recipe.
 # recipe: compute_validation_auc_by_disease (shaker)
-# inputs: validation_set_scored_grouped
+# inputs: validation_set_scored_named
 # outputs: validation_auc_by_disease
 
+expression: (hits_at_50 / 50) / (n_pos / (n_pos + n_neg))
 expression: 1 - (target_rank_sum - n_pos*(n_pos+1)/2) / (n_pos * n_neg)
+expression: auc_disease + 1.96*auc_se
+expression: auc_disease - 1.96*auc_se
 expression: hits_at_20 / n_pos
+expression: if(auc_hi95 <= 1.0 && n_pos >= variables["trust_n_pos"], 1, 0)
+expression: n_pos + n_neg
+expression: sqrt((auc_disease*(1-auc_disease) + (n_pos-1)*((auc_disease/(2-auc_disease))-auc_disease*auc_disease) + (n_neg-1)*(((2*auc_disease*auc_disease)/(1+auc_disease))-auc_disease*auc_disease)) / (n_pos*n_neg))

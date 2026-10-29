@@ -1,166 +1,106 @@
 <script setup lang="ts">
   /**
-   * Act 4 — the list, and the eyeball test.
+   * Act 4 — the list, and the eyeball test. The home page (DEC-DEMO-005).
    *
-   * The act this demo exists for: open a disease you know, judge the top of the
-   * list yourself, then narrow it on your own thresholds.
+   * Open a disease you know, judge the top of the list, narrow it on your own
+   * thresholds, then ask what supports one gene. One selection drives the
+   * header and every tab below the list, so they can never describe different
+   * genes. The disease is shared with "Why trust the list", and the *How do we
+   * know?* links lead there.
    *
-   * Card structure follows DASHBOARD_MOCKUP_V3.html; styling is the Dataiku
-   * design system rather than the mockup's standalone one.
+   * Guardrails held here and in the parts:
+   *  - `prediction` is never fetched or shown, and no AUC appears on this page;
+   *  - drug and liability badges render but are never filters (CandidateTable);
+   *  - every count carries its rank cut-off;
+   *  - the app ranks and explains; no copy recommends what to pursue.
    *
-   * Guardrails enforced here, not merely documented:
-   *  - drug badges and the liability flag RENDER but are never filter controls
-   *    (the badges are the ground truth the enrichment is measured against;
-   *    filtering the liability flag deletes ERBB2 from its own disease's list);
-   *  - `prediction` is never fetched or shown;
-   *  - every funnel count renders its rank cut-off, so a count cannot acquire
-   *    two values;
-   *  - no discovery-enrichment figure appears on a summary tile;
-   *  - the detail card shows the CHAMPION'S features, never whichever columns
-   *    the dataset happens to carry, and names the one it cannot show;
-   *  - a feature's percentile is ranked in the direction that feature counts,
-   *    so the best possible hop distance does not draw an empty bar.
-   *
-   * COPY REVIEW 2026-09-03. This act was already the best-instrumented view in
-   * the app -- 18 ActInfo tooltips against zero everywhere else -- and its
-   * "Why this gene?" card is the pattern the other three acts were rebuilt
-   * against. Three things were still missing or misplaced:
-   *
-   *  - THE RANKING METHODOLOGY WAS NOWHERE. The act asks a client to judge an
-   *    ordering without ever saying what produced it. It is now the ranked
-   *    list's #method block, which is the highest-value single addition here.
-   *  - THE PERCENTILE EXPLANATION WAS ALWAYS OPEN, pushing the graph card below
-   *    the fold. Same text, now collapsed -- and the disclosure it uses is the
-   *    component every other act adopted.
-   *  - "MUST NOT APPEAR" was a build-spec heading rendered in destructive red
-   *    at a client. The reasoning is good and is kept; the label and the colour
-   *    are gone, and it reads as the design choice it is.
+   * The evidence assistant (Phase 7) joins these tabs later.
    */
   import { computed, nextTick, onMounted, ref, watch } from 'vue'
+  import { storeToRefs } from 'pinia'
+  import { Button, Card, CardContent, Tabs, TabsContent, TabsList, TabsTrigger } from '@dataiku/ea-ui-kit'
+  import { AiAgent, ArrowExternalLink, Microscope } from '@dataiku/vue-icons'
+  import { EmptyState, PageHeader } from 'bs-blueprint'
+  import AssistantSheet from '@/components/shortlist/AssistantSheet.vue'
+  import CandidateHeader from '@/components/shortlist/CandidateHeader.vue'
+  import CandidateTable from '@/components/shortlist/CandidateTable.vue'
+  import LineageTab from '@/components/shortlist/LineageTab.vue'
+  import OverviewTab from '@/components/shortlist/OverviewTab.vue'
+  import RankingTab from '@/components/shortlist/RankingTab.vue'
+  import SourcesTab from '@/components/shortlist/SourcesTab.vue'
+  import { TRUST_LINKS, type Detail, type Drivers, type Payload, type Row, type Selection, type SourcesDoc } from '@/components/shortlist/types'
+  import { useSelectionStore } from '@/stores/selection'
+  import { agentHubUrl } from '@/utils/visualGraphExplorer'
   import { apiUrl } from '@/utils/api'
-  import { buildA4ExplorerQueries } from '@/utils/a4ExplorerQueries'
-  import ActCard from '@/components/act/ActCard.vue'
-  import { EmptyState, SelectField } from 'bs-blueprint'
-  import ActTabs from '@/components/act/ActTabs.vue'
-  import ActInfo from '@/components/act/ActInfo.vue'
-  import ActTerm from '@/components/act/ActTerm.vue'
-  import VisualGraphExplorerCard from '@/components/graph/VisualGraphExplorerCard.vue'
-  import { Button, Checkbox, Input, NativeSelect, NativeSelectOption, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@dataiku/ea-ui-kit'
-  import { Flow, ListNumbered, Microscope } from '@dataiku/vue-icons'
-  import { seriesVar } from '@/utils/seriesColours'
-  import { PageHeader } from 'bs-blueprint'
 
   defineOptions({ name: 'ShortlistView' })
 
-  interface Disease { disease_index: number; disease_name: string; n_candidates: number; n_known: number }
-  interface Row {
-    gene_index: number
-    gene_name: string; rank_in_disease: number; rank_percentile: number | null
-    score: number; is_target: number
-    top_shap_drivers: string | null; druggability_class: string | null; ot_class_l1: string | null
-    ot_sm_tractable: number; ot_ab_tractable: number
-    has_safety_liability: number; approved_for_disease: number; investigational_for_disease: number
-  }
-  interface Payload {
-    disease_name: string; funnel: { step: string; n: number }[]; rows: Row[]; returned: number
-    /** column name -> the standalone wording, from backend/feature_glossary.py. */
-    feature_labels: Record<string, string>
-  }
+  const selection = useSelectionStore()
+  const { diseases, diseaseIndex } = storeToRefs(selection)
+  const diseaseName = computed(() =>
+    diseases.value.find((d) => d.disease_index === diseaseIndex.value)?.disease_name ?? '')
 
-  /** One model feature, placed against this disease's own pool.
-      `percentile` is the share of the pool this candidate is STRONGER than,
-      measured in whichever direction the feature counts — `direction: 'lower'`
-      means fewer is stronger, which is true of hop distance and nothing else. */
-  interface Feature {
-    key: string; label: string; kind: string
-    direction: 'higher' | 'lower'
-    value: number; percentile: number
-  }
-  interface Detail {
-    gene_index: number; pool_size: number | null; safety_events: string | null
-    features: Feature[]
-    /** Champion inputs `dashboard_candidates` does not carry — named, not hidden. */
-    missing_features: string[]
-  }
-
-  const diseases = ref<Disease[]>([])
-  const selected = ref<number | undefined>()
-  // SelectField models strings; disease_index is numeric.
-  const selectedStr = computed<string | undefined>({
-    get: () => (selected.value === undefined ? undefined : String(selected.value)),
-    set: (v) => { selected.value = v === undefined ? undefined : Number(v) },
-  })
+  /* ── The list ────────────────────────────────────────────────────────────── */
   const data = ref<Payload | null>(null)
   const error = ref<string | null>(null)
   const loading = ref(false)
-
   const novelOnly = ref(false)
   const tractableOnly = ref(false)
   const excludeSecreted = ref(false)
   const maxRank = ref(200)
-  // The kit's Input emits strings. Keep the last valid rank while the box is
-  // empty or mid-edit, rather than querying with max_rank=''.
-  function setMaxRank(v: string | number) {
-    const n = Number(v)
-    if (v !== '' && Number.isFinite(n) && n >= 1) maxRank.value = n
+
+  async function loadCandidates() {
+    if (diseaseIndex.value === undefined) return
+    loading.value = true; error.value = null
+    try {
+      const q = new URLSearchParams({
+        disease: String(diseaseIndex.value), novel_only: String(novelOnly.value),
+        tractable_only: String(tractableOnly.value), exclude_secreted: String(excludeSecreted.value),
+        max_rank: String(maxRank.value),
+      })
+      const res = await fetch(apiUrl(`/api/candidates?${q}`))
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      data.value = await res.json()
+    } catch (e) {
+      error.value = `Could not load candidates: ${e instanceof Error ? e.message : String(e)}`
+      data.value = null
+    } finally { loading.value = false }
   }
 
-  // The table's own controls, as v3 has them. These filter the rows already
-  // loaded rather than refetching: the funnel above describes the population,
-  // this describes what is on screen.
-  const search = ref('')
-  const tract = ref('')          // '' | sm | ab | either
-  const klass = ref('')
-  const liab = ref(false)        // strike out, never remove — see the safety card
+  onMounted(async () => {
+    await selection.ensureDiseases()
+    if (selection.error) error.value = selection.error
+  })
+  // Immediate: returning from the evidence page, the shared disease is already set.
+  watch([diseaseIndex, novelOnly, tractableOnly, excludeSecreted, maxRank], loadCandidates, { immediate: true })
 
-  // Paging. 20 rows is what a person can actually scan; the funnel above still
-  // reports the true totals, so paging never hides how big the list is.
-  const PAGE = 20
-  const page = ref(1)
-
-  const classes = computed(() =>
-    [...new Set((data.value?.rows ?? []).map((r) => r.ot_class_l1).filter(Boolean))].sort() as string[])
-
-  const shown = computed(() => (data.value?.rows ?? []).filter((r) => {
-    if (search.value && !r.gene_name.toLowerCase().includes(search.value.toLowerCase())) return false
-    if (tract.value === 'sm' && !r.ot_sm_tractable) return false
-    if (tract.value === 'ab' && !r.ot_ab_tractable) return false
-    if (tract.value === 'either' && !(r.ot_sm_tractable || r.ot_ab_tractable)) return false
-    if (klass.value && r.ot_class_l1 !== klass.value) return false
-    return true
-  }))
-  const pageCount = computed(() => Math.max(1, Math.ceil(shown.value.length / PAGE)))
-  const paged = computed(() =>
-    shown.value.slice((page.value - 1) * PAGE, page.value * PAGE))
-  // Any change to the filters or the disease puts you back on page 1 — staying
-  // on page 7 of a list that now has two pages reads as an empty table.
-  watch([search, tract, klass, selected, novelOnly, tractableOnly, excludeSecreted, maxRank],
-        () => { page.value = 1 })
-
-  const tractLabel = (r: Row) =>
-    [r.ot_sm_tractable ? 'SM' : '', r.ot_ab_tractable ? 'Ab' : ''].filter(Boolean).join(' + ') || '—'
-
-  const current = computed(() => diseases.value.find((d) => d.disease_index === selected.value))
-
-  /* ── The selected candidate ────────────────────────────────────────────────
-     Both cards below the table read one selection rather than owning separate
-     pickers: the act's move is "judge a row, then ask why that row", and two
-     independent selectors would let the detail and Explorer cards describe
-     different genes at the same time. */
+  /* ── The selected candidate ──────────────────────────────────────────────── */
   const sel = ref<Row | null>(null)
   const detail = ref<Detail | null>(null)
   const detailBusy = ref(false)
   const detailError = ref<string | null>(null)
+  const tab = ref('overview')
 
-  async function selectRow(r: Row) {
-    if (selected.value === undefined) return
+  // Only the DISEASE invalidates a selection. The population filters do not:
+  // percentiles are computed against the disease's whole pool, not the filtered one.
+  watch(diseaseIndex, () => {
+    sel.value = null; detail.value = null; detailError.value = null; drivers.value = null; driversError.value = null
+    resetSources()
+  })
+
+  async function select(r: Row) {
+    if (diseaseIndex.value === undefined) return
     sel.value = r
+    tab.value = 'overview'
+    resetSources()
     detail.value = null
     detailError.value = null
     detailBusy.value = true
+    reveal()
     const forGene = r.gene_index
+    const q = new URLSearchParams({ disease: String(diseaseIndex.value), gene: String(r.gene_index) })
+    loadDrivers(q, forGene)
     try {
-      const q = new URLSearchParams({ disease: String(selected.value), gene: String(r.gene_index) })
       const res = await fetch(apiUrl(`/api/candidates/gene?${q}`))
       if (!res.ok) {
         const d = await res.json().catch(() => null)
@@ -176,566 +116,172 @@
     } finally {
       if (sel.value?.gene_index === forGene) detailBusy.value = false
     }
-    // Bring the answer to the reader. The card is always mounted, so this is a
-    // scroll rather than a reveal — but it waits a tick so the height it
-    // scrolls to is the height with this gene's content in it.
-    await nextTick()
-    revealWhyCard()
   }
 
-  /* Scroll the detail card into view, and MAKE SURE IT ARRIVES.
-
-     Deliberately arithmetic rather than `scrollIntoView`. Two things went wrong
-     with the built-in here, both observed in this app's own layout:
-
-      - `behavior: 'smooth'` is not always honoured. A smooth request moved this
-        container 11px and stopped, and `scrollTo({behavior:'smooth'})` on the
-        same element moved nothing at all, while an instant scroll worked every
-        time. Landing on the card is the requirement; the animation is a nicety.
-      - `scrollIntoView({block:'start'})` did not reliably put the card at the
-        top: from a cold page load it left the container pinned at its maximum
-        scroll with the card 468px above the fold, i.e. showing the FOOTNOTE of
-        the answer instead of the gene's name.
-
-     So: find the element that actually scrolls, compute the offset, set it, and
-     only use smooth when the browser proves it is doing something. */
-  function scrollParent(el: HTMLElement): HTMLElement {
-    for (let n = el.parentElement; n; n = n.parentElement) {
-      const oy = getComputedStyle(n).overflowY
-      if ((oy === 'auto' || oy === 'scroll') && n.scrollHeight > n.clientHeight) return n
-    }
-    return (document.scrollingElement as HTMLElement | null) ?? document.documentElement
-  }
-
-  function revealWhyCard() {
-    const card = document.getElementById('why-this-gene')
-    if (!card) return
-    const scroller = scrollParent(card)
-    const target = Math.max(0,
-      card.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop)
-    const start = scroller.scrollTop
-    if (Math.abs(target - start) < 1) return
-    scroller.scrollTo({ top: target, behavior: 'smooth' })
-    // A real animation has moved by now; a no-op has not. Only then, jump.
-    window.setTimeout(() => {
-      if (scroller.scrollTop === start) scroller.scrollTop = target
-    }, 200)
-  }
-
-  /* `top_shap_drivers` is a rendered STRING, not structured data:
-     "dwpc_GGD (+0.21), rwr_score (-0.04)" — see compute_top_shap_drivers_1.py,
-     which formats the top 2 by |contribution| and keeps the sign. Parsed back
-     apart here so the card can show the evidence route rather than the column
-     name, and so a negative driver reads as one. A part that does not match the
-     shape is passed through verbatim rather than dropped.
-
-     ONE parser, two callers. The table used to render this string raw, so every
-     row showed column names while the drawer three inches below showed the same
-     two features in English. */
-  interface Driver { key: string; label: string | null; sign: string; value: string }
-
-  function parseDrivers(raw: string | null | undefined, label: (k: string) => string | null): Driver[] {
-    if (!raw) return []
-    return raw.split(/,\s*/).map((part) => {
-      const m = part.match(/^(.*?)\s*\(([+-])([\d.]+)\)\s*$/)
-      if (!m) return { key: part, label: null, sign: '', value: '' }
-      const key = m[1].trim()
-      return { key, label: label(key), sign: m[2], value: m[3] }
+  // Scroll the content pane itself: scrollIntoView also scrolls the shell's
+  // fixed-height ancestors and pushes the sidebar off screen.
+  const pane = ref<HTMLElement | null>(null)
+  function reveal() {
+    nextTick(() => {
+      const card = document.getElementById('candidate')
+      if (!card || !pane.value) return
+      pane.value.scrollTop += card.getBoundingClientRect().top - pane.value.getBoundingClientRect().top - 16
     })
   }
 
-  const drivers = computed(() => parseDrivers(sel.value?.top_shap_drivers, labelFor))
+  // The evidence assistant for the selected pair (Phase 7a) and, for open exploration, Agent Hub
+  // (Phase 7b) in a new tab. Agent Hub cannot be handed the pair: the link opens its home page.
+  const assistantOpen = ref(false)
+  const hubUrl = agentHubUrl()
 
-  /* The table's own lookup. It cannot use `labelFor`: that reads the DETAIL
-     payload, which exists only for the one selected gene, so every other row
-     would fall back to the column name. This reads the per-disease map. */
-  const rowDrivers = (r: Row) =>
-    parseDrivers(r.top_shap_drivers, (k) => data.value?.feature_labels[k] ?? null)
+  // Trials and literature are searched ON DEMAND for the selected pair only (scope D3): nothing
+  // runs when a row is clicked, only when the Trials or Literature tab is opened. The search
+  // answers first and renders; the LLM selection pass fills in after. Both are cached per pair in
+  // DSS, so a second visit reads the cache.
+  const sources = ref<SourcesDoc | null>(null)
+  const sourcesError = ref<string | null>(null)
+  const pairSelection = ref<Selection | null>(null)
+  const selectionError = ref<string | null>(null)
+  const sourcesBusy = ref(false)
+  let sourcesFor: number | null = null
 
-  /* The evidence route a feature measures. Sourced from the detail payload so
-     the wording has exactly one definition (backend/feature_glossary.py) and
-     act 2's glossary cannot drift away from act 4's drawer. */
-  function labelFor(key: string): string | null {
-    return detail.value?.features.find((f) => f.key === key)?.label ?? null
+  function resetSources() {
+    sources.value = null; sourcesError.value = null; pairSelection.value = null; selectionError.value = null
+    sourcesFor = null
   }
 
-  /* Open Targets packs several observed effects into one pipe-delimited cell
-     ("cardiotoxicity|heart disease|..."). Shown as a list, not as the raw cell. */
-  const safetyEvents = computed(() =>
-    (detail.value?.safety_events ?? '').split('|').map((s) => s.trim()).filter(Boolean))
-
-  /* Small values go exponential rather than rounding to a misleading 0.000 —
-     several path weights live at 1e-4. */
-  function fmtValue(v: number): string {
-    if (v === 0) return '0'
-    return Math.abs(v) < 0.01 ? v.toExponential(2) : v.toFixed(3)
+  async function getJson(path: string) {
+    const res = await fetch(apiUrl(path))
+    const body = await res.json().catch(() => null)
+    if (!res.ok) throw new Error(body?.detail ?? `HTTP ${res.status}`)
+    return body
   }
 
-  const KIND_ORDER = ['path', 'proximity', 'topology', 'provenance']
-  const featureGroups = computed(() => {
-    const fs = detail.value?.features ?? []
-    return KIND_ORDER
-      .map((kind) => ({ kind, features: fs.filter((f) => f.kind === kind) }))
-      .filter((g) => g.features.length)
-  })
-
-  /* ── The mechanism, in Visual Graph Explorer ───────────────────────────────
-     Five independently runnable default queries are generated from the live
-     disease/candidate pair. Nothing executes when a row is selected: the user
-     chooses one query, copies it, and runs it in the Explorer. A later query
-     replaces the current Explorer result; Target Prioritizer never joins or
-     accumulates graph responses. */
-  const explorerQueries = computed(() => {
-    if (!sel.value || selected.value === undefined) return []
-    return buildA4ExplorerQueries(selected.value, sel.value.gene_index)
-      .map(({ id, label, description, classification, feature, cap, cypher }) => ({
-        id,
-        label,
-        cypher,
-        description: classification === 'feature'
-          ? `${description} Model feature ${feature}; cap ${cap}.`
-          : `${description} Context only; cap ${cap}.`,
-      }))
-  })
-
-  const explorerContextTitle = computed(() => {
-    if (!sel.value) return undefined
-    return `${sel.value.gene_name} → ${current.value?.disease_name ?? 'selected disease'}`
-  })
-
-  async function loadDiseases() {
+  async function loadSources(refresh = false) {
+    if (!sel.value || diseaseIndex.value === undefined) return
+    const forGene = sel.value.gene_index
+    if (!refresh && sourcesFor === forGene) return
+    resetSources(); sourcesFor = forGene; sourcesBusy.value = true
+    const q = new URLSearchParams({ disease: String(diseaseIndex.value), gene: String(forGene), refresh: String(refresh) })
     try {
-      const res = await fetch(apiUrl('/api/candidates/diseases'))
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      diseases.value = await res.json()
-      // The spine disease: a clinician recognises its top ranks on sight.
-      // Falls back to the largest pool if the name does not carry "HER2".
-      selected.value = (diseases.value.find((d) => /HER2/i.test(d.disease_name))
-        ?? diseases.value[0])?.disease_index
+      const doc = await getJson(`/api/candidates/sources?${q}`)
+      if (sourcesFor !== forGene) return
+      sources.value = doc
+      if (doc.selection && !refresh) { pairSelection.value = doc.selection; return }
+      try {
+        const s = await getJson(`/api/candidates/sources/selection?${q}`)
+        if (sourcesFor === forGene) pairSelection.value = s.selection
+      } catch (e) {
+        if (sourcesFor === forGene) selectionError.value = e instanceof Error ? e.message : String(e)
+      }
     } catch (e) {
-      error.value = `Could not load diseases: ${e instanceof Error ? e.message : String(e)}`
+      if (sourcesFor === forGene) sourcesError.value = e instanceof Error ? e.message : String(e)
+    } finally {
+      if (sourcesFor === forGene) sourcesBusy.value = false
     }
   }
+  watch(tab, (t) => { if (t === 'trials' || t === 'literature') loadSources() })
 
-  async function loadCandidates() {
-    if (selected.value === undefined) return
-    loading.value = true; error.value = null
+  // The top-5 SHAP drivers are their own request (a second scoring run, scope D2): if it fails,
+  // the Overview and Ranking tabs say so and everything else still works. Both tabs read this one
+  // copy, so they cannot name different strongest drivers.
+  const drivers = ref<Drivers | null>(null)
+  const driversError = ref<string | null>(null)
+  const driversBusy = ref(false)
+
+  async function loadDrivers(q: URLSearchParams, forGene: number) {
+    drivers.value = null; driversError.value = null; driversBusy.value = true
     try {
-      const q = new URLSearchParams({
-        disease: String(selected.value), novel_only: String(novelOnly.value),
-        tractable_only: String(tractableOnly.value), exclude_secreted: String(excludeSecreted.value),
-        max_rank: String(maxRank.value),
-      })
-      const res = await fetch(apiUrl(`/api/candidates?${q}`))
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-      data.value = await res.json()
+      const res = await fetch(apiUrl(`/api/candidates/drivers?${q}`))
+      const body = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(body?.detail ?? `HTTP ${res.status}`)
+      if (sel.value?.gene_index === forGene) drivers.value = body
     } catch (e) {
-      error.value = `Could not load candidates: ${e instanceof Error ? e.message : String(e)}`
-      data.value = null
-    } finally { loading.value = false }
+      if (sel.value?.gene_index === forGene) driversError.value = e instanceof Error ? e.message : String(e)
+    } finally {
+      if (sel.value?.gene_index === forGene) driversBusy.value = false
+    }
   }
-
-  onMounted(loadDiseases)
-  watch([selected, novelOnly, tractableOnly, excludeSecreted, maxRank], loadCandidates)
-
-  // Only the DISEASE invalidates a selection. The view filters do not: the
-  // percentiles are computed against the disease's whole pool, not the filtered
-  // one, so narrowing the table does not change what the detail card says.
-  watch(selected, () => {
-    sel.value = null
-    detail.value = null
-    detailError.value = null
-  })
 </script>
 
 <template>
   <div class="flex h-full flex-col">
-    <PageHeader title="Act 4 of 4 · The list" />
-    <div class="min-h-0 flex-1 overflow-auto">
-  <div class="flex flex-col gap-6 p-6">
-    <header class="flex flex-col gap-1.5 border-b border-border pb-5">
-      <h2 class="text-3xl font-semibold tracking-tight">Does this look right to you?</h2>
-      <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-        One disease, all the way down — and the act this demo exists for. Open a disease you know and
-        judge the top of the list yourself; the scientist is the instrument. Then take the controls:
-        nothing is pre-filtered, and you narrow it on your own thresholds.
-      </p>
-    </header>
+    <PageHeader title="The shortlist" />
 
-    <p v-if="error" class="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-2 text-sm text-destructive">
-      {{ error }}
-    </p>
-
-    <div class="grid grid-cols-12 gap-4">
-      <!-- The contract, stated before the list appears. -->
-      <!-- Your thresholds, not ours. -->
-      <!-- The ranked list. -->
-      <ActCard span="col-span-12" :icon="ListNumbered" title="The ranked list"
-               :chips="[['live', 'live']]" method-label="How genes are ranked"
-               :src="['dashboard_candidates']">
-        <template #desc>
-          <template v-if="data && current">
-            {{ data.rows.length.toLocaleString() }} genes scored for {{ current.disease_name }},
-            strongest evidence first. Nothing is pre-filtered — you set the cut-offs.
-          </template>
-          <template v-else>
-            One disease's candidates, strongest evidence first. Nothing is pre-filtered.
-          </template>
-        </template>
-
-        <!-- population controls: these refetch, because they change what is scored -->
-        <p class="mb-2 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
-          Population<ActInfo text="These controls change which candidates are in the list at all, so the funnel below them changes too." />
-          <span class="ml-1 normal-case tracking-normal opacity-70">· re-scores the list</span>
-        </p>
-        <div class="flex flex-wrap items-end gap-4">
-          <label class="flex min-w-64 flex-col gap-1 text-sm">
-            <span class="text-muted-foreground">
-              Disease
-              <ActInfo text="One of the 13 diseases scored into a ranked candidate list." />
-            </span>
-            <SelectField v-model="selectedStr" placeholder="— Select a disease —"
-                      :options="diseases.map((d) => ({ value: String(d.disease_index),
-                                 label: `${d.disease_name} (${d.n_candidates.toLocaleString()})` }))" />
-          </label>
-          <label class="flex items-center gap-2 text-sm">
-            <Checkbox v-model="novelOnly" /> Novel only
-            <ActInfo text="Drops genes already annotated as targets for this disease, so what remains is what the model surfaced rather than reproduced." />
-          </label>
-          <label class="flex items-center gap-2 text-sm">
-            <Checkbox v-model="tractableOnly" /> Tractable
-            <ActInfo text="Open Targets judges the protein reachable by a small molecule or an antibody." />
-          </label>
-          <label class="flex items-center gap-2 text-sm">
-            <Checkbox v-model="excludeSecreted" /> Not secreted
-            <ActInfo text="Excludes proteins released between cells. Harder to drug than ones sitting on a membrane." />
-          </label>
-          <label class="flex flex-col gap-1 text-sm">
-            <span class="text-muted-foreground">
-              Rank ≤
-              <ActInfo text="How far down the ranked list to go. Every count below carries this cut-off, so a number can never mean two things." />
-            </span>
-            <Input :model-value="maxRank" type="number" min="1" max="5000" class="w-24"
-                   @update:model-value="setMaxRank" />
-          </label>
-        </div>
-
-        <div v-if="data" class="mt-3 flex flex-wrap items-center gap-1.5">
-          <template v-for="(f, i) in data.funnel" :key="f.step">
-            <span class="rounded-md px-2.5 py-1 font-mono text-xs"
-                  :class="i === data.funnel.length - 1
-                    ? 'bg-primary/25 font-medium text-primary'
-                    : 'bg-secondary text-muted-foreground'">
-              {{ f.step }} · {{ f.n.toLocaleString() }}
-            </span>
-            <span v-if="i < data.funnel.length - 1" class="text-muted-foreground">→</span>
-          </template>
-        </div>
-
-        <hr class="my-4 border-border" />
-
-        <!-- view controls: these filter what is already on screen -->
-        <p class="mb-2 font-mono text-2xs uppercase tracking-wide text-muted-foreground">
-          View<ActInfo text="These controls only narrow what is drawn on screen. The funnel above still reports the true population, so nothing here can hide how big the list really is." />
-          <span class="ml-1 normal-case tracking-normal opacity-70">· filters what is on screen</span>
-        </p>
-        <div class="flex flex-wrap items-center gap-2">
-          <Input v-model="search" type="search" placeholder="Search gene…" class="h-8 w-36" />
-          <ActTabs :model-value="novelOnly ? 'novel' : 'all'"
-                   :options="[{ value: 'all', label: 'All' }, { value: 'novel', label: 'Novel only' }]"
-                   @update:model-value="(v) => (novelOnly = v === 'novel')" />
-          <span class="flex items-center">
-            <NativeSelect v-model="tract" class="h-8">
-              <NativeSelectOption value="">Any tractability</NativeSelectOption>
-              <NativeSelectOption value="sm">Small-molecule</NativeSelectOption>
-              <NativeSelectOption value="ab">Antibody</NativeSelectOption>
-              <NativeSelectOption value="either">Either</NativeSelectOption>
-            </NativeSelect>
-            <ActInfo text="Small-molecule: a drug-like pocket. Antibody: reachable from outside the cell. Either: at least one." />
-          </span>
-          <span class="flex items-center">
-            <NativeSelect v-model="klass" class="h-8">
-              <NativeSelectOption value="">Any target class</NativeSelectOption>
-              <NativeSelectOption v-for="c in classes" :key="c" :value="c">{{ c }}</NativeSelectOption>
-            </NativeSelect>
-            <ActInfo text="Open Targets' protein family — enzyme, membrane receptor, transcription factor and so on." />
-          </span>
-          <label class="flex items-center gap-2 text-sm"
-                 :class="liab ? 'font-medium text-destructive' : ''">
-            <Checkbox v-model="liab" />
-            Strike out liabilities
-            <ActInfo text="A public annotation recording that an adverse effect has been observed and published for this protein — from clinical or experimental evidence, aggregated by Open Targets. Its limits matter: the flag is not dose-, modality- or indication-specific, it says nothing about whether an effect is manageable, and it can only exist for targets that have already been drugged or studied. So an unflagged gene is not safe — it is unstudied. Treat it as evidence of attention, not of danger." />
-          </label>
-          <span class="font-mono text-2xs text-muted-foreground">
-            {{ shown.length }} of {{ data?.rows.length ?? 0 }} shown
-          </span>
-        </div>
-
-        <div v-if="shown.length" class="mt-3 overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Rank<ActInfo text="Position in this disease's list. The score behind it is uncalibrated, so the ordering is what carries meaning — not the number." /></TableHead>
-                <TableHead>Gene<ActInfo text="HGNC symbol of the candidate protein." /></TableHead>
-                <TableHead>Class<ActInfo text="Open Targets protein family." /></TableHead>
-                <TableHead>Tract.<ActInfo text="SM = small-molecule tractable · Ab = antibody tractable · — = neither assessed." /></TableHead>
-                <TableHead>Status<ActInfo text="associated = an Open Targets genetic or somatic association already exists for this disease–gene pair, at score ≥ 0.3 — this is the label the model was trained on · novel = no such association · approved / trial = drug evidence, shown as ground truth and never filterable · liability = a recorded safety flag." /></TableHead>
-                <TableHead>Top drivers<ActInfo text="The features that moved this candidate most, from its SHAP attribution." /></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <!-- The row IS the control. Clicking one answers "why this gene?"
-                   below and scrolls there; keyboard reaches it the same way. -->
-              <TableRow v-for="r in paged" :key="r.gene_name"
-                        class="cursor-pointer transition-colors hover:bg-accent/40"
-                        :class="[
-                          liab && r.has_safety_liability ? 'opacity-45 line-through' : '',
-                          sel?.gene_index === r.gene_index ? 'bg-accent/60' : '',
-                        ]"
-                        tabindex="0" role="button"
-                        :aria-label="`Why ${r.gene_name}?`"
-                        :aria-pressed="sel?.gene_index === r.gene_index"
-                        @click="selectRow(r)"
-                        @keydown.enter.prevent="selectRow(r)"
-                        @keydown.space.prevent="selectRow(r)">
-                <TableCell class="font-mono tabular-nums text-muted-foreground">{{ r.rank_in_disease }}</TableCell>
-                <TableCell class="font-mono font-medium">{{ r.gene_name }}</TableCell>
-                <TableCell class="text-muted-foreground">{{ r.ot_class_l1 || '—' }}</TableCell>
-                <TableCell class="font-mono text-2xs">{{ tractLabel(r) }}</TableCell>
-                <TableCell class="no-underline">
-                  <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-2xs uppercase"
-                        :class="r.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary'">
-                    {{ r.is_target ? 'associated' : 'novel' }}
-                  </span>
-                  <span v-if="r.approved_for_disease"
-                        class="mr-1 inline-block rounded bg-success/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-success">approved</span>
-                  <span v-if="r.investigational_for_disease"
-                        class="mr-1 inline-block rounded bg-warning/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-warning">trial</span>
-                  <span v-if="r.has_safety_liability"
-                        class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-destructive">liability</span>
-                </TableCell>
-                <TableCell class="text-xs text-muted-foreground">
-                  <template v-if="rowDrivers(r).length">
-                    <span v-for="(d, i) in rowDrivers(r)" :key="d.key">
-                      <span v-if="i">, </span>{{ d.label ?? d.key }}<span
-                        v-if="d.value" class="ml-0.5 font-mono tabular-nums"
-                        :style="{ color: seriesVar(d.sign === '+' ? 'contrast' : 'negative') }"
-                      >{{ d.sign }}{{ d.value }}</span>
-                    </span>
-                  </template>
-                  <template v-else>—</template>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </div>
-        <div v-if="shown.length > PAGE"
-             class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-3">
-          <span class="font-mono text-2xs text-muted-foreground">
-            {{ (page - 1) * PAGE + 1 }}–{{ Math.min(page * PAGE, shown.length) }}
-            of {{ shown.length.toLocaleString() }}
-          </span>
-          <div class="flex items-center gap-1">
-            <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
-                    :disabled="page === 1" @click="page = 1">« First</Button>
-            <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
-                    :disabled="page === 1" @click="page--">‹ Prev</Button>
-            <span class="px-2 font-mono text-2xs text-muted-foreground">
-              page {{ page }} / {{ pageCount }}
-            </span>
-            <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
-                    :disabled="page === pageCount" @click="page++">Next ›</Button>
-            <Button variant="outline" size="sm" class="h-7 px-2 text-xs"
-                    :disabled="page === pageCount" @click="page = pageCount">Last »</Button>
-          </div>
-        </div>
-        <EmptyState v-if="!shown.length" :icon="ListNumbered" title="Nothing matches"
-                 description="Loosen a filter, or pick another disease." />
-
-        <template #note>
-          <b>The drug badges are shown but cannot be filtered on, and that is deliberate.</b>
-          Approved-for-disease and in-trials are the ground truth the discovery result is measured
-          against — a shortlist filtered by them would be circular.
-        </template>
-        <template #method>
-          <p><b class="text-foreground">How genes are ranked.</b> Every gene the graph connects to this
-            disease enters the <ActTerm t="candidate-pool">candidate pool</ActTerm>. The
-            <ActTerm t="champion-model">champion model</ActTerm> scores each
-            <ActTerm t="gene-disease-pair">gene–disease pair</ActTerm> from the 14 graph-structure
-            features listed in Act 2, and the genes are sorted by that score
-            <b class="text-foreground">within this disease</b>.</p>
-          <p class="mt-1.5">The score is <ActTerm t="uncalibrated">uncalibrated</ActTerm> — it orders
-            candidates correctly but is not a probability, so 0.8 does not mean an 80% chance of being
-            a real target. <b class="text-foreground">The order carries the meaning, not the
-            number</b>, and a rank of 9 here is not comparable to a rank of 9 for another disease,
-            because the pools differ in both size and density.</p>
-          <p class="mt-1.5"><b class="text-foreground">Nothing is pre-filtered.</b> Every funnel count
-            above renders the rank cut-off it was measured at, so a number can never acquire two
-            values.</p>
-        </template>
-      </ActCard>
-
-      <ActCard id="why-this-gene" span="col-span-12 lg:col-span-6" :icon="Microscope"
-               :title="sel ? `Why ${sel.gene_name}?` : 'Why this gene?'"
-               :chips="[['live', 'live']]" method-label="How the percentile is computed"
-               desc="Every model input for this gene, ranked inside this disease's own pool."
-               :src="['dashboard_candidates']">
-        <EmptyState v-if="!sel" :icon="Microscope" title="Pick a row"
-                 description="Click any candidate in the list above." />
-
-        <p v-else-if="detailError"
-           class="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
-          {{ detailError }}
-        </p>
-
-        <div v-else class="flex flex-col gap-4">
-          <!-- Where this candidate sits, before any explanation of why. -->
-          <div class="flex flex-col gap-1.5">
-            <div class="flex flex-wrap items-baseline gap-2">
-              <span class="font-mono text-lg font-medium">{{ sel.gene_name }}</span>
-              <span class="mr-1 inline-block rounded px-1.5 py-0.5 font-mono text-2xs uppercase"
-                    :class="sel.is_target ? 'bg-secondary text-muted-foreground' : 'bg-primary/25 text-primary'">
-                {{ sel.is_target ? 'associated' : 'novel' }}
-              </span>
-              <span v-if="sel.approved_for_disease"
-                    class="inline-block rounded bg-success/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-success">approved</span>
-              <span v-if="sel.investigational_for_disease"
-                    class="inline-block rounded bg-warning/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-warning">trial</span>
-              <span v-if="sel.has_safety_liability"
-                    class="inline-block rounded bg-destructive/15 px-1.5 py-0.5 font-mono text-2xs uppercase text-destructive">liability</span>
-            </div>
-            <p class="font-mono text-2xs text-muted-foreground">
-              rank #{{ sel.rank_in_disease.toLocaleString() }}<template v-if="detail?.pool_size">
-                of {{ detail.pool_size.toLocaleString() }}</template>
-              <template v-if="sel.rank_percentile !== null"> · {{ sel.rank_percentile }} pct</template>
-              · {{ sel.ot_class_l1 || 'class not assessed' }}
-              · {{ tractLabel(sel) === '—' ? 'tractability not assessed' : tractLabel(sel) }}
-              · node_index {{ sel.gene_index }}
-            </p>
-            <p v-if="sel.has_safety_liability && safetyEvents.length"
-               class="text-xs leading-relaxed text-muted-foreground">
-              <span class="text-destructive">Recorded liability:</span>
-              {{ safetyEvents.join(' · ') }}
-            </p>
-          </div>
-
-          <!-- What moved it. Two drivers, because two is what is stored. -->
-          <div class="flex flex-col gap-1.5">
-            <h3 class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">
-              What moved this candidate
-              <ActInfo text="The features with the largest SHAP contribution for this one prediction, with the direction of each. A positive driver pushed the score up; a negative one pushed it down." />
-            </h3>
-            <div v-if="drivers.length" class="flex flex-col gap-1">
-              <div v-for="d in drivers" :key="d.key"
-                   class="flex items-baseline justify-between gap-3 rounded-md bg-muted/40 px-2.5 py-1.5">
-                <span class="text-xs leading-snug">
-                  {{ d.label ?? d.key }}
-                  <span v-if="d.label" class="ml-1 font-mono text-2xs text-muted-foreground">{{ d.key }}</span>
-                </span>
-                <span v-if="d.value" class="flex-none font-mono text-xs tabular-nums"
-                      :style="{ color: seriesVar(d.sign === '+' ? 'contrast' : 'negative') }">
-                  {{ d.sign }}{{ d.value }}
-                </span>
-              </div>
-            </div>
-            <p v-else class="text-sm text-muted-foreground">No attribution stored for this candidate.</p>
-            <p class="text-2xs leading-relaxed text-muted-foreground">
-              <b class="text-foreground">The two strongest drivers only.</b> A full per-feature waterfall
-              needs the scoring recipe to carry its whole SHAP matrix into
-              <code class="font-mono text-2xs">dashboard_candidates</code>; today only the top two
-              survive the flow, so this is what exists rather than what was chosen.
-            </p>
-          </div>
-
-          <!-- Every model input, ranked inside this disease's own pool. -->
-          <div class="flex flex-col gap-2">
-            <h3 class="font-mono text-2xs uppercase tracking-wide text-muted-foreground">
-              The evidence, against this disease
-              <ActInfo text="Every input to the champion model, not a selection. The bar is the candidate's rank within this disease's own pool — the raw value beside it is what the model actually read." />
-            </h3>
-            <p v-if="detailBusy" class="text-sm text-muted-foreground">Loading…</p>
-            <div v-for="g in featureGroups" :key="g.kind" class="flex flex-col gap-1.5">
-              <span class="font-mono text-2xs uppercase tracking-wide text-muted-foreground/70">
-                <ActTerm :t="`feature-${g.kind}`" plain>{{ g.kind }}</ActTerm>
-              </span>
-              <div v-for="f in g.features" :key="f.key" class="flex flex-col gap-0.5">
-                <div class="flex items-baseline justify-between gap-3">
-                  <span class="text-xs leading-snug">
-                    {{ f.label }}
-                    <ActInfo v-if="f.direction === 'lower'"
-                             text="Fewer is stronger for this one: a candidate one hop from the disease module is as close as the feature can report. The bar is ranked accordingly." />
-                  </span>
-                  <span class="flex-none font-mono text-2xs tabular-nums text-muted-foreground">
-                    {{ fmtValue(f.value) }} · {{ f.percentile }} pct
-                  </span>
-                </div>
-                <div class="h-1.25 overflow-hidden rounded-full bg-muted">
-                  <i class="block h-full rounded-full"
-                     :style="{ width: `${f.percentile}%`, background: seriesVar('contrast') }" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        <template #method>
-          <p><b class="text-foreground">How the percentile is computed.</b> For one gene and one
-            feature it is <code class="font-mono text-2xs">100 × (candidates for this disease this
-            one is stronger than) ÷ (candidates with a non-null value)</code> — a rank <b>within this
-            disease's own pool</b>, never a global one. The same gene can sit at the 96th percentile
-            here and the 40th for another disease on an identical raw value.</p>
-          <p class="mt-1.5">Stronger means a <b class="text-foreground">higher</b> value everywhere
-            except hop distance, where it means a lower one. Ties never count toward the number, so a
-            feature most of the pool shares reads modestly rather than at the 100th percentile.</p>
-          <p v-if="detail?.missing_features?.length" class="mt-1.5">
-            <b class="text-foreground">Not shown:</b>
-            <code v-for="m in detail.missing_features" :key="m"
-                  class="mx-1 font-mono text-2xs">{{ m }}</code>
-            — a model input that never reaches
-            <code class="font-mono text-2xs">dashboard_candidates</code>, so the bars above are
-            {{ detail.features.length }} of the champion's
-            {{ detail.features.length + detail.missing_features.length }} features.
+    <div ref="pane" class="min-h-0 flex-1 overflow-auto">
+      <div class="mx-auto flex w-full max-w-6xl flex-col gap-6 p-8">
+        <header class="flex flex-col gap-1.5">
+          <p class="text-xs font-semibold uppercase tracking-wide text-primary">Candidate review</p>
+          <h2 class="text-3xl font-semibold tracking-tight">Does this look right to you?</h2>
+          <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
+            Open a disease you know and judge the top of the list yourself; the scientist is the instrument.
+            Nothing is pre-filtered: narrow it on your own thresholds, then ask what supports each gene. The
+            model's reasons and the drug evidence stay in separate tabs, each with its source attached.
           </p>
-        </template>
-      </ActCard>
+          <nav class="flex flex-wrap items-center gap-1 text-sm">
+            <span class="mr-1 text-muted-foreground">How do we know?</span>
+            <Button v-for="l in TRUST_LINKS" :key="l.section" variant="ghost" size="sm" as-child>
+              <router-link :to="{ name: 'trust', query: { section: l.section } }">{{ l.label }}</router-link>
+            </Button>
+          </nav>
+        </header>
 
-      <ActCard v-if="!sel" span="col-span-12 lg:col-span-6" :icon="Flow"
-               title="See the evidence on the graph"
-               desc="Five ready-made queries showing the routes behind a candidate's score."
-               :chips="[['live', 'live']]" :src="['Kuzu folder (ytvuniN8)']">
-        <EmptyState :icon="Flow" title="Pick a row"
-                 description="The five queries are generated locally from the candidate you select." />
-      </ActCard>
+        <p v-if="error" class="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-2 text-sm text-destructive">
+          {{ error }}
+        </p>
 
-      <VisualGraphExplorerCard v-else span="col-span-12 lg:col-span-6"
-               title="See the evidence on the graph"
-               :description="sel ? `Five ready-made queries showing the routes behind ${sel.gene_name}'s score.` : undefined"
-               :context-title="explorerContextTitle"
-               :starter-queries="explorerQueries"
-               handoff="Running another default query replaces the current result."
-               :chips="[['live', 'live']]" :src="['Kuzu folder (ytvuniN8)']"
-               method-label="Query details">
-        <template #note>
-          <b>Four of the five queries are graph forms of model features</b> — protein interaction,
-          shared pathway, shared molecular function, shared biological process. The fifth is the drug
-          route: it helped admit this pair into the candidate pool, but
-          <b>no feature traverses a drug node</b>, so nothing on it fed the score.
-        </template>
-        <template #method>
-          <p><b class="text-foreground">Each query is independent.</b> Selecting a row only prepares
-            Cypher; it does not query the graph. Run one query at a time in the Explorer — publishing
-            captures only the currently displayed result.</p>
-          <p class="mt-1.5">Traversal is <b class="text-foreground">undirected</b>, relationship
-            variables are bound and returned, and the engine's gene label is
-            <code class="font-mono text-2xs">protein</code>. The two GO queries exclude terms with
-            <ActTerm t="node">node</ActTerm> degree above 200, which is what stops a generic term such
-            as “protein binding” from returning the whole graph. Node indices are snapshot-specific
-            and generated from the selected row.</p>
-        </template>
-      </VisualGraphExplorerCard>
-    </div>
-  </div>
+        <CandidateTable v-model:novel-only="novelOnly" v-model:tractable-only="tractableOnly"
+                        v-model:exclude-secreted="excludeSecreted" v-model:max-rank="maxRank"
+                        :data="data" :loading="loading" :selected-gene="sel?.gene_index ?? null"
+                        @select="select" />
+
+        <Card id="candidate">
+          <CardContent class="flex flex-col gap-6">
+            <EmptyState v-if="!sel || diseaseIndex === undefined" :icon="Microscope" title="Pick a row"
+                        description="Select any candidate in the list above to review its evidence here." />
+            <template v-else>
+              <CandidateHeader :row="sel" :detail="detail" :disease-name="diseaseName" />
+              <div class="flex flex-wrap gap-2">
+                <Button size="sm" @click="assistantOpen = true"><AiAgent class="size-4" /> Ask about {{ sel.gene_name }}</Button>
+                <Button v-if="hubUrl" variant="outline" size="sm" as-child>
+                  <a :href="hubUrl" target="_blank" rel="noopener">Explore in Agent Hub <ArrowExternalLink class="size-3" /></a>
+                </Button>
+              </div>
+              <AssistantSheet v-model:open="assistantOpen" :disease-index="diseaseIndex!" :gene-index="sel.gene_index"
+                              :gene="sel.gene_name" :disease-name="diseaseName" />
+              <Tabs v-model="tab">
+                <TabsList>
+                  <TabsTrigger value="overview">Overview</TabsTrigger>
+                  <TabsTrigger value="ranking">Why this ranking?</TabsTrigger>
+                  <TabsTrigger value="trials">Trials</TabsTrigger>
+                  <TabsTrigger value="literature">Literature</TabsTrigger>
+                  <TabsTrigger value="lineage">Drugs & graph</TabsTrigger>
+                </TabsList>
+                <TabsContent value="overview" class="pt-4">
+                  <OverviewTab :row="sel" :detail="detail" :drivers="drivers?.drivers ?? []" :disease-name="diseaseName"
+                               @go="(t) => (tab = t)" />
+                </TabsContent>
+                <TabsContent value="ranking" class="pt-4">
+                  <RankingTab :drivers="drivers" :pool-size="detail?.pool_size ?? null" :busy="driversBusy" :error="driversError" />
+                </TabsContent>
+                <TabsContent v-for="c in (['trials', 'literature'] as const)" :key="c" :value="c" class="pt-4">
+                  <SourcesTab :corpus="c === 'trials' ? 'trials' : 'papers'" :doc="sources" :doc-error="sourcesError"
+                              :selection="pairSelection" :selection-error="selectionError" :busy="sourcesBusy"
+                              @refresh="loadSources(true)" />
+                </TabsContent>
+                <TabsContent value="lineage" class="pt-4">
+                  <LineageTab :row="sel" :disease-index="diseaseIndex" :disease-name="diseaseName" />
+                </TabsContent>
+              </Tabs>
+            </template>
+          </CardContent>
+        </Card>
+
+        <p class="text-xs text-muted-foreground">
+          Not shown anywhere on this page: any AUC, the model's prediction column, and any filter on drug or
+          liability badges. The app ranks and explains; it does not recommend what to pursue.
+        </p>
+      </div>
     </div>
   </div>
 </template>

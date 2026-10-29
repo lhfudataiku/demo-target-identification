@@ -21,3 +21,8 @@ export const VISUAL_GRAPH_OBJECT_ID: string =
   import.meta.env.VITE_VISUAL_GRAPH_OBJECT_ID?.trim() ?? ''
 /** Optional DSS origin for local development; production defaults to same-origin. */
 export const DSS_ORIGIN: string = import.meta.env.VITE_DSS_ORIGIN?.trim() ?? ''
+
+/** The Agent Hub webapp the candidate card links to (workplan Phase 7b): its project and the webapp's
+    full object id as it appears in its DSS URL. Empty hides the link. */
+export const AGENT_HUB_PROJECT_KEY: string = import.meta.env.VITE_AGENT_HUB_PROJECT_KEY?.trim() ?? ''
+export const AGENT_HUB_OBJECT_ID: string = import.meta.env.VITE_AGENT_HUB_OBJECT_ID?.trim() ?? ''

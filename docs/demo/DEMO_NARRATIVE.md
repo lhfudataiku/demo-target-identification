@@ -53,15 +53,22 @@ competitor would overclaim.
 
 ## The four acts
 
-Each act answers one question. The order matters: a scientist will not engage with a ranking until
-they believe the substrate it came from.
+Each act answers one question. **The list comes first.** A scientist still will not accept a ranking
+until they believe the substrate it came from, but they ask on their own schedule: in a short demo the
+presenter opens on the list, and an evidence base presented ahead of it is skipped. So the eyeball test
+opens the demo, and Acts 1–3 wait one click away, as the three sections of a single page, *Why trust
+the list*, for the disease already open on the list.
 
-| | Act | The question | What answers it |
-|---|---|---|---|
-| 1 | **The evidence base** | *What went in?* | six public sources, provenance on every node and edge |
-| 2 | **Calibration** | *How faithfully does it reconstruct?* | the distribution across 670 diseases, not one number |
-| 3 | **The therapeutic area** | *Does it hold across my area?* | every term in a family, with its uncertainty |
-| 4 | **The list** | *Does this look right to you?* | the eyeball test — and they filter it themselves |
+| | Act | The question | What answers it | Where it is |
+|---|---|---|---|---|
+| 4 | **The list** | *Does this look right to you?* | the eyeball test — and they filter it themselves | the opening page |
+| 1 | **The evidence base** | *What went in?* | six public sources, provenance on every node and edge | *Why trust the list*, section 1 |
+| 2 | **Calibration** | *How faithfully does it reconstruct?* | the distribution across 670 diseases, not one number | section 2 |
+| 3 | **The therapeutic area** | *Does it hold across my area?* | every term in a family, with its uncertainty | section 3 |
+
+The act names stay as labels, so "Act 2" still means calibration wherever it is cited. The list's
+*How do we know?* links lead to the matching act. In a short demo they are the only route the evidence
+has into the room, so point at them; if nobody follows one, the objections below go unanswered.
 
 Acts 5 and 6 are a **spoken talk track**, not screens. They are about the platform, not the biology.
 
@@ -78,8 +85,9 @@ reproducing exactly**.
 No model yet. This act is about what the machine can see, and about the fact that every node and every
 edge can name where it came from.
 
-**Why it goes first.** Nothing later is worth discussing if the substrate is not credible. A scientist
-who does not believe the graph will not engage with the ranking — and rightly.
+**Why it is the first thing to reach for.** Nothing on the list is worth discussing if the substrate is
+not credible. A scientist who does not believe the graph will not engage with the ranking — and
+rightly. When the list raises *where did this come from?*, this is the answer.
 
 **What this act must not do:** claim quality. Faithful assembly is a lineage property, not an accuracy
 one. Whether the ranking is any good is Act 2.
@@ -250,7 +258,7 @@ scored — use it in Act 3 to show where the method runs out, never as a success
 |---|---|
 | Novel discovery as the headline | It is the claim we are explicitly not making today. Footnote only |
 | The ablation ladder (7 → 10 → 12 → 14 features) | A modelling decision nobody asked about |
-| Raw AUC as the opening number | It answers a question they did not ask. Lead with the evidence base |
+| Raw AUC as the opening number | It answers a question they did not ask. Open on the list, which shows no AUC; the distribution is Act 2, one click away |
 | The drug-target benchmark as a score | A lookup table beats us on it |
 | Any safety or toxicity claim | We do not have one |
 | Drug badges as a filter | They are the ground truth the enrichment is measured against |

@@ -189,16 +189,16 @@ result.
 
 ### 4.3 The interface between them
 
-`DEMO_KG_LS` exposes **13 objects** to `DEMO_TARGET_IDENTIFICATION`. This list *is* the contract —
+`DEMO_KG_LS` exposes **14 objects** to `DEMO_TARGET_IDENTIFICATION`. This list *is* the contract —
 anything else in the graph project can change freely.
 
-Each of the 13 foreign references now sits in the same zone as its local copy, mirroring
+Each of the 14 foreign references now sits in the same zone as its local copy, mirroring
 `DEMO_KG_LS`'s own zoning, so act 1's "six public sources" is visible in the flow rather than hidden
 in one undifferentiated box:
 
 | zone | foreign reference and local copy | mirrors the `DEMO_KG_LS` zone |
 |---|---|---|
-| `00 Import · genes & interactome` | `gene_names` | Gene & interactome (HGNC, PPI) |
+| `00 Import · genes & interactome` | `gene_names`, `hgnc_identity` | Gene & interactome (HGNC, PPI) |
 | `01 Import · diseases & phenotypes` | `mondo_references`, `raw_disease_disease` | Disease & phenotypes (MONDO, HPO) |
 | `02 Import · drugs & gene-disease` | `drug_disease_edges`, `drug_protein_edges`, `raw_ot_known_drug`, `raw_ot_druggability`, `raw_ot_safety` | Drugs & gene-disease (Open Targets) |
 | `03 Import · function & pathways` | `raw_go_hierarchy` | Function & pathways (GO, Reactome) |
@@ -211,7 +211,7 @@ than the flow. The retired snapshot `enriched_index_freezed-6bRVGs` is no longer
 project at all; it remains in `DEMO_KG_LS` as the provenance record for the published feature numbers.
 
 **Since 2026-08-18 the datasets are consumed through local synced copies, not read across the project
-boundary.** Each of the 12 foreign dataset references now feeds **exactly one Sync recipe** and
+boundary.** Each of the 13 foreign dataset references now feeds **exactly one Sync recipe** and
 nothing else; every downstream recipe reads the local copy of the same name. That makes the import
 surface auditable in one place and stops a rename in the graph project breaking 26 recipes at once.
 
@@ -219,7 +219,7 @@ surface auditable in one place and stops a rename in the graph project breaking 
 Sync'd, but it can be merged: `compute_ytvuniN8` is a Merge-Folder recipe that copies
 `DEMO_KG_LS.published_kg_ls-Mp25kL` into the local managed folder **`graph` (`ytvuniN8`)**. The Graph
 Explorer webapp and all 10 Cypher feature recipes now read that local folder, so **every foreign
-reference — all 13 — passes through exactly one Sync or Merge recipe**, and nothing reads a Kuzu
+reference — all 14 — passes through exactly one Sync or Merge recipe**, and nothing reads a Kuzu
 folder across the boundary. The equivalence of the old and new snapshots was verified before the
 switch, over 18,510,084 rows, and is recorded in GRAPH_BUILDING §6 and
 [`GRAPH_SNAPSHOT_SWITCH_2026-09-03.md`](../../archive/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md) (archived).
@@ -232,6 +232,7 @@ switch, over 18,510,084 rows, and is recorded in GRAPH_BUILDING §6 and
 | `drug_protein_edges` | 11 | tractability-axis ground truth — the only uninflated drug label |
 | `graph_edges` | 6 | matrix-form features computed outside Kuzu |
 | `gene_names` | 3 | gene symbols for the candidate tables |
+| `hgnc_identity` | 1 | the shortlist header's HGNC identity, from one **dated** HGNC complete-set file (added 2026-10-26, redesign D16); joined to the graph's genes into `candidate_identity` (zone S1). Nothing in the graph build reads it, unlike `gene_names` |
 | `raw_disease_disease` | 2 | **pre-reversal** hierarchy — assembly makes edges undirected, so hierarchy direction only survives here |
 | `mondo_references` | 2 | cross-reference hub, for the split-control anchor mapping |
 | `edge_metadata` | 1 | interaction-source provenance → measurement-confidence features |

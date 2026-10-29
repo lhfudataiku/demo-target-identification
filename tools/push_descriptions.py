@@ -13,6 +13,9 @@ glossary card cannot disagree.
     python3 tools/push_descriptions.py            # report drift, exit 1 if any (default, safe)
     python3 tools/push_descriptions.py --push     # write to DSS
     python3 tools/push_descriptions.py --check    # alias for the default
+
+A dataset entry with a "project" key lives in that project, not in PROJECT: the four the evidence
+project took over in M2 (2026-10-29).
 """
 import importlib.util
 import json
@@ -46,14 +49,18 @@ def load():
     return src["datasets"], cols
 
 
-def live_schema(dataset):
+def project_of(meta):
+    return meta.get("project", PROJECT)
+
+
+def live_schema(dataset, project):
     """[(column, existing comment)] for one dataset.
 
     Reads `dataset get-definition`, NOT `dataset schema`: the latter strips the `comment` field, so
     checking against it reports every described column as drifted forever.
     """
     r = subprocess.run(["dku", "--format", "json", "dataset", "get-definition", dataset,
-                        "-P", PROJECT], capture_output=True, text=True)
+                        "-P", project], capture_output=True, text=True)
     if r.returncode != 0:
         return None
     try:
@@ -67,16 +74,18 @@ def live_schema(dataset):
 def main():
     push = "--push" in sys.argv
     datasets, cols = load()
-    live = set(subprocess.run(["dku", "--format", "ids", "dataset", "list", "-P", PROJECT],
-                              capture_output=True, text=True).stdout.split())
-    missing = sorted(d for d in datasets if d not in live)
+    live = {p: set(subprocess.run(["dku", "--format", "ids", "dataset", "list", "-P", p],
+                                  capture_output=True, text=True).stdout.split())
+            for p in {project_of(m) for m in datasets.values()}}
+    missing = sorted(d for d, m in datasets.items() if d not in live[project_of(m)])
     drift, applied_ds, applied_cols = [], 0, 0
 
     for name in sorted(datasets):
-        if name not in live:
-            continue
         meta = datasets[name]
-        schema = live_schema(name)
+        project = project_of(meta)
+        if name not in live[project]:
+            continue
+        schema = live_schema(name, project)
         described = [(c, t) for c, t in (schema or []) if c in cols]
 
         if not push:
@@ -85,7 +94,7 @@ def main():
                     drift.append("%s.%s" % (name, c))
             continue
 
-        args = ["dku", "dataset", "set-metadata", name, "-P", PROJECT,
+        args = ["dku", "dataset", "set-metadata", name, "-P", project,
                 "--short-desc", meta["short"]]
         if meta.get("long"):
             args += ["--description", meta["long"]]
@@ -99,7 +108,7 @@ def main():
             for c, _ in described:
                 pairs += [c, cols[c]]
             r = subprocess.run(["dku", "dataset", "set-column-description", name, *pairs,
-                                "-P", PROJECT], capture_output=True, text=True)
+                                "-P", project], capture_output=True, text=True)
             if r.returncode != 0:
                 print("FAIL columns %s: %s" % (name, r.stderr.strip()[:120]))
             else:

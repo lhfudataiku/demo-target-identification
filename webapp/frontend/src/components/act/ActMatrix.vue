@@ -1,6 +1,6 @@
 <script setup lang="ts">
   /**
-   * Pairwise overlap matrix — a plain CSS grid, dynamically tinted.
+   * Pairwise overlap matrix — a plain CSS grid, tinted in token steps.
    *
    * The ECharts heatmap was unreadable at this size: rotated category labels
    * collided and the value labels fought the cells. v3 draws it as SVG cells
@@ -8,7 +8,6 @@
    * grid does the same with real text, selectable labels and native tooltips.
    */
   import { computed } from 'vue'
-  import { seriesVar } from '@/utils/seriesColours'
 
   defineOptions({ name: 'ActMatrix' })
 
@@ -30,6 +29,19 @@
     return m
   })
   const max = computed(() => Math.max(1, ...props.pairs.map((p) => p.shared)))
+
+  // Six tint steps of the `contrast` series token (chart-3), lightest to full,
+  // replacing a continuous color-mix in an inline style. Written out in full so
+  // Tailwind generates every class and the design lint can check each one.
+  const STEPS = [
+    'bg-chart-3/10 text-muted-foreground',
+    'bg-chart-3/25 text-muted-foreground',
+    'bg-chart-3/40 text-muted-foreground',
+    'bg-chart-3/60 text-primary-foreground',
+    'bg-chart-3/80 text-primary-foreground',
+    'bg-chart-3 text-primary-foreground',
+  ]
+  const cellClass = (v: number) => STEPS[Math.min(STEPS.length - 1, Math.floor((v / max.value) * STEPS.length))]
   const short = (l: string) => (l.length > 26 ? l.slice(0, 25) + '…' : l)
 </script>
 
@@ -52,11 +64,7 @@
           <div v-if="a === b" class="grid h-6.5 place-items-center rounded-sm bg-muted"></div>
           <div v-else
                class="grid h-6.5 place-items-center rounded-sm font-mono matrix-tick"
-               :style="{
-                 background: `color-mix(in oklab, ${seriesVar('contrast')} ${(8 + ((lookup.get(a + '|' + b) ?? 0) / max) * 90).toFixed(0)}%, var(--card))`,
-                 color: ((lookup.get(a + '|' + b) ?? 0) / max) > 0.55
-                   ? 'var(--primary-foreground)' : 'var(--muted-foreground)',
-               }"
+               :class="cellClass(lookup.get(a + '|' + b) ?? 0)"
                :title="`${a} × ${b}: ${lookup.get(a + '|' + b) ?? 0} of ${unit}`">
             {{ lookup.get(a + '|' + b) ?? 0 }}
           </div>

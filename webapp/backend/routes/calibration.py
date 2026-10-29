@@ -1,10 +1,11 @@
-"""Act 2 — calibration.
+"""Act 2 — calibration, section 2 of "Why trust the list".
 
 Governed claims consumed: TI-DATA-001 TI-MOD-001 TI-VAL-001 TI-VAL-002,
 TI-VAL-003, TI-VAL-004 and TI-VAL-005. The IDs govern meaning, fallback provenance and review;
 this route still derives live values where available.
 
-  GET /api/calibration   the AUC distribution, the hub-bias meter, orthogonality
+  GET /api/calibration   the AUC distribution, each scored disease's place in it,
+                         the hub-bias meter, orthogonality
 
 Read the AUC as RECONSTRUCTION FIDELITY, not predictive power: across 670
 diseases, how reliably do already-validated targets land near the top.
@@ -21,12 +22,14 @@ from __future__ import annotations
 import functools
 import logging
 import math
+import statistics
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
+from .. import config
 from ..dss_client import get_dataiku, get_project
-from ..feature_glossary import GLOSSARY, KIND
+from ..feature_glossary import CHAMPION
 from ..services import dataset_cache
 
 logger = logging.getLogger(__name__)
@@ -154,14 +157,12 @@ def _hist(values: list[float], lo: float, hi: float, bins: int) -> list[dict[str
 @router.get("")
 def calibration() -> dict[str, Any]:
     try:
-        auc = _ds("validation_auc_by_disease")
+        auc = _ds(config.AUC_BY_DISEASE)
         hub = _ds("hub_bias_meter")
         orth = _ds("orthogonality_scatter")
         split = _ds("split_audit_2")
-        drivers = _ds("shap_driver_frequency")
         elig = _ds("disease_eligibility")
-        fam = _ds("family_auc_by_family")
-        personas = _ds("persona_enrichment")
+        fam = _ds(config.AUC_BY_FAMILY)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Could not read a calibration dataset: {e}")
 
@@ -195,20 +196,31 @@ def calibration() -> dict[str, Any]:
     overlap_cols = [c for c in split.columns if c.startswith("overlap_") or c.startswith("strad")]
     leakage = {c: int(split[c].sum()) for c in overlap_cols}
 
-    drv = drivers.sort_values("count", ascending=False)
-
-    # v3 colours the driver bars in TWO groups, not a cycle: provenance features
-    # against everything else. The grouping is a curation, not data -- it is the
-    # same "kind" column the feature-glossary card renders, and it now lives in
-    # backend/feature_glossary.py because act 4's detail card names the same
-    # features and the two acts must not describe the model differently.
     tot_elig = int(elig["count"].sum())
     n_elig = int(elig.loc[elig.is_eligible == 1, "count"].sum())
 
     fam_vals = [float(v) for v in fam.auc_family.dropna()]
-    persona_vals = [{"label": str(r.disease), "value": round(float(r.rank_enrichment), 2),
-                     "current": bool(r.is_current)}
-                    for r in personas.itertuples() if r.rank_enrichment == r.rank_enrichment]
+
+    # Each scored disease's place in the distribution, so the page can mark the
+    # disease open on the shortlist. The per-disease AUC dataset carries the name,
+    # the enrichment and the known-target count since the M4 rebuild, which folded
+    # persona_enrichment into it (equal on all 670 diseases, 2026-10-29).
+    scored = auc.dropna(subset=["auc_disease"])
+    auc_rank = scored.auc_disease.rank(ascending=False, method="min")
+    diseases = [{
+        "disease_index": int(r.disease_index),
+        "disease": str(r.disease),
+        "auc": round(float(r.auc_disease), 4),
+        "auc_rank": int(auc_rank[i]),
+        "enrichment": (round(float(r.rank_enrichment), 2)
+                       if math.isfinite(float(r.rank_enrichment)) else None),
+        "n_known": int(r.n_pos),
+    } for i, r in zip(scored.index, scored.itertuples())]
+    enr = scored.rank_enrichment.astype(float)
+    enr = enr[enr.map(math.isfinite)]
+
+    def _q(p: float) -> float | None:
+        return round(float(enr.quantile(p)), 1) if len(enr) else None
 
     # The base rate the precision has to beat: the validation split's positive
     # rate, not the pooled one -- precision is measured on validation.
@@ -239,29 +251,28 @@ def calibration() -> dict[str, Any]:
         "routes": routes,
         "route_admissions": admissions,
         "duplicates_removed": admissions - union_rows,
-        "glossary": [{"feature": f, "kind": k, "label": n, "what": w}
-                     for f, k, n, w in GLOSSARY],
-        "family_auc_values": [round(v, 4) for v in fam_vals],
-        "personas": sorted(persona_vals, key=lambda r: -r["value"]),
-        "drivers_kind": {str(r.feature): KIND.get(str(r.feature), "topology") for r in drv.itertuples()},
         "union_rows": union_rows,
         "pos_rate": pos_rate,
         "pairs_per_disease": round(union_rows / n_elig) if n_elig else 0,
         "n_families": len(fam_vals),
+        "family_macro_auc": round(sum(fam_vals) / len(fam_vals), 4) if fam_vals else None,
         "splits": splits,
         "leakage": leakage,
-        "n_features": int(len(drivers)),
-        "drivers": [{"label": str(r.feature), "count": int(r.count)} for r in drv.itertuples()],
+        "n_features": len(CHAMPION),
+        "diseases": diseases,
+        # Enrichment is skewed (a few diseases enrich a hundredfold), so it is
+        # summarised by its quartiles, never by a mean.
+        "enrichment": {"median": _q(0.5), "q1": _q(0.25), "q3": _q(0.75),
+                       "max": round(float(enr.max()), 1) if len(enr) else None, "n": int(len(enr))},
         "n_diseases": len(vals),
         # Macro, never pooled. Pooled reads 0.8932 and overstates by ~7 points
         # because it lets large diseases carry small ones.
         "macro_auc": round(macro, 4),
-        "median_auc": round(sorted(vals)[len(vals) // 2], 4) if vals else None,
+        # The true median: with an even count (668) it averages the two middle
+        # values. Taking the upper one served 0.8628 against the documented 0.8623.
+        "median_auc": round(statistics.median(vals), 4) if vals else None,
         "below_chance": int(sum(1 for v in vals if v < 0.5)),
         "histogram": _hist(vals, 0.0, 1.0, 20),
-        # Raw per-disease values for the beeswarm: the distribution IS the point
-        # of that card, so it cannot be served pre-binned.
-        "auc_values": [round(v, 4) for v in vals],
         "hub_bias": [{
             "quintile": int(r_.quintile),
             "median_degree": float(r_.median_degree),
@@ -275,7 +286,6 @@ def calibration() -> dict[str, Any]:
             "n": n,
             "pearson_r": round(r, 4),
             "r2": round(r * r, 4),
-            "points": [{"assoc": round(a, 4), "drug": round(b, 4)} for a, b in zip(x, y)],
             "drug_macro_auc": round(sum(y) / n, 4) if n else None,
         },
     }

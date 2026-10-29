@@ -31,7 +31,10 @@ import json
 
 import dataiku
 
-NODES = "graph_nodes"
+# Qualified with the main project's key: a recipe in DEMO_TI_EVIDENCE declares graph_nodes as a
+# foreign input, which the dataiku client resolves only by this name, and the main project's own
+# recipes resolve it too. One name keeps the two projects' copies of this file identical (ADR-003).
+NODES = "DEMO_TARGET_IDENTIFICATION.graph_nodes"
 
 
 def variables() -> dict:

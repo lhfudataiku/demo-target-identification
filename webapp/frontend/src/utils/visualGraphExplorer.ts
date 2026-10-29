@@ -1,4 +1,6 @@
 import {
+  AGENT_HUB_OBJECT_ID,
+  AGENT_HUB_PROJECT_KEY,
   DSS_ORIGIN,
   VISUAL_GRAPH_OBJECT_ID,
   VISUAL_GRAPH_PROJECT_KEY,
@@ -39,6 +41,13 @@ export function visualGraphExplorerUrl(
   if (!projectKey || !webappId || !objectId || !origin) return null
 
   return `${origin}/projects/${encodeURIComponent(projectKey)}/webapps/${encodeURIComponent(objectId)}/view`
+}
+
+/** The Agent Hub webapp's view URL (workplan Phase 7b), built the same way; null when not configured. */
+export function agentHubUrl(): string | null {
+  return visualGraphExplorerUrl({
+    projectKey: AGENT_HUB_PROJECT_KEY, webappId: AGENT_HUB_OBJECT_ID, objectId: AGENT_HUB_OBJECT_ID, origin: DSS_ORIGIN,
+  })
 }
 
 /** Clipboard access is best-effort in DSS iframes; never report an unconfirmed copy. */

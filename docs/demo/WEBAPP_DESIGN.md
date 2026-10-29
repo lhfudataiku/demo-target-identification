@@ -29,6 +29,19 @@ current artefact. The three mockup iterations it was derived from, including the
 check, are historical material in
 [`../../archive/dashboard-mockup-iterations/`](../../archive/dashboard-mockup-iterations/).
 
+**The redesign, live since 2026-10-27** (`DEC-DEMO-004`, `DEC-DEMO-005`;
+[`WEBAPP_REDESIGN_SCOPE.md`](../../archive/WEBAPP_REDESIGN_SCOPE.md) and
+[`WEBAPP_REDESIGN_WORKPLAN.md`](../../archive/WEBAPP_REDESIGN_WORKPLAN.md)). The app opens on the shortlist (Act 4)
+and answers Acts 1–3 as the three sections of one page, *Why trust the list*, with one disease shared by
+both pages; the shortlist carries an evidence review and an evidence assistant. Built in phases on a
+preview webapp: the two-page navigation, the shared disease and *Why trust the list* (Phase 1); the
+shortlist split into the list and a tabbed card for the selected candidate, with the *How do we know?*
+links (Phase 2); the candidate's HGNC identity in that card's header (Phase 3); the drug records behind
+the badges (Phase 4); the top five SHAP drivers in *Why this ranking?* (Phase 5); the Trials and
+Literature tabs (Phase 6); and the evidence assistant, with a link to Agent Hub (Phase 7). At the Phase 8
+switch-over the redesign replaced the four act routes in the original webapp (`OlmPX9a`), so its URL is
+unchanged. §3.3 and the act tables below describe the app as it runs.
+
 **Where the rest lives.** [`FLOW_MAP.md`](../operations/FLOW_MAP.md) is the generated flow authority. Historical
 native-dashboard evaluation is in [`../../archive/NATIVE_DASHBOARD_EVALUATION.md`](../../archive/NATIVE_DASHBOARD_EVALUATION.md),
 and build chronology remains in [`../../archive/DASHBOARD_BUILD_LOG.md`](../../archive/DASHBOARD_BUILD_LOG.md).
@@ -162,20 +175,32 @@ mockup implements it as a `dataset · recipe` footer on every card.
 
 ### 3.3 Route → view → data map
 
-Sidebar order is act order. `menu: 'primary'`, `order` = act number.
+The shortlist leads (`DEC-DEMO-005`): `/shortlist` is the home route and `order` 1, *Why trust the
+list* is `order` 2, and Settings sits in the footer. Built in Phase 1 of the redesign on 2026-10-26 and
+live since the Phase 8 switch-over on 2026-10-27.
 
 Corrected 2026-09-03 against the shipped app. This table had drifted on every column: it named
 routes and views from the migration plan rather than the ones that were built, and its data column
 still described the mock-first phase §3.4 describes, which ended. **Acts 5 and 6 are talk track, not
-routes** — the router registers four primary routes, and copy that forward-references a fifth act is
+routes** — the router registers two primary routes, and copy that forward-references a fifth act is
 a defect (§3.7).
 
 | act | route | view | backend route | backing datasets |
 |---|---|---|---|---|
-| 1 | `/evidence` | `EvidenceView` | `GET /api/evidence` | `graph_node_type_counts`, `graph_relation_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence` |
-| 2 | `/calibration` | `CalibrationView` | `GET /api/calibration` | `validation_auc_by_disease`, `family_auc_by_family`, `split_audit_2`, `disease_eligibility`, `shap_driver_frequency`, `persona_enrichment`, `enriched_dwpc_{GGD,GPGD,GCD}`, + the live champion saved model |
-| 3 | `/therapeutic-area` | `TherapeuticAreaView` | `GET /api/families`, `/api/families/{id}` | `family_panel_metrics`, `family_panel_overlap`, `family_panel_top50`, `family_panel_programme`, `persona_enrichment`, `demo_panel_config` |
-| 4 | `/shortlist` | `ShortlistView` | `GET /api/candidates{,/diseases,/gene}` | `dashboard_candidates` |
+| 4 | `/shortlist` (home) | `ShortlistView` → `shortlist/CandidateTable`, `CandidateHeader`, `OverviewTab`, `RankingTab`, `LineageTab` | `GET /api/candidates{,/diseases,/gene,/identity,/drugs,/drivers}`; `GET /api/candidates/sources{,/selection}`; `POST /api/assistant` | `dashboard_candidates`; from zone S1, `candidate_identity` for `/identity`, `drug_evidence_records` for `/drugs` and `candidate_shap_top5` for `/drivers`; `/sources` searches the CT.gov and PubMed agent tools and reads and writes the folder `act4_evidence_cache`; `/assistant` reads the same sources and the folder, calls the three agent tools and stores nothing |
+| 1 | `/trust?section=graph` | `TrustView` → `trust/GraphSection` | `GET /api/evidence` | `graph_node_type_counts`, `graph_relation_counts`, `graph_node_source_counts`, `graph_ppi_provenance`, `graph_label_evidence` |
+| 2 | `/trust?section=reconstruction` | `TrustView` → `trust/ReconstructionSection` | `GET /api/calibration` | `validation_auc_by_disease`, `family_auc_by_family`, `split_audit_2`, `disease_eligibility`, `persona_enrichment`, `hub_bias_meter`, `orthogonality_scatter`, the `COUNT_RECORDS` metrics of `enriched_dwpc_{GGD,GPGD,GCD}`, + the live champion saved model |
+| 3 | `/trust?section=family` | `TrustView` → `trust/FamilySection` | `GET /api/families`, `/api/families/{id}` | `family_panel_metrics`, `family_panel_overlap`, `family_panel_top50`, `family_panel_programme`, `persona_enrichment`, `demo_panel_config` |
+
+**One disease drives both pages.** `stores/selection.ts` (Pinia) holds the shortlist's disease list
+(`/api/candidates/diseases`, fetched once) and the selected `disease_index`; both views read and write
+it, so choosing a disease on either page changes it on the other. Section 2 marks that disease using
+`/api/calibration`'s `diseases` list (each scored disease's AUC, rank, enrichment and known-target
+count, from `persona_enrichment`, whose `is_current` flag is not read). Section 3 opens the family
+whose `disease_indexes` in `/api/families` contain it, or says there is none. The section links scroll
+the content pane itself, because `scrollIntoView` also scrolls the shell's fixed-height ancestors.
+`/api/calibration` no longer serves the per-disease `auc_values`, the `personas` list or the driver
+frequencies, and no longer reads `shap_driver_frequency`.
 
 One non-act route is registered as `menu: 'tertiary'`: `/settings` (`SettingsView`, per-browser
 presenter notes). The **glossary is not a route**: it is an overlay (`stores/glossary.ts` +
@@ -235,8 +260,11 @@ product.
 
 - **Never hardcode colors.** Tailwind utilities over the kit theme's tokens — `bg-background`,
   `text-muted-foreground`, `border-border`, `bg-primary`, `text-destructive`. No hex, no `text-[#…]`.
-  A chart series names its meaning and takes its colour from `frontend/src/utils/seriesColours.ts`,
-  which holds exactly this table; it never picks a `--chart-N` slot directly. Change the table here
+  A chart series names its meaning and takes its colour classes from
+  `frontend/src/utils/seriesColours.ts` (`SERIES_TEXT`, `SERIES_BG`), which holds exactly this table;
+  colours are classes, never inline styles, because the design lint cannot see a colour set through a
+  bound `:style`. The overlap matrix and the gene coverage grid name `chart-3` and `chart-1` directly, as
+  scope D12 fixed them; they carry this table's `contrast` and `highlight` meanings. Change the table here
   first, then the module.
 
   | Meaning | Where it appears | Kit token |
@@ -325,12 +353,17 @@ restates the other.
 
 ## 4. The four acts, and the talk track
 
-| act | what it establishes | why it must precede the next |
+**Live since 2026-10-27** (`DEC-DEMO-005`): the app opens on act 4, and acts 1–3 are the
+three sections of *Why trust the list*, reached from the list's *How do we know?* links (Phase 2).
+The act numbers stay as labels. What each act establishes does not depend on the order, so the third
+column says what it answers rather than why it comes first.
+
+| act | what it establishes | what it answers |
 |---|---|---|
 | **1** | **The evidence base** — the graph, and that every edge knows where it came from | the model can only see what is in here; act 4's mechanism shot pays this off |
-| **2** | **Scope and calibration** — 670 diseases, the *spread*, where HER2+ sits in it | *"can I trust this for my disease"* is answered before any gene is shown |
-| **3** | **The therapeutic area** — the 12-term breast panel, and that the subtypes separate | the team sees itself; act 4's single disease stops looking cherry-picked |
-| **4** | **The shortlist** — the list, the filter, the SHAP, the pathway | the deliverable |
+| **2** | **Scope and calibration** — 670 diseases, the *spread*, where HER2+ sits in it | *"can I trust this for my disease"*, for the disease open on the list |
+| **3** | **The therapeutic area** — the 15-term breast panel, and that the subtypes separate | the team sees itself; act 4's single disease stops looking cherry-picked |
+| **4** | **The shortlist** — the list, the filter, the SHAP, the pathway | the deliverable, and the opening page |
 | **5** | **The interrogation** — famous genes, novel discovery, the ground truth | every objection, answered on the spine disease *and* across 670 |
 | **6** | **The limits and the punch line** — TNBC, then three refuted ideas | what makes acts 1–5 believable, and the platform close |
 
@@ -367,14 +400,17 @@ unchanged and still authoritative; this table is how to find the card that carri
 
 ### Act 1 — The evidence base
 
-| card | form | asserts |
+*Why trust the list*, section 1 (built in Phase 1). The *where* column says where each claim now
+appears: up front, or under *Show the detail*. The asserted figures are unchanged.
+
+| claim | where | asserts |
 |---|---|---|
-| Node inventory | treemap | **113,391** nodes over 8 types: disease 27,153 · biological_process 23,974 · gene/protein 20,861 · phenotype 19,120 · molecular_function 10,041 · drug 5,282 · cellular_component 4,077 · pathway 2,883 |
-| Relation inventory | horizontal bars | **2,851,510** edges over **18** relations. Verified live against `GRAPH_BUILDING.md` §7.1 — protein_protein 520,380 · phenotype_protein 487,054 · disease_phenotype_positive 380,280 · disease_protein 378,888 · bioprocess_protein 251,808 · cellcomp_protein 186,806 · molfunc_protein 156,246, **all seven match exactly** |
-| **Every edge knows where it came from** | stacked bars | of 520,380 protein interactions: menche 189,982 · string 151,254 · huri 92,536 · menche+string 54,554 · huri+menche 28,478 · all three 2,714 · huri+string 862. **86,608 (16.6%) are corroborated by more than one independent interactome, and the graph records which** |
-| **What "known target" actually means** | donut | of 323,786 annotated disease–gene edges: genetic_association **171,810** · somatic_mutation **150,266** · both **1,710**. These edges *are* the training label |
-| Accepted against a frozen reference | stat row | nodes −0.13%, edges −0.03%, **14 of 18 relations reproduce exactly**, identical relation inventory |
-| Explore the graph | shared Explorer card | three deterministic starter queries; each is visible, copyable and opened in the same full Explorer shell that Act 4 uses |
+| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · biological_process 23,974 · gene/protein 20,861 · phenotype 19,120 · molecular_function 10,041 · drug 5,282 · cellular_component 4,077 · pathway 2,883 |
+| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verified live against `GRAPH_BUILDING.md` §7.1 — protein_protein 520,380 · phenotype_protein 487,054 · disease_phenotype_positive 380,280 · disease_protein 378,888 · bioprocess_protein 251,808 · cellcomp_protein 186,806 · molfunc_protein 156,246, **all seven match exactly** |
+| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380 protein interactions: menche 189,982 · string 151,254 · huri 92,536 · menche+string 54,554 · huri+menche 28,478 · all three 2,714 · huri+string 862. **86,608 (16.6%) are corroborated by more than one independent interactome, and the graph records which** |
+| **What "known target" actually means** | up front · bars, with the unannotated edges named in prose | of 323,786 annotated disease–gene edges: genetic_association **171,810** · somatic_mutation **150,266** · both **1,710**. These edges *are* the training label |
+| Accepted against a frozen reference | detail · one-line note; the page states the acceptance, not these figures | nodes −0.13%, edges −0.03%, **14 of 18 relations reproduce exactly**, identical relation inventory |
+| Explore the graph | moved to the shortlist | the shortlist's shared Explorer card, with its five pair-specific presets; Act 1's three starter queries were retired with the act page |
 
 **The provenance data is two disjoint stories.** `edge_metadata`'s 844,166 rows split cleanly: 520,380
 protein_protein rows carry `ppi_sources` with blank `datatypes`; 323,786 disease_protein rows carry the
@@ -388,25 +424,27 @@ defuses part of act 5's ground-truth objection four acts early.
 ⚠ **`disease_protein` has 378,888 edges but only 323,786 metadata rows** — 55,102 (14.5%) carry no
 evidence-type annotation. Do not describe the donut as covering all disease–gene edges.
 
-**Explore is an explicit handoff.** Selecting an Act 1 starter changes only the visible Cypher. The
-shared card opens the Visual Graph Explorer and, when the browser permits it, copies the selected query
-for the user to paste and run there. The Explorer's query generator owns natural-language exploration;
-Act 1 has no local Cypher executor, graph/table toggle or graph renderer.
+**Explore is an explicit handoff, and it now lives on the shortlist.** The shared card opens the Visual
+Graph Explorer and, when the browser permits it, copies the selected query for the user to paste and run
+there. The Explorer's query generator owns natural-language exploration; the app has no local Cypher
+executor, graph/table toggle or graph renderer.
 
-> **Must not appear:** the build pipeline, recipe counts, how long it took. No model, no score — the model
-> has not been mentioned yet.
+> **Must not appear:** the build pipeline, recipe counts, how long it took. No model score in this
+> section: it describes what the model can see, not how well it does.
 
 ---
 
 ### Act 2 — Scope and calibration
 
-| card | form | asserts |
+*Why trust the list*, section 2 (built in Phase 1), for the disease shared with the shortlist.
+
+| claim | where | asserts |
 |---|---|---|
-| **Zero straddling keys — read this first** | table | 3 rows; all four overlap/straddling columns at **zero** across train (2,187,862 rows / 383 diseases), validation (3,958,921 / 670), test (607,345 / 104) |
-| The spread across 670 diseases | histogram, 20 bins | macro **0.8230**, median 0.8623, range 0.1045–0.9962 over the **668** that score |
-| It holds across 505 families | histogram, 20 bins | macro **0.8009** over the **503** that score |
-| **Usefulness is not uniform** | box plot | rank enrichment median **19.2×**, quartiles **9.1–28.2×**, range **0–59.2×** across 670 diseases |
-| Where your disease sits | marker on the histogram | HER2+ at **0.9365** — upper tail, stated as a *position in a spread* |
+| **Zero straddling keys — read this first** | up front · one line; the split table under detail | 3 rows; all four overlap/straddling columns at **zero** across train (2,187,862 rows / 383 diseases), validation (3,958,921 / 670), test (607,345 / 104) |
+| The spread across 670 diseases | up front · histogram, 20 bins | macro **0.8230**, median 0.8623, range 0.1045–0.9962 over the **668** that score |
+| It holds across 505 families | detail · one line | macro **0.8009** over the **503** that score |
+| **Usefulness is not uniform** | up front · the quartiles in prose, beside the selected disease's own enrichment | rank enrichment median **19.2×**, quartiles **9.1–28.2×**, range **0–59.2×** across 670 diseases |
+| Where your disease sits | up front · marker on the histogram, rank and share of diseases beaten | HER2+ at **0.9365**, rank 94 of 668 — upper tail, stated as a *position in a spread* |
 
 **The framing rule.** The distribution leads; the macro number is its summary. The narrative forbids raw
 AUC as an opening number — *"it is the answer to a question they did not ask"* — and the TxGNN result is
@@ -414,8 +452,11 @@ why: showing experts *why* raised their accuracy 46% and confidence 49%; accurac
 scoped-POC team's real question is **can I trust this for my disease**, which is about spread and
 position, not a mean.
 
-The audit card is placed first, full width, ahead of every AUC. The AUCs mean nothing until the straddling
-count is zero, and the layout enforces the reading order.
+The audit is the section's first line, ahead of every AUC. The AUCs mean nothing until the straddling
+count is zero, and the layout enforces the reading order. Precision against chance, which diseases
+qualify, how the candidate pool is built and the bias toward well-connected genes sit under *Show the
+detail*. *What drives the score* and *The model's inputs* moved to the shortlist's detail and the
+glossary.
 
 ⚠ **Two corrections the build forced.**
 
@@ -439,14 +480,18 @@ each, so AUC is undefined. `nb3` uses pandas, which skips them, so the documente
 
 ### Act 3 — The therapeutic area
 
-| card | form | asserts |
-|---|---|---|
-| The panel | table | 12 breast terms: pool, known targets, AUC, hits@50, enrichment, verdict. HER2+ 0.9365 / 599 · lobular 0.9337 / 513 · TNBC 0.8949 / **8** |
-| **The subtypes actually separate** | paired stat | HER2+ vs triple-negative share **2 of 50**; lung adenocarcinoma vs squamous share **47 of 50** |
-| Where the panel is trustworthy | scatter | `n_known_targets` × `auc` — AUC is meaningless below ~50 known targets, and TNBC is the visible outlier |
-| Signature of each subtype's head | small multiples | luminal A → EP300, ATM, MSH2, FGFR1 · luminal B → EP300, MSH6, PIK3R1, FGFR1 · TNBC → RAD50, ATM, TP53, BRCA2, NBN |
+*Why trust the list*, section 3 (built in Phase 1): the family of the disease shared with the
+shortlist, or a statement that it has none. The overlap matrix, the gene coverage grid and the
+shared/specific chips keep the live Act 3 plots' form, with their colours moved to token classes.
 
-This act is why a single-disease deck does not read as cherry-picking: same model, twelve terms of the
+| claim | where | asserts |
+|---|---|---|
+| The panel | up front · every term with its 95% interval, thin terms flagged; the rest in each row's tooltip | 15 breast terms, 14 scored (macro **0.9025** over those 14; triple-negative's 8 known targets keep it out), each with its AUC and interval, known targets and, in its tooltip, enrichment. HER2+ 0.9365 / 599 · lobular 0.9337 / 513 · TNBC 0.8949 / **8** |
+| **The subtypes actually separate** | up front · novel top-50 genes the selected subtype shares with each other subtype | HER2+ vs triple-negative share **2 of 50** novel genes. The lung contrast (adenocarcinoma vs squamous, **47 of 50**) has no panel on the page, so it is spoken, not shown |
+| Where the panel is trustworthy | up front · the warning mark and the known-target column on the interval rows | `n_known_targets` × `auc` — AUC is meaningless below ~50 known targets, and TNBC is the visible outlier |
+| Signature of each subtype's head | detail · *Shared vs. subtype-specific* chips | luminal A → EP300, ATM, MSH2, FGFR1 · luminal B → EP300, MSH6, PIK3R1, FGFR1 · TNBC → RAD50, ATM, TP53, BRCA2, NBN |
+
+This act is why a single-disease deck does not read as cherry-picking: same model, fifteen terms of the
 same area, lists that differ in a way a breast oncologist recognises. The trustworthiness scatter puts
 TNBC's 8 known targets on screen *before* act 6 claims anything about it.
 
@@ -457,27 +502,85 @@ TNBC's 8 known targets on screen *before* act 6 claims anything about it.
 
 ### Act 4 — The shortlist
 
-| card | form | asserts |
-|---|---|---|
-| The contract | prose | the deliverable in one sentence, and **the three things it does not do** |
-| The ranked list | virtualised table | 12,272 rows, rank + percentile + score + SHAP drivers + status badges |
-| The validated filter | three checkboxes + live count | **12,272 → novel 11,673 → tractable 7,951 → not secreted 7,274 → rank ≤ 200 → 38** |
-| Candidate detail | card, follows the selected row | rank against pool, SHAP drivers, **every champion feature** against **this disease's own distribution** |
-| The mechanism, on the graph | shared Explorer card with five independent bounded presets | prepared interaction, pathway, molecular-function, biological-process and drug-context queries for the selected disease and gene |
+*The shortlist*, the home page (built in Phase 2): the ranked list, then one card for
+the selected candidate with five tabs — Overview, *Why this ranking?*, Trials, Literature, and Drugs &
+graph.
 
-**Selection, not two pickers.** Clicking a row in the ranked list drives BOTH cards and scrolls the
-page to the detail card — the act's move is *judge a row, then ask why that row*, and separate pickers
-would let the drawer and the graph context describe different genes at once. Candidate selection prepares
+| claim | where | asserts |
+|---|---|---|
+| The contract | not a block of its own: the Overview tab's *What these sources cannot tell you* carries the therapeutic-relevance clause, and the liability tooltip and note carry the safety one. The subtype clause is not on the page | the deliverable in one sentence, and **the three things it does not do** |
+| The ranked list | paged table, 15 rows a page | 12,272 rows: rank, gene, class, tractability, the association badge, the drug-evidence badges and the safety badge. The SHAP drivers moved to the candidate's *Why this ranking?* tab |
+| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tractable 7,950 → not secreted 7,273 → rank ≤ 200 → 38** (re-derived 2026-10-26 through the backend's own filter; previously 7,951 and 7,274) |
+| Candidate detail | the card below the list: a header, then the Overview and *Why this ranking?* tabs | rank against the pool, every flag and the gene's HGNC identity in the header; the top five SHAP drivers, each with its percentile in **this disease's own distribution** |
+| The drugs behind the badges | Drugs & graph tab · table under the badges | every drug that acts on the gene **and** is recorded for exactly this disease node: name, highest stage, action on the gene, DrugBank id, release. ERBB2 × HER2+: tucatinib (approval), poziotinib (phase 2). An empty table reads *no link in snapshot* |
+| Trials and papers that name the gene | Trials and Literature tabs, searched when either tab is first opened | the records the searches retrieved that name the gene, then up to five of each with a role, a subtype match, a reason and a quote found in the passage; the rest listed below. Counts say *retrieved*, never *all*; a trial's phase or status is never read as efficacy |
+| The mechanism, on the graph | Drugs & graph tab · shared Explorer card with five independent bounded presets | prepared interaction, pathway, molecular-function, biological-process and drug-context queries for the selected disease and gene |
+| Questions about the pair | *Ask about {gene}* under the card's header opens the assistant panel; *Explore in Agent Hub* beside it opens Agent Hub in a new tab | four starter questions and a free one, answered over the graph, CT.gov and PubMed; every sentence shows its citations or the *not from a retrieved source* mark, and every graph result its Cypher |
+| *How do we know?* | the intro row (all three sections); the Overview tab's model box (section 2) and association box (section 1) | links to *Why trust the list*, landing on the section |
+
+**Selection, not two pickers.** Clicking a row in the ranked list drives the header and every tab, and
+scrolls the page to the candidate card — the act's move is *judge a row, then ask why that row*, and
+separate pickers would let two panels describe different genes at once. Candidate selection prepares
 the five route-specific queries but does not execute one; the user chooses a preset and opens the shared
 Explorer shell when ready to inspect the graph.
 
-**The detail card shows the champion's own inputs, not a selection.** webapp v1's drawer showed five
-features, of which three — `rwr_score`, `ppi_common_neighbors`, `shared_pathway_count` — are **not
-inputs to m7-f14**; they are columns `dashboard_candidates` happens to carry. A non-feature under the
-heading *"why this gene?"* answers a question the model never asked, so the set is derived from
-`backend/feature_glossary.py` and moves when the champion does. One champion input, `prox_kernel`,
-never reaches `dashboard_candidates`, and the card says so rather than showing 13 of 14 as if that
-were all of them.
+**Identity is preloaded from a dated HGNC file** (`DEC-DATA-002`; scope D16). The header reads
+`candidate_identity` (zone S1): the graph's gene nodes left-joined, by the NCBI Gene ID the graph
+carries (`graph_nodes.node_id`), to one dated HGNC complete-set file that Part 1's
+`compute_hgnc_identity` loads. Nothing is fetched per click. The source line names the file and the
+NCBI Gene ID it matched on, and the header warns when HGNC's current symbol differs from the graph's.
+From `hgnc_complete_set_2026-10-06.txt`, 20,860 of 20,861 gene nodes match (PGM5P1's record carries no
+NCBI Gene ID), 10 graph symbols have since been renamed by HGNC, and the HER2+ top 200 agree field for
+field with a live HGNC lookup. A first build looked genes up live at the HGNC REST service; it was
+replaced the same day.
+
+**Drug records are the badges, kept one row per drug** (scope D7). The tab reads
+`drug_evidence_records` (zone S1), built with a visual Group and Join from the same
+`drug_disease_edges` and `drug_protein_edges` that `compute_drug_evidence_pairs` reduces to two flags.
+It holds every linked pair (86,123 records over 55,270 pairs), so it does not depend on the scoring
+chain; grouped by pair, the 2,294 records on candidate pairs reproduce both flags for all 105,702 pairs
+with zero mismatches (checked 2026-10-26), so a badge and the table under it cannot disagree. The link
+is exact-node: lapatinib and neratinib act on ERBB2 but are recorded on *breast cancer*, so they are
+not in HER2+'s table.
+
+**Trials and papers are retrieved for the selected pair only** (`DEC-DEMO-004`; scope D3–D6). Opening
+the Trials or Literature tab runs six Cortex searches, three queries on each corpus — the symbol with
+the disease family, the symbol with the disease, and the HGNC full name with the disease — and keeps a record only if the gene or a safe alias appears outside a citation. The records show at
+once; two LLM calls, one per corpus over the text around the gene's mentions, then pick up to five of each
+and label them. Every label carries a quote the backend finds in the record's full passage, or it is
+dropped and counted; the record stays, unlabelled. Search and selection are cached per pair in
+`act4_evidence_cache`, so a second visit reads the file (0.16 s); **Refresh** re-runs it. Measured on
+ERBB2 × HER2+: 3.2 s of searches and 11.4 s of selection, inside the 4 s and 15 s budgets. The
+`prefill_evidence_cache` scenario fills the HER2+ top 20 and SMARCA2 before a demo.
+
+**The assistant answers about the selected pair, and the backend checks every answer** (`DEC-DEMO-004`;
+scope D1). Each question is sent with the pair's identity, its top five drivers, its drug records and its
+cached trials and papers, each with a reference the model must cite. The model may search the graph,
+CT.gov and PubMed itself, at most 8 times in 45 s; a search repeated unchanged reuses its first result. When the answer is complete the backend resolves every
+citation to a record or a search result from this answer, removes any that resolve to nothing, marks
+every uncited sentence *not from a retrieved source*, flags prescriptive phrases and attaches each graph
+search's Cypher. The check verifies that a citation exists, not that the sentence is true. Conversations
+live in the page and are lost on reload. Measured on ERBB2 and SMARCA2 × HER2+: 2.9–24.7 s per answer
+(Phase 7); a drug question over four pairs took 9–37 s (Phase 8), the model's own reasoning time being the
+main variable. The graph, search and wording rules the model follows are shared with the Agent Hub agent
+(`backend/services/agent_rules.py`).
+For open exploration, *Explore in Agent Hub* opens a separate Agent Hub webapp running the DSS agent
+`target_evidence_agent` over the same three tools and rules; it does not know the pair, its answers are not
+checked, and it keeps its own conversation history.
+
+**Why this ranking? lists only the top five drivers** (scope D2). The tab shows the five features with
+the largest SHAP values, each with its sign and size and where this gene's value sits in this disease's
+pool; the champion's other nine inputs are in the glossary. They come from `candidate_shap_top5` (zone
+S1), a second scoring run of the champion with five explanations beside the run that sets the rank; it
+scores every pair identically, and its two strongest drivers equal the stored `top_shap_drivers` on all
+105,702 pairs (2026-10-26). The Overview tab's strongest driver reads the same list. Percentiles are
+computed in the flow by the rule `/gene` uses, so `prox_kernel`, which never reaches
+`dashboard_candidates`, now has one. When a driver has no value — no such path for this gene — the
+tab says the contribution is its absence. The feature wording comes from `backend/feature_glossary.py`,
+so it moves when the champion does.
+webapp v1's drawer had shown three features — `rwr_score`, `ppi_common_neighbors`,
+`shared_pathway_count` — that are **not inputs to m7-f14**, which is why the set is derived, never
+curated.
 
 **Percentile direction is per feature.** The bar is the share of this disease's pool the candidate is
 *stronger* than — a higher value everywhere except `prox_closest`, where fewer hops is stronger.
@@ -657,7 +760,7 @@ the pivot matters more than it looks.
 | Let the drug badges be filterable | the discovery lift is measured *against those labels* — filtering makes it circular | rendered as badges; no filter control, and a tooltip saying why |
 | Let the liability flag be filterable | it would delete ERBB2 from its own disease's list | same, plus act 6 shows the cost |
 | `AVG(lift_top10)` in a chart | Sjögren is 252.4× and the notebook drops infinities first | the aggregate carries mean, **median** and **n**, inf-drop explicit, distribution shown beside it |
-| Open with the AUC | answers a question they did not ask | act 2 leads with the distribution; no single number stands alone |
+| Open with the AUC | answers a question they did not ask | act 2 leads with the distribution; no single number stands alone. **Live** (`DEC-DEMO-005`): the app opens on the list, which shows no AUC |
 | One "enrichment" series | approved and investigational mean different things | never OR'd, never merged, separately labelled |
 | Report pooled AUC because it is bigger | pooled overstates by ~7 points | macro only, never adjacent to a pooled figure |
 | Quote a filtered count without its rank cut-off | how the obesity landing count acquired two values (§10.3) | every funnel count renders its cut-off in the same component |
@@ -666,6 +769,9 @@ the pivot matters more than it looks.
 | A discovery-enrichment figure on a summary tile or opening screen | the narrative makes a **reconstruction** claim, not a discovery one; a headline number turns one into the other and the slide is not recoverable in the room | the enrichment lives below the fold in act 4, labelled as an observation, and appears on no tile |
 | A headline number typed into card copy | act 2 carried a literal `1.9%` positive rate and a literal `0.9776` accuracy while their neighbours read live from `data.champion`, so a retrain made one card contradict itself on screen. Two proposed subtitles asserted *"most PPIs are corroborated"* (16.6% are) and *"provenance features dominate"* (path features are collectively larger) — both written from intuition, both false, both plausible enough to survive an eyeball review | every figure in a title, subtitle or note is derived from the payload; a claim that cannot be derived is not made. Where a card figure has a canonical value here, the card matches this document's precision, not its own rounding |
 | Language that prescribes research direction — *"you should pursue…"*, *"the next target is…"* | we are a platform company, not a domain authority. Prescribing costs the room | the app ranks and explains; every verb in the copy is about evidence, never about what to do next |
+| *Live* (`DEC-DEMO-004`): an assistant sentence from general knowledge rendered like a sourced one | the LLM's background knowledge reads as retrieved evidence, and the careful parts of the demo stop being trusted with it | every sourced sentence cites a record; a general-knowledge sentence is marked *not from a retrieved source* and is never a citation; a graph answer shows its Cypher |
+| *Live* (`DEC-DEMO-004`): an LLM role label taken on trust | a label with no checkable basis is an unreviewed claim about a paper or trial | every label carries a quote the backend finds in the passage after whitespace normalisation; a label that fails is dropped and the record stays, unlabelled |
+| *Live*: "no drug" inferred from a missing drug link | drug links are exact-node: lapatinib's and neratinib's approvals sit on *breast cancer*, not on the HER2+ subtype | the copy says *no link in snapshot*, never *no drug* |
 
 ---
 
@@ -685,12 +791,18 @@ the pivot matters more than it looks.
 
 - **No login, no user management, no persistence.** This is a demo surface over read-only flow output.
 - **No writes to DSS.** The one exception worth considering later is act 3's clinician review form
-  (`breast_shortlist`), and it is out of scope until someone asks.
+  (`breast_shortlist`), and it is out of scope until someone asks. **Exception**
+  (`DEC-DEMO-004`): retrieved trials and papers, with their selection, are cached per (disease,
+  gene) pair in the managed folder `act4_evidence_cache`. The in-app assistant's conversations are never stored; Agent Hub, a separate
+  webapp linked from the card, stores its own (`DEC-DEMO-004`).
 - **No LLM anything.** A chatbot over a ranked gene list is the kind of thing that makes a careful
   audience stop trusting the careful parts. The template's chat block, like its other optional blocks
   (wizard, charts, flow, documents), was never enabled and was deleted on 2026-10-15, together with the
   `ENABLE_*` flags ([`BLUEPRINT_ALIGNMENT_PLAN.md`](../../archive/BLUEPRINT_ALIGNMENT_PLAN.md), Phase 0). Every routed
-  view is an act or Settings.
+  view is the shortlist, *Why trust the list* or Settings. **Exception** (`DEC-DEMO-004`): on the
+  shortlist only, one LLM selection step (two calls, one per corpus) picks and labels retrieved trials and
+  papers, and an evidence assistant answers over the same sources, both on the terms §6 enforces. The reasoning above still holds everywhere else: no other
+  surface uses an LLM.
 
 ---
 

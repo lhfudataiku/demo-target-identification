@@ -6,7 +6,7 @@ not that the number is right." Zone 90 existed as staging for exactly this conve
 
 WHY A SHARED MODULE AND NOT A COPY IN EACH SCRIPT. `tractability_axis` is read by BOTH nb4 (section
 8.4) and nb6 (acts 5-6). A copy per script would recreate the duplication that
-`tools/push_assertions.py` was written to remove -- the assertion logic used to exist in three
+`tools/push_assertions.py` (retired 2026-10-28) was written to remove -- the assertion logic used to exist in three
 places and `.index/assertions.tsv` described the copy that was not being run.
 
 HOW THESE FUNCTIONS WERE PRODUCED. Each body is the corresponding `dss_recipes/` mirror, wrapped in
@@ -74,7 +74,7 @@ def tractability_axis(verbose=True):
 
     KS = [10, 20, 50, 100, 200]
 
-    nid = dataiku.Dataset("graph_nodes").get_dataframe(
+    nid = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes").get_dataframe(
         columns=["node_index", "node_id", "node_name", "node_type"], infer_with_pandas=False)
     nid["node_index"] = nid.node_index.astype(int)
     nid["node_id"] = nid.node_id.astype(str)
@@ -85,19 +85,19 @@ def tractability_axis(verbose=True):
     gmap = dict(zip(G.node_id, G.node_index))
 
     # ---- demonstrated tractability: a molecule engages this protein. No join, no inflation. ----
-    dp = dataiku.Dataset("drug_protein_edges").get_dataframe(infer_with_pandas=False)
+    dp = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_protein_edges").get_dataframe(infer_with_pandas=False)
     gc, tc = ("x_id", "y_id") if (dp.x_type == "drug").any() else ("y_id", "x_id")
     demo_genes = set(dp[tc].astype(str).map(gmap).dropna().astype(int))
     _p(f"genes with a demonstrated drug-target edge: {len(demo_genes):,} of {len(G):,} "
           f"({len(demo_genes)/len(G):.1%})")
 
-    drg = dataiku.Dataset("enriched_gene_druggability_v2").get_dataframe()
+    drg = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.enriched_gene_druggability_v2").get_dataframe()
     drg["assessed"] = ((drg.ot_sm_tractable == 1) | (drg.ot_ab_tractable == 1)).astype(int)
     drg["demonstrated"] = drg.gene_index.isin(demo_genes).astype(int)
     _p(f"genes with an assessed tractability bucket : {int(drg.assessed.sum()):,} "
           f"({drg.assessed.mean():.1%})")
 
-    sc = dataiku.Dataset("scored_champion").get_dataframe(
+    sc = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").get_dataframe(
         columns=["disease_index", "gene_index", "is_target", "proba_1", "gene_ppi_degree"])
     sc = sc.merge(drg[["gene_index", "assessed", "demonstrated", "druggability_class"]],
                   on="gene_index", how="left")

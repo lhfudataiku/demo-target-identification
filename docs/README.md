@@ -48,6 +48,8 @@ evidence and generated documents appear first; planning and historical material 
 | [`platform/DSS_CHEATSHEET.md`](platform/DSS_CHEATSHEET.md) | DSS behaviours and CLI patterns. **Read §1 before trusting any output** — those failures produce plausible results rather than errors |
 | [`operations/BUILD_GOVERNANCE.md`](operations/BUILD_GOVERNANCE.md) | Deterministic Part 2 build-event, accepted-baseline and targeted-review contract; read before designing or operating the approved DSS pilot |
 | [`operations/FLOW_MAP.md`](operations/FLOW_MAP.md) | Every dataset by zone, its producing recipe and its consuming act or notebook — generated from live DSS. **Read before pruning anything**: a reference check alone flags the whole serving layer |
+| [`operations/FLOW_MAP_EVIDENCE.md`](operations/FLOW_MAP_EVIDENCE.md) | The same map for the evidence project `DEMO_TI_EVIDENCE`, whose datasets the notebooks read; generated from live DSS. `.index/recipes_evidence.tsv` says which of its recipes are identity recipes, checked copies or evidence-only |
+| [`operations/WEBAPP_DATASET_MAP.md`](operations/WEBAPP_DATASET_MAP.md) | **Canonical for §2:** what the released webapp reads, field by field and with row scope; update it when a backend route changes what it reads. §§1, 3–6 are the dated analysis behind the flow migration |
 | [`reference/RESEARCH_NOTE.md`](reference/RESEARCH_NOTE.md) | Evidence base behind the modelling choices. **Unvalidated corpus — verify before client-facing use** |
 | [`reference/DISCOVERY_LANDSCAPE.md`](reference/DISCOVERY_LANDSCAPE.md) | The wider discovery chain (stages 1–6). A **separate framework** from the target-identification work above |
 
@@ -60,14 +62,19 @@ evidence and generated documents appear first; planning and historical material 
 
 ## Planning
 
-No plan is open. Completed plans move to [`../archive/`](../archive/): the most recent is the webapp's
-bs-blueprint alignment, implemented 2026-10-15 (`DEC-DEMO-003`).
+No plan is in progress. Completed plans move to [`../archive/`](../archive/): the most recent is the flow migration, done
+2026-10-29 (`DEC-ARCH-006`, `DEC-OPS-007`, `DEC-MEAS-005`, `DEC-ARCH-007`; its workplan and evidence
+design are [`FLOW_MIGRATION_WORKPLAN.md`](../archive/FLOW_MIGRATION_WORKPLAN.md) and
+[`EVIDENCE_PROJECT_DESIGN.md`](../archive/EVIDENCE_PROJECT_DESIGN.md)). Before it came the webapp
+redesign, live 2026-10-27 (`DEC-DEMO-004`, `DEC-DEMO-005`; its scope and workplan are
+[`WEBAPP_REDESIGN_SCOPE.md`](../archive/WEBAPP_REDESIGN_SCOPE.md) and
+[`WEBAPP_REDESIGN_WORKPLAN.md`](../archive/WEBAPP_REDESIGN_WORKPLAN.md)).
 
 ## Historical material
 
 | | |
 |---|---|
-| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, the three dashboard mockups and their app-parity check, the retired hand-authored flow view, completed plans (the documentation restructure with its phase records, the Visual Graph Explorer integration scope, the bs-blueprint alignment), the 2026-09-03 graph-snapshot switch record, the `m3-f12`-era appendix snapshots and breast-annotation exports, and the unpublished DSS wiki drafts. Do not load by default; use only for an explicit history investigation |
+| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, the three dashboard mockups and their app-parity check, the retired hand-authored flow view, completed plans (the documentation restructure with its phase records, the Visual Graph Explorer integration scope, the bs-blueprint alignment, the webapp redesign scope and workplan, the flow migration workplan and evidence-project design), the 2026-09-03 graph-snapshot switch record, the `m3-f12`-era appendix snapshots and breast-annotation exports, and the unpublished DSS wiki drafts. Do not load by default; use only for an explicit history investigation |
 | [`../archive/decisions/`](../archive/decisions/) | Immutable retired decision chronology and its five-way triage; query `.index/decisions_history.tsv` before opening it |
 
 ## Not in this directory

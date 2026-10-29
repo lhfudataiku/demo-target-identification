@@ -13,7 +13,7 @@ It reads only the repo -- the Python mirrors in `dss_recipes/*.py`, the Cypher i
 That also means it is only as fresh as the last `build_recipe_index.py --refresh`:
 it catches drift that has been mirrored, not drift still sitting in the DSS UI.
 
-Three rules:
+Five rules:
 
   1. IDENTITY   the recipes converted under DEC-OPS-006 must hold no bare disease
                 node_index. Indices renumber on a graph rebuild; these recipes resolve
@@ -24,6 +24,14 @@ Three rules:
   3. GATES      the ten seed-gated recipes must still carry exactly the gate
                 DEC-OPS-006 pins them to. This is the inverse guard: those literals
                 are supposed to stay, and a silent change to one is as bad as drift.
+  4. TWO PROJECTS since 2026-10-28 (DEC-ARCH-006) the identity recipes and the variables also
+                exist in DEMO_TI_EVIDENCE. Its copy of each must equal the one dss_recipes/
+                mirror, every copy there passes rule 1, and its variables must equal the main
+                project's -- all as snapshotted by the last --refresh.
+  5. COPIES     every other Python recipe both projects run under one name must be the same
+                code: the evidence copy equals the main project's mirror once the inputs the
+                evidence recipe reads from the main project are qualified by name (M6,
+                2026-10-29). A fix made in one project and not the other fails here.
 
 Run: python3 tools/check_governed_values.py
 """
@@ -38,6 +46,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RECIPES = os.path.join(ROOT, "dss_recipes")
 INDEX = os.path.join(ROOT, ".index", "recipes.tsv")
 SNAP = os.path.join(ROOT, ".index", "dss_snapshot.json")
+EV_SNAP = os.path.join(ROOT, ".index", "dss_snapshot_evidence.json")
+MAIN_PROJECT = "DEMO_TARGET_IDENTIFICATION"
 
 # DEC-MEAS-004 pins these two and, crucially, pins them APART. They answer different
 # questions -- "can this AUROC be quoted at all" (trust) versus "does this term go on
@@ -48,8 +58,14 @@ SNAP = os.path.join(ROOT, ".index", "dss_snapshot.json")
 EXPECTED_VARIABLES = {"trust_n_pos": 30, "panel_n_pos": 50, "near_dup": 0.6}
 DISTINCT_PAIRS = (("trust_n_pos", "panel_n_pos"),)
 
+EVIDENCE_PROJECT = "DEMO_TI_EVIDENCE"
+
 # Recipes whose disease identity is resolved by name (DEC-OPS-006). Adding a recipe
-# here after converting it is what keeps the guarantee from rotting.
+# here after converting it is what keeps the guarantee from rotting. Every one has a
+# copy in EVIDENCE_PROJECT equal to its dss_recipes/ mirror. compute_demo_panel_config
+# and compute_split_audit_2 also run, identically, in the main project;
+# compute_breast_panel moved to the evidence project (M2, 2026-10-29), which its mirror
+# now follows.
 IDENTITY_RECIPES = (
     "compute_demo_panel_config",
     "compute_breast_panel",
@@ -103,20 +119,24 @@ def read_lines(path: str):
         return fh.read().splitlines()
 
 
+def bare_indices(label, lines, fail):
+    for n, raw in enumerate(lines, 1):
+        line = strip_comment(raw, visual=False)
+        for m in INT_LITERAL.finditer(line):
+            if INDEX_RANGE[0] <= int(m.group(1)) <= INDEX_RANGE[1]:
+                fail.append(
+                    f"{label}:{n}: bare node_index {m.group(1)} in an identity recipe. "
+                    f"Resolve it by name via demo_identity.name_to_index (DEC-OPS-006)."
+                )
+
+
 def check_identity(fail):
     for name in IDENTITY_RECIPES:
         path = os.path.join(RECIPES, name + ".py")
         if not os.path.exists(path):
             fail.append(f"{name}: mirror missing from dss_recipes/ -- cannot verify identity")
             continue
-        for n, raw in enumerate(read_lines(path), 1):
-            line = strip_comment(raw, visual=False)
-            for m in INT_LITERAL.finditer(line):
-                if INDEX_RANGE[0] <= int(m.group(1)) <= INDEX_RANGE[1]:
-                    fail.append(
-                        f"{name}.py:{n}: bare node_index {m.group(1)} in an identity recipe. "
-                        f"Resolve it by name via demo_identity.name_to_index (DEC-OPS-006)."
-                    )
+        bare_indices(name + ".py", read_lines(path), fail)
 
 
 def check_thresholds(fail):
@@ -195,9 +215,73 @@ def check_variables(fail):
                         f"interval evidence supports no single cliff.")
 
 
+def check_evidence(fail):
+    """Rule 4: the evidence project's identity copies and variables, as last snapshotted."""
+    import json
+    with open(SNAP, encoding="utf-8") as fh:
+        snap = json.load(fh) or {}
+    ev = snap.get("_evidence")
+    if not ev:
+        fail.append(f"no {EVIDENCE_PROJECT} snapshot -- run build_recipe_index.py --refresh")
+        return
+    for name in IDENTITY_RECIPES:
+        code = (ev.get("identity_code") or {}).get(name)
+        path = os.path.join(RECIPES, name + ".py")
+        if code is None:
+            fail.append(f"{name}: no copy in {EVIDENCE_PROJECT}")
+            continue
+        bare_indices(f"{EVIDENCE_PROJECT}.{name}", code.splitlines(), fail)
+        if os.path.exists(path) and code.rstrip() != "\n".join(read_lines(path)).rstrip():
+            fail.append(f"{name}: the {EVIDENCE_PROJECT} copy differs from dss_recipes/{name}.py. "
+                        f"Each identity recipe has one source (DEC-OPS-006).")
+    main_vars = snap.get("_variables") or {}
+    for key in sorted(set(main_vars) | set(ev.get("variables") or {})):
+        a, b = main_vars.get(key), (ev.get("variables") or {}).get(key)
+        if a != b:
+            fail.append(f"project variable `{key}` is {a!r} in the main project and {b!r} in "
+                        f"{EVIDENCE_PROJECT}. The two must stay equal (DEC-OPS-006).")
+
+
+def qualified(code: str, upstream: list[str]) -> str:
+    """The main project's code as the evidence project runs it: each input it reads from the main
+    project named with that project's key (as tools/build_evidence_flow.py rewrote the copies)."""
+    for name in sorted(upstream):
+        code = code.replace('"%s"' % name, '"%s.%s"' % (MAIN_PROJECT, name))
+    return code
+
+
+def check_copies(fail) -> int:
+    """Rule 5. Returns how many copies were compared."""
+    import json
+    if not os.path.exists(EV_SNAP):
+        fail.append(f"no {EVIDENCE_PROJECT} recipe snapshot -- run build_recipe_index.py --refresh")
+        return 0
+    with open(EV_SNAP, encoding="utf-8") as fh:
+        ev = json.load(fh)
+    with open(SNAP, encoding="utf-8") as fh:
+        main = {k for k in json.load(fh) if not k.startswith("_")}
+    n = 0
+    for name, rec in sorted(ev["recipes"].items()):
+        if rec.get("type") != "python" or name not in main or name in IDENTITY_RECIPES:
+            continue
+        path = os.path.join(RECIPES, name + ".py")
+        if not os.path.exists(path) or rec.get("code") is None:
+            fail.append(f"{name}: no mirror or no {EVIDENCE_PROJECT} code to compare")
+            continue
+        upstream = [x.split(".", 1)[1] for x in rec.get("inputs") or [] if x.startswith(MAIN_PROJECT + ".")]
+        expected = qualified("\n".join(read_lines(path)), upstream)
+        if rec["code"].rstrip() != expected.rstrip():
+            fail.append(f"{name}: the {EVIDENCE_PROJECT} copy differs from dss_recipes/{name}.py "
+                        f"beyond its qualified reads. Change both projects, or neither.")
+        n += 1
+    return n
+
+
 def main() -> int:
     fail: list[str] = []
     check_variables(fail)
+    check_evidence(fail)
+    copies = check_copies(fail)
     check_identity(fail)
     check_thresholds(fail)
     check_gates(fail)
@@ -206,8 +290,8 @@ def main() -> int:
         for f in fail:
             print("  " + f)
         return 1
-    print(f"governed values ok ({len(IDENTITY_RECIPES)} identity recipes, "
-          f"{len(GOVERNED)} variables, {len(EXPECTED_GATES)} pinned gates)")
+    print(f"governed values ok ({len(IDENTITY_RECIPES)} identity recipes in 2 projects, "
+          f"{copies} copied recipes, {len(GOVERNED)} variables, {len(EXPECTED_GATES)} pinned gates)")
     return 0
 
 

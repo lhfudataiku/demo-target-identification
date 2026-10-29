@@ -174,7 +174,7 @@ check("7.4 drug-target macro AUC",0.6886,round(float(db.auc_drug_targets.mean())
 
 # ==== 7.2  hub-bias meter -- it has no recipe, so this notebook IS its artifact ====
 
-sc3=dataiku.Dataset("scored_champion").get_dataframe(
+sc3=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").get_dataframe(
     columns=["disease_index","gene_index","is_target","proba_1","gene_ppi_degree","disease_split_key"])
 sc3["dq"]=pd.qcut(sc3.gene_ppi_degree.rank(method="first"),5,labels=False)
 top=sc3.sort_values("proba_1",ascending=False).groupby("disease_index").head(50)

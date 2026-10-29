@@ -96,7 +96,7 @@ for K, want_pooled, want_macro in [(10, False, False), (20, True, False), (50, T
 # needed here, and they are ~1.9% of the pool, so filter per chunk and keep the exact values rather
 # than sampling: sampling would move the 0.59 / 0.79 figures this section asserts.
 _chunks = []
-for _c in dataiku.Dataset("scored_champion").iter_dataframes(
+for _c in dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").iter_dataframes(
         chunksize=250_000,
         columns=["disease_index", "gene_index", "is_target", "proba_1", "gene_ppi_degree"]):
     _c = _c[_c.is_target == 1]
@@ -162,8 +162,8 @@ print(f"DISCTAIL|approved lift@10: mean={ap.mean():.2f} median={ap.median():.2f}
 # `raw_ot_known_drug` is target-disease pairs (targetId, symbol, diseaseId, score) and carries NO
 # drug column, so the multi-target inflation cannot be measured from it. The drug identity lives in
 # the graph edges: drug_protein_edges (drug -> target) and drug_disease_edges (drug -> disease).
-dpe = dataiku.Dataset("drug_protein_edges").get_dataframe(columns=["x_id", "y_id", "x_type"])
-dde = dataiku.Dataset("drug_disease_edges").get_dataframe(columns=["x_id", "y_id", "x_type"])
+dpe = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_protein_edges").get_dataframe(columns=["x_id", "y_id", "x_type"])
+dde = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_disease_edges").get_dataframe(columns=["x_id", "y_id", "x_type"])
 # x is the drug on both edge tables; guard in case a build flips the orientation.
 tpd = dpe.groupby("x_id").y_id.nunique()          # targets per drug
 dpd = dde.groupby("x_id").y_id.nunique()          # diseases per drug
@@ -222,7 +222,7 @@ if "n_validated_targets" in db.columns:
 # identical STRING FORMS for the group keys — `lof_intolerant` groups to the key "1.0", not "1", and
 # every assertion looks the value up by that string.
 # ============================================================================
-_nodes = dataiku.Dataset("graph_nodes").get_dataframe(
+_nodes = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes").get_dataframe(
     columns=["node_index", "node_id", "node_name", "node_type"], infer_with_pandas=False)
 _nodes["node_index"] = _nodes.node_index.astype(int)
 _nodes["node_id"] = _nodes.node_id.astype(str)
@@ -231,8 +231,8 @@ _dis_map = dict(zip(_nodes[_nodes.node_type == "disease"].node_id,
 _gene_map = dict(zip(_nodes[_nodes.node_type == "gene/protein"].node_id,
                      _nodes[_nodes.node_type == "gene/protein"].node_index))
 
-_dd = dataiku.Dataset("drug_disease_edges").get_dataframe(infer_with_pandas=False)
-_dp = dataiku.Dataset("drug_protein_edges").get_dataframe(infer_with_pandas=False)
+_dd = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_disease_edges").get_dataframe(infer_with_pandas=False)
+_dp = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_protein_edges").get_dataframe(infer_with_pandas=False)
 _ind = _dd[_dd.relation.astype(str).str.fullmatch("indication", case=False, na=False)].copy()
 _c1, _c2 = ("x_id", "y_id") if (_ind.x_type == "drug").any() else ("y_id", "x_id")
 _ind["drug"] = _ind[_c1].astype(str)
@@ -250,7 +250,7 @@ _truth_dis = set(truth.disease_index)
 # container with "signal 1" and no traceback. The per-chunk filter to the drug-validated diseases is
 # what keeps the result small — this is chunking, not sampling, so the lifts are unchanged.
 _keep = []
-for _c in dataiku.Dataset("scored_champion").iter_dataframes(
+for _c in dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").iter_dataframes(
         chunksize=250_000, columns=["disease_index", "gene_index", "is_target"]):
     _c = _c[_c.disease_index.isin(_truth_dis)]
     if len(_c):
@@ -300,9 +300,9 @@ def lift_table(annot, cols, min_n=2000, as_object=False):
     return pd.DataFrame(rows)
 
 
-tl = lift_table(dataiku.Dataset("enriched_gene_druggability_v2").get_dataframe(),
+tl = lift_table(dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.enriched_gene_druggability_v2").get_dataframe(),
                 ["ot_ab_tractable", "ot_sm_tractable", "localization_class", "ot_class_l1"])
-sl = lift_table(dataiku.Dataset("enriched_gene_safety_v2").get_dataframe(),
+sl = lift_table(dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.enriched_gene_safety_v2").get_dataframe(),
                 ["safety_flag", "lof_intolerant", "loeuf_bucket", "has_safety_liability"],
                 as_object=True)
 print(f"LIFTBASE|computed tractability rows={len(tl)}|safety rows={len(sl)}")
@@ -340,7 +340,7 @@ check("6.1 liability drug_lift", 4.62, round(d3, 2), tol=0.02, fmt="{:.2f}")
 # Cross-check the adopted tables against the upstream annotations they summarise, so adopting them
 # is a verification and not just a read-back.
 try:
-    dg = dataiku.Dataset("enriched_gene_druggability_v2").get_dataframe()
+    dg = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.enriched_gene_druggability_v2").get_dataframe()
     print(f"XCHECK|enriched_gene_druggability_v2 rows={len(dg):,} "
           f"classes={dg.ot_class_l1.nunique() if 'ot_class_l1' in dg.columns else 'n/a'}")
 except Exception as e:  # noqa: BLE001 — the cross-check is advisory, not load-bearing
@@ -397,7 +397,7 @@ _gname = dict(zip(_nodes[_nodes.node_type == "gene/protein"].node_index.astype(i
 _dname = dict(zip(_nodes[_nodes.node_type == "disease"].node_index.astype(int),
                   _nodes[_nodes.node_type == "disease"].node_name))
 _lgc = []
-for _c in dataiku.Dataset("scored_champion").iter_dataframes(
+for _c in dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").iter_dataframes(
         chunksize=250_000,
         columns=["disease_index", "gene_index", "is_target", "disease_family_id", "proba_1"]):
     _c = _c[_c.disease_family_id == _LUNG_FAMILY]

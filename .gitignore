@@ -13,3 +13,6 @@ __pycache__/
 # tracked. This file held the only project permissions until 2026-08-31 while being invisible to the
 # repository, because it was excluded by a personal global gitignore rather than by this file.
 .claude/settings.local.json
+
+# Design-review mockups: large, embed retrieved passages, rebuilt outside the repo.
+docs/demo/design_review/

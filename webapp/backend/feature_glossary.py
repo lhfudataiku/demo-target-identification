@@ -80,8 +80,8 @@ LOWER_IS_STRONGER: frozenset[str] = frozenset({"prox_closest"})
 LABEL: dict[str, str] = {f: n for f, _, n, _ in GLOSSARY}
 WHAT: dict[str, str] = {f: w for f, _, _, w in GLOSSARY}
 
-# feature -> kind, for the driver-frequency bars. Wider than GLOSSARY on purpose:
-# `shap_driver_frequency` is computed over whatever the scoring recipe emitted,
+# feature -> kind, for the per-candidate driver bars. Wider than GLOSSARY on purpose:
+# the drivers come from whatever the scoring recipe emitted,
 # which includes features the champion dropped, and an unmapped one would fall
 # back to the wrong colour rather than no colour.
 KIND: dict[str, str] = {

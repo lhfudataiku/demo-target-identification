@@ -70,7 +70,7 @@ _TRUST_N_POS = int(demo_identity.thresholds()["trust_n_pos"])
 PANEL = {_idx[n]: _labels.get(n, n) for n in _names}
 K = 50
 
-nid = dataiku.Dataset("graph_nodes").get_dataframe(
+nid = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes").get_dataframe(
     columns=["node_index", "node_id", "node_name", "node_type"], infer_with_pandas=False)
 nid["node_index"] = nid.node_index.astype(int)
 nid["node_id"] = nid.node_id.astype(str)
@@ -81,8 +81,8 @@ dmap = dict(zip(D.node_id, D.node_index))
 gmap = dict(zip(G.node_id, G.node_index))
 
 # --- the two independent drug ground truths (TARGET_PRIORITIZER §8.1) -------------------
-dd = dataiku.Dataset("drug_disease_edges").get_dataframe(infer_with_pandas=False)
-dp = dataiku.Dataset("drug_protein_edges").get_dataframe(infer_with_pandas=False)
+dd = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_disease_edges").get_dataframe(infer_with_pandas=False)
+dp = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.drug_protein_edges").get_dataframe(infer_with_pandas=False)
 gc, tc = ("x_id", "y_id") if (dp.x_type == "drug").any() else ("y_id", "x_id")
 dp["drug"] = dp[gc].astype(str)
 dp["gene_index"] = dp[tc].astype(str).map(gmap)
@@ -104,7 +104,7 @@ def pairs_for(rel):
 TRUTH = {"approved": pairs_for("indication"),
          "investigational": pairs_for("drug_investigated_for")}
 
-sc = dataiku.Dataset("scored_champion").get_dataframe(
+sc = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", "proba_1"])
 sc = sc[sc.disease_index.isin(PANEL)].copy()
 print(f"{len(sc):,} scored rows over {sc.disease_index.nunique()} breast terms\n")

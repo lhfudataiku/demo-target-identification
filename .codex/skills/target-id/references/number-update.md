@@ -20,25 +20,22 @@ dku job run --target A --target B --type RECURSIVE_BUILD --auto-update-schema --
 
 ## 2. Run the assertions first, and treat failures as the worklist
 
-One command runs all seven assertion scripts against live data:
+One command runs all seven assertion scripts locally against the evidence project
+`DEMO_TI_EVIDENCE` (`DEC-OPS-007`):
 
 ```bash
-dku scenario run validate_notebooks -P DEMO_TARGET_IDENTIFICATION
-dku scenario run-log validate_notebooks --run <RUN_ID> -P DEMO_TARGET_IDENTIFICATION --grep "CHK|STALE"
+eval "$(dku auth export-env)"
+uv run --project notebooks python tools/run_notebooks.py --out data/assertion_runs/<date>.json
 ```
 
-Takes about 20 minutes. Each step reports `ASSERT|<script>|checks_executed=N|stale=N`, and a stale
-check fails the step — the contract lives in `nb_assertions/runner.py`, because six of the seven
-scripts only *print* their stale count and would otherwise report SUCCESS over stale numbers.
+Takes about 15 minutes. Each script reports `ASSERT|<script>|checks_executed=N|stale=N`, and a stale
+check fails it — the contract lives in `tools/nb_assertions/runner.py`, because six of the seven
+scripts only *print* their stale count and would otherwise report success over stale numbers.
+A champion change reaches the evidence project only after its flow is rebuilt; until then the run
+measures the old outputs.
 
-`notebooks/*.py` is the source of truth. After editing one, push it before running:
-
-```bash
-python3 tools/push_assertions.py --push
-```
-
-`tools/check_indexes.sh` fails if the library copy has drifted from the repo. There are no DSS
-Jupyter notebooks any more — they were retired 2026-09-03 (`archive/notebooks-dss-2026-09-03/`).
+`notebooks/*.py` is the source of truth and the only copy; there is nothing to push. There are no
+DSS Jupyter notebooks any more — they were retired 2026-09-03 (`archive/notebooks-dss-2026-09-03/`).
 
 **The failing assertions are the doc-update worklist.** Do not start editing docs before this — it is how §6.2's split sizes were caught as provably wrong and how §7.2's central claim was refuted.
 
