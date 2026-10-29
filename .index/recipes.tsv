@@ -21,9 +21,11 @@ compute_DEMO_KG_raw_disease_disease_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_disea
 compute_DEMO_KG_raw_go_hierarchy_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_go_hierarchy	raw_go_hierarchy
 compute_DEMO_KG_raw_ot_druggability_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_ot_druggability	raw_ot_druggability
 compute_DEMO_KG_raw_ot_safety_copy	sync	-	-		DSS-only	DEMO_KG_LS.raw_ot_safety	raw_ot_safety
+compute_candidates_annotated_m4	join	-	-		DSS-only	disease_pool_sizes_m4,drug_evidence_pairs,enriched_gene_druggability_v2,enriched_gene_safety_v2,graph_nodes,top_candidates_m4	candidates_annotated_m4
 compute_demo_panel_config	python	-	-		dss_recipes/compute_demo_panel_config.py	family_panel,graph_nodes	demo_panel_config
 compute_disease_eligibility	python	-	-		dss_recipes/compute_disease_eligibility.py	enriched_module_size_1,graph_node_type_counts	disease_eligibility
 compute_disease_family_id	python	-	-		dss_recipes/compute_disease_family_id.py	enriched_graph_features_1,graph_nodes,hetionet_disease_slim,mondo_references,raw_disease_disease	disease_family_id
+compute_disease_pool_sizes_m4	grouping	-	-		DSS-only	persona2_scored_shap5	disease_pool_sizes_m4
 compute_drug_classified	shaker	-	-		DSS-only	drug_joined	drug_classified
 compute_drug_evidence_pairs	python	-	-		dss_recipes/compute_drug_evidence_pairs.py	drug_disease_edges,drug_protein_edges,graph_nodes	drug_evidence_pairs
 compute_drug_joined	join	-	-		DSS-only	enriched_gene_localization,ot_drug_mapped	drug_joined
@@ -36,6 +38,7 @@ compute_enriched_inflammatory_go	CustomCode_visual-graph-execute-cypher	-	-		dss
 compute_enriched_node_centrality_1	CustomCode_visual-graph-graph-features	-	-		DSS-only	ytvuniN8	enriched_node_centrality_1
 compute_enriched_pair_features_index_1	vstack	-	-		DSS-only	enriched_disease_context_1,enriched_dwpc_GBGD,enriched_dwpc_GCD,enriched_dwpc_GFGD,enriched_dwpc_GGD,enriched_dwpc_GPGD,enriched_guilt_by_association_1,enriched_ppi_cn_zscore,enriched_prox_closest,enriched_rwr_score_1,enriched_shared_pathway_count_1	enriched_pair_features_index_1
 compute_family_auc	shaker	-	-		DSS-only	family_auc_grouped	family_auc_by_family
+compute_family_auc_m4	shaker	-	-		DSS-only	family_auc_grouped_m4	family_auc_by_family_m4
 compute_family_panel	join	-	-		DSS-only	disease_family_id,validation_auc_ci	family_panel
 compute_family_panel_metrics	join	-	-		DSS-only	demo_panel_config,family_panel	family_panel_metrics
 compute_family_panel_overlap	python	-	-		dss_recipes/compute_family_panel_overlap.py	demo_panel_config,family_panel_top50	family_panel_overlap
@@ -60,10 +63,13 @@ compute_ppi_evidence_depth	python	-	-		dss_recipes/compute_ppi_evidence_depth.py
 compute_raw_ot_known_drug	sync	-	-		DSS-only	DEMO_KG_LS.raw_ot_known_drug	raw_ot_known_drug
 compute_shap_top5	python	-	-		dss_recipes/compute_shap_top5.py	persona2_scored_shap5	candidate_shap_top5
 compute_split_audit_2	python	-	-		dss_recipes/compute_split_audit_2.py	graph_nodes,psplit_test_set,psplit_train_set,psplit_validation_set	split_audit_2
+compute_top_candidates_m4	window	-	-		DSS-only	persona2_scored_shap5	top_candidates_m4
 compute_top_shap_drivers_1	python	-	-		dss_recipes/compute_top_shap_drivers_1.py	persona2_scored	persona2_scored_shap
 compute_validation_auc_by_disease	shaker	-	-		DSS-only	validation_set_scored_grouped	validation_auc_by_disease
+compute_validation_auc_by_disease_m4	shaker	-	-		DSS-only	validation_set_scored_named_m4	validation_auc_by_disease_m4
 compute_validation_auc_ci	shaker	-	-		DSS-only	validation_auc_by_disease	validation_auc_ci
 compute_validation_set_scored_grouped	grouping	-	-		DSS-only	validation_set_scored_windows	validation_set_scored_grouped
+compute_validation_set_scored_named_m4	join	-	-		DSS-only	graph_nodes,validation_set_scored_grouped	validation_set_scored_named_m4
 compute_validation_set_scored_windows	window	-	-		DSS-only	scored_champion	validation_set_scored_windows
 compute_ytvuniN8	merge_folder	-	-		DSS-only	DEMO_KG_LS.UBUlwwxT	ytvuniN8
 count_candidates_per_disease	grouping	-	-		DSS-only	target_candidates_2	disease_pool_sizes
@@ -72,8 +78,10 @@ extract_hetionet_disease_slim	python	-	-		dss_recipes/extract_hetionet_disease_s
 filter_has_path_evidence	sampling	-	-		DSS-only	enriched_graph_features_1_family	enriched_graph_features_candidate_psplit
 filter_persona_diseases	join	-	-		DSS-only	demo_panel_config,psplit_validation_set	validation_set_personas_2
 finalize_dashboard_candidates	shaker	-	-		DSS-only	candidates_annotated	dashboard_candidates
+finalize_dashboard_candidates_m4	shaker	-	-		DSS-only	candidates_annotated_m4	dashboard_candidates_m4
 group_drug_protein_actions	grouping	-	-		DSS-only	drug_protein_edges	drug_protein_actions
 group_family_auc	grouping	-	-		DSS-only	family_validation_ranked	family_auc_grouped
+group_family_auc_m4	grouping	-	-		DSS-only	family_validation_ranked_m4	family_auc_grouped_m4
 join_candidate_identity	join	-	-		DSS-only	graph_nodes,hgnc_identity	candidate_identity
 join_dashboard_annotations	join	-	-		DSS-only	disease_pool_sizes,drug_evidence_pairs,target_candidates_2	candidates_annotated
 join_disease_family_id	join	-	-		DSS-only	disease_family_id,enriched_graph_features_1	enriched_graph_features_1_family
@@ -88,3 +96,4 @@ split_by_disease_key	split	-	-		DSS-only	enriched_graph_features_candidate_pspli
 sync_scored_champion	sync	-	-		DSS-only	scored_m7	scored_champion
 train_m7-f14	prediction_training	-	-		DSS-only	psplit_train_set	hJLGoYn4
 window_family_rank	window	-	-		DSS-only	family_validation_scored	family_validation_ranked
+window_family_rank_m4	window	-	-		DSS-only	scored_champion	family_validation_ranked_m4

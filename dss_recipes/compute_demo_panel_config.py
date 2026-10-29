@@ -28,8 +28,6 @@ The curated overlay below is the DECISION; everything else is derived from
 import dataiku
 import pandas as pd
 
-USABLE_FLOOR = None        # set from the `thresholds` project variable below
-
 # ── the decision, now GOVERNED ───────────────────────────────────────────────
 # Membership and thresholds come from project variables, not from literals here.
 # The panel is identified BY NAME; node indices are resolved from graph_nodes at
@@ -117,11 +115,12 @@ for order, (name, area) in enumerate(A4, start=1):
         raise ValueError(f"Act 4 disease not in the validation set: {name!r}")
     r = hit.iloc[0]
     fam = A3_FAMILIES.get(int(r.disease_family_id)) if pd.notna(r.disease_family_id) else None
-    role = None
-    if fam and r.disease in A3_LEAVES[fam]:
-        role = "leaf"
-    put(r, act4_area=area, act4_order=order, in_act4=True,
-        **({"act3_family": fam, "act3_role": role} if fam and rows.get(int(r.disease_index), {}).get("act3_family") is None else {}))
+    kw = {"act4_area": area, "act4_order": order, "in_act4": True}
+    # A term Act 3 already placed keeps its family and role; a family term below the usable
+    # floor (TNBC) gets them here.
+    if fam and rows.get(int(r.disease_index), {}).get("act3_family") is None:
+        kw.update(act3_family=fam, act3_role="leaf" if r.disease in A3_LEAVES[fam] else None)
+    put(r, **kw)
 
 out = pd.DataFrame(list(rows.values())).sort_values(
     ["in_act4", "act4_order", "act3_family", "hop_depth", "n_pos"],
@@ -139,6 +138,7 @@ for fam, leaves in A3_LEAVES.items():
 print(f"config: {len(out)} rows | act3={int(out.in_act3.sum())} act4={int(out.in_act4.sum())}")
 print(out.groupby(["act3_family", "act3_role"], dropna=False).size().to_string())
 dataiku.Dataset("demo_panel_config").write_with_schema(out)
+
 
 
 

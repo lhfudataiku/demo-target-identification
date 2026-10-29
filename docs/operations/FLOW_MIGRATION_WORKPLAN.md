@@ -604,6 +604,63 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
     tie group. `rank_percentile` is recomputed from the predicted rank and must equal the new one.
     The 3,611 changed ranks (§2) are therefore expected, not differences to explain.
 - **Done when:** every served dataset matches, or each difference is explained and approved.
+- **Planned 2026-10-29, with the user's decisions:**
+  - **Zone 40, read live.** Its old chain cannot be rebuilt: `candidates_annotated` and
+    `disease_pool_sizes` have no files, so `finalize_dashboard_candidates` (now in S1) cannot run.
+    Nothing may rebuild zone 40 or run `Refresh_serving_layer` before the switch. After M6, zone 40
+    holds only `filter_persona_diseases` → `validation_set_personas_2` and the panel definition.
+  - **Decision 1: the panel definition stays as it is in M4.** M6 repoints `compute_family_panel` to
+    the new per-disease dataset, selecting today's 14 columns plus `disease`, rebuilds only
+    `family_panel` and compares it. `compute_demo_panel_config` can then take `disease` from
+    `family_panel` and drop its pandas merge and second `graph_nodes` read.
+  - **Decision 2: the two inputs the new chain reads are stored.** `--apply` clears
+    `virtualizable` on `validation_set_personas_2` and `persona2_scored_shap5`. The user set the
+    project's creation default to non-virtualizable on 2026-10-29; 79 older datasets keep the flag.
+  - **Decision 3: new datasets take the suffix `_m4`.**
+  - **One annotation join.** `decorate_target_candidates`, `join_disease_name` and
+    `join_dashboard_annotations` merge into one join: each is a left join keyed on the shortlist
+    row, and `graph_nodes` enters twice, for the gene and the disease name, as in the evidence
+    project's `compute_shortlist_joined`. The old recipes are not edited; M6 retires them.
+  - **`compute_demo_panel_config` simplified** in the mirror: the Act 4 pass sets the family and
+    role with a plain `if` instead of a conditional `**` splat, and the `USABLE_FLOOR = None`
+    placeholder is gone. Run locally with its write captured, the old and the new code both give
+    exactly the live 35 rows and 13 columns in both projects. The user pushed the code to both
+    projects with `dku recipe set-code` on 2026-10-29, with no rebuild; the refreshed mirror and
+    `check_governed_values.py` agree.
+  - **`tools/build_serving_m4.py`** (dry run by default) creates 8 recipes and 8 datasets: in S1, a
+    window over `persona2_scored_shap5` (rank with ties as `rank_in_disease`, the partition count as
+    `disease_pool_size`), the annotation join and the finalize prepare, ending in
+    `dashboard_candidates_m4` with the 32 served columns; in S3, a disease-name join and one prepare
+    ending in `validation_auc_by_disease_m4` (today's six steps, plus `module_size = n_pos + n_neg`
+    and `rank_enrichment`, as `compute_persona_candidates` defines them), and the per-family window
+    on `scored_champion`, trimmed, with copies of its group and prepare. No scoring run is added.
+    The build runs in three non-recursive stages, which the tool prints.
+  - **Built and compared 2026-10-29: every served dataset matches.** The user ran `--apply` and
+    the staged builds; `tools/compare_serving_m4.py` (read-only, cache in `data/serving_m4/`)
+    reports, against the datasets the webapp reads today:
+    - `dashboard_candidates_m4`: 105,702 rows, the 32 served columns equal (floats within 1e-9);
+      every rank as predicted, with 3,611 changed, all tied and none untied; every
+      `rank_percentile` as recomputed from the predicted rank, with 2,155 changed. The pool size
+      equals the stored one.
+    - `validation_auc_by_disease_m4`: 670 rows, equal to `validation_auc_ci` plus
+      `persona_enrichment`'s `disease`, `module_size` and `rank_enrichment`.
+    - `family_auc_by_family_m4`: 505 rows, equal.
+  - **Four faults on the way,** each fixed in the builder or the compare:
+    - A join created in raw mode lost its input list. Raw creation is now used for Prepare only, and
+      the builder recreates a recipe left without inputs.
+    - A copied Prepare step carried `preview: true`, which ends a Prepare there, so the merged AUC
+      prepare dropped its last six steps. Copied steps are now set to run.
+    - The window's count was running, not the whole partition (map §6.1, corrected): the pool size
+      comes from a group recipe, `compute_disease_pool_sizes_m4`. **The flow ends at 33 recipes
+      and 33 datasets.**
+    - Re-applying a schema update drops the output's files, even when unchanged: a rerun emptied
+      five built datasets. The builder now applies one only when DSS asks.
+
+    The compare's own faults: a column with any NaN fell back to string comparison, and numpy
+    rounds halves to even where GREL rounds them up (4 exact halves).
+  - The new datasets' declared type of `prox_closest` is `bigint` (`double` before); the values
+    compare equal.
+  - **Still to do in M4:** the rename test on one small dataset, which settles M5's switch method.
 
 ### M5 — switch the webapp *(DSS: deploy)*
 

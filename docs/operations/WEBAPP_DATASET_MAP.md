@@ -197,7 +197,7 @@ rebuilt `dashboard_candidates` chain joins them in S1, reading S1's scoring run.
 | evidence §1 (S2) | 5 / 5 | 5 / 5 | none |
 | evidence §2 (S3) | 16 / 16 | 12 / 12 | below |
 | evidence §3 (S4) | 6 / 6 | 6 / 6 | inputs repointed only |
-| **total** | **41 / 41** | **32 / 32** | **−9 of each** (settled in §6.1) |
+| **total** | **41 / 41** | **32 / 32** | **−9 of each** (settled in §6.1; 33 / 33 after its 2026-10-29 correction) |
 
 **Shortlist, from 14 to 9 recipes.**
 
@@ -312,6 +312,11 @@ flow was re-checked on 2026-10-28 and is unchanged since the 2026-10-27 measurem
 - `count_candidates_per_disease`, `disease_pool_sizes` and their join are not needed.
 - M4's compare confirms the count against the stored `disease_pool_size`.
 - The builder's `--keep-columns` option also covers the optional column trims on the AUC windows.
+- **Corrected 2026-10-29 by M4's build: the count does not cover the partition.** Ordered, the DSS
+  window counted from the partition start to the current row (5,504 or 234 where the pool is 6,837),
+  with limits off and again with limits on and neither side limited. The rebuilt shortlist counts
+  each disease's pool with a group recipe (`compute_disease_pool_sizes_m4`, 12 rows) that the
+  annotation join reads, so the flow ends at **33 recipes and 33 datasets**, with 9 in S1.
 
 ### 6.2 Zone 20 splits into three zones, but not along the planned job lines
 

@@ -13,7 +13,7 @@
 > python3 tools/build_flow_map.py
 > ```
 
-Live DSS: **91 datasets across 17 zones**, cross-referenced against the recipe graph (89 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
+Live DSS: **100 datasets across 17 zones**, cross-referenced against the recipe graph (98 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
 
 A dataset counts as **read** only when its name appears *quoted* in reader code. A bare
 mention is prose: `calibration.py` names the three DWPC feature datasets in a display
@@ -31,10 +31,10 @@ so zones A1-A4 are read by named routes rather than by an unbuilt UI.
 
 ## Summary
 
-- datasets: **91**
+- datasets: **100**
 - endpoints (read by a webapp route or a notebook): **35**
-- flow intermediates (consumed by a recipe, no direct reader): **55**
-- genuine orphans: **1** — `llm_hx`
+- flow intermediates (consumed by a recipe, no direct reader): **61**
+- genuine orphans: **4** — `dashboard_candidates_m4`, `family_auc_by_family_m4`, `llm_hx`, `validation_auc_by_disease_m4`
 
 > Every orphan here is a deliberate decision, not a finding. See
 > `.index/_dead.json` `keep_do_not_prune` for why each one survives.
@@ -95,7 +95,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 |---|---|---|--:|---|
 | `edge_metadata` | — | `compute_DEMO_KG_edge_metadata_copy` | 3 | intermediate |
 | `graph_edges` | nb5 | `compute_DEMO_KG_graph_edges_copy` | 7 | notebook |
-| `graph_nodes` | nb5, nb6 | `compute_DEMO_KG_graph_nodes_copy` | 19 | notebook |
+| `graph_nodes` | nb5, nb6 | `compute_DEMO_KG_graph_nodes_copy` | 21 | notebook |
 | `llm_hx` | — | — *(source)* | 0 | **ORPHAN** |
 
 ## 10 Features - graph traversal (Cypher)  (10 datasets, 10 recipes)
@@ -137,11 +137,11 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 |---|---|---|--:|---|
 | `disease_family_id` | — | `compute_disease_family_id` | 2 | intermediate |
 | `drug_classified` | — | `compute_drug_classified` | 1 | intermediate |
-| `drug_evidence_pairs` | — | `compute_drug_evidence_pairs` | 1 | intermediate |
+| `drug_evidence_pairs` | — | `compute_drug_evidence_pairs` | 2 | intermediate |
 | `drug_joined` | — | `compute_drug_joined` | 1 | intermediate |
-| `enriched_gene_druggability_v2` | nb6 | `compute_enriched_gene_druggability_v2` | 1 | notebook |
+| `enriched_gene_druggability_v2` | nb6 | `compute_enriched_gene_druggability_v2` | 2 | notebook |
 | `enriched_gene_localization` | — | `compute_gene_localization` | 1 | intermediate |
-| `enriched_gene_safety_v2` | nb6 | `compute_enriched_gene_safety_v2` | 1 | notebook |
+| `enriched_gene_safety_v2` | nb6 | `compute_enriched_gene_safety_v2` | 2 | notebook |
 | `gene_crosswalk` | — | `compute_gene_crosswalk` | 3 | intermediate |
 | `gene_safety_joined` | — | `compute_gene_safety_join` | 1 | intermediate |
 | `hetionet_disease_slim` | — | `extract_hetionet_disease_slim` | 1 | intermediate |
@@ -161,7 +161,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
-| `scored_champion` | nb1, nb2, nb3, nb3b, nb4, nb6 | `sync_scored_champion` | 6 | notebook |
+| `scored_champion` | nb1, nb2, nb3, nb3b, nb4, nb6 | `sync_scored_champion` | 7 | notebook |
 | `scored_m7` | — | `score_psplit_validation_m7` | 1 | intermediate |
 
 ## 40 Candidate ranking (shared by acts)  (10 datasets, 10 recipes)
@@ -185,16 +185,20 @@ Foreign references in this zone (1), each feeding exactly one Sync or Merge reci
 
 _No datasets in this zone._
 
-## S1 Shortlist  (6 datasets, 6 recipes)
+## S1 Shortlist  (10 datasets, 10 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `candidate_identity` | **webapp:routes/candidates**, **webapp:services/pair_sources** | `join_candidate_identity` | 0 | webapp |
 | `candidate_shap_top5` | **webapp:routes/candidates** | `compute_shap_top5` | 0 | webapp |
+| `candidates_annotated_m4` | — | `compute_candidates_annotated_m4` | 1 | intermediate |
 | `dashboard_candidates` | **webapp:prefill**, **webapp:routes/candidates**, **webapp:services/pair_sources** | `finalize_dashboard_candidates` | 0 | webapp |
+| `dashboard_candidates_m4` | — | `finalize_dashboard_candidates_m4` | 0 | **ORPHAN** |
+| `disease_pool_sizes_m4` | — | `compute_disease_pool_sizes_m4` | 1 | intermediate |
 | `drug_evidence_records` | **webapp:routes/candidates** | `join_drug_evidence_records` | 0 | webapp |
 | `drug_protein_actions` | — | `group_drug_protein_actions` | 1 | intermediate |
-| `persona2_scored_shap5` | — | `score_persona_candidates_shap5` | 1 | intermediate |
+| `persona2_scored_shap5` | — | `score_persona_candidates_shap5` | 3 | intermediate |
+| `top_candidates_m4` | — | `compute_top_candidates_m4` | 1 | intermediate |
 
 ## S2 Evidence · graph  (5 datasets, 5 recipes)
 
@@ -206,15 +210,18 @@ _No datasets in this zone._
 | `graph_ppi_provenance` | **webapp:routes/evidence** | `compute_graph_ppi_provenance` | 0 | webapp |
 | `graph_relation_counts` | **webapp:routes/evidence** | `compute_graph_relation_counts` | 0 | webapp |
 
-## S3 Evidence · reconstruction  (16 datasets, 16 recipes)
+## S3 Evidence · reconstruction  (21 datasets, 21 recipes)
 
 | dataset | read by | producing recipe | recipe consumers | flag |
 |---|---|---|--:|---|
 | `disease_eligibility` | **webapp:routes/calibration** | `compute_disease_eligibility` | 0 | webapp |
 | `drug_target_benchmark` | — | `compute_drug_target_benchmark` | 2 | intermediate |
 | `family_auc_by_family` | **webapp:routes/calibration** | `compute_family_auc` | 0 | webapp |
+| `family_auc_by_family_m4` | — | `compute_family_auc_m4` | 0 | **ORPHAN** |
 | `family_auc_grouped` | — | `group_family_auc` | 1 | intermediate |
+| `family_auc_grouped_m4` | — | `group_family_auc_m4` | 1 | intermediate |
 | `family_validation_ranked` | — | `window_family_rank` | 1 | intermediate |
+| `family_validation_ranked_m4` | — | `window_family_rank_m4` | 1 | intermediate |
 | `family_validation_scored` | — | `compute_family_validation_scored` | 1 | intermediate |
 | `hub_bias_meter` | **webapp:routes/calibration** | `compute_hub_bias_meter` | 0 | webapp |
 | `novel_discovery_eval` | — | `compute_novel_discovery_eval` | 1 | intermediate |
@@ -223,8 +230,10 @@ _No datasets in this zone._
 | `persona_enrichment` | **webapp:routes/calibration**, **webapp:routes/families** | `compute_persona_enrichment` | 0 | webapp |
 | `split_audit_2` | **webapp:routes/calibration** | `compute_split_audit_2` | 0 | webapp |
 | `validation_auc_by_disease` | **webapp:routes/calibration** | `compute_validation_auc_by_disease` | 3 | webapp |
+| `validation_auc_by_disease_m4` | — | `compute_validation_auc_by_disease_m4` | 0 | **ORPHAN** |
 | `validation_auc_ci` | — | `compute_validation_auc_ci` | 1 | intermediate |
-| `validation_set_scored_grouped` | — | `compute_validation_set_scored_grouped` | 1 | intermediate |
+| `validation_set_scored_grouped` | — | `compute_validation_set_scored_grouped` | 2 | intermediate |
+| `validation_set_scored_named_m4` | — | `compute_validation_set_scored_named_m4` | 1 | intermediate |
 | `validation_set_scored_windows` | — | `compute_validation_set_scored_windows` | 1 | intermediate |
 
 ## S4 Evidence · family panels  (4 datasets, 4 recipes)
