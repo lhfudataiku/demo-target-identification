@@ -28,8 +28,10 @@ PROJECT = "DEMO_TARGET_IDENTIFICATION"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "docs", "operations", "FLOW_MAP.md")
 SNAPSHOT = os.path.join(ROOT, ".index", "dss_snapshot.json")
-# A quoted dataset name is a real read; a bare occurrence is usually prose.
-QUOTED = r'''["']{}["']'''
+# A quoted dataset name is a real read; a bare occurrence is usually prose. The notebooks read this
+# project's datasets by qualified name (`"DEMO_TARGET_IDENTIFICATION.scored_champion"`, workplan M2),
+# so the project prefix is optional.
+QUOTED = r'''["'](?:%s\.)?{}["']''' % re.escape(PROJECT)
 
 
 def dku_json(args):

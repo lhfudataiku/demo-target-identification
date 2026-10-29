@@ -1,7 +1,8 @@
 """Run the assertion scripts locally against a DSS project (DEC-OPS-007).
 
-The scripts in `notebooks/` read datasets by bare name, so they resolve in whichever project is the
-dataiku client's default. This sets that default, then executes each script through
+The scripts in `notebooks/` read the evidence datasets by bare name, so those resolve in whichever
+project is the dataiku client's default; the main-project inputs are read by qualified name
+(`DEMO_TARGET_IDENTIFICATION.<name>`), so they resolve the same either way. This sets that default, then executes each script through
 `tools/nb_assertions/runner.py`, which raises when a script's own FAIL list is non-empty -- the
 failure contract the `validate_notebooks` scenario used to provide.
 
@@ -31,8 +32,8 @@ ROOT = Path(__file__).resolve().parent.parent
 NOTEBOOKS = ROOT / "notebooks"
 
 # The lifecycle order in notebooks/README.md. The scripts are independent; the order is for reading
-# the output, not a dependency. nb5 (data exploration) is left out, as push_assertions.py leaves it
-# out: it defines no check(), and the runner refuses a script that asserts nothing. Run it directly.
+# the output, not a dependency. nb5 (data exploration) is left out: it defines no check(), and the
+# runner refuses a script that asserts nothing. Run it directly.
 ORDER = [
     "nb1_features_and_config",
     "nb2_splitting_and_pool",
@@ -43,7 +44,7 @@ ORDER = [
     "nb7_panel_selection",
 ]
 
-# The evidence project (ADR-003). Until M2 creates it, pass --project DEMO_TARGET_IDENTIFICATION.
+# The evidence project (ADR-003). --project DEMO_TARGET_IDENTIFICATION reruns M2's baseline.
 DEFAULT_PROJECT = "DEMO_TI_EVIDENCE"
 
 

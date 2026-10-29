@@ -6,10 +6,17 @@
 > · **Excludes:** modelling rationale and narrative interpretation.
 
 **These files are the source of truth, not a mirror.** They run on the **`demo_kg-drug-discovery`** code env (Python 3.13), the project default.
-`tools/push_assertions.py --push` copies them into the DSS project library under
-`/python/nb_assertions/`, and the `validate_notebooks` scenario executes them there through
-`nb_assertions/runner.py` — one two-line step per script. `tools/check_indexes.sh` fails on any
-repo/library drift, and `.index/assertions.tsv` is parsed from these files, so the index describes
+They run locally against the evidence project `DEMO_TI_EVIDENCE` (`DEC-OPS-007`):
+
+```bash
+uv sync --project notebooks
+uv run --project notebooks python tools/run_notebooks.py
+```
+
+`tools/run_notebooks.py` makes the evidence project the dataiku client's default and executes each
+script through `tools/nb_assertions/runner.py`. The evidence datasets are read by bare name; the
+main-project inputs by qualified name (`"DEMO_TARGET_IDENTIFICATION.scored_champion"`). There is no
+DSS copy and no scenario: `.index/assertions.tsv` is parsed from these files, so the index describes
 exactly the code that runs.
 
 **They are assertion-first.** Every value the documentation quotes is compared against live data and
@@ -94,8 +101,7 @@ permanent unless an assertion stops reading them, not staging for deletion.
 `nb7` is the one script with a repository dependency: it compares live DSS data against frozen
 expectations in `docs/demo/panel_selection/analysis/eyeball_test.csv`, and guards every figure in
 `docs/demo/panel_selection.html`. Run it after any graph rebuild, gate move, champion change or
-persona-filter repoint. `tools/push_assertions.py` uploads that CSV alongside the scripts so the
-relative path resolves in DSS.
+persona-filter repoint.
 
 ---
 

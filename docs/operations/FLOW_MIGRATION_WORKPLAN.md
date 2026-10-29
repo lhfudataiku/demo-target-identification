@@ -449,8 +449,36 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
   sync per upstream object if M0 chose copies.
 - **Revise the notebooks** as M1 listed. The revision changes where a script reads; it never changes
   an assertion's expected value. A value that moves is investigated (§4).
+  - **Done 2026-10-28.** The 14 main-project inputs are read by their qualified names: 32 reads in
+    the eight scripts and `tools/nb_assertions/derive.py` (the design's 29 sites, counting
+    `raw_ot_known_drug` twice and the `keys()` helper's three calls). The evidence datasets keep
+    their bare names. No `check(...)` line changed.
+  - **Run locally against `DEMO_TI_EVIDENCE`:** all 7 pass, with the baseline's 150 checks
+    executed and 0 stale, in about 15 minutes. The per-script counts equal the baseline's. `nb5`,
+    which asserts nothing, also ran through. The record is in
+    `data/assertion_runs/2026-10-28_evidence.json`, which is not committed.
+  - `tools/build_flow_map.py` accepts the project prefix, so the map still lists these notebook
+    readers. `check_indexes.sh` now fails on `push_assertions.py --check`: the main project's
+    `/python/nb_assertions/` copies predate the revision. That check retires with the tooling step
+    below; nothing is pushed to the library in the meantime.
 - **Point the tooling at the evidence project:** the runner wrapper, `POLICY.json` and
   `IDENTITY_RECIPES` as M0 decided. Retire `push_assertions.py` and its call in `check_indexes.sh`.
+  - **Done 2026-10-28, repository only.**
+    - `push_assertions.py` is deleted, along with its `--check` in `check_indexes.sh`. The runner,
+      `notebooks/README.md` and the target-id skill's number-update reference now describe the
+      local run; nothing tells a reader to push.
+    - `build_recipe_index.py --refresh` also snapshots the evidence project's identity recipes and
+      variables. `check_governed_values.py` gains a fourth rule: the shared identity recipes
+      (`compute_demo_panel_config`, `compute_split_audit_2`) equal the one mirror in both projects,
+      every evidence copy holds no bare `node_index`, and the two projects' variables are equal. It
+      passes, and a tampered snapshot trips all four failure kinds. The evidence
+      `compute_breast_panel` differs from its main mirror only by its four qualified reads.
+    - `POLICY.json` allowlists `breast_panel_metrics` under `DEMO_TI_EVIDENCE` and drops
+      `breast_panel_overlap`. The main-project entry stays until the original is deleted: the
+      governance tests replay the 2026-08-31 pilot, which ran there. The 11 tests pass.
+    - **Left for the deletions:** once `compute_breast_panel` leaves the main project, its
+      `dss_recipes/` mirror must come from the evidence copy, and the main `POLICY.json` entry,
+      the pilot-based tests and `capture_build_governance.py`'s project key move with it.
 - **Main-project changes:**
   - edit `Refresh_serving_layer` to drop `shap_drivers_long` and `shap_driver_frequency`;
   - then delete those two recipes and datasets;

@@ -15,8 +15,8 @@ kd=dataiku.Dataset("known_drug_truth").get_dataframe()
 k8=kd[kd.score>=0.8]
 print(f"LABEL|known_drug rows={len(kd):,}|at>=0.8={len(k8):,}|diseases={k8.disease_index.nunique()}")
 # 107,593 is the RAW extract; known_drug_truth holds only what resolved onto the graph.
-raw=dataiku.Dataset("raw_ot_known_drug").get_dataframe(columns=[
-    dataiku.Dataset("raw_ot_known_drug").read_schema()[0]["name"]])
+raw=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.raw_ot_known_drug").get_dataframe(columns=[
+    dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.raw_ot_known_drug").read_schema()[0]["name"]])
 check("8.1 raw known_drug rows",107593,len(raw),tol=0)
 check("8.1 resolving onto graph",67748,int(kd.disease_index.notna().sum()),tol=0)
 
@@ -101,7 +101,7 @@ plt.close(fig)
 M = 200000
 _k8 = kd[kd.score >= 0.8].dropna(subset=["disease_index", "gene_index"])
 _tkey = np.unique((_k8.disease_index.astype(np.int64)*M + _k8.gene_index.astype(np.int64)).values)
-_sc = dataiku.Dataset("scored_champion").get_dataframe(
+_sc = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").get_dataframe(
     columns=["disease_index", "gene_index", "is_target", "proba_1"])
 _di = _sc.disease_index.astype(np.int64).values
 _gi = _sc.gene_index.astype(np.int64).values

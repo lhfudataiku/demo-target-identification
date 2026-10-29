@@ -15,7 +15,7 @@ FEATS12=["dwpc_GBGD","dwpc_GFGD","dwpc_GGD","dwpc_GPGD","gene_n_pathways","gene_
 REJ=["dwpc_GCD","gene_n_diseases","module_size","degree","eigenvector_centrality","pagerank",
      "triangles","clustering_coefficient","ppi_common_neighbors","prox_closest","rwr_score"]
 cols=["disease_index","gene_index","is_target"]+FEATS12+REJ
-tr=dataiku.Dataset("psplit_train_set").get_dataframe(columns=cols, sampling="random", ratio=0.25)
+tr=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.psplit_train_set").get_dataframe(columns=cols, sampling="random", ratio=0.25)
 print(f"FEAT|sample={len(tr):,} rows ({len(cols)} cols) | positives={int(tr.is_target.sum()):,} "
       f"({100*tr.is_target.mean():.3f}%)")
 
@@ -94,7 +94,7 @@ check("6.1 dwpc_GGD single-feature AUC",0.669,round(sf.get("dwpc_GGD",0),3),tol=
 del tr, sm
 
 # ==== 6.3  the threshold is not the ranking ====
-sc=dataiku.Dataset("scored_champion").get_dataframe(
+sc=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").get_dataframe(
     columns=["disease_index","is_target","proba_1"])
 ob=sc[sc.disease_index==37143]
 tot=int(ob.is_target.sum())

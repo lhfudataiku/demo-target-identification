@@ -9,7 +9,7 @@ def check(name, doc, live, tol=0.0, fmt="{:,}"):
 M=200_000
 
 # ==== 5.2  the pool, and its route composition ====
-pool=dataiku.Dataset("enriched_graph_features_candidate_psplit").get_dataframe(
+pool=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.enriched_graph_features_candidate_psplit").get_dataframe(
     columns=["disease_index","gene_index","is_target"])
 print(f"POOL|rows={len(pool):,} diseases={pool.disease_index.nunique()} "
       f"positives={int(pool.is_target.sum()):,} rate={100*pool.is_target.mean():.3f}%")
@@ -19,7 +19,7 @@ pk=np.unique((pool.disease_index.to_numpy(np.int64)*M)+pool.gene_index.to_numpy(
 def keys(ds):
     d=dataiku.Dataset(ds).get_dataframe(columns=["disease_index","gene_index"])
     return np.unique((d.disease_index.to_numpy(np.int64)*M)+d.gene_index.to_numpy(np.int64))
-GGD,GPGD,GCD=keys("enriched_dwpc_GGD"),keys("enriched_dwpc_GPGD"),keys("enriched_dwpc_GCD")
+GGD,GPGD,GCD=keys("DEMO_TARGET_IDENTIFICATION.enriched_dwpc_GGD"),keys("DEMO_TARGET_IDENTIFICATION.enriched_dwpc_GPGD"),keys("DEMO_TARGET_IDENTIFICATION.enriched_dwpc_GCD")
 check("5.2 GGD rows",3380853,len(GGD)); check("5.2 GPGD rows",5373706,len(GPGD))
 check("5.2 GCD rows",42227,len(GCD))
 union=np.union1d(np.union1d(GGD,GPGD),GCD)
@@ -33,7 +33,7 @@ check("5.2.1 GCD-only pct of pool",0.153,round(100*len(gcd_only)/len(pk),3),tol=
 # The recipe also produced an "all known_drug" label. Nothing asserts or reads it, so it is dropped
 # rather than reproduced — the two labels below are the ones this notebook checks.
 _scc=[]
-for _c in dataiku.Dataset("scored_champion").iter_dataframes(
+for _c in dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").iter_dataframes(
         chunksize=250_000, columns=["disease_index","gene_index","proba_1"]):
     _scc.append(_c)
 sc=pd.concat(_scc,ignore_index=True)

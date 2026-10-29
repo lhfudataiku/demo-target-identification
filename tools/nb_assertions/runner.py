@@ -1,4 +1,4 @@
-"""Execute one repository assertion script inside DSS and fail loudly if it went stale.
+"""Execute one repository assertion script and fail loudly if it went stale.
 
 WHY THIS EXISTS. The assertion logic used to exist in three places: the DSS Jupyter notebooks, the
 `notebooks/*.py` scripts in the repository, and inline copies pasted into the `validate_notebooks`
@@ -6,12 +6,13 @@ scenario steps. `archive/notebooks-dss-2026-09-03/README.md` records what that c
 copies had diverged in both directions, and `.index/assertions.tsv` counts expectations from the REPOSITORY
 copy, so the index was describing scripts that were not the ones being run.
 
-This module makes the repository copy the only copy. The scripts are synced here verbatim from
-`notebooks/`, and each scenario step is two lines that call `run()`.
+This module makes the repository copy the only copy. Since 2026-10-28 (`DEC-OPS-007`) it runs
+locally: `tools/run_notebooks.py` points `HERE` at `notebooks/` and calls `run()` per script. The DSS
+library copy and the `validate_notebooks` scenario are retired.
 
 THE FAILURE CONTRACT, which is the reason a plain exec is not enough. Six of the seven scripts only
 *print* their stale count -- `print(f"SUMMARY|{len(FAIL)} STALE")` -- and then end. Run as-is, a
-scenario step would print the staleness and still report SUCCESS: a green scenario over stale
+step would print the staleness and still report SUCCESS: a green run over stale
 numbers, which is the failure this whole index exists to prevent. Only nb6 raises. So the contract
 lives here rather than in the scripts: `run()` inspects the script's own `FAIL` list after execution
 and raises if it is non-empty. The scripts are not edited -- they are the assertion source of truth,

@@ -4,7 +4,7 @@
 # Method, unchanged: known targets ONLY (biology held constant, every row a true positive), bin by
 # interactome degree, compare mean predicted probability in the lowest vs highest quintile.
 import dataiku, numpy as np, pandas as pd
-sc=dataiku.Dataset("scored_champion").get_dataframe(
+sc=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").get_dataframe(
     columns=["disease_index","gene_index","is_target","proba_1","gene_ppi_degree"])
 kt=sc[sc.is_target==1].copy()
 print(f"KT|known-target rows in validation: {len(kt):,}")

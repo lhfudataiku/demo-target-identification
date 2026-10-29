@@ -27,10 +27,6 @@ python3 tools/check_links.py
 if command -v dku >/dev/null 2>&1; then
   # FLOW_MAP.md is generated from live DSS, so --check queries DSS.
   python3 tools/build_flow_map.py --check
-  # The DSS project library holds a generated copy of notebooks/*.py that the
-  # validate_notebooks scenario executes. Catch repo/library drift here, because a
-  # stale library copy means the scenario is asserting against code nobody reviewed.
-  python3 tools/push_assertions.py --check
   # Dataset and column descriptions live in tools/dataset_descriptions.json, not only in DSS, so a
   # stale one is visible in review. Feature wording comes from webapp/backend/feature_glossary.py.
   python3 tools/push_descriptions.py --check

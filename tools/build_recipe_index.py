@@ -75,6 +75,24 @@ def sh(args):
     return subprocess.run(args, cwd=ROOT, capture_output=True, text=True).stdout
 
 
+def evidence_snapshot():
+    """The evidence project's copies of the identity recipes, and its variables (DEC-OPS-006 note,
+    2026-10-28). check_governed_values.py checks both projects against the one dss_recipes/ mirror,
+    and it reads only the repo, so the evidence side is snapshotted here."""
+    from check_governed_values import EVIDENCE_PROJECT, IDENTITY_RECIPES
+    code = {}
+    for n in IDENTITY_RECIPES:
+        raw = sh(["dku", "recipe", "get-code", n, "-P", EVIDENCE_PROJECT])
+        code[n] = raw if raw and "has no code payload" not in raw else None
+    raw_vars = sh(["dku", "project", "get-variables", "-P", EVIDENCE_PROJECT, "--format", "json"])
+    try:
+        variables = json.loads(raw_vars).get("standard", {})
+    except (ValueError, AttributeError):
+        print("  WARN could not read %s variables" % EVIDENCE_PROJECT, file=sys.stderr)
+        variables = {}
+    return {"project": EVIDENCE_PROJECT, "identity_code": code, "variables": variables}
+
+
 def refresh():
     """Snapshot every recipe's settings and mirror any Cypher into the repo."""
     listing = sh(["dku", "recipe", "list", "-P", PROJECT]).split("\n")
@@ -172,6 +190,7 @@ def refresh():
     except (ValueError, AttributeError):
         print("  WARN could not read project variables", file=sys.stderr)
         snap["_variables"] = {}
+    snap["_evidence"] = evidence_snapshot()
 
     os.makedirs(INDEX, exist_ok=True)
     json.dump(snap, open(SNAP, "w"), indent=1, sort_keys=True)
