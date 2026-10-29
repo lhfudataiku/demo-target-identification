@@ -32,9 +32,9 @@ so zones A1-A4 are read by named routes rather than by an unbuilt UI.
 ## Summary
 
 - datasets: **100**
-- endpoints (read by a webapp route or a notebook): **35**
-- flow intermediates (consumed by a recipe, no direct reader): **61**
-- genuine orphans: **4** — `dashboard_candidates_m4`, `family_auc_by_family_m4`, `llm_hx`, `validation_auc_by_disease_m4`
+- endpoints (read by a webapp route or a notebook): **34**
+- flow intermediates (consumed by a recipe, no direct reader): **62**
+- genuine orphans: **4** — `dashboard_candidates`, `family_auc_by_family`, `llm_hx`, `persona_enrichment`
 
 > Every orphan here is a deliberate decision, not a finding. See
 > `.index/_dead.json` `keep_do_not_prune` for why each one survives.
@@ -192,8 +192,8 @@ _No datasets in this zone._
 | `candidate_identity` | **webapp:routes/candidates**, **webapp:services/pair_sources** | `join_candidate_identity` | 0 | webapp |
 | `candidate_shap_top5` | **webapp:routes/candidates** | `compute_shap_top5` | 0 | webapp |
 | `candidates_annotated_m4` | — | `compute_candidates_annotated_m4` | 1 | intermediate |
-| `dashboard_candidates` | **webapp:prefill**, **webapp:routes/candidates**, **webapp:services/pair_sources** | `finalize_dashboard_candidates` | 0 | webapp |
-| `dashboard_candidates_m4` | — | `finalize_dashboard_candidates_m4` | 0 | **ORPHAN** |
+| `dashboard_candidates` | — | `finalize_dashboard_candidates` | 0 | **ORPHAN** |
+| `dashboard_candidates_m4` | **webapp:config** | `finalize_dashboard_candidates_m4` | 0 | webapp |
 | `disease_pool_sizes_m4` | — | `compute_disease_pool_sizes_m4` | 1 | intermediate |
 | `drug_evidence_records` | **webapp:routes/candidates** | `join_drug_evidence_records` | 0 | webapp |
 | `drug_protein_actions` | — | `group_drug_protein_actions` | 1 | intermediate |
@@ -216,8 +216,8 @@ _No datasets in this zone._
 |---|---|---|--:|---|
 | `disease_eligibility` | **webapp:routes/calibration** | `compute_disease_eligibility` | 0 | webapp |
 | `drug_target_benchmark` | — | `compute_drug_target_benchmark` | 2 | intermediate |
-| `family_auc_by_family` | **webapp:routes/calibration** | `compute_family_auc` | 0 | webapp |
-| `family_auc_by_family_m4` | — | `compute_family_auc_m4` | 0 | **ORPHAN** |
+| `family_auc_by_family` | — | `compute_family_auc` | 0 | **ORPHAN** |
+| `family_auc_by_family_m4` | **webapp:config** | `compute_family_auc_m4` | 0 | webapp |
 | `family_auc_grouped` | — | `group_family_auc` | 1 | intermediate |
 | `family_auc_grouped_m4` | — | `group_family_auc_m4` | 1 | intermediate |
 | `family_validation_ranked` | — | `window_family_rank` | 1 | intermediate |
@@ -227,10 +227,10 @@ _No datasets in this zone._
 | `novel_discovery_eval` | — | `compute_novel_discovery_eval` | 1 | intermediate |
 | `orthogonality_scatter` | **webapp:routes/calibration** | `join_orthogonality` | 0 | webapp |
 | `persona_candidates` | — | `compute_persona_candidates` | 1 | intermediate |
-| `persona_enrichment` | **webapp:routes/calibration**, **webapp:routes/families** | `compute_persona_enrichment` | 0 | webapp |
+| `persona_enrichment` | — | `compute_persona_enrichment` | 0 | **ORPHAN** |
 | `split_audit_2` | **webapp:routes/calibration** | `compute_split_audit_2` | 0 | webapp |
-| `validation_auc_by_disease` | **webapp:routes/calibration** | `compute_validation_auc_by_disease` | 3 | webapp |
-| `validation_auc_by_disease_m4` | — | `compute_validation_auc_by_disease_m4` | 0 | **ORPHAN** |
+| `validation_auc_by_disease` | — | `compute_validation_auc_by_disease` | 3 | intermediate |
+| `validation_auc_by_disease_m4` | **webapp:config** | `compute_validation_auc_by_disease_m4` | 0 | webapp |
 | `validation_auc_ci` | — | `compute_validation_auc_ci` | 1 | intermediate |
 | `validation_set_scored_grouped` | — | `compute_validation_set_scored_grouped` | 2 | intermediate |
 | `validation_set_scored_named_m4` | — | `compute_validation_set_scored_named_m4` | 1 | intermediate |

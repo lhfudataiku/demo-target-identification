@@ -44,6 +44,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
+from .. import config
 from ..dss_client import get_dataiku
 from ..services import dataset_cache
 
@@ -54,7 +55,7 @@ METRICS = "family_panel_metrics"
 OVERLAP = "family_panel_overlap"
 PROGRAMME = "family_panel_programme"
 TOP50 = "family_panel_top50"
-ENRICH = "persona_enrichment"
+ENRICH = config.AUC_BY_DISEASE  # carries rank_enrichment since M4; was persona_enrichment
 
 # The near-duplicate threshold is NOT duplicated here. `compute_family_panel_overlap`
 # applies it (Jaccard > 0.6 on the top 50) and writes `near_duplicate` per pair; this
@@ -73,8 +74,8 @@ def _enrich_at(stamp: str) -> dict[int, float]:
     """disease_index -> rank enrichment. The thin-disease card plots this rather
     than the known-target count, because a count is the label and not a score.
 
-    `stamp` is unused inside -- it is the build key, so a persona_enrichment
-    rebuild refreshes this map without a backend restart.
+    `stamp` is unused inside -- it is the build key, so a rebuild of ENRICH
+    refreshes this map without a backend restart.
     """
     try:
         df = dataset_cache.frame(ENRICH, ["disease_index", "rank_enrichment"])

@@ -693,6 +693,27 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
 - The user runs `make deploy`; Claude verifies read-only.
 - **Done when:** every route returns the same payload as before, apart from the predicted tied ranks
   and their percentiles, and the pages look the same.
+- **Backend switched and checked locally, 2026-10-29; deploy pending.**
+  - `backend/config.py` names the three switched datasets (`SHORTLIST`, `AUC_BY_DISEASE`,
+    `AUC_BY_FAMILY`, all `_m4`), so M6 changes them back in one place. `candidates.py`,
+    `prefill.py` and `services/pair_sources.py` read the shortlist through it; `calibration.py`
+    and `families.py` take `disease`, `rank_enrichment` and `n_pos` from the per-disease dataset
+    instead of `persona_enrichment`. The shortlist and the pre-fill sort by rank, then gene name,
+    with a stable sort. The `prefill_evidence_cache` scenario imports the deployed `prefill.py`, so
+    it follows the deploy. No frontend change: the table shows rows in the order served.
+  - M4's comparison, re-run on fresh data immediately before: all three served datasets match.
+  - `tools/capture_webapp_payloads.py` (the M2 capture, moved from the scratchpad) captured the
+    switched backend locally (163 calls, all 200) and compared it with the 2026-10-29 capture:
+    nothing differs outside the rank fields; 14 rank-field changes, all tied genes moving to the
+    lowest rank of their group, in two diseases; every candidate list ordered by rank, then gene
+    name. `prox_closest` arrives as an integer, equal in value.
+  - **Deployed 2026-10-29 by the user** (`make -C webapp deploy`, webapp `OlmPX9a`). Read-only
+    check: the six changed backend files in the project library equal the repository's, and the
+    backend started cleanly with no errors in its log. The user looked over the pages: they look
+    the same, with the tied genes in psoriatic arthritis and diabetes mellitus sharing a rank.
+  - **M5 is done.** The old `rank_per_disease` still numbers rows (`rowNumber`), but nothing served
+    reads its chain; M6 retires it. `make deploy` does not read `webapp/uv.lock`, whose
+    `dataiku-internal-client` hash is stale (it blocks only a local `uv sync`).
 
 ### M6 — retire and tidy *(DSS)*
 

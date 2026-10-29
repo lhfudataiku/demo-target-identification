@@ -27,6 +27,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 
+from .. import config
 from ..dss_client import get_dataiku, get_project
 from ..feature_glossary import CHAMPION
 from ..services import dataset_cache
@@ -156,13 +157,12 @@ def _hist(values: list[float], lo: float, hi: float, bins: int) -> list[dict[str
 @router.get("")
 def calibration() -> dict[str, Any]:
     try:
-        auc = _ds("validation_auc_by_disease")
+        auc = _ds(config.AUC_BY_DISEASE)
         hub = _ds("hub_bias_meter")
         orth = _ds("orthogonality_scatter")
         split = _ds("split_audit_2")
         elig = _ds("disease_eligibility")
-        fam = _ds("family_auc_by_family")
-        personas = _ds("persona_enrichment")
+        fam = _ds(config.AUC_BY_FAMILY)
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Could not read a calibration dataset: {e}")
 
@@ -202,11 +202,10 @@ def calibration() -> dict[str, Any]:
     fam_vals = [float(v) for v in fam.auc_family.dropna()]
 
     # Each scored disease's place in the distribution, so the page can mark the
-    # disease open on the shortlist. persona_enrichment carries the same 668 AUCs
-    # as validation_auc_by_disease (checked 2026-10-26: identical values), plus
-    # the enrichment and known-target count. Its `is_current` flag marks a
-    # retired persona set and is deliberately not read.
-    scored = personas.dropna(subset=["auc_disease"])
+    # disease open on the shortlist. The per-disease AUC dataset carries the name,
+    # the enrichment and the known-target count since the M4 rebuild, which folded
+    # persona_enrichment into it (equal on all 670 diseases, 2026-10-29).
+    scored = auc.dropna(subset=["auc_disease"])
     auc_rank = scored.auc_disease.rank(ascending=False, method="min")
     diseases = [{
         "disease_index": int(r.disease_index),

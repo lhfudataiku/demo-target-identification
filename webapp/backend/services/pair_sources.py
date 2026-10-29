@@ -32,6 +32,7 @@ import threading
 import time
 from typing import Any
 
+from .. import config
 from ..dss_client import get_project
 from . import dataset_cache
 
@@ -85,7 +86,7 @@ def _safe_aliases(identity: dict[str, Any]) -> list[str]:
 
 
 def context(disease: int, gene: int) -> dict[str, Any]:
-    d = dataset_cache.frame("dashboard_candidates", ["disease_index", "disease_name", "anchor_name"])
+    d = dataset_cache.frame(config.SHORTLIST, ["disease_index", "disease_name", "anchor_name"])
     row = d[d.disease_index == disease].head(1)
     if row.empty:
         raise LookupError(f"No candidates for disease_index {disease}")

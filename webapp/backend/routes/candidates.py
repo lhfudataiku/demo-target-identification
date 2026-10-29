@@ -22,13 +22,13 @@ from typing import Any
 import numpy as np
 from fastapi import APIRouter, HTTPException, Query
 
-from .. import feature_glossary
+from .. import config, feature_glossary
 from ..dss_client import get_dataiku
 from ..services import dataset_cache
 
 router = APIRouter(prefix="/api/candidates")
 
-DATASET = "dashboard_candidates"
+DATASET = config.SHORTLIST
 
 # Sent for EVERY row of a disease's list. Narrow on purpose: the client holds the
 # whole filtered pool so the view controls filter with no round-trip, and every
@@ -149,7 +149,9 @@ def candidates(
     # Every row that survives the filters, not an arbitrary head(). `max_rank`
     # is the only bound, and it is a control the scientist sets — so the table
     # can never be quietly shorter than the funnel says.
-    d = d.sort_values("rank_in_disease")
+    # Tied scores share a rank (DEC-MEAS-005), so the gene name settles their order; a stable
+    # sort keeps it the same on every request.
+    d = d.sort_values(["rank_in_disease", "gene_name"], kind="stable")
     # Projected to BULK_COLS explicitly. The frame also carries the feature and
     # detail columns for /gene, and without this they would ride along on every
     # row of a five-figure list — the exact cost the two column lists exist to
