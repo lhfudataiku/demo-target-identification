@@ -1,5 +1,9 @@
 """Build the rebuilt serving chains beside the old ones (FLOW_MIGRATION_WORKPLAN.md M4, map §4.2).
 
+DONE, KEPT AS THE RECORD: M6 (2026-10-29) deleted the old chains and renamed this tool's `_m4`
+objects to their final names. Do not run it again: it would create the `_m4` objects anew, and a
+new dataset under a vacated `_m4` name collides with the renamed one on disk.
+
 DRY RUN BY DEFAULT: it reads the main project and prints every object it would create. Nothing is
 written to DSS without --apply, which needs the user's approval at the time. It builds nothing: the
 datasets are created empty, and the user runs the staged build it prints.

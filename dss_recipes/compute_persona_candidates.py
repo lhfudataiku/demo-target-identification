@@ -29,7 +29,7 @@ import demo_identity
 CURRENT = {"lung cancer", "obesity disorder", "type 2 diabetes mellitus",
            "chronic kidney disease", "lung adenocarcinoma", "non-small cell lung carcinoma"}
 
-nodes = dataiku.Dataset("graph_nodes").get_dataframe(
+nodes = dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes").get_dataframe(
     columns=["node_index", "node_name", "node_type"], infer_with_pandas=False)
 nodes["node_index"] = nodes.node_index.astype(int)
 dname = dict(zip(nodes[nodes.node_type == "disease"].node_index,

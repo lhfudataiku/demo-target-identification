@@ -9,7 +9,8 @@
 > migration's sequence, in [`FLOW_MIGRATION_WORKPLAN.md`](FLOW_MIGRATION_WORKPLAN.md), whose M1
 > inventory this feeds.
 
-**Status: DRAFT — measured 2026-10-27, read-only. Nothing in DSS or the webapp changed.**
+**Status: measured 2026-10-27; executed by the migration's M3–M6 (2026-10-29).** §2 describes the
+webapp as it reads today; §§1, 3–6 keep the analysis that led there, with dated corrections.
 
 Premise: the notebooks stay in the repository, and the `validate_notebooks` scenario is dropped. A
 supporting evidence project reads this project's zones 00–31 and recomputes what the notebooks need
@@ -45,7 +46,10 @@ The counts below are for the main project.
 ## 2. What the webapp reads, by function
 
 Row counts were counted live on 2026-10-27. "Scope" is which rows exist, which is not always what the
-page shows.
+page shows. **Since M6 (2026-10-29)** the rebuilt chains serve these names: `dashboard_candidates`
+ranks with ties and keeps only the 32 read columns, and `validation_auc_by_disease` also carries
+`disease`, the interval, `module_size` and `rank_enrichment`, so `persona_enrichment` is no longer
+served.
 
 ### 2.1 Shortlist page
 
@@ -68,7 +72,7 @@ all.
 | trials and literature | `GET /api/candidates/sources`, `/sources/selection` | `dashboard_candidates`; `candidate_identity`; folder `act4_evidence_cache` | `disease_index`, `disease_name`, `anchor_name`; `node_index`, `node_name`, `symbol`, `name`, `alias_symbol`, `prev_symbol`; one JSON file per pair at `{disease_index}/{gene_index}.json` | any selected pair; the `prefill_evidence_cache` scenario fills 21 HER2+ pairs (ranks 1–20, plus ERBB2 and SMARCA2) |
 | evidence assistant | `POST /api/assistant` | all of the above | the list row, the drivers, the drug records, the identity, and the cached trials and papers for the pair | one pair; tools: `graph search` (`b6Rpbve`, Kuzu folder `ytvuniN8`), Cortex CT.gov (`4I2L6YL`), Cortex PubMed (`FNxhpfF`) |
 
-`dashboard_candidates` stores **63 columns; the webapp reads 32**. The other 31 are unread. They
+`dashboard_candidates` stored **63 columns; the webapp reads 32**, and since M6 it stores only those 32. The other 31 were unread. They
 include `top_shap_drivers` (superseded by `candidate_shap_top5`), the non-champion features
 (`rwr_score`, `rwr_norm`, `pagerank`, `degree`, `triangles`, `eigenvector_centrality`,
 `clustering_coefficient`, `ppi_common_neighbors`, `ppi_cn_expected`, `shared_pathway_count`,
@@ -94,7 +98,7 @@ split: **670 held-out diseases (668 with an AUC) in 505 disease families**.
 | dataset | fields read | rows and scope |
 |---|---|---|
 | `validation_auc_by_disease` | `auc_disease` | 670 diseases → macro AUC, median, histogram, count below chance |
-| `persona_enrichment` | `disease_index`, `disease`, `auc_disease`, `rank_enrichment`, `n_pos` | 670 → each disease's place in the distribution, and the enrichment quartiles |
+| `validation_auc_by_disease` (since M6; was `persona_enrichment`) | `disease_index`, `disease`, `auc_disease`, `rank_enrichment`, `n_pos` | 670 → each disease's place in the distribution, and the enrichment quartiles |
 | `orthogonality_scatter` | `auc_disease`, `auc_drug_targets` | 670 rows, 130 with a drug-target AUC → Pearson r |
 | `family_auc_by_family` | `auc_family` | 505 families, 503 with an AUC → family macro AUC |
 | `split_audit_2` | `split`, `rows`, `positives`, `pos_rate_pct`, `n_diseases`, `n_split_keys`, `n_anchor_families`, `overlap_*`, `straddling_split_keys` | 3 splits; leakage columns must sum to 0 |
@@ -105,7 +109,8 @@ split: **670 held-out diseases (668 with an AUC) in 505 disease families**.
 
 `persona_enrichment` carries the same 668 AUCs as `validation_auc_by_disease`, and its
 `rank_enrichment` is `(hits_at_50 / 50) / (n_pos / (n_pos + n_neg))`. **Both can be computed from
-`validation_auc_by_disease` alone**: recomputed that way, the difference is at most 7e-15.
+`validation_auc_by_disease` alone**: recomputed that way, the difference is at most 7e-15. M4's
+rebuild did exactly that, and M6 retired `persona_enrichment` from the main project.
 
 **Section 3 — family panels** (`GET /api/families`, `GET /api/families/{family_id}`). The scope is
 **3 families**: breast (15 terms, 14 scored, 4 leaves), stomach (6, 6, 3) and uterine (8, 8, 4).
@@ -119,7 +124,7 @@ no family.
 | `family_panel_overlap` | `act3_family`, `disease_a`, `disease_b`, `all_overlap`, `novel_overlap`, `jaccard_top50`, `depth_gap`, `pair_kind`, `near_duplicate` | 148 term pairs within a family |
 | `family_panel_programme` | `act3_family`, `subtype`, `gene`, `scope`, `rank_in_subtype` | 550 rows over the 11 leaf subtypes (common, partial, specific) |
 | `family_panel_top50` | `disease`, `gene`, `rank_in_disease` (read where `rank <= 50`) | 2,752 rows over 35 terms; the page reads 1,750 |
-| `persona_enrichment` | `disease_index`, `rank_enrichment` | the thin-disease card |
+| `validation_auc_by_disease` (since M6; was `persona_enrichment`) | `disease_index`, `rank_enrichment` | the thin-disease card |
 
 ### 2.3 Dependencies that are not served datasets
 
@@ -345,6 +350,11 @@ Every move is `dku flow move`, which changes zone membership only; nothing is bu
   description rewrite no longer needs a scenario using the Python API.
 
 ### 6.4 The M1 table: every dataset after zone 31, plus `breast_panel_metrics`
+
+**Executed 2026-10-29.** The last column held: the rows marked "removed (M6)" are deleted, the
+rebuilt datasets carry the names in the first column, and the map in [`FLOW_MAP.md`](FLOW_MAP.md)
+is the current record. One change from the table: S1 also holds `disease_pool_sizes`, built by a group
+recipe (§6.1, corrected), so the flow ends at 33 datasets.
 
 "Copy" means the evidence project builds its own dataset of the same name ([`EVIDENCE_PROJECT_DESIGN.md`](EVIDENCE_PROJECT_DESIGN.md) §3).
 "Rebuilt" means a new chain replaces the old one in M4, and M6 retires the old one. The rebuild also

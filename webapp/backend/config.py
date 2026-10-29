@@ -34,9 +34,9 @@ CORS_ORIGINS: list[str] = [
     if o.strip()
 ]
 
-# The served datasets the flow migration rebuilt (docs/operations/FLOW_MIGRATION_WORKPLAN.md M4-M5).
-# They carry the `_m4` suffix beside the old chains until M6 deletes the old datasets, renames these
-# back and restores the original names here.
-SHORTLIST: str = "dashboard_candidates_m4"
-AUC_BY_DISEASE: str = "validation_auc_by_disease_m4"
-AUC_BY_FAMILY: str = "family_auc_by_family_m4"
+# The served datasets the flow migration rebuilt (docs/operations/FLOW_MIGRATION_WORKPLAN.md M4-M6).
+# They carried the `_m4` suffix beside the old chains until M6 deleted those and renamed these to the
+# original names.
+SHORTLIST: str = "dashboard_candidates"
+AUC_BY_DISEASE: str = "validation_auc_by_disease"
+AUC_BY_FAMILY: str = "family_auc_by_family"

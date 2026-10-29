@@ -135,6 +135,7 @@
    "long": "Read THIS dataset, not validation_auc_by_disease_2 -- the _2 variant is a two-level table nothing reads. Aggregate as a macro mean across diseases; a pooled AUC is a different and wrong number."
   },
   "validation_auc_ci": {
+   "project": "DEMO_TI_EVIDENCE",
    "short": "Intermediate: per-disease AUC with its interval, feeding family_panel in A3.",
    "long": ""
   },
@@ -151,24 +152,23 @@
    "long": "Treat as a WARNING signal, never an optimisation target: this benchmark can measure gene popularity rather than model quality."
   },
   "novel_discovery_eval": {
+   "project": "DEMO_TI_EVIDENCE",
    "short": "Discovery lift on genes the labels do not already claim, by ground-truth class and rank cutoff.",
    "long": "This is the closest thing the project has to a discovery claim, and it is deliberately modest -- the ranked list beats chance on not-yet-annotated genes, which is not the same as finding something new."
   },
   "persona_enrichment": {
+   "project": "DEMO_TI_EVIDENCE",
    "short": "Per-disease enrichment used to pick the demo panel and to render act 3's spread.",
    "long": ""
   },
   "persona_candidates": {
+   "project": "DEMO_TI_EVIDENCE",
    "short": "Candidate diseases considered for the demo panel, with the metrics the choice was made on.",
    "long": ""
   },
   "split_audit_2": {
    "short": "Act 2: proof that no disease split key straddles train, validation or test.",
    "long": "Zero straddling keys is the claim every held-out number rests on. Its recipe once failed silently for weeks, leaving the leakage guarantee unverified -- which is why this table is shown rather than asserted."
-  },
-  "family_validation_scored": {
-   "short": "Intermediate: champion scores joined to family membership, first step of the per-family AUC chain.",
-   "long": ""
   },
   "family_validation_ranked": {
    "short": "Intermediate: per-family ranking, second step of the per-family AUC chain.",

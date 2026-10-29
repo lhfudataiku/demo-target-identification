@@ -731,6 +731,60 @@ diseases from `demo_panel_config.in_act4`. So the order is `validation_auc_ci` (
   - the main project's map has no notebook reader and no orphan outside the keep list;
   - the webapp reads only S1–S4 plus the named exceptions;
   - `tools/check_indexes.sh` passes for both projects.
+- **Started 2026-10-29, at the user's word, with `tools/retire_serving_m6.py`** (dry run by default;
+  every stage applied by the user). Decisions: fix 1 (`compute_demo_panel_config` taking `disease`
+  from `family_panel`) is dropped: the shared recipe would break in the evidence project, whose
+  `family_panel` has no `disease`, so its `graph_nodes` read stays, a known exception to the
+  visual-join rule. The short webapp outage between the rename and the redeploy was accepted.
+  - **A. Repoint (done).** `join_orthogonality` and `compute_family_panel` read
+    `validation_auc_by_disease_m4` with today's columns selected by name. Rebuilt non-recursively,
+    `orthogonality_scatter` and `family_panel` equal their previous data, row for row and column
+    for column.
+  - **B. Scenario (done).** `Refresh_serving_layer` no longer builds or watches a retired dataset:
+    A2 went from 11 builds to 4, zone 40 from 9 to 1, and two dataset-change triggers (on
+    `validation_auc_by_disease` and `dashboard_candidates`, never fired: the scenario is inactive)
+    are gone. The first delete refused on those triggers, which the scenario stage had missed.
+  - **C. Delete (done).** 17 recipes and their datasets: zone 40's eight-recipe shortlist chain, and
+    in S3 the persona chain, the two old per-disease prepares and the four-recipe per-family chain.
+    The main project went from 98 recipes and 100 datasets to 81 and 83.
+  - **D. Rename and switch (done).** The 9 `_m4` datasets and recipes took their final names (mostly
+    the old ones, plus `validation_set_scored_named` and `compute_disease_pool_sizes`);
+    `webapp/backend/config.py` names the original datasets again, and the user redeployed at once.
+    The 9 renamed datasets were rebuilt non-recursively, so their build stamps (the backend's cache
+    key) are current. The deployed `config.py` equals the repository's, the backend log is clean,
+    and a capture of all 163 calls matches the 2026-10-29 baseline apart from the 14 predicted
+    tie-rank fields, and is identical to the M5 capture.
+  - **E. Tidy, in progress.** Done in the repository: `build_recipe_index.py` mirrors
+    `compute_novel_discovery_eval` and `compute_persona_candidates` from the evidence project, which
+    now owns them; `dataset_descriptions.json` places `novel_discovery_eval`, `persona_candidates`,
+    `persona_enrichment` and `validation_auc_ci` in the evidence project and drops
+    `family_validation_scored`; `_dead.json` lists the retirements under `retired_in_m6`;
+    `build_serving_m4.py` is marked done. The user ran `push_descriptions.py --push` (46 datasets,
+    458 column descriptions), and `check_indexes.sh` passes.
+    - **Zone 20 split and zone descriptions (done, `zones` stage, applied by the user).** Zone 20 is
+      now `20 Gene annotation` (4 datasets), with `21 Druggability · drug evidence` (5) and
+      `22 Disease family · split key` (2) beside it, each dataset with its producing recipe, as map
+      §6.2 lays out. 13 zones have new short descriptions; S1-S4 name the page they serve. The
+      00-04 imports keep theirs.
+    - **`Refresh_serving_layer` rewritten (done, `refresh` stage).** Its old steps put dependent
+      datasets in one non-recursive job, which runs them side by side. It now builds the 33
+      serving datasets in 11 dependency levels taken from the live recipe graph, the S1 scoring
+      run at level 8 and `dashboard_candidates` last. It stays inactive with its 3 graph triggers,
+      and was not run.
+    - **`WEBAPP_DATASET_MAP.md` (done).** The status line records M3-M6; §2 describes today's reads
+      (the `persona_enrichment` reads now on `validation_auc_by_disease`, the shortlist at 32
+      columns); §6.4 notes its execution.
+    - **`llm_hx` lost its zone.** It sat explicitly in zone 04 at M3's end and had no zone after
+      stage D, with no stage touching it; cause not found. It now shows in the default `Agent`
+      zone, and the user decided it stays there.
+    - **S3 split (done, `split-s3` stage, at the user's request).** S3 held five independent
+      chains. The three audits (`split_audit_2`, `hub_bias_meter`, `disease_eligibility`) moved with
+      their recipes to a new `S5 Evidence · audits`; S3 keeps the per-disease and per-family
+      reconstruction (9 datasets), whose per-disease AUC feeds zone 40. Moves only; the refresh
+      levels are unchanged. S1 stays whole: its three chains (ranked list, drug records, gene
+      identity) all serve the shortlist page. The webapp now reads S1-S5, plus the zone-10 DWPC
+      metrics and `demo_panel_config` in 40, the exceptions `DEC-ARCH-007` names.
+    - **Still to do:** teach the index and flow-map tools the second project, the last done-when.
 
 ## 4. Risks
 

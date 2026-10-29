@@ -75,10 +75,12 @@ def sh(args):
     return subprocess.run(args, cwd=ROOT, capture_output=True, text=True).stdout
 
 
-# Python recipes the evidence project owns outright: moved out of the main project in M2
-# (2026-10-29). Their dss_recipes/ mirrors come from the evidence copies.
+# Python recipes the evidence project owns outright: moved out of the main project in M2, or left
+# there alone when M6 retired the main copies (2026-10-29). Their dss_recipes/ mirrors come from the
+# evidence copies.
 EVIDENCE_OWNED = ("compute_breast_panel", "compute_filter_three_axes", "compute_known_drug_truth",
-                  "compute_pool_reachability")
+                  "compute_pool_reachability", "compute_novel_discovery_eval",
+                  "compute_persona_candidates")
 
 
 def evidence_snapshot():

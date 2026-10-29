@@ -13,7 +13,6 @@ ppi_multi_source_frac	compute_ppi_evidence_depth	-	-	y
 prox_closest	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1	y	Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
 prox_kernel	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1	y	Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
 shared_pathway_frac	compute_enriched_shared_pathway_count_1	module_size >= 20	1	y	n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
-_rank	rank_per_disease	-	-		
 act3_family	compute_demo_panel_config	-	-		
 act3_role	compute_demo_panel_config	-	-		
 act4_area	compute_demo_panel_config	-	-		
@@ -22,25 +21,14 @@ action_type	join_drug_evidence_records	-	-
 all_overlap	compute_family_panel_overlap	-	-		
 anchor_name	compute_disease_family_id	-	-		
 approved_for_disease	compute_drug_evidence_pairs	-	-		
-approved_found50	compute_persona_candidates	-	-		
-approved_lift50	compute_persona_candidates	-	-		
-approved_to_find	compute_persona_candidates	-	-		
 auc_assoc_labels	compute_drug_target_benchmark	-	-		
 auc_disease	compute_validation_auc_by_disease	-	-		
-auc_disease	compute_validation_auc_by_disease_m4	-	-		
 auc_drug_targets	compute_drug_target_benchmark	-	-		
 auc_family	compute_family_auc	-	-		
-auc_family	compute_family_auc_m4	-	-		
-auc_hi95	compute_validation_auc_by_disease_m4	-	-		
-auc_hi95	compute_validation_auc_ci	-	-		
-auc_lo95	compute_validation_auc_by_disease_m4	-	-		
-auc_lo95	compute_validation_auc_ci	-	-		
-auc_se	compute_validation_auc_by_disease_m4	-	-		
-auc_se	compute_validation_auc_ci	-	-		
-auc_trustworthy	compute_validation_auc_by_disease_m4	-	-		
-auc_trustworthy	compute_validation_auc_ci	-	-		
-best_found50	compute_persona_candidates	-	-		
-best_lift50	compute_persona_candidates	-	-		
+auc_hi95	compute_validation_auc_by_disease	-	-		
+auc_lo95	compute_validation_auc_by_disease	-	-		
+auc_se	compute_validation_auc_by_disease	-	-		
+auc_trustworthy	compute_validation_auc_by_disease	-	-		
 best_rank	compute_drug_target_benchmark	-	-		
 clustering_coefficient	compute_enriched_node_centrality_1	-	-		
 count	compute_graph_label_evidence	-	-		
@@ -51,14 +39,12 @@ count	compute_graph_relation_counts	-	-
 count	compute_validation_set_scored_grouped	-	-		
 count	group_drug_protein_actions	-	-		
 count	group_family_auc	-	-		
-count	group_family_auc_m4	-	-		
 degree	compute_enriched_node_centrality_1	-	-		
 depth_a	compute_family_panel_overlap	-	-		
 depth_b	compute_family_panel_overlap	-	-		
 depth_gap	compute_family_panel_overlap	-	-		
 disease	compute_demo_panel_config	-	-		
-disease	compute_novel_discovery_eval	-	-		
-disease	compute_validation_set_scored_named_m4	-	-		
+disease	compute_validation_set_scored_named	-	-		
 disease_a	compute_family_panel_overlap	-	-		
 disease_b	compute_family_panel_overlap	-	-		
 disease_context	compute_enriched_disease_context_1	module_size >= 20	1		Settled 2026-08-21 from the newly mirrored Cypher. The gate filters the ANCHOR D only; D2 is matched fresh via (D)-[:disease_disease]-(D2) with NO module_size filter, so an existing (g,D) pair's disease_context cannot change. Was flagged unresolved before the mirror existed.
@@ -76,11 +62,9 @@ disease_index	compute_enriched_rwr_score_1	MIN_SEEDS 20	1		MIN_SEEDS gate inside
 disease_index	compute_enriched_shared_pathway_count_1	module_size >= 20	1		n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
 disease_index	compute_ppi_cn_zscore	-	-		
 disease_index	join_drug_evidence_records	-	-		
-disease_name	compute_candidates_annotated_m4	-	-		
+disease_name	compute_candidates_annotated	-	-		
 disease_name	compute_drug_target_benchmark	-	-		
-disease_name	join_disease_name	-	-		
-disease_pool_size	compute_candidates_annotated_m4	-	-		
-disease_pool_size	finalize_dashboard_candidates	-	-		
+disease_pool_size	compute_candidates_annotated	-	-		
 disease_split_key	compute_disease_family_id	-	-		
 display_relation_concat	group_drug_protein_actions	-	-		
 doid	extract_hetionet_disease_slim	-	-		
@@ -91,7 +75,6 @@ druggability_evidence	compute_drug_classified	-	-
 dwpc_GCD	compute_enriched_dwpc_GCD	module_size >= 20	1		POOL ROUTE, compound-mediated. Not a model feature -- pool membership only (see _champion_features_provenance). Source of the 5.2.1 selection bias.
 eigenvector_centrality	compute_enriched_node_centrality_1	-	-		
 ev_rank	compute_drug_classified	-	-		
-explanations	score_persona_candidates	-	-		
 explanations	score_persona_candidates_shap5	-	-		
 gene	compute_family_panel_top50	-	-		
 gene_index	compute_drug_evidence_pairs	-	-		
@@ -111,51 +94,30 @@ gene_index	compute_gene_localization	-	-
 gene_index	compute_ppi_cn_zscore	-	-		
 gene_index	compute_ppi_evidence_depth	-	-		
 gene_index	join_drug_evidence_records	-	-		
-gene_index_count	compute_disease_pool_sizes_m4	-	-		
-gene_index_count	count_candidates_per_disease	-	-		
+gene_index_count	compute_disease_pool_sizes	-	-		
 gene_n_diseases	compute_enriched_degree_controls_1	-	-		
-gene_name	compute_candidates_annotated_m4	-	-		
-gene_name	decorate_target_candidates	-	-		
-ground_truth	compute_novel_discovery_eval	-	-		
+gene_name	compute_candidates_annotated	-	-		
 has_approved_drug	compute_drug_classified	-	-		
 has_inflammatory_go_annotation	compute_enriched_inflammatory_go	-	-		
 hits_at_10	compute_validation_set_scored_grouped	-	-		
 hits_at_10	group_family_auc	-	-		
-hits_at_10	group_family_auc_m4	-	-		
 hits_at_20	compute_validation_set_scored_grouped	-	-		
 hits_at_20	group_family_auc	-	-		
-hits_at_20	group_family_auc_m4	-	-		
 hits_at_50	compute_drug_target_benchmark	-	-		
 hits_at_50	compute_validation_set_scored_grouped	-	-		
 hits_at_50	group_family_auc	-	-		
-hits_at_50	group_family_auc_m4	-	-		
 hits_at_top10pct	compute_drug_target_benchmark	-	-		
 hits_at_top1pct	compute_drug_target_benchmark	-	-		
-hits_top10	compute_novel_discovery_eval	-	-		
-hits_top100	compute_novel_discovery_eval	-	-		
-hits_top20	compute_novel_discovery_eval	-	-		
-hits_top200	compute_novel_discovery_eval	-	-		
-hits_top50	compute_novel_discovery_eval	-	-		
 hop_depth	compute_disease_family_id	-	-		
 in_act3	compute_demo_panel_config	-	-		
 in_act4	compute_demo_panel_config	-	-		
 investigational_for_disease	compute_drug_evidence_pairs	-	-		
-investigational_found50	compute_persona_candidates	-	-		
-investigational_lift50	compute_persona_candidates	-	-		
-investigational_to_find	compute_persona_candidates	-	-		
-is_current	compute_persona_candidates	-	-		
 is_eligible	compute_disease_eligibility	-	-		
 is_membrane_only	compute_gene_localization	-	-		
 is_plasma_membrane	compute_gene_localization	-	-		
 is_secreted	compute_gene_localization	-	-		
 is_target	compute_enriched_graph_features_1	-	-		
 jaccard_top50	compute_family_panel_overlap	-	-		
-known_pct50	compute_persona_candidates	-	-		
-lift_top10	compute_novel_discovery_eval	-	-		
-lift_top100	compute_novel_discovery_eval	-	-		
-lift_top20	compute_novel_discovery_eval	-	-		
-lift_top200	compute_novel_discovery_eval	-	-		
-lift_top50	compute_novel_discovery_eval	-	-		
 localization_class	compute_gene_localization	-	-		
 lof_intolerant	compute_enriched_gene_safety_v2	-	-		
 max_stage	join_drug_evidence_records	-	-		
@@ -163,28 +125,20 @@ mean_proba	compute_hub_bias_meter	-	-
 median_degree	compute_hub_bias_meter	-	-		
 median_pct	compute_drug_target_benchmark	-	-		
 module_size	compute_enriched_module_size_1	module_size >= 20	1		Trivially per-disease. WARNING: this dataset is itself gated, so its minimum IS 20 -- it cannot be used to size the sub-20 population. Use graph_edges disease_protein directly (FEATURE_AUDIT section 5).
-module_size	compute_persona_candidates	-	-		
-module_size	compute_validation_auc_by_disease_m4	-	-		
+module_size	compute_validation_auc_by_disease	-	-		
 n_anchor_families	compute_split_audit_2	-	-		
 n_assoc_positives	compute_drug_target_benchmark	-	-		
-n_criteria	compute_persona_candidates	-	-		
 n_diseases	compute_split_audit_2	-	-		
 n_diseases_in_family	group_family_auc	-	-		
-n_diseases_in_family	group_family_auc_m4	-	-		
 n_distinct_genes	group_family_auc	-	-		
-n_distinct_genes	group_family_auc_m4	-	-		
 n_genes	compute_drug_target_benchmark	-	-		
 n_genes	compute_hub_bias_meter	-	-		
-n_known	compute_novel_discovery_eval	-	-		
 n_leaves_in_family	compute_family_panel_programme	-	-		
 n_leaves_sharing	compute_family_panel_programme	-	-		
 n_neg	compute_validation_set_scored_grouped	-	-		
 n_neg	group_family_auc	-	-		
-n_neg	group_family_auc_m4	-	-		
-n_novel	compute_novel_discovery_eval	-	-		
 n_pos	compute_validation_set_scored_grouped	-	-		
 n_pos	group_family_auc	-	-		
-n_pos	group_family_auc_m4	-	-		
 n_rows	compute_hub_bias_meter	-	-		
 n_split_keys	compute_split_audit_2	-	-		
 n_validated_targets	compute_drug_target_benchmark	-	-		
@@ -192,15 +146,8 @@ name	extract_hetionet_disease_slim	-	-
 near_duplicate	compute_family_panel_overlap	-	-		
 node_group	compute_enriched_node_centrality_1	-	-		
 node_id	compute_enriched_node_centrality_1	-	-		
-novel_base_rate_pct	compute_novel_discovery_eval	-	-		
-novel_linked_total	compute_novel_discovery_eval	-	-		
 novel_overlap	compute_family_panel_overlap	-	-		
 novel_rank	compute_family_panel_top50	-	-		
-ok_auc	compute_persona_candidates	-	-		
-ok_discovery	compute_persona_candidates	-	-		
-ok_found	compute_persona_candidates	-	-		
-ok_ranking	compute_persona_candidates	-	-		
-ok_size	compute_persona_candidates	-	-		
 overlap_test_val_keys	compute_split_audit_2	-	-		
 overlap_train_test_keys	compute_split_audit_2	-	-		
 overlap_train_val_keys	compute_split_audit_2	-	-		
@@ -213,13 +160,10 @@ positives	compute_split_audit_2	-	-
 ppi_cn_expected	compute_ppi_cn_zscore	-	-		
 ppi_common_neighbors	compute_enriched_guilt_by_association_1	module_size >= 20	1		deg_m and ppi_deg_g are whole-graph COUNT{} over protein_protein, halved for the both-directions Kuzu build. Emits ppi_adamic_adar, ppi_jaccard.
 ppi_edges_with_provenance	compute_ppi_evidence_depth	-	-		
-prediction	score_persona_candidates	-	-		
 prediction	score_persona_candidates_shap5	-	-		
 prediction	score_psplit_validation_m7	-	-		
-proba_0	score_persona_candidates	-	-		
 proba_0	score_persona_candidates_shap5	-	-		
 proba_0	score_psplit_validation_m7	-	-		
-proba_1	score_persona_candidates	-	-		
 proba_1	score_persona_candidates_shap5	-	-		
 proba_1	score_psplit_validation_m7	-	-		
 prox_mean	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1		Per-disease BFS. Phase 1 already lowered MIN_SEEDS to 5 and capped with POOL_MIN=20 so the population would not move; Phase 3 lowers POOL_MIN. Emits prox_closest, prox_mean, prox_kernel, prox_n_reach.
@@ -227,21 +171,14 @@ prox_n_reach	compute_enriched_prox_closest	MIN_SEEDS 5; POOL_MIN 20	1		Per-disea
 quintile	compute_hub_bias_meter	-	-		
 rank	compute_validation_set_scored_windows	-	-		
 rank	window_family_rank	-	-		
-rank	window_family_rank_m4	-	-		
-rank_enrichment	compute_persona_candidates	-	-		
-rank_enrichment	compute_validation_auc_by_disease_m4	-	-		
+rank_enrichment	compute_validation_auc_by_disease	-	-		
 rank_in_disease	compute_family_panel_top50	-	-		
-rank_in_disease	compute_top_candidates_m4	-	-		
-rank_in_disease	join_disease_name	-	-		
+rank_in_disease	compute_top_candidates	-	-		
 rank_in_subtype	compute_family_panel_programme	-	-		
 rank_percentile	finalize_dashboard_candidates	-	-		
-rank_percentile	finalize_dashboard_candidates_m4	-	-		
 recall_at_20	compute_family_auc	-	-		
-recall_at_20	compute_family_auc_m4	-	-		
 recall_at_20	compute_validation_auc_by_disease	-	-		
-recall_at_20	compute_validation_auc_by_disease_m4	-	-		
 recall_at_50	compute_family_auc	-	-		
-recall_at_50	compute_family_auc_m4	-	-		
 rho_degree_proba	compute_hub_bias_meter	-	-		
 role_a	compute_family_panel_overlap	-	-		
 role_b	compute_family_panel_overlap	-	-		
@@ -250,8 +187,7 @@ rwr_norm	compute_enriched_graph_features_1	-	-
 rwr_score	compute_enriched_rwr_score_1	MIN_SEEDS 20	1		MIN_SEEDS gate inside a per-disease loop; adjacency and degrees are global. Was UNVERSIONED until 2026-08-21 -- a gated recipe with no diff history.
 safety_flag	compute_enriched_gene_safety_v2	-	-		
 scope	compute_family_panel_programme	-	-		
-score	compute_candidates_annotated_m4	-	-		
-score	join_disease_name	-	-		
+score	compute_candidates_annotated	-	-		
 shap_top5	compute_shap_top5	-	-		
 shared_genes	compute_family_panel_overlap	-	-		
 shared_pathway_count	compute_enriched_shared_pathway_count_1	module_size >= 20	1		n_pathways_g is a whole-graph COUNT{} over pathway_protein, so the frac denominator does not move with eligibility.
@@ -263,8 +199,6 @@ straddling_split_keys	compute_split_audit_2	-	-
 subtype	compute_family_panel_programme	-	-		
 target_rank_sum	compute_validation_set_scored_grouped	-	-		
 target_rank_sum	group_family_auc	-	-		
-target_rank_sum	group_family_auc_m4	-	-		
 threshold	compute_hub_bias_meter	-	-		
-top_shap_drivers	compute_top_shap_drivers_1	-	-		
 triangles	compute_enriched_node_centrality_1	-	-		
 validated_also_assoc	compute_drug_target_benchmark	-	-		
