@@ -43,9 +43,11 @@ evidence and generated documents appear first; planning and historical material 
 
 ## Platform, operations and reference
 
+DSS platform behaviour and `dku` usage are not documented here: use the internal team's `dku-cli`
+skill.
+
 | | |
 |---|---|
-| [`platform/DSS_CHEATSHEET.md`](platform/DSS_CHEATSHEET.md) | DSS behaviours and CLI patterns. **Read §1 before trusting any output** — those failures produce plausible results rather than errors |
 | [`operations/BUILD_GOVERNANCE.md`](operations/BUILD_GOVERNANCE.md) | Deterministic Part 2 build-event, accepted-baseline and targeted-review contract; read before designing or operating the approved DSS pilot |
 | [`operations/FLOW_MAP.md`](operations/FLOW_MAP.md) | Every dataset by zone, its producing recipe and its consuming act or notebook — generated from live DSS. **Read before pruning anything**: a reference check alone flags the whole serving layer |
 | [`operations/FLOW_MAP_EVIDENCE.md`](operations/FLOW_MAP_EVIDENCE.md) | The same map for the evidence project `DEMO_TI_EVIDENCE`, whose datasets the notebooks read; generated from live DSS. `.index/recipes_evidence.tsv` says which of its recipes are identity recipes, checked copies or evidence-only |
@@ -74,7 +76,7 @@ redesign, live 2026-10-27 (`DEC-DEMO-004`, `DEC-DEMO-005`; its scope and workpla
 
 | | |
 |---|---|
-| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, the three dashboard mockups and their app-parity check, the retired hand-authored flow view, completed plans (the documentation restructure with its phase records, the Visual Graph Explorer integration scope, the bs-blueprint alignment, the webapp redesign scope and workplan, the flow migration workplan and evidence-project design), the 2026-09-03 graph-snapshot switch record, the `m3-f12`-era appendix snapshots and breast-annotation exports, and the unpublished DSS wiki drafts. Do not load by default; use only for an explicit history investigation |
+| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, the three dashboard mockups and their app-parity check, the retired hand-authored flow view, completed plans (the documentation restructure with its phase records, the Visual Graph Explorer integration scope, the bs-blueprint alignment, the webapp redesign scope and workplan, the flow migration workplan and evidence-project design, and the one-shot scripts that carried out the migration), the 2026-09-03 graph-snapshot switch record, the `m3-f12`-era appendix snapshots and breast-annotation exports, the unpublished DSS wiki drafts, early `.index/` scratch files, and the project's DSS cheatsheet, retired 2026-10-30 in favour of the internal team's `dku-cli` skill. Do not load by default; use only for an explicit history investigation |
 | [`../archive/decisions/`](../archive/decisions/) | Immutable retired decision chronology and its five-way triage; query `.index/decisions_history.tsv` before opening it |
 
 ## Not in this directory

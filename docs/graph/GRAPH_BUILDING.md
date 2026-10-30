@@ -10,7 +10,7 @@
 >
 > Companion documents: **[PROJECT_CONTEXT.md](../overview/PROJECT_CONTEXT.md)** (why / who / how the two
 > projects fit) · **[TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md)** (the modelling project that
-> consumes this graph) · **[DSS_CHEATSHEET.md](../platform/DSS_CHEATSHEET.md)** (platform behaviours).
+> consumes this graph).
 >
 > **Status: complete.** 113,391 nodes / 2,851,510 edges / 18 relations, rebuilt from source and
 > accepted against the frozen reference (§7). Decisions are logged in the **appendix**.

@@ -60,4 +60,5 @@ Read these only when doing that task:
 
 - **Retargeting documented numbers after a champion change** → `references/number-update.md`
 - **Phase 3 / widening the seed gate** → `docs/prioritizer/PHASE3_PREREGISTRATION.md` (predictions and the committed adopt/reject rule) and `.index/recipes.tsv` for the Class 1 / Class 2 split
-- **DSS platform behaviours in depth** → `docs/platform/DSS_CHEATSHEET.md`
+- **DSS platform behaviours and `dku` usage** → the internal team's `dku-cli` skill; the retired
+  project cheatsheet is `archive/platform/DSS_CHEATSHEET.md`, for history only

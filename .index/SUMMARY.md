@@ -20,18 +20,18 @@ whose wording already flags them as historical are dropped.
 | file | asserted | value-only | orphan | total |
 |---|--:|--:|--:|--:|
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 11 | 15 | 26 |
-| `docs/demo/DEMO_NARRATIVE.md` | 1 | 19 | 3 | 23 |
+| `docs/demo/DEMO_NARRATIVE.md` | 1 | 7 | 5 | 13 |
 | `docs/demo/WEBAPP_DESIGN.md` | 0 | 55 | 87 | 142 |
 | `docs/demo/panel_selection/README.md` | 0 | 3 | 21 | 24 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 140 | 140 |
-| `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 14 | 19 |
+| `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 13 | 18 |
 | `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 19 | 103 | 122 |
 | `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 16 | 49 | 65 |
-| **total** | **1** | **128** | **432** | **561** |
+| **total** | **1** | **116** | **433** | **550** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**95 rows.** Of 432 total orphans, these are the model-dependent ones: the numbers that move
+**95 rows.** Of 433 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -39,6 +39,7 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:104` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:113` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
 | `docs/demo/BREAST_SURGEON_BRIEFING.md:115` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
+| `docs/demo/DEMO_NARRATIVE.md:57` | - | 12,272 | *tractable* and *exclude secreted*: 12,272 candidates become 38 in the top 200. The third  |
 | `docs/demo/WEBAPP_DESIGN.md:444` | 4 | 0.8623 | \| The spread across 670 diseases \| up front · histogram, 20 bins \| macro **0.8230**, me |
 | `docs/demo/WEBAPP_DESIGN.md:444` | 4 | 0.1045 | \| The spread across 670 diseases \| up front · histogram, 20 bins \| macro **0.8230**, me |
 | `docs/demo/WEBAPP_DESIGN.md:444` | 4 | 0.9962 | \| The spread across 670 diseases \| up front · histogram, 20 bins \| macro **0.8230**, me |
@@ -55,12 +56,11 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/WEBAPP_DESIGN.md:770` | 6 | 0.9776 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
 | `docs/demo/WEBAPP_DESIGN.md:770` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
 | `docs/demo/panel_selection/README.md:75` | - | 0.350 | distance either way: Spearman −0.350 over the 148 shipped pairs. |
-| `docs/overview/PROJECT_CONTEXT.md:114` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
-| `docs/overview/PROJECT_CONTEXT.md:264` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `docs/overview/PROJECT_CONTEXT.md:264` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `docs/overview/PROJECT_CONTEXT.md:265` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `docs/overview/PROJECT_CONTEXT.md:265` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `docs/overview/PROJECT_CONTEXT.md:276` | 4.6 | 129,253 | solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying |
+| `docs/overview/PROJECT_CONTEXT.md:113` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
+| `docs/overview/PROJECT_CONTEXT.md:269` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
+| `docs/overview/PROJECT_CONTEXT.md:269` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
+| `docs/overview/PROJECT_CONTEXT.md:270` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
+| `docs/overview/PROJECT_CONTEXT.md:270` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.646 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.567 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.328 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |

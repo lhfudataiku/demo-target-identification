@@ -33,7 +33,7 @@ class IndexManifestTests(unittest.TestCase):
     def test_every_tracked_markdown_file_requires_a_manifest_role(self):
         manifest, _, _ = build_index.load_manifest()
         manifest["current_scan_exclusions"]["files"].remove(
-            "docs/platform/DSS_CHEATSHEET.md")
+            "docs/operations/BUILD_GOVERNANCE.md")
         with tempfile.NamedTemporaryFile("w", suffix=".json") as handle:
             json.dump(manifest, handle)
             handle.flush()
