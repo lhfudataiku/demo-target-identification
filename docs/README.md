@@ -74,7 +74,7 @@ redesign, live 2026-10-27 (`DEC-DEMO-004`, `DEC-DEMO-005`; its scope and workpla
 
 | | |
 |---|---|
-| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, the three dashboard mockups and their app-parity check, the retired hand-authored flow view, completed plans (the documentation restructure with its phase records, the Visual Graph Explorer integration scope, the bs-blueprint alignment, the webapp redesign scope and workplan, the flow migration workplan and evidence-project design), the 2026-09-03 graph-snapshot switch record, the `m3-f12`-era appendix snapshots and breast-annotation exports, and the unpublished DSS wiki drafts. Do not load by default; use only for an explicit history investigation |
+| [`../archive/`](../archive/) | Superseded designs, native-dashboard evaluation, build chronology, the three dashboard mockups and their app-parity check, the retired hand-authored flow view, completed plans (the documentation restructure with its phase records, the Visual Graph Explorer integration scope, the bs-blueprint alignment, the webapp redesign scope and workplan, the flow migration workplan and evidence-project design, and the one-shot scripts that carried out the migration), the 2026-09-03 graph-snapshot switch record, the `m3-f12`-era appendix snapshots and breast-annotation exports, the unpublished DSS wiki drafts, and early `.index/` scratch files. Do not load by default; use only for an explicit history investigation |
 | [`../archive/decisions/`](../archive/decisions/) | Immutable retired decision chronology and its five-way triage; query `.index/decisions_history.tsv` before opening it |
 
 ## Not in this directory

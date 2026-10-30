@@ -24,14 +24,14 @@ whose wording already flags them as historical are dropped.
 | `docs/demo/WEBAPP_DESIGN.md` | 0 | 55 | 87 | 142 |
 | `docs/demo/panel_selection/README.md` | 0 | 3 | 21 | 24 |
 | `docs/graph/GRAPH_BUILDING.md` | 0 | 0 | 140 | 140 |
-| `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 14 | 19 |
+| `docs/overview/PROJECT_CONTEXT.md` | 0 | 5 | 13 | 18 |
 | `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 19 | 103 | 122 |
 | `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 16 | 49 | 65 |
-| **total** | **1** | **128** | **432** | **561** |
+| **total** | **1** | **128** | **431** | **560** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**95 rows.** Of 432 total orphans, these are the model-dependent ones: the numbers that move
+**94 rows.** Of 431 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -56,11 +56,10 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/WEBAPP_DESIGN.md:770` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
 | `docs/demo/panel_selection/README.md:75` | - | 0.350 | distance either way: Spearman −0.350 over the 148 shipped pairs. |
 | `docs/overview/PROJECT_CONTEXT.md:114` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
-| `docs/overview/PROJECT_CONTEXT.md:264` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `docs/overview/PROJECT_CONTEXT.md:264` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `docs/overview/PROJECT_CONTEXT.md:265` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `docs/overview/PROJECT_CONTEXT.md:265` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `docs/overview/PROJECT_CONTEXT.md:276` | 4.6 | 129,253 | solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying |
+| `docs/overview/PROJECT_CONTEXT.md:270` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
+| `docs/overview/PROJECT_CONTEXT.md:270` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
+| `docs/overview/PROJECT_CONTEXT.md:271` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
+| `docs/overview/PROJECT_CONTEXT.md:271` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.646 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.567 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.328 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
@@ -96,8 +95,9 @@ when the champion changes and that no notebook would catch.
 | `docs/prioritizer/FEATURE_AUDIT.md:183` | 4 | 0.1932 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
 | `docs/prioritizer/FEATURE_AUDIT.md:183` | 4 | 0.1915 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
 | `docs/prioritizer/FEATURE_AUDIT.md:183` | 4 | 0.1900 | \| hub spread *(lower better)* \| 0.1954 \| 0.1932 \| 0.1915 \| **0.1900** \| 0.1935 \| wo |
+| `docs/prioritizer/FEATURE_AUDIT.md:184` | 4 | 0.6911 | \| therapeutic, all \| 0.6911 \| 0.6949 \| 0.6931 \| 0.6949 \| 0.6886 \| worst of five \| |
 
-*35 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*34 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## Decision indexes
 

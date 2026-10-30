@@ -6,6 +6,12 @@ Two linked Dataiku DSS proof-of-concepts:
   `DEMO_KG_LS` project, plus the graph webapp that browses it.
 - **Part 2 — the prioritizer.** An explainable target-gene prioritizer owned by
   `DEMO_TARGET_IDENTIFICATION`, which consumes shared objects from Part 1 and serves a demo webapp.
+- **Supporting evidence.** `DEMO_TI_EVIDENCE` computes the datasets the assertion notebooks check
+  every documented number against. Nothing reads it.
+
+**Status:** complete as of 2026-10-29. The champion model is `m7-f14`, the demo webapp is live, and
+the open items are owner decisions, listed in
+[docs/overview/PROJECT_CONTEXT.md](docs/overview/PROJECT_CONTEXT.md) §4.6.
 
 This repository holds the documentation, the mirrored DSS recipe code, the generated indexes and the
 webapp source. It does **not** hold the data: `data/` is local-only and never committed.
@@ -20,19 +26,23 @@ Start with whichever matches what you need — you should not have to read the w
 | Find the right document for a topic | [docs/README.md](docs/README.md), the document router |
 | Look up a model, metric, feature, recipe or past decision | `.index/` — see below |
 | Work on the demo webapp | [webapp/README.md](webapp/README.md) |
+| See every DSS dataset, its recipe and who reads it | [docs/operations/FLOW_MAP.md](docs/operations/FLOW_MAP.md) and [FLOW_MAP_EVIDENCE.md](docs/operations/FLOW_MAP_EVIDENCE.md) |
+| Re-derive a documented number | [notebooks/README.md](notebooks/README.md) |
+| Find a superseded design or a past plan | [archive/](archive/) — history only; not loaded by default |
 | Change the instructions an AI agent follows here | [harness/README.md](harness/README.md) |
 
 Several documents are tens of thousands of tokens. Read one section, not a whole file.
 
 ## The generated indexes
 
-`.index/` holds ten small TSVs generated from the docs, the notebooks and a committed DSS snapshot.
-They answer most factual questions — which recipe produces a feature, which decision is current,
-whether a documented number is guarded by a notebook assertion — without opening a large document.
-`.index/index_metadata.tsv` names each index's owner, scope and freshness command, and
+`.index/` holds twelve small TSVs generated from the docs, the notebooks and committed DSS
+snapshots. They answer most factual questions — which recipe produces a feature, which decision is
+current, whether a documented number is guarded by a notebook assertion — without opening a large
+document. `.index/index_metadata.tsv` names each index's owner, scope and freshness command, and
 `.index/SUMMARY.md` carries the risk surface of numbers that could drift.
 
-They are generated artifacts. Regenerate rather than hand-edit them.
+They are generated artifacts. Regenerate rather than hand-edit them. The one exception is
+`.index/_dead.json`, a hand-maintained prune ledger: read it before deleting anything in DSS.
 
 ## Working with an AI agent here
 

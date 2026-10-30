@@ -50,6 +50,10 @@
     {"path": ".index/models.tsv", "owner": "model registry and DSS snapshot", "freshness": "python3 tools/build_recipe_index.py --check", "scope": "model identities, consumers and guarded measurements"},
     {"path": ".index/features.tsv", "owner": "recipe classes and DSS snapshot", "freshness": "python3 tools/build_recipe_index.py --check", "scope": "feature producers and gate classification"},
     {"path": ".index/recipes.tsv", "owner": "DSS snapshot and recipe classes", "freshness": "python3 tools/build_recipe_index.py --check", "scope": "recipe inventory and gate classification"},
-    {"path": ".index/code.tsv", "owner": "tracked code and DSS snapshot", "freshness": "python3 tools/build_recipe_index.py --check", "scope": "code ownership and reference tripwires"}
+    {"path": ".index/code.tsv", "owner": "tracked code and DSS snapshot", "freshness": "python3 tools/build_recipe_index.py --check", "scope": "code ownership and reference tripwires"},
+    {"path": ".index/recipes_evidence.tsv", "owner": "DEMO_TI_EVIDENCE snapshot", "freshness": "python3 tools/build_recipe_index.py --check", "scope": "evidence-project recipes and their relation to the main project's"},
+    {"path": ".index/dss_snapshot.json", "owner": "live DEMO_TARGET_IDENTIFICATION", "freshness": "python3 tools/build_recipe_index.py --refresh (live DSS, slow)", "scope": "committed DSS snapshot every offline check reads"},
+    {"path": ".index/dss_snapshot_evidence.json", "owner": "live DEMO_TI_EVIDENCE", "freshness": "python3 tools/build_recipe_index.py --refresh (live DSS, slow)", "scope": "committed evidence-project snapshot"},
+    {"path": ".index/_dead.json", "owner": "hand-maintained prune ledger", "freshness": "none; update when a flow object is retired or kept", "scope": "prune candidates and why survivors must not be pruned"}
   ]
 }

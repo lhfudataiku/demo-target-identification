@@ -160,6 +160,12 @@ node in the graph.
    Kuzu snapshot + graph webapp  ───────────────→ (evidence paths render on the webapp)
 ```
 
+A third project, **`DEMO_TI_EVIDENCE`**, has held the supporting evidence for model development since
+2026-10-29 ([ADR-003](../decisions/adrs/ADR-003-evidence-project.md)): the datasets the assertion
+notebooks read, computed from objects `DEMO_TARGET_IDENTIFICATION` exposes. Nothing reads it, and it reads
+no serving zone, so the demo and the evidence no longer share datasets. Its flow is in
+[`FLOW_MAP_EVIDENCE.md`](../operations/FLOW_MAP_EVIDENCE.md).
+
 ### 4.1 `DEMO_KG_LS` — data pipeline and graph-building webapp
 
 Ingests public biomedical sources over HTTP, harmonizes them onto a single identifier system, and
@@ -268,23 +274,34 @@ reference, against a ±0.02 tolerance set in advance (historical comparison in
 Three individual personas reproduced to within **0.002**, which is stronger evidence than the macro
 average because nothing averages out.
 
-### 4.6 What remains
+### 4.6 Delivered, and what remains open
 
-- **Retire `KNOWLEDGE_GRAPH_PRIMEKG`** — the acceptance criterion is now met, so the frozen reference
-  has served its purpose. Also retire the older of the two Kuzu snapshots in `DEMO_KG_LS`.
-- **Target prioritisation (stage 2) — the deliverable is now filterable, the safety axis is not
-  solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying
-  tractability, target class and known-liability annotations, so a scientist filters instead of
-  receiving a pre-cut list. But the two freely-available safety signals were measured and **rejected
-  as filters** — genetic constraint runs *with* druggability and curated liabilities mark drug
-  precedent, not risk ([VALIDATION.md](../prioritizer/VALIDATION.md) §5). A real safety axis needs a direct measurement
-  (essentiality, tissue-expression breadth), which means a new source. That plus the dashboard is the
-  largest remaining increment of demo value.
-- **Re-pick the persona panel on evidence.** The flagship metabolic disease is the weakest case on
-  both metrics while two non-persona cancers are the strongest therapeutic showcases
-  ([VALIDATION.md](../prioritizer/VALIDATION.md) §6.3).
-- **Minor:** regenerate the demo query literals, rebuild the drug-label chain, and materialise the
-  hub-bias meter as a recipe ([VALIDATION.md](../prioritizer/VALIDATION.md) §3.3).
+The POC reached its completion criteria on 2026-10-29. Delivered since the split:
+
+- **The demo webapp** is live (released 2026-10-27; `DEC-DEMO-004`, `DEC-DEMO-005`). It serves a
+  filterable shortlist carrying tractability, target class and known-liability annotations, so a
+  scientist filters instead of receiving a pre-cut list ([`WEBAPP_DESIGN.md`](../demo/WEBAPP_DESIGN.md)).
+- **The persona panel was re-picked on evidence** (2026-08-27): breast and uterine carry the subtype
+  act and therapeutic breadth comes from singletons ([`panel_selection.html`](../demo/panel_selection.html)).
+- **The serving flow was rebuilt by webapp function** and the notebooks' supporting evidence moved to
+  a third project, `DEMO_TI_EVIDENCE` (2026-10-29; `DEC-ARCH-006`, `DEC-ARCH-007`).
+- **The hub-bias meter is a recipe** (`compute_hub_bias_meter`).
+
+Open, each an owner's decision rather than unfinished work:
+
+- **A safety axis.** The two freely-available safety signals were measured and **rejected as
+  filters** (`DEC-SAFE-001`) — genetic constraint runs *with* druggability and curated liabilities
+  mark drug precedent, not risk ([VALIDATION.md](../prioritizer/VALIDATION.md) §5). A real safety
+  axis needs a direct measurement (essentiality, tissue-expression breadth), which means a new source.
+- **Phase 3, the seed-gate widening**, is pre-registered and approved but not executed
+  (`DEC-PH3-001`, [`PHASE3_PREREGISTRATION.md`](../prioritizer/PHASE3_PREREGISTRATION.md)).
+- **Retire `KNOWLEDGE_GRAPH_PRIMEKG`** and the older of the two Kuzu snapshots in `DEMO_KG_LS`. The
+  reconstruction criterion is met, but the project stays frozen until its owner decides.
+- **Source licensing** is a preliminary internal draft
+  ([`DATA_SOURCE_LICENSE_REVIEW.md`](../graph/DATA_SOURCE_LICENSE_REVIEW.md)) and must be resolved
+  before any commercial use.
+- **Minor, carried from 2026-08 and not re-verified:** regenerate the demo query literals and
+  rebuild the drug-label chain.
 
 ---
 

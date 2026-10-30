@@ -244,7 +244,8 @@ def check_evidence(fail):
 
 def qualified(code: str, upstream: list[str]) -> str:
     """The main project's code as the evidence project runs it: each input it reads from the main
-    project named with that project's key (as tools/build_evidence_flow.py rewrote the copies)."""
+    project named with that project's key (as the archived
+    archive/flow-migration-tools-2026-10-29/build_evidence_flow.py rewrote the copies)."""
     for name in sorted(upstream):
         code = code.replace('"%s"' % name, '"%s.%s"' % (MAIN_PROJECT, name))
     return code

@@ -359,20 +359,19 @@ docs/overview/PROJECT_CONTEXT.md	70	2.1	4.8	ORPHAN				| **Genetic evidence works
 docs/overview/PROJECT_CONTEXT.md	114	2.3	0.81	ORPHAN		y		disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche et al.,
 docs/overview/PROJECT_CONTEXT.md	135	3	0.93	ORPHAN				0.93 on 599 known targets), **diabetes mellitus** and **obesity disorder**.
 docs/overview/PROJECT_CONTEXT.md	138	3	0.69	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1 approved join auc_all	y		measurement.** It is the *worst* term in the breast panel — AUC **0.69**, beaten by its own subtypes.
-docs/overview/PROJECT_CONTEXT.md	169	4.1	113,391	ORPHAN				**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
-docs/overview/PROJECT_CONTEXT.md	169	4.1	2,851,510	ORPHAN				**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
-docs/overview/PROJECT_CONTEXT.md	183	4.2	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		`m7-f14` (14 features): macro per-disease AUC **0.8230** over 670 diseases. Three-rung ablation
-docs/overview/PROJECT_CONTEXT.md	184	4.2	1.9	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			ladder, two independent validation metrics cross-checking to 1.9×10⁻⁴, and a documented negative
-docs/overview/PROJECT_CONTEXT.md	224	4.3	18,510,084	ORPHAN				switch, over 18,510,084 rows, and is recorded in GRAPH_BUILDING §6 and
-docs/overview/PROJECT_CONTEXT.md	258	4.5	0.01	ORPHAN			hist	2026-08-17 and **the reconstruction is confirmed**: every metric landed within ±0.01 of the frozen
-docs/overview/PROJECT_CONTEXT.md	259	4.5	0.02	ORPHAN			hist	reference, against a ±0.02 tolerance set in advance (historical comparison in
-docs/overview/PROJECT_CONTEXT.md	264	4.5	0.8228	ORPHAN		y		| macro per-disease AUC | 0.8228 | **0.8197** |
-docs/overview/PROJECT_CONTEXT.md	264	4.5	0.8197	ORPHAN		y		| macro per-disease AUC | 0.8228 | **0.8197** |
-docs/overview/PROJECT_CONTEXT.md	265	4.5	0.6836	ORPHAN		y		| drug-target AUC | 0.6836 | **0.6911** |
-docs/overview/PROJECT_CONTEXT.md	265	4.5	0.6911	ORPHAN		y		| drug-target AUC | 0.6836 | **0.6911** |
-docs/overview/PROJECT_CONTEXT.md	266	4.5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| candidate pool | 6,754,128 | **6,754,128** *(identical)* |
-docs/overview/PROJECT_CONTEXT.md	268	4.5	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		Three individual personas reproduced to within **0.002**, which is stronger evidence than the macro
-docs/overview/PROJECT_CONTEXT.md	276	4.6	129,253	ORPHAN		y		solved.** `target_candidates_2` is **129,253 ranked candidates over 13 personas** carrying
+docs/overview/PROJECT_CONTEXT.md	175	4.1	113,391	ORPHAN				**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
+docs/overview/PROJECT_CONTEXT.md	175	4.1	2,851,510	ORPHAN				**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
+docs/overview/PROJECT_CONTEXT.md	189	4.2	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		`m7-f14` (14 features): macro per-disease AUC **0.8230** over 670 diseases. Three-rung ablation
+docs/overview/PROJECT_CONTEXT.md	190	4.2	1.9	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			ladder, two independent validation metrics cross-checking to 1.9×10⁻⁴, and a documented negative
+docs/overview/PROJECT_CONTEXT.md	230	4.3	18,510,084	ORPHAN				switch, over 18,510,084 rows, and is recorded in GRAPH_BUILDING §6 and
+docs/overview/PROJECT_CONTEXT.md	264	4.5	0.01	ORPHAN			hist	2026-08-17 and **the reconstruction is confirmed**: every metric landed within ±0.01 of the frozen
+docs/overview/PROJECT_CONTEXT.md	265	4.5	0.02	ORPHAN			hist	reference, against a ±0.02 tolerance set in advance (historical comparison in
+docs/overview/PROJECT_CONTEXT.md	270	4.5	0.8228	ORPHAN		y		| macro per-disease AUC | 0.8228 | **0.8197** |
+docs/overview/PROJECT_CONTEXT.md	270	4.5	0.8197	ORPHAN		y		| macro per-disease AUC | 0.8228 | **0.8197** |
+docs/overview/PROJECT_CONTEXT.md	271	4.5	0.6836	ORPHAN		y		| drug-target AUC | 0.6836 | **0.6911** |
+docs/overview/PROJECT_CONTEXT.md	271	4.5	0.6911	ORPHAN		y		| drug-target AUC | 0.6836 | **0.6911** |
+docs/overview/PROJECT_CONTEXT.md	272	4.5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| candidate pool | 6,754,128 | **6,754,128** *(identical)* |
+docs/overview/PROJECT_CONTEXT.md	274	4.5	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		Three individual personas reproduced to within **0.002**, which is stronger evidence than the macro
 docs/prioritizer/FEATURE_AUDIT.md	42	1	0.00	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 			§6.1 measured that `gene_ppi_degree` and `gene_n_pathways` show **0.00% variation across diseases**.
 docs/prioritizer/FEATURE_AUDIT.md	44	1	1.23	ORPHAN				> **For 43 diseases (1.23% of pool rows) the model has no disease-specific signal at all. It is
 docs/prioritizer/FEATURE_AUDIT.md	46	1	3.7	ORPHAN				> model being served for 3.7% of the disease population.

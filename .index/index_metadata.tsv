@@ -9,3 +9,7 @@ path	owner	freshness	scope
 .index/features.tsv	recipe classes and DSS snapshot	python3 tools/build_recipe_index.py --check	feature producers and gate classification
 .index/recipes.tsv	DSS snapshot and recipe classes	python3 tools/build_recipe_index.py --check	recipe inventory and gate classification
 .index/code.tsv	tracked code and DSS snapshot	python3 tools/build_recipe_index.py --check	code ownership and reference tripwires
+.index/recipes_evidence.tsv	DEMO_TI_EVIDENCE snapshot	python3 tools/build_recipe_index.py --check	evidence-project recipes and their relation to the main project's
+.index/dss_snapshot.json	live DEMO_TARGET_IDENTIFICATION	python3 tools/build_recipe_index.py --refresh (live DSS, slow)	committed DSS snapshot every offline check reads
+.index/dss_snapshot_evidence.json	live DEMO_TI_EVIDENCE	python3 tools/build_recipe_index.py --refresh (live DSS, slow)	committed evidence-project snapshot
+.index/_dead.json	hand-maintained prune ledger	none; update when a flow object is retired or kept	prune candidates and why survivors must not be pruned
