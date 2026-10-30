@@ -21,7 +21,6 @@
 > | **[DISCOVERY_LANDSCAPE.md](../reference/DISCOVERY_LANDSCAPE.md)** | the wider drug-discovery chain (stages 1–6) and where a platform belongs | — |
 > | **[RESEARCH_NOTE.md](../reference/RESEARCH_NOTE.md)** | per-reference evidence base for the Part 2 method choices | — |
 > | **[DECISION_REGISTER.md](../decisions/DECISION_REGISTER.md)** | current durable project decisions and consequences | both |
-> | **[DSS_CHEATSHEET.md](../platform/DSS_CHEATSHEET.md)** | platform behaviours and CLI patterns, stated generically | — |
 >
 > Current durable decisions live in the [decision register](../decisions/DECISION_REGISTER.md).
 > Experiments, incidents and reversals remain recoverable through `.index/decisions_history.tsv`.

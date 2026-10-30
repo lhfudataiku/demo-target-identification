@@ -2,21 +2,21 @@ path	kind	status	n_refs	referenced_by
 webapp/frontend/tsconfig.json	webapp	ORPHAN (referenced by nothing)	0	-
 archive/appendix/manifest.json	archive	ARCHIVED	5	archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/appendix/README.md,archive/doc-restructure-2026-08-28/PHASE_6_ACCEPTANCE_2026-08-31.md,docs/README.md
 archive/decisions/TRIAGE.json	archive	ARCHIVED	2	archive/decisions/README.md,tools/build_index.py
-archive/flow-migration-tools-2026-10-29/build_evidence_flow.py	archive	ARCHIVED	3	archive/EVIDENCE_PROJECT_DESIGN.md,archive/FLOW_MIGRATION_WORKPLAN.md,tools/check_governed_values.py
-archive/flow-migration-tools-2026-10-29/build_serving_m4.py	archive	ARCHIVED	1	archive/FLOW_MIGRATION_WORKPLAN.md
-archive/flow-migration-tools-2026-10-29/clean_main_project.py	archive	ARCHIVED	1	archive/FLOW_MIGRATION_WORKPLAN.md
-archive/flow-migration-tools-2026-10-29/compare_serving_m4.py	archive	ARCHIVED	1	archive/FLOW_MIGRATION_WORKPLAN.md
-archive/flow-migration-tools-2026-10-29/retire_serving_m6.py	archive	ARCHIVED	1	archive/FLOW_MIGRATION_WORKPLAN.md
-archive/flow-migration-tools-2026-10-29/setup_evidence_project.py	archive	ARCHIVED	1	archive/FLOW_MIGRATION_WORKPLAN.md
+archive/flow-migration-tools-2026-10-29/build_evidence_flow.py	archive	ARCHIVED	4	archive/EVIDENCE_PROJECT_DESIGN.md,archive/FLOW_MIGRATION_WORKPLAN.md,archive/flow-migration-tools-2026-10-29/README.md,tools/check_governed_values.py
+archive/flow-migration-tools-2026-10-29/build_serving_m4.py	archive	ARCHIVED	2	archive/FLOW_MIGRATION_WORKPLAN.md,archive/flow-migration-tools-2026-10-29/README.md
+archive/flow-migration-tools-2026-10-29/clean_main_project.py	archive	ARCHIVED	2	archive/FLOW_MIGRATION_WORKPLAN.md,archive/flow-migration-tools-2026-10-29/README.md
+archive/flow-migration-tools-2026-10-29/compare_serving_m4.py	archive	ARCHIVED	2	archive/FLOW_MIGRATION_WORKPLAN.md,archive/flow-migration-tools-2026-10-29/README.md
+archive/flow-migration-tools-2026-10-29/retire_serving_m6.py	archive	ARCHIVED	2	archive/FLOW_MIGRATION_WORKPLAN.md,archive/flow-migration-tools-2026-10-29/README.md
+archive/flow-migration-tools-2026-10-29/setup_evidence_project.py	archive	ARCHIVED	2	archive/FLOW_MIGRATION_WORKPLAN.md,archive/flow-migration-tools-2026-10-29/README.md
 archive/graph-snapshot-switch-2026-09-03/graph-config-fingerprints.json	archive	ARCHIVED	1	archive/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md
 archive/graph-snapshot-switch-2026-09-03/signature-after-switch.json	archive	ARCHIVED	1	archive/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md
 archive/graph-snapshot-switch-2026-09-03/signature-before-switch.json	archive	ARCHIVED	1	archive/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md
 archive/graph-snapshot-switch-2026-09-03/signature-reference-two-hash.json	archive	ARCHIVED	1	archive/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md
 archive/graph-snapshot-switch-2026-09-03/signature.py	archive	ARCHIVED	1	archive/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md
-archive/index-scratch-2026-08/_map.json	archive	ARCHIVED	0	-
-archive/index-scratch-2026-08/_mockup_cards.json	archive	ARCHIVED	0	-
-archive/index-scratch-2026-08/_webapp_cards.json	archive	ARCHIVED	0	-
-archive/index-scratch-2026-08/_z90.json	archive	ARCHIVED	0	-
+archive/index-scratch-2026-08/_map.json	archive	ARCHIVED	1	archive/index-scratch-2026-08/README.md
+archive/index-scratch-2026-08/_mockup_cards.json	archive	ARCHIVED	1	archive/index-scratch-2026-08/README.md
+archive/index-scratch-2026-08/_webapp_cards.json	archive	ARCHIVED	1	archive/index-scratch-2026-08/README.md
+archive/index-scratch-2026-08/_z90.json	archive	ARCHIVED	1	archive/index-scratch-2026-08/README.md
 archive/prioritizer/model_recovery.json	archive	ARCHIVED	1	archive/DASHBOARD_BUILD_LOG.md
 archive/webapp-v1/backend.py	archive	ARCHIVED	7	archive/flow-map-iterations/flow_map.html,tools/recipe_classes.json,webapp/README.md,webapp/app.env
 docs/operations/build-governance/POLICY.json	docs	LIVE (referenced)	4	archive/FLOW_MIGRATION_WORKPLAN.md,docs/operations/BUILD_GOVERNANCE.md,docs/operations/WEBAPP_DATASET_MAP.md,tools/build_governance.py
@@ -99,10 +99,10 @@ tools/build_governance.py	tool	LIVE	3	archive/FLOW_MIGRATION_WORKPLAN.md,docs/op
 tools/build_index.py	tool	LIVE	10	archive/DASHBOARD_BUILD_LOG.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/decisions/README.md
 tools/build_recipe_index.py	tool	LIVE	39	README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DASHBOARD_BUILD_LOG.md,archive/EVIDENCE_PROJECT_DESIGN.md
 tools/capture_build_governance.py	tool	LIVE	2	archive/FLOW_MIGRATION_WORKPLAN.md,docs/operations/BUILD_GOVERNANCE.md
-tools/capture_webapp_payloads.py	tool	LIVE	1	archive/FLOW_MIGRATION_WORKPLAN.md
+tools/capture_webapp_payloads.py	tool	LIVE	2	archive/FLOW_MIGRATION_WORKPLAN.md,archive/flow-migration-tools-2026-10-29/README.md
 tools/check_claim_registry.py	tool	LIVE	4	archive/FLOW_MIGRATION_WORKPLAN.md,docs/prioritizer/VALIDATION.md,tools/check_indexes.sh,tools/index_manifest.json
 tools/check_freshness.py	tool	LIVE	2	archive/DASHBOARD_BUILD_LOG.md,archive/FLOW_MIGRATION_WORKPLAN.md
-tools/check_governed_values.py	tool	LIVE	7	archive/EVIDENCE_PROJECT_DESIGN.md,archive/FLOW_MIGRATION_WORKPLAN.md,archive/flow-migration-tools-2026-10-29/build_evidence_flow.py,docs/decisions/DECISION_REGISTER.md
+tools/check_governed_values.py	tool	LIVE	8	archive/EVIDENCE_PROJECT_DESIGN.md,archive/FLOW_MIGRATION_WORKPLAN.md,archive/flow-migration-tools-2026-10-29/README.md,archive/flow-migration-tools-2026-10-29/build_evidence_flow.py
 tools/check_harness.py	tool	LIVE	3	archive/FLOW_MIGRATION_WORKPLAN.md,harness/README.md,tools/check_indexes.sh
 tools/check_indexes.sh	tool	LIVE	13	.github/workflows/checks.yml,README.md,archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/FLOW_MIGRATION_WORKPLAN.md
 tools/check_links.py	tool	LIVE	7	archive/BLUEPRINT_ALIGNMENT_PLAN.md,archive/DOC_RESTRUCTURE_PLAN_2026-08-26.md,archive/decisions/DECISIONS_2026-08-31.md,archive/doc-restructure-2026-08-28/PHASE_0_BASELINE_2026-08-28.md

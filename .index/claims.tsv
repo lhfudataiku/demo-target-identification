@@ -25,29 +25,19 @@ docs/demo/BREAST_SURGEON_BRIEFING.md	164	5	98.5	VALUE_ONLY	nb2_splitting_and_poo
 docs/demo/BREAST_SURGEON_BRIEFING.md	165	5	0.081	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 Spearman pool_size vs coverage	y		a disease is annotated (Spearman +0.081). TNBC is one of only two diseases below 50% coverage. Do not
 docs/demo/BREAST_SURGEON_BRIEFING.md	170	5	0.689	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1 approved join auc_all	y		evaluation *because of the relationship being evaluated*. Fixing it raises drug-target AUC from 0.689
 docs/demo/BREAST_SURGEON_BRIEFING.md	171	5	0.747	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1 approved join auc_supported			to 0.747. Not clinician-facing, but it changes numbers that are.
-docs/demo/DEMO_NARRATIVE.md	81	-	113,391	ORPHAN				A biomedical knowledge graph assembled from six public sources — **113,391 nodes, 2,851,510 edges, 18
-docs/demo/DEMO_NARRATIVE.md	81	-	2,851,510	ORPHAN				A biomedical knowledge graph assembled from six public sources — **113,391 nodes, 2,851,510 edges, 18
-docs/demo/DEMO_NARRATIVE.md	82	-	0.03	ORPHAN			hist	relations** — and accepted against a frozen reference at **−0.03% on edges, with 14 of 18 relations
-docs/demo/DEMO_NARRATIVE.md	101	-	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows	y		The candidate pool is **6,754,128 disease–gene pairs at a 1.89% positive rate**. Ranking quality is
-docs/demo/DEMO_NARRATIVE.md	101	-	1.89	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %	y		The candidate pool is **6,754,128 disease–gene pairs at a 1.89% positive rate**. Ranking quality is
-docs/demo/DEMO_NARRATIVE.md	102	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		**macro per-disease AUC 0.8230 across 670 held-out diseases**.
-docs/demo/DEMO_NARRATIVE.md	113	-	0.8932	ASSERTED	nb3_validation_and_plots.py:header pooled AUC	y		**Report macro, never pooled.** Pooled reads 0.8932 and overstates by roughly seven points, because it
-docs/demo/DEMO_NARRATIVE.md	123	-	3.29	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @10			| Top 10 | **3.29×** |
-docs/demo/DEMO_NARRATIVE.md	124	-	2.42	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @200			| Top 200 | **2.42×** |
-docs/demo/DEMO_NARRATIVE.md	127	-	0.59	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability			least-connected fifth at **0.59** against **0.79** for the most-connected. **The model under-scores
-docs/demo/DEMO_NARRATIVE.md	127	-	0.79	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability			least-connected fifth at **0.59** against **0.79** for the most-connected. **The model under-scores
-docs/demo/DEMO_NARRATIVE.md	142	-	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			**Across 505 disease families, reconstruction holds at 0.8009.**
-docs/demo/DEMO_NARRATIVE.md	169	-	0.9365	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		Open **HER2-positive breast carcinoma**. The model reconstructs its known targets at **AUC 0.9365**.
-docs/demo/DEMO_NARRATIVE.md	184	-	16.88	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10			enriched for genes that later turn out to be real drug targets — **16.88× at top-10 against approved
-docs/demo/DEMO_NARRATIVE.md	185	-	21.32	VALUE_ONLY	nb4_results_three_axes.py:8.3 curated>=0.8 lift@10			drugs, 21.32× against a curated target–disease source**.
-docs/demo/DEMO_NARRATIVE.md	209	-	3.16	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			| *"Use druggability as a model input."* | Membrane receptors are **3.16×** more likely to be real drug target
-docs/demo/DEMO_NARRATIVE.md	209	-	0.78	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor assoc_lift			| *"Use druggability as a model input."* | Membrane receptors are **3.16×** more likely to be real drug target
-docs/demo/DEMO_NARRATIVE.md	209	-	11.89	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 ion channel drug_lift			| *"Use druggability as a model input."* | Membrane receptors are **3.16×** more likely to be real drug target
-docs/demo/DEMO_NARRATIVE.md	210	-	2.07	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant assoc_lift	y		| *"Filter out genes the body cannot live without."* | Loss-of-function-intolerant genes are enriched on **bot
-docs/demo/DEMO_NARRATIVE.md	210	-	1.37	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant drug_lift	y		| *"Filter out genes the body cannot live without."* | Loss-of-function-intolerant genes are enriched on **bot
-docs/demo/DEMO_NARRATIVE.md	211	-	4.62	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			| *"Exclude targets with known safety liabilities."* | Liability-flagged genes are **4.62×** enriched among re
-docs/demo/DEMO_NARRATIVE.md	221	-	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r			uncorrelated, r = **+0.002**. And on a drug-target benchmark, a lookup table — *"how many diseases is
-docs/demo/DEMO_NARRATIVE.md	246	-	0.9365	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		| **HER2-positive breast carcinoma** | **the spine.** Reconstructs at AUC **0.9365**; a clinician recognises t
+docs/demo/DEMO_NARRATIVE.md	51	-	0.9365	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		model reconstructs this disease's known targets at **AUC 0.9365**, but the page shows no AUC: the
+docs/demo/DEMO_NARRATIVE.md	57	-	12,272	ORPHAN		y		*tractable* and *exclude secreted*: 12,272 candidates become 38 in the top 200. The third is
+docs/demo/DEMO_NARRATIVE.md	104	-	16.88	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10			the top is enriched for genes that later became drug targets, **16.88× at top 10** against approved
+docs/demo/DEMO_NARRATIVE.md	122	-	113,391	ORPHAN				from a knowledge graph of **113,391 nodes and 2,851,510 edges** assembled from six public sources. The
+docs/demo/DEMO_NARRATIVE.md	122	-	2,851,510	ORPHAN				from a knowledge graph of **113,391 nodes and 2,851,510 edges** assembled from six public sources. The
+docs/demo/DEMO_NARRATIVE.md	123	-	0.03	ORPHAN			hist	graph was rebuilt in DSS and checked against a frozen reference, with edge counts within **0.03%**.
+docs/demo/DEMO_NARRATIVE.md	128	-	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			"diabetes" and "type 2 diabetes" never sit on opposite sides. Over **6,754,128 disease–gene pairs**
+docs/demo/DEMO_NARRATIVE.md	129	-	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		and **670 held-out diseases**, the macro per-disease AUC is **0.8230**. Show the distribution with
+docs/demo/DEMO_NARRATIVE.md	131	-	0.8932	ASSERTED	nb3_validation_and_plots.py:header pooled AUC			more than the average. Pooling all pairs would read **0.8932**, about seven points higher, because
+docs/demo/DEMO_NARRATIVE.md	135	-	3.29	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @10			model leans toward them. Compared with genes of the same connectivity, the top 10 is still **3.29×**
+docs/demo/DEMO_NARRATIVE.md	142	-	0.8009	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			little. Across **505 disease families**, reconstruction holds at **0.8009**. Within breast cancer, each
+docs/demo/DEMO_NARRATIVE.md	162	-	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r			across diseases the two are uncorrelated (r = **+0.002**). On a drug-target benchmark, a simple lookup
+docs/demo/DEMO_NARRATIVE.md	175	-	12,272	ORPHAN				**Before the demo.** Re-check the scripted path on the live app: the funnel from 12,272 to 38, and
 docs/demo/WEBAPP_DESIGN.md	76	2	0.9365	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		**Why a spine at all:** the eyeball test needs a disease the audience knows cold. HER2+ reconstructs at AUC 0.
 docs/demo/WEBAPP_DESIGN.md	81	2	12,272	ORPHAN				**The clinical sanity check, unprompted.** HER2+ breast carcinoma scores 12,272 candidates. Top 15:
 docs/demo/WEBAPP_DESIGN.md	94	2	12,272	ORPHAN				The model was never told which gene this disease is named after. **ERBB2 lands at 14 of 12,272**, and the
@@ -354,24 +344,24 @@ docs/graph/GRAPH_BUILDING.md	467	7.3	8,100,498	ORPHAN				| **Total** | **8,100,4
 docs/graph/GRAPH_BUILDING.md	467	7.3	2,851,510	ORPHAN				| **Total** | **8,100,498** | **2,851,510** | |
 docs/graph/GRAPH_BUILDING.md	493	7.3	113,391	ORPHAN				| 2026-08-14 | **Assembly decomposed into 4 recipes**, two visual (§4.4). All outputs reproduce the monolith e
 docs/graph/GRAPH_BUILDING.md	496	7.3	0.03	ORPHAN			hist	| 2026-08-14 | **Reconstruction accepted** (§7.2). 7 of 9 node groups and 14 of 18 relations reproduce **to th
-docs/overview/PROJECT_CONTEXT.md	70	2.1	2.6	ORPHAN				| **Genetic evidence works** | Target–disease pairs with human genetic support have **2.6× relative clinical s
-docs/overview/PROJECT_CONTEXT.md	70	2.1	4.8	ORPHAN				| **Genetic evidence works** | Target–disease pairs with human genetic support have **2.6× relative clinical s
-docs/overview/PROJECT_CONTEXT.md	114	2.3	0.81	ORPHAN		y		disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche et al.,
-docs/overview/PROJECT_CONTEXT.md	135	3	0.93	ORPHAN				0.93 on 599 known targets), **diabetes mellitus** and **obesity disorder**.
-docs/overview/PROJECT_CONTEXT.md	138	3	0.69	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1 approved join auc_all	y		measurement.** It is the *worst* term in the breast panel — AUC **0.69**, beaten by its own subtypes.
-docs/overview/PROJECT_CONTEXT.md	175	4.1	113,391	ORPHAN				**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
-docs/overview/PROJECT_CONTEXT.md	175	4.1	2,851,510	ORPHAN				**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
-docs/overview/PROJECT_CONTEXT.md	189	4.2	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		`m7-f14` (14 features): macro per-disease AUC **0.8230** over 670 diseases. Three-rung ablation
-docs/overview/PROJECT_CONTEXT.md	190	4.2	1.9	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			ladder, two independent validation metrics cross-checking to 1.9×10⁻⁴, and a documented negative
-docs/overview/PROJECT_CONTEXT.md	230	4.3	18,510,084	ORPHAN				switch, over 18,510,084 rows, and is recorded in GRAPH_BUILDING §6 and
-docs/overview/PROJECT_CONTEXT.md	264	4.5	0.01	ORPHAN			hist	2026-08-17 and **the reconstruction is confirmed**: every metric landed within ±0.01 of the frozen
-docs/overview/PROJECT_CONTEXT.md	265	4.5	0.02	ORPHAN			hist	reference, against a ±0.02 tolerance set in advance (historical comparison in
-docs/overview/PROJECT_CONTEXT.md	270	4.5	0.8228	ORPHAN		y		| macro per-disease AUC | 0.8228 | **0.8197** |
-docs/overview/PROJECT_CONTEXT.md	270	4.5	0.8197	ORPHAN		y		| macro per-disease AUC | 0.8228 | **0.8197** |
-docs/overview/PROJECT_CONTEXT.md	271	4.5	0.6836	ORPHAN		y		| drug-target AUC | 0.6836 | **0.6911** |
-docs/overview/PROJECT_CONTEXT.md	271	4.5	0.6911	ORPHAN		y		| drug-target AUC | 0.6836 | **0.6911** |
-docs/overview/PROJECT_CONTEXT.md	272	4.5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| candidate pool | 6,754,128 | **6,754,128** *(identical)* |
-docs/overview/PROJECT_CONTEXT.md	274	4.5	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		Three individual personas reproduced to within **0.002**, which is stronger evidence than the macro
+docs/overview/PROJECT_CONTEXT.md	69	2.1	2.6	ORPHAN				| **Genetic evidence works** | Target–disease pairs with human genetic support have **2.6× relative clinical s
+docs/overview/PROJECT_CONTEXT.md	69	2.1	4.8	ORPHAN				| **Genetic evidence works** | Target–disease pairs with human genetic support have **2.6× relative clinical s
+docs/overview/PROJECT_CONTEXT.md	113	2.3	0.81	ORPHAN		y		disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche et al.,
+docs/overview/PROJECT_CONTEXT.md	134	3	0.93	ORPHAN				0.93 on 599 known targets), **diabetes mellitus** and **obesity disorder**.
+docs/overview/PROJECT_CONTEXT.md	137	3	0.69	VALUE_ONLY	nb2_splitting_and_pool.py:5.2.1 approved join auc_all	y		measurement.** It is the *worst* term in the breast panel — AUC **0.69**, beaten by its own subtypes.
+docs/overview/PROJECT_CONTEXT.md	174	4.1	113,391	ORPHAN				**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
+docs/overview/PROJECT_CONTEXT.md	174	4.1	2,851,510	ORPHAN				**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
+docs/overview/PROJECT_CONTEXT.md	188	4.2	0.8230	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		`m7-f14` (14 features): macro per-disease AUC **0.8230** over 670 diseases. Three-rung ablation
+docs/overview/PROJECT_CONTEXT.md	189	4.2	1.9	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			ladder, two independent validation metrics cross-checking to 1.9×10⁻⁴, and a documented negative
+docs/overview/PROJECT_CONTEXT.md	229	4.3	18,510,084	ORPHAN				switch, over 18,510,084 rows, and is recorded in GRAPH_BUILDING §6 and
+docs/overview/PROJECT_CONTEXT.md	263	4.5	0.01	ORPHAN			hist	2026-08-17 and **the reconstruction is confirmed**: every metric landed within ±0.01 of the frozen
+docs/overview/PROJECT_CONTEXT.md	264	4.5	0.02	ORPHAN			hist	reference, against a ±0.02 tolerance set in advance (historical comparison in
+docs/overview/PROJECT_CONTEXT.md	269	4.5	0.8228	ORPHAN		y		| macro per-disease AUC | 0.8228 | **0.8197** |
+docs/overview/PROJECT_CONTEXT.md	269	4.5	0.8197	ORPHAN		y		| macro per-disease AUC | 0.8228 | **0.8197** |
+docs/overview/PROJECT_CONTEXT.md	270	4.5	0.6836	ORPHAN		y		| drug-target AUC | 0.6836 | **0.6911** |
+docs/overview/PROJECT_CONTEXT.md	270	4.5	0.6911	ORPHAN		y		| drug-target AUC | 0.6836 | **0.6911** |
+docs/overview/PROJECT_CONTEXT.md	271	4.5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| candidate pool | 6,754,128 | **6,754,128** *(identical)* |
+docs/overview/PROJECT_CONTEXT.md	273	4.5	0.002	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		Three individual personas reproduced to within **0.002**, which is stronger evidence than the macro
 docs/prioritizer/FEATURE_AUDIT.md	42	1	0.00	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 			§6.1 measured that `gene_ppi_degree` and `gene_n_pathways` show **0.00% variation across diseases**.
 docs/prioritizer/FEATURE_AUDIT.md	44	1	1.23	ORPHAN				> **For 43 diseases (1.23% of pool rows) the model has no disease-specific signal at all. It is
 docs/prioritizer/FEATURE_AUDIT.md	46	1	3.7	ORPHAN				> model being served for 3.7% of the disease population.

@@ -1,9 +1,9 @@
 # Dataiku DSS — platform behaviours & CLI patterns
 
-> **Lifecycle:** Canonical · **Audience:** DSS builders and reviewers · **Authority:** reusable
-> platform behaviours and command patterns verified during this work · **Update when:** a behaviour is
-> refuted, corrected or materially changes by DSS version · **Generated dependencies:** none ·
-> **Excludes:** project-specific flow status and domain methodology.
+> **Lifecycle:** Historical — retired 2026-10-30 · **Audience:** maintainers tracing the evidence the
+> decision register cites · **Authority:** platform behaviours as verified up to its retirement ·
+> **Update when:** never · **Generated dependencies:** none · **Excludes:** current `dku` CLI usage,
+> which the internal team maintains as the `dku-cli` skill. Do not load by default.
 
 > Findings from building a large multi-project flow (≈160 recipes, 2.9M-edge graph, Visual ML,
 > plugin recipes, cross-project sharing). **Written generically** — nothing here depends on this

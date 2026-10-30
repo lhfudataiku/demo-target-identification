@@ -161,7 +161,7 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Status:** accepted
 - **Decision:** Select subtype-granularity comparisons by curated disease family rather than by an arbitrary split-key integer.
 - **Rationale:** Split-key elevation can change when node identifiers are remapped even when family semantics are unchanged.
-- **Evidence:** [`TARGET_PRIORITIZER.md` §2.3](../prioritizer/TARGET_PRIORITIZER.md), [`DSS_CHEATSHEET.md` §1](../platform/DSS_CHEATSHEET.md)
+- **Evidence:** [`TARGET_PRIORITIZER.md` §2.3](../prioritizer/TARGET_PRIORITIZER.md), [`DSS_CHEATSHEET.md` §1](../../archive/platform/DSS_CHEATSHEET.md)
 - **Consequences:** Diagnostics survive identifier remapping and continue comparing the intended disease family.
 - **Supersedes:** split-key-selected subtype diagnostics
 - **Superseded by:** —
@@ -187,7 +187,7 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Status:** accepted
 - **Decision:** Standard-rescale and mean-impute every numeric model input, and audit per-feature handling after each deployment.
 - **Rationale:** DSS feature-handling guesses can vary between deployments and silently change the model contract.
-- **Evidence:** [`TARGET_PRIORITIZER.md` §4](../prioritizer/TARGET_PRIORITIZER.md), [`DSS_CHEATSHEET.md` §1](../platform/DSS_CHEATSHEET.md)
+- **Evidence:** [`TARGET_PRIORITIZER.md` §4](../prioritizer/TARGET_PRIORITIZER.md), [`DSS_CHEATSHEET.md` §1](../../archive/platform/DSS_CHEATSHEET.md)
 - **Consequences:** Deployment review verifies the saved model's actual preprocessing rather than trusting defaults.
 - **Supersedes:** per-deployment inferred handling
 - **Superseded by:** —
@@ -304,7 +304,7 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Status:** accepted
 - **Decision:** When graph identifiers are reassigned, audit every rule that ranks, minimizes or applies modulo to them; literal substitution alone is insufficient.
 - **Rationale:** Three rules depended on integer order despite stable biological identifiers.
-- **Evidence:** [`DSS_CHEATSHEET.md` §1](../platform/DSS_CHEATSHEET.md)
+- **Evidence:** [`DSS_CHEATSHEET.md` §1](../../archive/platform/DSS_CHEATSHEET.md)
 - **Consequences:** Migration verification includes semantic outputs for splits, family assignment and filters.
 - **Supersedes:** literal-only index remapping
 - **Superseded by:** —
@@ -317,7 +317,7 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Status:** accepted
 - **Decision:** Capture recoverable configuration and evidence before deleting or materially replacing DSS objects.
 - **Rationale:** Saved models and experiments can be evidence even when they are no longer live consumers.
-- **Evidence:** [`DSS_CHEATSHEET.md` §6](../platform/DSS_CHEATSHEET.md)
+- **Evidence:** [`DSS_CHEATSHEET.md` §6](../../archive/platform/DSS_CHEATSHEET.md)
 - **Consequences:** Deletion remains separately authorized and follows a verified snapshot.
 - **Supersedes:** —
 - **Superseded by:** —
