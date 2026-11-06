@@ -50,7 +50,7 @@ uploaded file (the Menche interactome) and one snapshot (§3.2).
 | **PPI: Menche + HuRI + STRING** | protein interactome, merged with provenance retained | `gene/protein` (20,861) | `protein_protein` |
 | **Reactome** | curated pathways | `pathway` (2,883) | `pathway_protein`, `pathway_pathway` |
 | **GO + NCBI `gene2go`** | functional annotation, 3 namespaces | `biological_process` (23,974), `molecular_function` (10,041), `cellular_component` (4,077) | `bioprocess_protein`, `molfunc_protein`, `cellcomp_protein` + 3 hierarchies |
-| **HPO** (`hp.obo`, `phenotype.hpoa`, `genes_to_phenotype`) | phenotype layer | `effect/phenotype` (19,120) | `disease_phenotype_positive`/`_negative`, `phenotype_protein`, `phenotype_phenotype`; gene links on reclassified terms land in `disease_protein` |
+| **HPO** (`hp.obo`, `phenotype.hpoa`, `genes_to_phenotype`) | phenotype layer | `effect/phenotype` (19,120) | `disease_phenotype_positive`/`_negative`, `phenotype_protein`, `phenotype_phenotype`, `disease_phenotype_disease`; gene links on reclassified terms land in `disease_protein` |
 
 ### 2.1 Sources deliberately excluded
 
@@ -227,7 +227,11 @@ are resolved once, in assembly.
   to the disease node; affected edges reclassify rather than duplicate. **555** overlap terms (557
   raw identifiers collapse to 555 once two multi-mapped ids are resolved). A phenotype gene link on
   such a term becomes a `disease_protein` edge, so that relation mixes Open Targets evidence with
-  phenotype-annotation links that carry no Open Targets evidence type.
+  phenotype-annotation links that carry no Open Targets evidence type. A disease→phenotype
+  annotation on such a term becomes a `disease_phenotype_disease` edge (label `phenotype
+  annotation (disease term)`), **not** `disease_disease`, which is reserved for the MONDO hierarchy;
+  a negated (`NOT`) annotation on such a term is dropped, because there is no negative
+  disease–disease relation to carry it.
 - **Disease grouping** — the published grouping map assigns grouped nodes an underscore-joined
   identifier, the group name, and a distinct node source. Deterministic; no language model needed.
 - **Giant-component filter** — keep the largest connected component only.
@@ -239,7 +243,7 @@ are resolved once, in assembly.
 | 1 | `stack_edge_sources` | **Stack** (12 in) | union the 12 edge tables, deduplicate, drop self-loops | `kg_stacked` — 1,474,753 |
 | 2 | `compute_kg_edges` | Python (8 in) | reverse-all, attach names, ground, disease grouping, giant component | `kg_grounded` 2,854,754 + unindexed nodes 113,391 |
 | 3 | `assign_node_index` | **Window** | `node_index` over an explicit sort | `graph_nodes` — 113,391 |
-| 4 | `attach_node_index` | Python (3 in) | join indices back onto both endpoints | `kg` 2,854,754 · `graph_edges` 2,851,510 · `edge_metadata` 844,166 |
+| 4 | `attach_node_index` | Python (5 in) | join indices back onto both endpoints; rewrite `display_relation` into readable labels | `kg` 2,854,754 · `graph_edges` 2,851,510 · `edge_metadata` 844,166 |
 
 All four outputs match the pre-split monolithic recipe exactly. What the decomposition bought:
 
@@ -259,6 +263,27 @@ validated, and visual recipe semantics produced silently wrong output twice duri
 > been "fixed" into a behaviour change; and casting the metadata columns to string would have made
 > `"nan"` a real value and broken the metadata filter. **Anchor every migrated step on a row count
 > from the previous implementation.**
+
+**Display labels.** `display_relation` is the edge label people read in the Graph Explorer. The
+per-source recipes set it to fixed text or raw source values; step 4 rewrites it once, at assembly.
+`relation` is never changed, so Part 2 features and training labels are unaffected. Each rule gives
+one label per link or maps one raw value to one new value, so `kg`, `graph_edges` and the built graph
+keep their counts; the recipe asserts this. The per-source tables keep their raw values, because
+Part 2's drug evidence reads `drug_protein_edges` and `drug_disease_edges` directly.
+
+| Relation | Raw value | Label in the graph |
+|---|---|---|
+| `disease_protein` | associated with | by the Open Targets evidence types pooled over the link (`datatypes`): `germline genetic association` · `somatic mutation association` · `germline + somatic association` · `linked via phenotype annotation` (no Open Targets type: the link comes only from a reclassified phenotype gene link) |
+| `disease_disease` | parent-child | unchanged: MONDO hierarchy only |
+| `disease_phenotype_disease` | phenotype annotation (disease term) | unchanged: set at source by `harmonize_disease_phenotype` (§4.3) |
+| `protein_protein` | ppi | `interacts with` |
+| `pathway_protein` | interacts with | `member of pathway` (Reactome membership, not a physical interaction) |
+| `phenotype_protein` | has phenotype | `linked to phenotype (via disease)` |
+| `indication` / `drug_investigated_for` | highest clinical stage (APPROVAL, PHASE_2, …) | readable stage: `approved for`, `filed for approval for`, `in phase 1 … 3 trials for`, `IND filed for`, `preclinical for`, `investigated for (stage unknown)` |
+| all others | unchanged | `drug_protein` keeps the ChEMBL action type; GO, disease–phenotype and hierarchy labels are already standard |
+
+Same-type relations are stored in both directions with the same label, so their labels are worded
+to read either way; `parent-child` cannot say which end is the parent.
 
 ### 4.5 Identifier-integrity rules
 
@@ -287,9 +312,10 @@ Which source is the system of record for each node and edge type, and how it gro
 | `gene/protein` | gene vocabulary | Entrez | authoritative |
 | `disease`, `disease_disease` | disease ontology | bare-integer MONDO | authoritative; cross-reference hub for everything else |
 | `pathway`, `pathway_protein`, `pathway_pathway` | pathway database | stable pathway id | human-only filter; gene id → Entrez |
-| `biological_process` / `molecular_function` / `cellular_component` + links + hierarchies | function ontology + gene annotation | GO id | namespace → node type; annotation file is already Entrez |
+| `biological_process` / `molecular_function` / `cellular_component` + links + hierarchies | function ontology + gene annotation | GO id | namespace → node type; annotation file is already Entrez; negated (`NOT`) annotations dropped |
 | `effect/phenotype`, `phenotype_phenotype` | phenotype ontology | HP id | direct |
 | `disease_phenotype_positive` / `_negative` | phenotype annotations | Mendelian / rare-disease ids | → MONDO via the cross-reference hub; a negation qualifier splits ± |
+| `disease_phenotype_disease` | phenotype annotations on terms that are also diseases (§4.3) | as above | positive annotations only; `NOT` dropped |
 | `phenotype_protein` | phenotype gene links | HP id + Entrez | direct — *replaces the reference's now-paid source* |
 | `protein_protein` | three interactomes | Entrez / Ensembl / internal | Ensembl→Entrez via the gene map; third source filtered to experimental or database evidence ≥ 700; merged on a canonical unordered pair |
 | `disease_protein` | association table + reclassified phenotype gene links | Ensembl + disease id; HP id + Entrez | genetic-association + somatic-mutation types at score ≥ 0.3, both ids remapped; plus phenotype gene links whose term reclassifies to a disease (§4.3), which have no `datatypes` in `edge_metadata` |
@@ -497,6 +523,7 @@ exposure), not under-coverage of what we do build.
 | 2026-08-14 | **Rule: anchor every migrated step on a row count from the previous implementation.** Literal translation of code into visual recipes is not behaviour-preserving — three traps in one refactor, each producing a plausible graph rather than an error. |
 | 2026-08-14 | **Reconstruction accepted** (§7.2). 7 of 9 node groups and 14 of 18 relations reproduce **to the row**; total delta −0.03% of edges, all function-ontology. Root cause traced to the *reference* being stale, not the rebuild. |
 | 2026-08-17 | **The graph-building webapp and Kuzu snapshot belong to this project**, and the snapshot is shared out as the modelling project's primary input. |
+| 2026-11-06 | **Relation corrections and readable labels.** Disease→phenotype annotations on terms that are also diseases moved out of `disease_disease` into a new `disease_phenotype_disease` relation (they were 36% of `disease_disease` links, labelled `parent-child`); negated GO and reclassified phenotype annotations dropped; `display_relation` rewritten into readable labels at assembly. Edges stay stored in both directions. **Rejected:** dropping the reclassified links (loses information) and one-way storage (5 of 14 champion features assume two-way). *Not yet built — §7 statistics describe the previous build.* |
 
 ## References
 

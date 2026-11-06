@@ -14,6 +14,7 @@
 #     2. Check node_index and the node key are both unique, so the joins cannot multiply rows.
 #     3. Join node_index onto the x end (x_index) and the y end (y_index); fail loudly, with
 #        examples, if the row count changes or any endpoint has no number.
+#     3b. Rewrite display_relation into readable labels (relation untouched; counts unchanged).
 #     4. Write:
 #        - kg            full edge table: relation, display_relation, x/y index, id, type, name,
 #                        source (PrimeKG layout)
@@ -35,6 +36,76 @@ import pandas as pd
 
 KEY = ["node_id", "node_type", "node_name", "node_source"]
 METADATA_COLS = ["datatypes", "ppi_sources"]
+
+# ---- display-label vocabulary (used in step 3b) ------------------------------
+# Wording is chosen to read correctly from the side the built graph stores cross-type edges on
+# (x -> y: protein -> disease / pathway / phenotype, drug -> disease), and to stay neutral for
+# same-type relations, which are stored in both directions with the same label.
+
+# disease_protein: from the Open Targets evidence types in `datatypes`, pooled over every row of the
+# same link. No type at all means the link comes only from a phenotype gene link whose phenotype term
+# is also a disease (harmonize_phenotype_protein).
+DP_LABELS = {
+    frozenset({"genetic_association"}): "germline genetic association",
+    frozenset({"somatic_mutation"}): "somatic mutation association",
+    frozenset({"genetic_association", "somatic_mutation"}): "germline + somatic association",
+    frozenset(): "linked via phenotype annotation",
+}
+# disease_disease is the MONDO hierarchy only and keeps "parent-child". Disease -> phenotype
+# annotations whose phenotype term is also a disease have their own relation,
+# disease_phenotype_disease, labelled at source by harmonize_disease_phenotype.
+# One raw value -> one readable value.
+CONSTANT_LABELS = {
+    ("protein_protein", "ppi"): "interacts with",
+    ("pathway_protein", "interacts with"): "member of pathway",       # Reactome membership
+    ("phenotype_protein", "has phenotype"): "linked to phenotype (via disease)",
+}
+# indication / drug_investigated_for: display_relation holds the highest clinical stage reached.
+STAGE_LABELS = {
+    "APPROVAL": "approved for",
+    "PREAPPROVAL": "filed for approval for",
+    "PHASE_3": "in phase 3 trials for",
+    "PHASE_2_3": "in phase 2/3 trials for",
+    "PHASE_2": "in phase 2 trials for",
+    "PHASE_1_2": "in phase 1/2 trials for",
+    "PHASE_1": "in phase 1 trials for",
+    "EARLY_PHASE_1": "in early phase 1 trials for",
+    "IND": "IND filed for",
+    "PRECLINICAL": "preclinical for",
+    "UNKNOWN": "investigated for (stage unknown)",
+}
+LINK_COLS = ["relation", "display_relation", "x_index", "y_index"]
+
+
+def relabel_display(kg):
+    """Rewrite display_relation only; relation, endpoints and row count are unchanged."""
+    kg = kg.copy()
+    rel = kg.relation.copy()
+
+    # disease_protein -- one label per link, from the pooled evidence types
+    dp = rel == "disease_protein"
+    links = [frozenset((a, b)) for a, b in zip(kg.x_index[dp], kg.y_index[dp])]
+    raw = kg.datatypes[dp] if "datatypes" in kg.columns else pd.Series([None] * int(dp.sum()))
+    pooled = {}
+    for link, t in zip(links, raw):
+        s = pooled.setdefault(link, set())
+        if isinstance(t, str) and t and t != "nan":
+            s.update(t.split("+"))
+    unknown = {frozenset(s) for s in pooled.values()} - set(DP_LABELS)
+    assert not unknown, f"unexpected disease_protein evidence types: {unknown}"
+    kg.loc[dp, "display_relation"] = [DP_LABELS[frozenset(pooled[link])] for link in links]
+
+    # fixed-text relations
+    for (r, old), new in CONSTANT_LABELS.items():
+        kg.loc[(rel == r) & (kg.display_relation == old), "display_relation"] = new
+
+    # clinical stage -> readable phrase; an unmapped stage is kept as-is and reported
+    st = rel.isin(["indication", "drug_investigated_for"])
+    missing = sorted(set(kg.display_relation[st]) - set(STAGE_LABELS))
+    if missing:
+        print("WARNING: clinical stages without a readable label, left unchanged:", missing)
+    kg.loc[st, "display_relation"] = kg.display_relation[st].map(lambda v: STAGE_LABELS.get(v, v))
+    return kg
 
 # ---- 1. read inputs ----------------------------------------------------------
 # infer_with_pandas=False is MANDATORY. With inference on, get_dataframe() guesses dtypes per
@@ -79,6 +150,21 @@ if len(bad_x) or len(bad_y):
     raise AssertionError("some endpoints did not resolve to a node_index")
 kg["x_index"] = kg.x_index.astype("int64")
 kg["y_index"] = kg.y_index.astype("int64")
+
+# ---- 3b. readable display labels (display_relation only) ---------------------
+# display_relation is the edge label people read in the Graph Explorer. The per-source recipes
+# set it to fixed or raw values; this step rewrites it once, here, so that:
+#   - `relation` is never touched. Part 2 features and labels read relation + x/y index only.
+#   - The per-source tables keep their raw values. Part 2's drug evidence chain reads
+#     drug_protein_edges / drug_disease_edges directly (group_drug_protein_actions,
+#     join_drug_evidence_records, compute_drug_target_benchmark), not kg / graph_edges.
+#   - Every rule gives ONE label per (relation, link), or maps one raw value to one new value, so no
+#     two rows that differ today become identical and no identical rows split. kg, graph_edges and
+#     the built graph keep exactly their row and edge counts.
+n_links = len(kg[LINK_COLS].drop_duplicates())
+kg = relabel_display(kg)
+assert len(kg[LINK_COLS].drop_duplicates()) == n_links, "relabel changed the graph_edges row count"
+print("display labels:", kg.groupby(["relation", "display_relation"]).size().to_dict())
 
 # ---- 4. write kg and graph_edges (PrimeKG columns only) ----------------------
 # graph_edges is de-duplicated on (relation, display_relation, x_index, y_index), so it can have

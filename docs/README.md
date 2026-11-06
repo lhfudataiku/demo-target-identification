@@ -64,7 +64,12 @@ skill.
 
 ## Planning
 
-No plan is in progress. Completed plans move to [`../archive/`](../archive/): the most recent is the flow migration, done
+**In progress:** the graph revision, drafted 2026-11-06:
+[`operations/GRAPH_REVISION_WORKPLAN.md`](operations/GRAPH_REVISION_WORKPLAN.md). It moves data
+loading into `DEMO_KG_PREP`, corrects two relations, makes edge labels readable, and rebuilds from
+current sources.
+
+Completed plans move to [`../archive/`](../archive/): the most recent is the flow migration, done
 2026-10-29 (`DEC-ARCH-006`, `DEC-OPS-007`, `DEC-MEAS-005`, `DEC-ARCH-007`; its workplan and evidence
 design are [`FLOW_MIGRATION_WORKPLAN.md`](../archive/FLOW_MIGRATION_WORKPLAN.md) and
 [`EVIDENCE_PROJECT_DESIGN.md`](../archive/EVIDENCE_PROJECT_DESIGN.md)). Before it came the webapp
