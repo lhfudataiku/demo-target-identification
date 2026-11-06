@@ -50,7 +50,7 @@ uploaded file (the Menche interactome) and one snapshot (§3.2).
 | **PPI: Menche + HuRI + STRING** | protein interactome, merged with provenance retained | `gene/protein` (20,861) | `protein_protein` |
 | **Reactome** | curated pathways | `pathway` (2,883) | `pathway_protein`, `pathway_pathway` |
 | **GO + NCBI `gene2go`** | functional annotation, 3 namespaces | `biological_process` (23,974), `molecular_function` (10,041), `cellular_component` (4,077) | `bioprocess_protein`, `molfunc_protein`, `cellcomp_protein` + 3 hierarchies |
-| **HPO** (`hp.obo`, `phenotype.hpoa`, `genes_to_phenotype`) | phenotype layer | `effect/phenotype` (19,120) | `disease_phenotype_positive`/`_negative`, `phenotype_protein`, `phenotype_phenotype` |
+| **HPO** (`hp.obo`, `phenotype.hpoa`, `genes_to_phenotype`) | phenotype layer | `effect/phenotype` (19,120) | `disease_phenotype_positive`/`_negative`, `phenotype_protein`, `phenotype_phenotype`; gene links on reclassified terms land in `disease_protein` |
 
 ### 2.1 Sources deliberately excluded
 
@@ -225,7 +225,9 @@ are resolved once, in assembly.
   function and phenotype term tables.
 - **Phenotype↔disease reclassification** — a term that is *both* a phenotype and a disease resolves
   to the disease node; affected edges reclassify rather than duplicate. **555** overlap terms (557
-  raw identifiers collapse to 555 once two multi-mapped ids are resolved).
+  raw identifiers collapse to 555 once two multi-mapped ids are resolved). A phenotype gene link on
+  such a term becomes a `disease_protein` edge, so that relation mixes Open Targets evidence with
+  phenotype-annotation links that carry no Open Targets evidence type.
 - **Disease grouping** — the published grouping map assigns grouped nodes an underscore-joined
   identifier, the group name, and a distinct node source. Deterministic; no language model needed.
 - **Giant-component filter** — keep the largest connected component only.
@@ -290,7 +292,7 @@ Which source is the system of record for each node and edge type, and how it gro
 | `disease_phenotype_positive` / `_negative` | phenotype annotations | Mendelian / rare-disease ids | → MONDO via the cross-reference hub; a negation qualifier splits ± |
 | `phenotype_protein` | phenotype gene links | HP id + Entrez | direct — *replaces the reference's now-paid source* |
 | `protein_protein` | three interactomes | Entrez / Ensembl / internal | Ensembl→Entrez via the gene map; third source filtered to experimental or database evidence ≥ 700; merged on a canonical unordered pair |
-| `disease_protein` | association table | Ensembl + disease id | genetic-association + somatic-mutation types at score ≥ 0.3; both ids remapped |
+| `disease_protein` | association table + reclassified phenotype gene links | Ensembl + disease id; HP id + Entrez | genetic-association + somatic-mutation types at score ≥ 0.3, both ids remapped; plus phenotype gene links whose term reclassifies to a disease (§4.3), which have no `datatypes` in `edge_metadata` |
 | `drug` | drug molecule table | internal → cross-referenced id | drugs without a cross-reference are dropped |
 | `drug_protein` | mechanism of action | internal × Ensembl | action type → display relation |
 | `indication` / `drug_investigated_for` | clinical indication | internal × disease id | **split on maximum clinical stage** — approved vs everything else |
@@ -370,7 +372,7 @@ across the project boundary any more (PROJECT_CONTEXT §4.3).
 | protein_protein | 520,380 | three interactomes merged; sources retained in `edge_metadata` |
 | phenotype_protein | 487,054 | phenotype gene links |
 | disease_phenotype_positive | 380,280 | phenotype annotations |
-| disease_protein | 378,888 | genetic association + somatic mutation @ ≥ 0.3 |
+| disease_protein | 378,888 | genetic association + somatic mutation @ ≥ 0.3; reclassified phenotype gene links |
 | bioprocess_protein | 251,808 | function ontology + gene annotation |
 | cellcomp_protein | 186,806 | as above |
 | molfunc_protein | 156,246 | as above |
@@ -448,7 +450,7 @@ Reference: Chandak et al., *Sci Data* 2023. Both undirected.
 | disease–phenotype (pos) | 300,634 | 380,280 | higher — full ontology |
 | biological process–protein | 289,610 | 251,808 | close |
 | cellular component–protein | 166,804 | 186,806 | close |
-| disease–protein | 160,822 | 378,888 | higher — genetic + somatic |
+| disease–protein | 160,822 | 378,888 | higher — genetic + somatic + reclassified phenotype links |
 | molecular function–protein | 139,060 | 156,246 | close |
 | drug–phenotype | 129,568 | 0 | not built |
 | bioprocess–bioprocess | 105,772 | 80,972 | close |
