@@ -74,9 +74,9 @@ join_candidate_identity	join	-	-		DSS-only	graph_nodes,hgnc_identity	candidate_i
 join_disease_family_id	join	-	-		DSS-only	disease_family_id,enriched_graph_features_1	enriched_graph_features_1_family
 join_drug_evidence_records	join	-	-		DSS-only	drug_disease_edges,drug_protein_actions,graph_nodes	drug_evidence_records
 join_orthogonality	join	-	-		DSS-only	drug_target_benchmark,validation_auc_by_disease	orthogonality_scatter
-score_persona_candidates_shap5	prediction_scoring	-	-		DSS-only	hJLGoYn4,validation_set_personas_2	persona2_scored_shap5
-score_psplit_validation_m7	prediction_scoring	-	-		DSS-only	hJLGoYn4,psplit_validation_set	scored_m7
+score_persona_candidates_shap5	prediction_scoring	-	-		DSS-only	W8VhjZOZ,validation_set_personas_2	persona2_scored_shap5
+score_psplit_validation_m7	prediction_scoring	-	-		DSS-only	W8VhjZOZ,psplit_validation_set	scored_m7
 split_by_disease_key	split	-	-		DSS-only	enriched_graph_features_candidate_psplit	psplit_test_set,psplit_train_set,psplit_validation_set
 sync_scored_champion	sync	-	-		DSS-only	scored_m7	scored_champion
-train_m7-f14	prediction_training	-	-		DSS-only	psplit_train_set	hJLGoYn4
+train_m7-f14-cal	prediction_training	-	-		DSS-only	psplit_test_set,psplit_train_set	W8VhjZOZ
 window_family_rank	window	-	-		DSS-only	scored_champion	family_validation_ranked

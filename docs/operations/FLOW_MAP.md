@@ -15,7 +15,7 @@
 
 Project `DEMO_TARGET_IDENTIFICATION`. The other Part 2 project is mapped in [`FLOW_MAP_EVIDENCE.md`](FLOW_MAP_EVIDENCE.md): the evidence project, which the notebooks read and nothing here reads.
 
-Live DSS: **83 datasets across 20 zones**, cross-referenced against the recipe graph (81 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
+Live DSS: **82 datasets across 20 zones**, cross-referenced against the recipe graph (81 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
 
 A dataset counts as **read** only when its name appears *quoted* in reader code. A bare
 mention is prose: `calibration.py` names the three DWPC feature datasets in a display
@@ -33,13 +33,10 @@ so zones A1-A4 are read by named routes rather than by an unbuilt UI.
 
 ## Summary
 
-- datasets: **83**
+- datasets: **82**
 - endpoints (read by a webapp route or a notebook): **34**
 - flow intermediates (consumed by a recipe, no direct reader): **48**
-- genuine orphans: **1** — `llm_hx`
-
-> Every orphan here is a deliberate decision, not a finding. See
-> `.index/_dead.json` `keep_do_not_prune` for why each one survives.
+- genuine orphans: **0**
 
 ### Shared-recipe caution
 
@@ -164,7 +161,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 |---|---|---|--:|---|
 | `enriched_graph_features_1_family` | — | `join_disease_family_id` | 1 | intermediate |
 | `enriched_graph_features_candidate_psplit` | nb2, nb5 | `filter_has_path_evidence` | 1 | notebook |
-| `psplit_test_set` | — | `split_by_disease_key` | 1 | intermediate |
+| `psplit_test_set` | — | `split_by_disease_key` | 2 | intermediate |
 | `psplit_train_set` | nb1 | `split_by_disease_key` | 2 | notebook |
 | `psplit_validation_set` | — | `split_by_disease_key` | 3 | intermediate |
 
@@ -183,13 +180,11 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `family_panel` | — | `compute_family_panel` | 2 | intermediate |
 | `validation_set_personas_2` | — | `filter_persona_diseases` | 1 | intermediate |
 
-## Agent  (1 datasets, 0 recipes)
+## Agent  (0 datasets, 0 recipes)
 
 Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.UBUlwwxT`
 
-| dataset | read by | producing recipe | recipe consumers | flag |
-|---|---|---|--:|---|
-| `llm_hx` | — | — *(source)* | 0 | **ORPHAN** |
+_No datasets in this zone._
 
 ## S1 Shortlist  (9 datasets, 9 recipes)
 

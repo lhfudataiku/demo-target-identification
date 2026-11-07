@@ -29,10 +29,10 @@ for gt in ["approved","investigational","any"]:
     print(f"DISC|{gt:16s}|diseases={len(s):4d}|lift@10={l10:6.2f}|lift@200={l200:5.2f}|"
           f"hits@200={int(s.hits_top200.sum()):,}")
     if gt=="approved":
-        check("8.3 approved lift@10",16.88,round(float(l10),2),tol=0.02,fmt="{:.2f}")
-        check("8.3 approved lift@200",5.04,round(float(l200),2),tol=0.02,fmt="{:.2f}")
+        check("8.3 approved lift@10",21.26,round(float(l10),2),tol=0.02,fmt="{:.2f}")
+        check("8.3 approved lift@200",5.22,round(float(l200),2),tol=0.02,fmt="{:.2f}")
     if gt=="investigational":
-        check("8.3 investigational lift@10",8.85,round(float(l10),2),tol=0.02,fmt="{:.2f}")
+        check("8.3 investigational lift@10",6.71,round(float(l10),2),tol=0.02,fmt="{:.2f}")
 
 # ==== 8.3  FIGURE 1 — discovery lift vs K, by ground truth ====
 # Replaces the per-K table in section 8.3: the shape (monotone decay toward a ~4x floor) is the point,
@@ -124,9 +124,9 @@ for K in [10, 200]:
     _cl[K] = float(((_ag["h%d" % K]/K)/_ag.base).replace([np.inf], np.nan).mean())
 print("CURATED|diseases=%d|lift@10=%.2f|lift@200=%.2f|expected@10=%.2f" % (
     len(_ag), _cl[10], _cl[200], (10*_ag.base).sum()))
-check("8.3 curated>=0.8 diseases", 114, len(_ag))
-check("8.3 curated>=0.8 lift@10", 21.32, round(_cl[10], 2), tol=0.02, fmt="{:.2f}")
-check("8.3 curated>=0.8 lift@200", 5.23, round(_cl[200], 2), tol=0.02, fmt="{:.2f}")
+check("8.3 curated>=0.8 diseases", 103, len(_ag))
+check("8.3 curated>=0.8 lift@10", 20.36, round(_cl[10], 2), tol=0.02, fmt="{:.2f}")
+check("8.3 curated>=0.8 lift@200", 5.02, round(_cl[200], 2), tol=0.02, fmt="{:.2f}")
 del _nv2, _g2
 
 # ==== 8.4  tractability, naive vs degree-matched ====
@@ -150,16 +150,17 @@ for K in [10,20,50,100,200]:
     pdm,pnv,mdm,mnv = _lifts(K)
     print("XOVER|K=%d|pooled dm%s naive|macro dm%s naive" % (
         K, ">" if pdm>pnv else "<", ">" if mdm>mnv else "<"))
-# documented: dm WEAKENS at 10 under both; pooled turns at 20; macro not until 50
-for K,want_p,want_m in [(10,False,False),(20,True,False),(50,True,True),(200,True,True)]:
+# documented: dm WEAKENS at 10 under both; both estimators turn at 20 (m7-f14-cal on the MONDO-ID
+# split, 2026-11-07; on m7-f14 / the old split macro did not turn until 50)
+for K,want_p,want_m in [(10,False,False),(20,True,True),(50,True,True),(200,True,True)]:
     pdm,pnv,mdm,mnv=_lifts(K)
     check(f"8.4 dm>naive pooled @{K}", want_p, bool(pdm>pnv), tol=0, fmt="{}")
     check(f"8.4 dm>naive macro @{K}",  want_m, bool(mdm>mnv), tol=0, fmt="{}")
 p10=nv.demonstrated_obs10.sum()/nv.demonstrated_exp10.sum()
 p200=nv.demonstrated_obs200.sum()/nv.demonstrated_exp200.sum()
-check("8.4 pooled dm lift @10",3.29,round(float(p10),2),tol=0.02,fmt="{:.2f}")
-check("8.4 pooled dm lift @200",2.42,round(float(p200),2),tol=0.02,fmt="{:.2f}")
-check("8.4 macro dm lift @10",3.11,round(float(nv.demonstrated_dm10.mean()),2),tol=0.02,fmt="{:.2f}")
+check("8.4 pooled dm lift @10",3.06,round(float(p10),2),tol=0.02,fmt="{:.2f}")
+check("8.4 pooled dm lift @200",2.30,round(float(p200),2),tol=0.02,fmt="{:.2f}")
+check("8.4 macro dm lift @10",2.85,round(float(nv.demonstrated_dm10.mean()),2),tol=0.02,fmt="{:.2f}")
 
 # ==== 8.4  FIGURE 2 — the estimator crossover, which the table states but does not show ====
 fig,ax=plt.subplots(figsize=(7.4,4.8))
@@ -191,8 +192,8 @@ print(f"FILTER|rows={len(f3)}|cols={list(f3.columns)[:8]}")
 pc=dataiku.Dataset("persona_candidates").get_dataframe()
 n5=int((pc.n_criteria==5).sum())
 print(f"PERSONA|diseases={len(pc)}|passing all five={n5}")
-check("8.7 diseases passing 5 criteria",64,n5)
-check("8.7 validation diseases",670,len(pc))
+check("8.7 diseases passing 5 criteria",45,n5)
+check("8.7 validation diseases",607,len(pc))
 
 # ==== 8.10  the breast panel ====
 bm=dataiku.Dataset("breast_panel_metrics").get_dataframe()
@@ -201,7 +202,7 @@ for _,r in bm.sort_values("n_known_targets",ascending=False).iterrows():
     print(f"BREAST|{str(r.disease)[:34]:34s}|{int(r.pool):6d}|{int(r.n_known_targets):4d}|"
           f"{r.auc:.4f}|{int(r.hits_at_50):3d}|{r.expected_at_50:6.2f}|{str(r.hits50_verdict)[:34]}")
 h=bm[bm.disease.str.contains("HER2")]; t=bm[bm.disease.str.contains("triple")]
-if len(h): check("8.10 HER2+ AUC",0.9365,round(float(h.auc.iloc[0]),4),tol=0.0006,fmt="{:.4f}")
+if len(h): check("8.10 HER2+ AUC",0.9385,round(float(h.auc.iloc[0]),4),tol=0.0006,fmt="{:.4f}")
 if len(t): check("8.10 TNBC known targets",8,int(t.n_known_targets.iloc[0]))
 bo=dataiku.Dataset("family_panel_overlap").get_dataframe()
 # breast_panel_overlap retired -- family_panel_overlap covers all three Act 3
@@ -209,6 +210,6 @@ bo=dataiku.Dataset("family_panel_overlap").get_dataframe()
 bo=bo[bo.act3_family=="breast"]
 kp=bo[(bo.disease_a.str.contains("HER2")&bo.disease_b.str.contains("triple"))|
       (bo.disease_b.str.contains("HER2")&bo.disease_a.str.contains("triple"))]
-if len(kp): check("8.10 HER2+ vs TNBC novel overlap",2,int(kp.novel_overlap.iloc[0]))
+if len(kp): check("8.10 HER2+ vs TNBC novel overlap",1,int(kp.novel_overlap.iloc[0]))
 print(f"\nSUMMARY|{len(FAIL)} STALE")
 for n,d,l in FAIL: print(f"FAILED|{n}|doc={d}|live={l}")

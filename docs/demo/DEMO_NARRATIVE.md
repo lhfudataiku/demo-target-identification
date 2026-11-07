@@ -48,7 +48,7 @@ single gene they can argue about.
 **Start with a disease they know.** Open **HER2-positive breast carcinoma** and ask the room: *does
 the top of this list look right?* A breast oncologist reads the PI3K/AKT and RAS–MAPK axis in the
 first rows. Those are targets the field has already validated, and the model has put them first. The
-model reconstructs this disease's known targets at **AUC 0.9365**, but the page shows no AUC: the
+model reconstructs this disease's known targets at **AUC 0.9385**, but the page shows no AUC: the
 scientist's own judgment is the test, and the list speaks first.
 
 **Then let them narrow it on their own terms.** Nothing is pre-filtered. The controls are the
@@ -101,7 +101,7 @@ marking, not the fluency: that marking is what makes an agent usable in science.
 - The score orders candidates and does not measure them. Rank 9 means ninth, not 90% likely.
 
 **Close the page with the footnote, not a headline.** Remove every known target and re-rank the rest:
-the top is enriched for genes that later became drug targets, **16.88× at top 10** against approved
+the top is enriched for genes that later became drug targets, **21.26× at top 10** against approved
 drugs. *"We report this because it is measured, not because we ask you to act on it. It suggests the
 same machinery is worth pointing at data where the answer is not known yet: yours."*
 
@@ -126,22 +126,22 @@ This section is about provenance, not quality: it shows exactly what went in, an
 **2 · How faithfully it reconstructs known biology.** *Measured on diseases the model never trained
 on, and shown as a distribution, not one number.* Train and test are split by disease family, so
 "diabetes" and "type 2 diabetes" never sit on opposite sides. Over **6,754,128 disease–gene pairs**
-and **670 held-out diseases**, the macro per-disease AUC is **0.8230**. Show the distribution with
+and **607 held-out diseases**, the macro per-disease AUC is **0.8170**. Show the distribution with
 HER2+ marked, because usefulness is not uniform, and knowing which diseases reconstruct well is worth
-more than the average. Pooling all pairs would read **0.8932**, about seven points higher, because
+more than the average. Pooling all pairs would read **0.8908**, about seven points higher, because
 large diseases would carry small ones. The demo reports the per-disease figure.
 
 Raise the known weakness here before the room does. Well-studied genes have more edges, so any graph
-model leans toward them. Compared with genes of the same connectivity, the top 10 is still **3.29×**
+model leans toward them. Compared with genes of the same connectivity, the top 10 is still **3.06×**
 enriched for real targets. Yet among known targets, the least-connected genes score lower than the
 most-connected. *"Where your field is under-studied, it will under-rank. Here is the size of that
 effect."*
 
 **3 · Does it hold across the disease family.** *Robust: the same model on every term in the family,
 each with its uncertainty.* Most teams own one therapeutic area, so one well-chosen disease proves
-little. Across **505 disease families**, reconstruction holds at **0.8009**. Within breast cancer, each
+little. Across **481 disease families**, reconstruction holds at **0.7988**. Within breast cancer, each
 subtype carries its interval, and thin subtypes are flagged rather than hidden. The subtypes really
-do differ: HER2-positive and triple-negative breast share only **2** novel candidates in their top
+do differ: HER2-positive and triple-negative breast share only **1** novel candidate in their top
 50. *"We can tell you which of your subtypes this resolves before you build on it."*
 
 All three sections rest on one discipline: an assertion notebook re-derives each headline model
@@ -159,7 +159,7 @@ afternoon by one recipe, and the record of why stays in the flow for the next pe
 are worth testing is the scientist's call. Making them cheap to test is the platform's job.
 
 State one limitation before it is found. Ranking by association does not predict therapeutic value:
-across diseases the two are uncorrelated (r = **+0.002**). On a drug-target benchmark, a simple lookup
+across diseases the two are essentially uncorrelated (r = **+0.091**, R² under 1%). On a drug-target benchmark, a simple lookup
 of how many diseases a gene already targets beats the model. That benchmark measures gene popularity,
 so it is never presented as a score.
 

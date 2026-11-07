@@ -94,21 +94,21 @@ is read entire as `label, count`.
 | `graph_label_evidence` | `datatypes` | 3 |
 
 **Section 2 — reconstruction and calibration** (`GET /api/calibration`). The scope is the validation
-split: **670 held-out diseases (668 with an AUC) in 505 disease families**.
+split: **607 held-out diseases (606 with an AUC) in 481 disease families**.
 
 | dataset | fields read | rows and scope |
 |---|---|---|
-| `validation_auc_by_disease` | `auc_disease` | 670 diseases → macro AUC, median, histogram, count below chance |
-| `validation_auc_by_disease` (since M6; was `persona_enrichment`) | `disease_index`, `disease`, `auc_disease`, `rank_enrichment`, `n_pos` | 670 → each disease's place in the distribution, and the enrichment quartiles |
-| `orthogonality_scatter` | `auc_disease`, `auc_drug_targets` | 670 rows, 130 with a drug-target AUC → Pearson r |
-| `family_auc_by_family` | `auc_family` | 505 families, 503 with an AUC → family macro AUC |
+| `validation_auc_by_disease` | `auc_disease` | 607 diseases → macro AUC, median, histogram, count below chance |
+| `validation_auc_by_disease` (since M6; was `persona_enrichment`) | `disease_index`, `disease`, `auc_disease`, `rank_enrichment`, `n_pos` | 607 → each disease's place in the distribution, and the enrichment quartiles |
+| `orthogonality_scatter` | `auc_disease`, `auc_drug_targets` | 607 rows, 122 with a drug-target AUC → Pearson r |
+| `family_auc_by_family` | `auc_family` | 481 families, 480 with an AUC → family macro AUC |
 | `split_audit_2` | `split`, `rows`, `positives`, `pos_rate_pct`, `n_diseases`, `n_split_keys`, `n_anchor_families`, `overlap_*`, `straddling_split_keys` | 3 splits; leakage columns must sum to 0 |
 | `hub_bias_meter` | `quintile`, `median_degree`, `mean_proba`, `pct_predicted_positive`, `n_genes`, `rho_degree_proba`, `threshold` | 5 degree quintiles |
 | `disease_eligibility` | `is_eligible`, `count` | 2 rows (1,157 eligible of 27,153 diseases) |
 | `enriched_dwpc_GGD`, `enriched_dwpc_GPGD`, `enriched_dwpc_GCD` (zone 10) | the `COUNT_RECORDS` and `BUILD_START_DATE` metrics only | the three pool-admission routes |
-| saved model `hJLGoYn4` (zone 31) | the active version's precision, recall, F1, AUPRC, pooled AUC and lift | the champion card |
+| saved model `W8VhjZOZ` (`m7-f14-cal`, zone 31) | the active version's precision, recall, F1, AUPRC, pooled AUC and lift | the champion card |
 
-`persona_enrichment` carries the same 668 AUCs as `validation_auc_by_disease`, and its
+`persona_enrichment` carries the same AUCs (606 on the 2026-11 split) as `validation_auc_by_disease`, and its
 `rank_enrichment` is `(hits_at_50 / 50) / (n_pos / (n_pos + n_neg))`. **Both can be computed from
 `validation_auc_by_disease` alone**: recomputed that way, the difference is at most 7e-15. M4's
 rebuild did exactly that, and M6 retired `persona_enrichment` from the main project.

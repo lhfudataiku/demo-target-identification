@@ -66,6 +66,7 @@ disease_name	compute_candidates_annotated	-	-
 disease_name	compute_drug_target_benchmark	-	-		
 disease_pool_size	compute_candidates_annotated	-	-		
 disease_split_key	compute_disease_family_id	-	-		
+disease_split_key_mondo	compute_disease_family_id	-	-		
 display_relation_concat	group_drug_protein_actions	-	-		
 doid	extract_hetionet_disease_slim	-	-		
 drug_id	join_drug_evidence_records	-	-		

@@ -71,12 +71,12 @@ for K in KS:
 
 p10 = nv.demonstrated_obs10.sum() / nv.demonstrated_exp10.sum()
 p200 = nv.demonstrated_obs200.sum() / nv.demonstrated_exp200.sum()
-check("5.1 pooled dm lift @10", 3.29, round(float(p10), 2), tol=0.02, fmt="{:.2f}")
-check("5.1 pooled dm lift @200", 2.42, round(float(p200), 2), tol=0.02, fmt="{:.2f}")
-check("5.1 macro dm lift @10", 3.11, round(float(nv.demonstrated_dm10.mean()), 2), tol=0.02, fmt="{:.2f}")
+check("5.1 pooled dm lift @10", 3.06, round(float(p10), 2), tol=0.02, fmt="{:.2f}")
+check("5.1 pooled dm lift @200", 2.30, round(float(p200), 2), tol=0.02, fmt="{:.2f}")
+check("5.1 macro dm lift @10", 2.85, round(float(nv.demonstrated_dm10.mean()), 2), tol=0.02, fmt="{:.2f}")
 
 # The crossover, stated as a boolean so it cannot drift silently.
-for K, want_pooled, want_macro in [(10, False, False), (20, True, False), (50, True, True), (200, True, True)]:
+for K, want_pooled, want_macro in [(10, False, False), (20, True, True), (50, True, True), (200, True, True)]:
     o = nv[f"demonstrated_obs{K}"].sum()
     pdm = o / nv[f"demonstrated_exp{K}"].sum()
     pnv = o / (nv[f"demonstrated_obs{K}"] / nv[f"demonstrated_naive{K}"].replace(0, np.nan)).sum()
@@ -98,7 +98,7 @@ for K, want_pooled, want_macro in [(10, False, False), (20, True, False), (50, T
 _chunks = []
 for _c in dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").iter_dataframes(
         chunksize=250_000,
-        columns=["disease_index", "gene_index", "is_target", "proba_1", "gene_ppi_degree"]):
+        columns=["disease_index", "gene_index", "is_target", "proba_1", "prediction", "gene_ppi_degree"]):
     _c = _c[_c.is_target == 1]
     if len(_c):
         _chunks.append(_c)
@@ -108,28 +108,29 @@ pos = pos.dropna(subset=["proba_1", "gene_ppi_degree"]).copy()
 print(f"HUBREAD|known-target rows read in chunks: {len(pos):,}")
 pos["q"] = pd.qcut(pos.gene_ppi_degree, 5, labels=False, duplicates="drop")
 
-# The F1-optimised operating threshold, not 0.5. nb3b uses 0.860 and the documented 17.3% / 57.0%
-# detection rates are measured at it; at 0.5 the same data reads 65.5% / 84.8% and looks like a
-# different finding entirely.
-THR = 0.860
-print(f"HUBHDR|quintile|median_degree|mean_score|predicted_positive_pct@{THR}|n")
+# The deployed model's own operating threshold, read from its `prediction` column (as nb3b does),
+# never a fixed number: the detection rates mean "what the model calls positive", and a hard-coded
+# cut-off breaks when the probability scale changes. The former 0.860 was the raw m7-f14 scale; on the
+# sigmoid-calibrated m7-f14-cal (2026-11-07) it matched no row at all.
+THR = float(pos.loc[pos.prediction == 1, "proba_1"].min())
+print(f"HUBHDR|quintile|median_degree|mean_score|predicted_positive_pct@~{THR:.3f}|n")
 band = {}
 for q, g in pos.groupby("q"):
     band[int(q)] = (float(g.gene_ppi_degree.median()), float(g.proba_1.mean()),
-                    100.0 * float((g.proba_1 >= THR).mean()), len(g))
+                    100.0 * float((g.prediction == 1).mean()), len(g))
     print(f"HUB|{int(q) + 1}|{band[int(q)][0]:.0f}|{band[int(q)][1]:.2f}|{band[int(q)][2]:.1f}|{band[int(q)][3]:,}")
 
 lo, hi = band[min(band)], band[max(band)]
-check("5.2 champion Q1 probability", 0.59, round(lo[1], 2), tol=0.02, fmt="{:.2f}")
-check("5.2 champion Q5 probability", 0.79, round(hi[1], 2), tol=0.02, fmt="{:.2f}")
-check("5.2 Q1 predicted-positive %", 17.3, round(lo[2], 1), tol=1.0, fmt="{:.1f}")
-check("5.2 Q5 predicted-positive %", 57.0, round(hi[2], 1), tol=1.5, fmt="{:.1f}")
+check("5.2 champion Q1 probability", 0.09, round(lo[1], 2), tol=0.02, fmt="{:.2f}")
+check("5.2 champion Q5 probability", 0.22, round(hi[1], 2), tol=0.02, fmt="{:.2f}")
+check("5.2 Q1 predicted-positive %", 12.7, round(lo[2], 1), tol=1.0, fmt="{:.1f}")
+check("5.2 Q5 predicted-positive %", 55.5, round(hi[2], 1), tol=1.5, fmt="{:.1f}")
 print(f"HUBSPREAD|detection swing Q1->Q5 = {hi[2] / max(lo[2], 1e-9):.1f}x on network position alone")
 
 # Spearman between connectivity and score, ON KNOWN TARGETS — the same population as the quintiles
 # above, which is what nb3b reports. A pool-wide rho would be a different statistic.
 rho = float(pos.gene_ppi_degree.rank().corr(pos.proba_1.rank()))
-check("5.2 champion rho(degree, proba)", 0.3273, round(rho, 4), tol=0.02, fmt="{:.4f}")
+check("5.2 champion rho(degree, proba)", 0.3500, round(rho, 4), tol=0.02, fmt="{:.4f}")
 
 # ============================================================================
 # 5.3  Novel discovery — "you already knew all of these"
@@ -144,10 +145,10 @@ for gt in ["approved", "investigational"]:
     l10 = s.lift_top10.replace([np.inf], np.nan).mean()
     l200 = s.lift_top200.replace([np.inf], np.nan).mean()
     if gt == "approved":
-        check("5.3 approved lift@10", 16.88, round(float(l10), 2), tol=0.02, fmt="{:.2f}")
-        check("5.3 approved lift@200", 5.04, round(float(l200), 2), tol=0.02, fmt="{:.2f}")
+        check("5.3 approved lift@10", 21.26, round(float(l10), 2), tol=0.02, fmt="{:.2f}")
+        check("5.3 approved lift@200", 5.22, round(float(l200), 2), tol=0.02, fmt="{:.2f}")
     else:
-        check("5.3 investigational lift@10", 8.85, round(float(l10), 2), tol=0.02, fmt="{:.2f}")
+        check("5.3 investigational lift@10", 6.71, round(float(l10), 2), tol=0.02, fmt="{:.2f}")
 
 # The tail is the honest part: the mean is not the median and the deck must show the distribution.
 ap = nde[nde.ground_truth == "approved"].lift_top10.replace([np.inf], np.nan).dropna()
@@ -195,9 +196,9 @@ x, y, n = j.auc_disease.to_numpy(), j.auc_drug_targets.to_numpy(), len(j)
 r = float(np.corrcoef(x, y)[0, 1])
 slope = float(np.polyfit(x, y, 1)[0])
 print(f"ORTH|n={n}|pearson={r:+.4f}|R2={r * r:.4f}|slope={slope:+.4f}")
-check("5.5 orthogonality pearson r", 0.002, round(r, 3), tol=0.004, fmt="{:+.3f}")
-check("5.5 orthogonality R2", 0.0000, round(r * r, 4), tol=0.0004, fmt="{:.4f}")
-check("5.5 drug-target macro AUC", 0.6886, round(float(db.auc_drug_targets.mean()), 4), tol=0.0006, fmt="{:.4f}")
+check("5.5 orthogonality pearson r", 0.091, round(r, 3), tol=0.004, fmt="{:+.3f}")
+check("5.5 orthogonality R2", 0.0082, round(r * r, 4), tol=0.0004, fmt="{:.4f}")
+check("5.5 drug-target macro AUC", 0.6737, round(float(db.auc_drug_targets.mean()), 4), tol=0.0006, fmt="{:.4f}")
 
 # The slide no vendor shows: a popularity lookup beats the trained model on this benchmark.
 if "n_validated_targets" in db.columns:
@@ -267,7 +268,7 @@ print(f"LIFTBASE|rows={len(liftbase):,}|diseases={liftbase.disease_index.nunique
 # If the codified truth-table build or the chunked read drifts, the lifts would move quietly;
 # this fails loudly first. (safety_flag sums to 905,651 — 1,595 rows sit in groups below the
 # n>=2000 floor and are dropped from the table, not from the base.)
-check("6.0 lift base rows", 907246, len(liftbase), fmt="{:,}")
+check("6.0 lift base rows", 869707, len(liftbase), fmt="{:,}")
 # Diseases carrying >=1 drug-validated target. compute_tractability_lift's docstring says 112, but
 # that is a code comment with no run behind it — printed, deliberately not asserted.
 print(f"LIFTBASE|diseases with >=1 drug-validated target: {liftbase.disease_index.nunique()}"
@@ -320,22 +321,22 @@ print("GATEHDR|gate|attribute=value|assoc_lift|drug_lift|verdict")
 # Gate 1 — "use druggability as a model input". It points the wrong way.
 a, d = lift(tl, "ot_class_l1", "Membrane receptor")
 print(f"GATE|druggability|Membrane receptor|{a:.2f}|{d:.2f}|REJECTED — model would learn 'score lower'")
-check("6.1 membrane receptor assoc_lift", 0.78, round(a, 2), tol=0.02, fmt="{:.2f}")
-check("6.1 membrane receptor drug_lift", 3.16, round(d, 2), tol=0.02, fmt="{:.2f}")
+check("6.1 membrane receptor assoc_lift", 0.80, round(a, 2), tol=0.02, fmt="{:.2f}")
+check("6.1 membrane receptor drug_lift", 3.02, round(d, 2), tol=0.02, fmt="{:.2f}")
 a_ic, d_ic = lift(tl, "ot_class_l1", "Ion channel")
 print(f"GATE|druggability|Ion channel|{a_ic:.2f}|{d_ic:.2f}|same shape, larger")
-check("6.1 ion channel drug_lift", 11.89, round(d_ic, 2), tol=0.05, fmt="{:.2f}")
+check("6.1 ion channel drug_lift", 10.10, round(d_ic, 2), tol=0.05, fmt="{:.2f}")
 
 # Gate 2 — "filter out genes the body cannot live without". The measurement went the other way.
 a2, d2 = lift(sl, "lof_intolerant", "1.0")
 print(f"GATE|essentiality|lof_intolerant=1|{a2:.2f}|{d2:.2f}|REJECTED — BOTH above 1")
-check("6.1 lof_intolerant assoc_lift", 2.07, round(a2, 2), tol=0.02, fmt="{:.2f}")
-check("6.1 lof_intolerant drug_lift", 1.37, round(d2, 2), tol=0.02, fmt="{:.2f}")
+check("6.1 lof_intolerant assoc_lift", 1.99, round(a2, 2), tol=0.02, fmt="{:.2f}")
+check("6.1 lof_intolerant drug_lift", 1.46, round(d2, 2), tol=0.02, fmt="{:.2f}")
 
 # Gate 3 — "exclude known safety liabilities". The flag marks the best-studied targets.
 a3, d3 = lift(sl, "has_safety_liability", "1.0")
 print(f"GATE|liability|has_safety_liability=1|{a3:.2f}|{d3:.2f}|REJECTED — liabilities are DISCOVERED by drugging")
-check("6.1 liability drug_lift", 4.62, round(d3, 2), tol=0.02, fmt="{:.2f}")
+check("6.1 liability drug_lift", 4.69, round(d3, 2), tol=0.02, fmt="{:.2f}")
 
 # Cross-check the adopted tables against the upstream annotations they summarise, so adopting them
 # is a verification and not just a read-back.
@@ -350,7 +351,15 @@ except Exception as e:  # noqa: BLE001 — the cross-check is advisory, not load
 # 6.2  What the liability gate would cost — the ten-second check, on the spine disease.
 # This one IS in the webapp (act 4's demonstration control); recomputing it here is the cross-check.
 # ============================================================================
-HER2 = 48537
+def _disease_index(name):
+    """node_index of the one disease node called `name`. node_index renumbers when the graph is
+    rebuilt (graph revision, 2026-11), so these notebooks resolve demo diseases by name."""
+    hit = _nodes[(_nodes.node_type == "disease") & (_nodes.node_name == name)]
+    assert len(hit) == 1, f"disease name {name!r} resolves to {len(hit)} nodes"
+    return int(hit.node_index.iloc[0])
+
+
+HER2 = _disease_index("HER2 positive breast carcinoma")
 dc = dataiku.Dataset("dashboard_candidates").get_dataframe(
     columns=["disease_index", "gene_name", "rank_in_disease", "has_safety_liability",
              "approved_for_disease", "is_target"])
@@ -362,8 +371,8 @@ top50 = dc[dc.rank_in_disease <= 50]
 k15 = int(top15.has_safety_liability.sum())
 k50 = int(top50.has_safety_liability.sum())
 print(f"COST|HER2+ top15 flagged={k15}/15 | top50 flagged={k50}/50")
-check("6.2 HER2+ top-15 liability-flagged", 9, k15)
-check("6.2 HER2+ top-50 liability-flagged", 23, k50)
+check("6.2 HER2+ top-15 liability-flagged", 8, k15)
+check("6.2 HER2+ top-50 liability-flagged", 21, k50)
 erbb2 = top15[top15.gene_name == "ERBB2"]
 if len(erbb2):
     print(f"COST|ERBB2 rank={int(erbb2.rank_in_disease.iloc[0])} "
@@ -383,15 +392,15 @@ try:
     if len(kp):
         print(f"SUBTYPE|HER2+ vs TNBC: novel_overlap={int(kp.novel_overlap.iloc[0])} "
               f"all_overlap={int(kp.all_overlap.iloc[0])} of 50")
-        check("6.3 HER2+ vs TNBC novel overlap", 2, int(kp.novel_overlap.iloc[0]))
-        check("6.3 HER2+ vs TNBC all-gene overlap", 14, int(kp.all_overlap.iloc[0]))
+        check("6.3 HER2+ vs TNBC novel overlap", 1, int(kp.novel_overlap.iloc[0]))
+        check("6.3 HER2+ vs TNBC all-gene overlap", 12, int(kp.all_overlap.iloc[0]))
 except Exception as e:  # noqa: BLE001
     print(f"SUBTYPE|skipped: {e}")
 
 # `lung_granularity_check` COMPUTED here (step 4) — the recipe was 77 lines that this reproduces in
 # a dozen. Its own printout is dropped: nb6 builds a different table from the same frame below, so
 # reproducing the recipe's console output would only duplicate what follows.
-_LUNG_FAMILY, _TOPN = 52236, 50           # disease_family_id: lung cancer
+_LUNG_FAMILY, _TOPN = _disease_index("lung cancer"), 50   # disease_family_id: lung cancer
 _gname = dict(zip(_nodes[_nodes.node_type == "gene/protein"].node_index.astype(int),
                   _nodes[_nodes.node_type == "gene/protein"].node_name))
 _dname = dict(zip(_nodes[_nodes.node_type == "disease"].node_index.astype(int),

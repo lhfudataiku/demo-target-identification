@@ -63,7 +63,7 @@ for _lname,_sub in [("approved join",kd[kd.in_approved_join==1]),
 sb=pd.DataFrame(_sbrows)
 sb["auc_delta"]=sb.auc_supported_only-sb.auc_all
 print(f"SELBIAS|computed rows={len(sb)}|labels={sb.label.nunique()}")
-for lab,docA,docS in [("approved join",0.6886,0.7471),("curated known_drug >=0.8",0.6833,0.7335)]:
+for lab,docA,docS in [("approved join",0.6737,0.7392),("curated known_drug >=0.8",0.6644,0.7148)]:
     r=sb[sb.label==lab]
     if not len(r): print(f"MISS|{lab}"); continue
     a=r.auc_all.mean(); s=r.auc_supported_only.mean()

@@ -63,16 +63,17 @@ fp = fp.merge(names, on="disease_index", how="left")
 # Values are literals in the loop table so tools/build_index.py can index them --
 # a check() whose expected value is a dict lookup is invisible to the claims index,
 # which is the difference between "a notebook exists" and "the number is tracked".
-for area, doc_n, doc_usable in [("oncology", 246, 144),
-                                ("autoimmune", 23, 12),
-                                ("cvrm", 32, 17)]:
+for area, doc_n, doc_usable in [("oncology", 202, 127),
+                                ("autoimmune", 22, 11),
+                                ("cvrm", 40, 26)]:
     m = fp[fp.disease.fillna("").str.contains(AREAS[area], case=False, regex=True)]
     check(f"7.1 {area} diseases", doc_n, len(m))
     check(f"7.1 {area} usable", doc_usable, int((m.n_pos >= USABLE_FLOOR).sum()))
 
-# The two that decide Act 3: autoimmune has ONE family with >=2 terms, CVRM has NONE
-# with >=2 usable terms -- so neither area can supply subtypes to score.
-for area, doc_fams, mode in [("autoimmune", 1, "terms"), ("cvrm", 0, "usable")]:
+# The two that decide Act 3: autoimmune has NO family with >=2 terms and CVRM ONE with >=2 usable
+# terms (MONDO-ID split, 2026-11-07; was 1 / 0) -- one two-term family is not a subtype panel, so
+# neither area can supply subtypes to score.
+for area, doc_fams, mode in [("autoimmune", 0, "terms"), ("cvrm", 1, "usable")]:
     m = fp[fp.disease.fillna("").str.contains(AREAS[area], case=False, regex=True)]
     fams = m.groupby("disease_family_id").agg(
         terms=("disease_index", "size"),
@@ -85,12 +86,12 @@ for area, doc_fams, mode in [("autoimmune", 1, "terms"), ("cvrm", 0, "usable")]:
 fp["usable"] = fp.n_pos >= USABLE_FLOOR
 fam = fp.groupby(["disease_family_id", "anchor_name"]).agg(
     n_terms=("disease_index", "size"), n_usable=("usable", "sum")).reset_index()
-check("7.2 families with 3+ terms", 25, int((fam.n_terms >= 3).sum()))
+check("7.2 families with 3+ terms", 19, int((fam.n_terms >= 3).sum()))
 
-for label, fid, doc_terms, doc_usable in [("breast", 49721, 19, 14),
-                                          ("lung", 52236, 17, 14),
+for label, fid, doc_terms, doc_usable in [("breast", 49721, 20, 14),
+                                          ("lung", 52236, 15, 12),
                                           ("uterine", 44244, 8, 8),
-                                          ("heme", 43521, 29, 20),
+                                          ("heme", 43521, 30, 20),
                                           ("obesity", 37143, 2, 1)]:
     row = fam[fam.disease_family_id == fid]
     check(f"7.2 {label} terms", doc_terms, int(row.n_terms.iloc[0]))
@@ -120,9 +121,9 @@ check("7.4 overlap pairs", 148, len(ov))
 check("7.4 spearman depth_gap vs jaccard", -0.350,
       round(ov.depth_gap.rank().corr(ov.jaccard_top50.rank()), 3), tol=0.02, fmt="{:.3f}")
 
-for fam, doc_pairs, doc_mean, doc_near in [("breast", 105, 0.4299, 22),
-                                           ("uterine", 28, 0.4777, 1),
-                                           ("stomach", 15, 0.4510, 3)]:
+for fam, doc_pairs, doc_mean, doc_near in [("breast", 105, 0.4491, 27),
+                                           ("uterine", 28, 0.5084, 5),
+                                           ("stomach", 15, 0.3976, 3)]:
     g = ov[ov.act3_family == fam]
     check(f"7.4 {fam} overlap pairs", doc_pairs, len(g))
     check(f"7.4 {fam} mean overlap", doc_mean, round(g.jaccard_top50.mean(), 4),
@@ -133,15 +134,15 @@ for fam, doc_pairs, doc_mean, doc_near in [("breast", 105, 0.4299, 22),
 # is caught in one place rather than three.
 kp = ov[(ov.disease_a.str.contains("HER2") & ov.disease_b.str.contains("triple"))
         | (ov.disease_b.str.contains("HER2") & ov.disease_a.str.contains("triple"))]
-check("7.4 HER2+ vs TNBC novel overlap", 2, int(kp.novel_overlap.iloc[0]))
-check("7.4 HER2+ vs TNBC all overlap", 14, int(kp.all_overlap.iloc[0]))
+check("7.4 HER2+ vs TNBC novel overlap", 1, int(kp.novel_overlap.iloc[0]))
+check("7.4 HER2+ vs TNBC all overlap", 12, int(kp.all_overlap.iloc[0]))
 
 # ── 7.4b  the common-vs-specific card ───────────────────────────────────────
 # One classification axis per family. Breast is molecular only: including the
 # histology terms (ductal, lobular) left HER2+ with ONE specific gene, because
 # ductal overlaps it 85% and absorbed the rest.
 pg = dataiku.Dataset("family_panel_programme").get_dataframe()
-for fam, doc_leaves, doc_common in [("breast", 4, 8), ("uterine", 4, 24), ("stomach", 3, 17)]:
+for fam, doc_leaves, doc_common in [("breast", 4, 10), ("uterine", 4, 26), ("stomach", 3, 19)]:
     g = pg[pg.act3_family == fam]
     check(f"7.4b {fam} leaves", doc_leaves, g.subtype.nunique())
     check(f"7.4b {fam} common genes", doc_common,
@@ -173,12 +174,12 @@ served = dash.rename(columns={"disease_name": "disease", "gene_name": "gene",
 live = expect[["disease", "gene"]].merge(served, on=["disease", "gene"], how="left")
 
 for dis, short, doc_20 in [("endometrium adenocarcinoma", "endometrioid", 4),
-                           ("rheumatoid arthritis", "RA", 4),
-                           ("dilated cardiomyopathy", "DCM", 3),
-                           ("endometrial serous adenocarcinoma", "serous", 3),
+                           ("rheumatoid arthritis", "RA", 5),
+                           ("dilated cardiomyopathy", "DCM", 2),
+                           ("endometrial serous adenocarcinoma", "serous", 2),
                            ("familial hypercholesterolemia", "FH", 3),
                            ("gastric adenocarcinoma", "gastric", 3),
-                           ("psoriatic arthritis", "PsA", 2)]:
+                           ("psoriatic arthritis", "PsA", 3)]:
     check(f"7.5 {short} targets in top20", doc_20,
           int((live[live.disease == dis]["rank"] <= 20).sum()))
 

@@ -162,6 +162,10 @@
    "name": "target_evidence_agent",
    "type": "LLM_GENERIC_RAW"
   },
+  "W8VhjZOZ": {
+   "name": "m7-f14-cal",
+   "type": "PREDICTION"
+  },
   "hJLGoYn4": {
    "name": "m7-f14",
    "type": "PREDICTION"
@@ -287,7 +291,8 @@
    "hop_depth",
    "disease_split_key",
    "split_key_name",
-   "split_key_rule"
+   "split_key_rule",
+   "disease_split_key_mondo"
   ],
   "disease_pool_sizes": [
    "disease_index",
@@ -565,7 +570,8 @@
    "hop_depth",
    "disease_split_key",
    "split_key_name",
-   "split_key_rule"
+   "split_key_rule",
+   "disease_split_key_mondo"
   ],
   "enriched_graph_features_candidate_psplit": [
    "gene_index",
@@ -609,7 +615,8 @@
    "hop_depth",
    "disease_split_key",
    "split_key_name",
-   "split_key_rule"
+   "split_key_rule",
+   "disease_split_key_mondo"
   ],
   "enriched_guilt_by_association_1": [
    "gene_index",
@@ -717,7 +724,8 @@
    "hop_depth",
    "disease_split_key",
    "split_key_name",
-   "split_key_rule"
+   "split_key_rule",
+   "disease_split_key_mondo"
   ],
   "family_panel_metrics": [
    "disease_index",
@@ -746,7 +754,8 @@
    "anchor_name",
    "disease_split_key",
    "split_key_name",
-   "split_key_rule"
+   "split_key_rule",
+   "disease_split_key_mondo"
   ],
   "family_panel_overlap": [
    "act3_family",
@@ -992,6 +1001,7 @@
    "disease_split_key",
    "split_key_name",
    "split_key_rule",
+   "disease_split_key_mondo",
    "proba_0",
    "proba_1",
    "prediction",
@@ -1039,7 +1049,8 @@
    "hop_depth",
    "disease_split_key",
    "split_key_name",
-   "split_key_rule"
+   "split_key_rule",
+   "disease_split_key_mondo"
   ],
   "psplit_train_set": [
    "gene_index",
@@ -1083,7 +1094,8 @@
    "hop_depth",
    "disease_split_key",
    "split_key_name",
-   "split_key_rule"
+   "split_key_rule",
+   "disease_split_key_mondo"
   ],
   "psplit_validation_set": [
    "gene_index",
@@ -1127,7 +1139,8 @@
    "hop_depth",
    "disease_split_key",
    "split_key_name",
-   "split_key_rule"
+   "split_key_rule",
+   "disease_split_key_mondo"
   ],
   "raw_disease_disease": [
    "parent_id",
@@ -1212,6 +1225,7 @@
    "disease_split_key",
    "split_key_name",
    "split_key_rule",
+   "disease_split_key_mondo",
    "proba_0",
    "proba_1",
    "prediction"
@@ -1259,6 +1273,7 @@
    "disease_split_key",
    "split_key_name",
    "split_key_rule",
+   "disease_split_key_mondo",
    "proba_0",
    "proba_1",
    "prediction"
@@ -1358,7 +1373,8 @@
    "hop_depth",
    "disease_split_key",
    "split_key_name",
-   "split_key_rule"
+   "split_key_rule",
+   "disease_split_key_mondo"
   ],
   "validation_set_scored_grouped": [
    "disease_index",
@@ -1424,6 +1440,7 @@
    "disease_split_key",
    "split_key_name",
    "split_key_rule",
+   "disease_split_key_mondo",
    "proba_0",
    "proba_1",
    "prediction",
@@ -1933,7 +1950,7 @@
   "visual": null
  },
  "compute_disease_family_id": {
-  "code": "# Disease family_id (Hetionet DO-Slim anchor rollup) -- COMPUTE.\n# Mitigates train/test leakage from MONDO parent/child & sibling disease\n# concepts (e.g. breast cancer <-> breast carcinoma) for the enriched graph's\n# resampling split. For every disease appearing in enriched_graph_features_1,\n# walk up the native (directed) MONDO parent-child hierarchy (raw_disease_disease,\n# pre-reversal -- graph_edges/kg lose direction via compute_kg's reverse-all step)\n# and find the nearest Hetionet DO-Slim term (mapped via mondo_references' DOID\n# xrefs). Ties broken by shallowest depth, then lowest node_index. Diseases with\n# no reachable anchor within MAX_DEPTH fall back to their own node_index (never\n# worse than the current disease_index-based split).\n#\n# A full graph-wide connected-components grouping over the whole MONDO hierarchy\n# was tried and rejected: >50% of eligible diseases have multiple direct MONDO\n# parents, so any peer-to-peer grouping (undirected hops, directed ancestor\n# checks, hub-degree-filtered variants) transitively collapses ~85-96% of the\n# eligible population into one dominant component regardless of parameters.\n# The fixed, small (137-term), pre-curated Hetionet anchor set avoids this: each\n# disease independently looks up toward a static anchor list rather than being\n# unioned with its peers, so ambiguity stays local (7.4% of diseases reach >1\n# anchor) instead of cascading. See decision log for the empirical comparison.\nimport dataiku\nimport networkx as nx\nimport pandas as pd\n\nMAX_DEPTH = 15\n# Option 5 -- \"lift the split key one level\". The split key is NOT the anchor itself but the\n# anchor's most-specific parent, so an anchor and its own parent/siblings land in ONE family.\n# Motivation: `diabetes mellitus` (parent) sat in validation while `type 2 diabetes mellitus`\n# (child, an anchor) sat in TRAIN -- a direct MONDO parent/child pair straddling the split,\n# which is leak 3 recurring. The upward-only rollup cannot fix that: a parent can never join\n# its own child-anchor's family.\n#\n# Measured alternatives, all rejected:\n#   - merging the parent INTO the child-anchor family: clinically backwards\n#   - promoting siblings to anchors: makes grouping FINER (wrong direction for a split key)\n#   - adding anchor-parents to the key SET: does not merge -- an anchor is already a key,\n#     so it never walks up to its parent\n#\n# The key set is built ONCE (lift every anchor to its most-specific parent under the cap),\n# then every disease finds its nearest member of THAT set. Keying directly on the elevated\n# set is what broadens coverage: a disease sitting under `diabetes mellitus` but under\n# neither of its anchor children (e.g. `monogenic diabetes`) now finds the key, where the\n# earlier \"find anchor first, then lift\" order left it as a self-fallback singleton.\n# Measured: coverage 27.4% -> 34.7%, families 900 -> 841, largest family 35.\n#\n# SPLIT_PARENT_FANOUT_CAP keeps classificatory blobs (`hereditary disease`, 1,762 children)\n# from becoming split keys; above the cap we keep the anchor itself. The cap is a sharp\n# threshold, not a dial: at 50 `cancer` becomes a key and absorbs 143 diseases, and the\n# breast-cancer/breast-carcinoma pair SPLITS again. 20 keeps the largest family at 35 with\n# anatomically coherent top groups; 30 reaches 36.6% coverage but lets `hematologic\n# disorder` grow to 55.\n#\n# The split key carries NO clinical meaning and is never reported -- it only has to guarantee\n# that biologically-related diseases land on the same side. Scoring stays at `disease_index`\n# granularity (lung adenocarcinoma != small-cell lung carcinoma for target validation).\nSPLIT_PARENT_FANOUT_CAP = 20\n\nhetionet = dataiku.Dataset(\"hetionet_disease_slim\").get_dataframe(infer_with_pandas=False)\n# Dataset DEMO_KG_LS.mondo_references renamed to DEMO_KG_mondo_references_copy by liheng.fu@dataiku.com on 2026-08-18 09:40:43\n# Dataset DEMO_KG_mondo_references_copy renamed to mondo_references by liheng.fu@dataiku.com on 2026-08-18 09:56:26\nmondo_refs = dataiku.Dataset(\"mondo_references\").get_dataframe(infer_with_pandas=False)\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(infer_with_pandas=False)\n# Dataset DEMO_KG_LS.raw_disease_disease renamed to DEMO_KG_raw_disease_disease_copy by liheng.fu@dataiku.com on 2026-08-18 09:40:57\n# Dataset DEMO_KG_raw_disease_disease_copy renamed to raw_disease_disease by liheng.fu@dataiku.com on 2026-08-18 09:56:09\nraw_dd = dataiku.Dataset(\"raw_disease_disease\").get_dataframe(infer_with_pandas=False)\ntarget_diseases = dataiku.Dataset(\"enriched_graph_features_1\").get_dataframe(columns=[\"disease_index\"])\ntarget_diseases = target_diseases.disease_index.unique()\n\ndisease_nodes = nodes[(nodes.node_type == \"disease\") & (nodes.node_source == \"MONDO\")]\nid_to_index = dict(zip(disease_nodes.node_id.astype(str), disease_nodes.node_index.astype(int)))\nindex_to_name = dict(zip(nodes.node_index.astype(int), nodes.node_name))\n\ndoid_to_mondo = (mondo_refs[mondo_refs.ontology == \"DOID\"]\n                 .groupby(\"ontology_id\").mondo_id.apply(list).to_dict())\nanchor_indices, anchor_names = set(), {}\nfor _, row in hetionet.iterrows():\n    for mid in doid_to_mondo.get(row.doid, []):\n        idx = id_to_index.get(str(mid))\n        if idx is not None:\n            anchor_indices.add(idx)\n            anchor_names[idx] = row[\"name\"]\n\nraw_dd[\"parent_idx\"] = raw_dd.parent_id.map(id_to_index)\nraw_dd[\"child_idx\"] = raw_dd.child_id.map(id_to_index)\nmapped = raw_dd.dropna(subset=[\"parent_idx\", \"child_idx\"]).copy()\nmapped[\"parent_idx\"] = mapped.parent_idx.astype(int)\nmapped[\"child_idx\"] = mapped.child_idx.astype(int)\n\nGdir = nx.DiGraph()\nGdir.add_edges_from(mapped[[\"child_idx\", \"parent_idx\"]].itertuples(index=False, name=None))\n\nparents_of = mapped.groupby(\"child_idx\").parent_idx.apply(set).to_dict()\nfanout = mapped.groupby(\"parent_idx\").child_idx.nunique().to_dict()\n\n\ndef lift_key(anchor):\n    \"\"\"Most-specific parent of `anchor` under the fanout cap; the anchor itself if none.\"\"\"\n    cands = [p for p in parents_of.get(anchor, set())\n             if fanout.get(p, 0) <= SPLIT_PARENT_FANOUT_CAP]\n    if not cands:\n        return anchor, \"anchor (no parent under cap)\"\n    return min(cands, key=lambda p: (fanout.get(p, 0), p)), \"lifted to parent\"\n\n\n# build the elevated key set once, then key every disease against it\nSPLIT_KEYS, key_origin = set(), {}\nfor _a in anchor_indices:\n    _k, _rule = lift_key(_a)\n    SPLIT_KEYS.add(_k)\n    key_origin.setdefault(_k, _rule)\n\n\ndef nearest_split_key(d):\n    \"\"\"Nearest member of the elevated key set at or above d.\"\"\"\n    if d in SPLIT_KEYS:\n        return d, key_origin.get(d, \"is a split key\")\n    if d not in Gdir:\n        return None, None\n    seen, frontier, depth = {d}, [d], 0\n    while frontier and depth < MAX_DEPTH:\n        depth += 1\n        nxt, found = [], set()\n        for n in frontier:\n            for p in Gdir.successors(n):\n                if p not in seen:\n                    seen.add(p); nxt.append(p)\n                    if p in SPLIT_KEYS:\n                        found.add(p)\n        if found:\n            return min(found), \"under a split key\"\n        frontier = nxt\n    return None, None\n\n\ndef nearest_anchor(d):\n    if d in anchor_indices:\n        return d, 0, anchor_names.get(d)\n    if d not in Gdir:\n        return None, None, None\n    seen = {d: 0}\n    frontier = [d]\n    depth = 0\n    found = {}\n    while frontier and depth < MAX_DEPTH:\n        depth += 1\n        nxt = []\n        for n in frontier:\n            for p in Gdir.successors(n):\n                if p not in seen:\n                    seen[p] = depth\n                    nxt.append(p)\n                    if p in anchor_indices:\n                        found[p] = depth\n        frontier = nxt\n    if not found:\n        return None, None, None\n    min_depth = min(found.values())\n    best = min(a for a, dep in found.items() if dep == min_depth)\n    return best, min_depth, anchor_names.get(best)\n\n\nrows = []\nfor d in target_diseases:\n    d = int(d)\n    anchor, depth, name = nearest_anchor(d)\n    family_id = anchor if anchor is not None else d\n    split_key, rule = nearest_split_key(d)\n    if split_key is None:\n        split_key, rule = d, \"self (no key above)\"\n    rows.append({\"disease_index\": d, \"disease_family_id\": int(family_id),\n                 \"anchor_name\": name, \"hop_depth\": depth,\n                 \"disease_split_key\": int(split_key),\n                 \"split_key_name\": index_to_name.get(int(split_key)),\n                 \"split_key_rule\": rule})\n\nout = pd.DataFrame(rows)\nprint(\"disease_family_id rows:\", out.shape,\n      \"| covered by an anchor:\", out.anchor_name.notna().sum(),\n      \"| self-fallback:\", out.anchor_name.isna().sum())\nprint(\"families (old anchor key) :\", out.disease_family_id.nunique())\nprint(\"families (lifted split key):\", out.disease_split_key.nunique())\nprint(out.split_key_rule.value_counts().to_string())\ndataiku.Dataset(\"disease_family_id\").write_with_schema(out)\n\n",
+  "code": "# Disease family_id (Hetionet DO-Slim anchor rollup) -- COMPUTE.\n# Mitigates train/test leakage from MONDO parent/child & sibling disease\n# concepts (e.g. breast cancer <-> breast carcinoma) for the enriched graph's\n# resampling split. For every disease appearing in enriched_graph_features_1,\n# walk up the native (directed) MONDO parent-child hierarchy (raw_disease_disease,\n# pre-reversal -- graph_edges/kg lose direction via compute_kg's reverse-all step)\n# and find the nearest Hetionet DO-Slim term (mapped via mondo_references' DOID\n# xrefs). Ties broken by shallowest depth, then lowest node_index. Diseases with\n# no reachable anchor within MAX_DEPTH fall back to their own node_index (never\n# worse than the current disease_index-based split).\n#\n# A full graph-wide connected-components grouping over the whole MONDO hierarchy\n# was tried and rejected: >50% of eligible diseases have multiple direct MONDO\n# parents, so any peer-to-peer grouping (undirected hops, directed ancestor\n# checks, hub-degree-filtered variants) transitively collapses ~85-96% of the\n# eligible population into one dominant component regardless of parameters.\n# The fixed, small (137-term), pre-curated Hetionet anchor set avoids this: each\n# disease independently looks up toward a static anchor list rather than being\n# unioned with its peers, so ambiguity stays local (7.4% of diseases reach >1\n# anchor) instead of cascading. See decision log for the empirical comparison.\nimport dataiku\nimport networkx as nx\nimport pandas as pd\n\nMAX_DEPTH = 15\n# Option 5 -- \"lift the split key one level\". The split key is NOT the anchor itself but the\n# anchor's most-specific parent, so an anchor and its own parent/siblings land in ONE family.\n# Motivation: `diabetes mellitus` (parent) sat in validation while `type 2 diabetes mellitus`\n# (child, an anchor) sat in TRAIN -- a direct MONDO parent/child pair straddling the split,\n# which is leak 3 recurring. The upward-only rollup cannot fix that: a parent can never join\n# its own child-anchor's family.\n#\n# Measured alternatives, all rejected:\n#   - merging the parent INTO the child-anchor family: clinically backwards\n#   - promoting siblings to anchors: makes grouping FINER (wrong direction for a split key)\n#   - adding anchor-parents to the key SET: does not merge -- an anchor is already a key,\n#     so it never walks up to its parent\n#\n# The key set is built ONCE (lift every anchor to its most-specific parent under the cap),\n# then every disease finds its nearest member of THAT set. Keying directly on the elevated\n# set is what broadens coverage: a disease sitting under `diabetes mellitus` but under\n# neither of its anchor children (e.g. `monogenic diabetes`) now finds the key, where the\n# earlier \"find anchor first, then lift\" order left it as a self-fallback singleton.\n# Measured: coverage 27.4% -> 34.7%, families 900 -> 841, largest family 35.\n#\n# SPLIT_PARENT_FANOUT_CAP keeps classificatory blobs (`hereditary disease`, 1,762 children)\n# from becoming split keys; above the cap we keep the anchor itself. The cap is a sharp\n# threshold, not a dial: at 50 `cancer` becomes a key and absorbs 143 diseases, and the\n# breast-cancer/breast-carcinoma pair SPLITS again. 20 keeps the largest family at 35 with\n# anatomically coherent top groups; 30 reaches 36.6% coverage but lets `hematologic\n# disorder` grow to 55.\n#\n# The split key carries NO clinical meaning and is never reported -- it only has to guarantee\n# that biologically-related diseases land on the same side. Scoring stays at `disease_index`\n# granularity (lung adenocarcinoma != small-cell lung carcinoma for target validation).\nSPLIT_PARENT_FANOUT_CAP = 20\n\nhetionet = dataiku.Dataset(\"hetionet_disease_slim\").get_dataframe(infer_with_pandas=False)\n# Dataset DEMO_KG_LS.mondo_references renamed to DEMO_KG_mondo_references_copy by liheng.fu@dataiku.com on 2026-08-18 09:40:43\n# Dataset DEMO_KG_mondo_references_copy renamed to mondo_references by liheng.fu@dataiku.com on 2026-08-18 09:56:26\nmondo_refs = dataiku.Dataset(\"mondo_references\").get_dataframe(infer_with_pandas=False)\nnodes = dataiku.Dataset(\"graph_nodes\").get_dataframe(infer_with_pandas=False)\n# Dataset DEMO_KG_LS.raw_disease_disease renamed to DEMO_KG_raw_disease_disease_copy by liheng.fu@dataiku.com on 2026-08-18 09:40:57\n# Dataset DEMO_KG_raw_disease_disease_copy renamed to raw_disease_disease by liheng.fu@dataiku.com on 2026-08-18 09:56:09\nraw_dd = dataiku.Dataset(\"raw_disease_disease\").get_dataframe(infer_with_pandas=False)\ntarget_diseases = dataiku.Dataset(\"enriched_graph_features_1\").get_dataframe(columns=[\"disease_index\"])\ntarget_diseases = target_diseases.disease_index.unique()\n\ndisease_nodes = nodes[(nodes.node_type == \"disease\") & (nodes.node_source == \"MONDO\")]\nid_to_index = dict(zip(disease_nodes.node_id.astype(str), disease_nodes.node_index.astype(int)))\nindex_to_name = dict(zip(nodes.node_index.astype(int), nodes.node_name))\n\n# STABLE IDENTITY (graph revision, 2026-11). node_index is renumbered whenever the graph's node set\n# changes, so nothing that decides a family or a fold may depend on its order or value. Every\n# tie-break below orders by the MONDO id instead, and the split routes on disease_split_key_mondo.\n# A grouped node's id is its members' MONDO ids joined by \"_\"; the first one stands for the group.\n# disease_family_id and disease_split_key stay node_index values because readers resolve them\n# through graph_nodes (demo panel config, hierarchy annotation, per-key AUC, the webapp).\nall_disease = nodes[nodes.node_type == \"disease\"]\nindex_to_mondo = {int(i): int(str(n).split(\"_\")[0])\n                  for i, n in zip(all_disease.node_index, all_disease.node_id)}\n\n\ndef mondo_order(i):\n    return index_to_mondo[int(i)]\n\ndoid_to_mondo = (mondo_refs[mondo_refs.ontology == \"DOID\"]\n                 .groupby(\"ontology_id\").mondo_id.apply(list).to_dict())\nanchor_indices, anchor_names = set(), {}\nfor _, row in hetionet.iterrows():\n    for mid in doid_to_mondo.get(row.doid, []):\n        idx = id_to_index.get(str(mid))\n        if idx is not None:\n            anchor_indices.add(idx)\n            anchor_names[idx] = row[\"name\"]\n\nraw_dd[\"parent_idx\"] = raw_dd.parent_id.map(id_to_index)\nraw_dd[\"child_idx\"] = raw_dd.child_id.map(id_to_index)\nmapped = raw_dd.dropna(subset=[\"parent_idx\", \"child_idx\"]).copy()\nmapped[\"parent_idx\"] = mapped.parent_idx.astype(int)\nmapped[\"child_idx\"] = mapped.child_idx.astype(int)\n\nGdir = nx.DiGraph()\nGdir.add_edges_from(mapped[[\"child_idx\", \"parent_idx\"]].itertuples(index=False, name=None))\n\nparents_of = mapped.groupby(\"child_idx\").parent_idx.apply(set).to_dict()\nfanout = mapped.groupby(\"parent_idx\").child_idx.nunique().to_dict()\n\n\ndef lift_key(anchor):\n    \"\"\"Most-specific parent of `anchor` under the fanout cap; the anchor itself if none.\"\"\"\n    cands = [p for p in parents_of.get(anchor, set())\n             if fanout.get(p, 0) <= SPLIT_PARENT_FANOUT_CAP]\n    if not cands:\n        return anchor, \"anchor (no parent under cap)\"\n    return min(cands, key=lambda p: (fanout.get(p, 0), mondo_order(p))), \"lifted to parent\"\n\n\n# build the elevated key set once, then key every disease against it\nSPLIT_KEYS, key_origin = set(), {}\nfor _a in anchor_indices:\n    _k, _rule = lift_key(_a)\n    SPLIT_KEYS.add(_k)\n    key_origin.setdefault(_k, _rule)\n\n\ndef nearest_split_key(d):\n    \"\"\"Nearest member of the elevated key set at or above d.\"\"\"\n    if d in SPLIT_KEYS:\n        return d, key_origin.get(d, \"is a split key\")\n    if d not in Gdir:\n        return None, None\n    seen, frontier, depth = {d}, [d], 0\n    while frontier and depth < MAX_DEPTH:\n        depth += 1\n        nxt, found = [], set()\n        for n in frontier:\n            for p in Gdir.successors(n):\n                if p not in seen:\n                    seen.add(p); nxt.append(p)\n                    if p in SPLIT_KEYS:\n                        found.add(p)\n        if found:\n            return min(found, key=mondo_order), \"under a split key\"\n        frontier = nxt\n    return None, None\n\n\ndef nearest_anchor(d):\n    if d in anchor_indices:\n        return d, 0, anchor_names.get(d)\n    if d not in Gdir:\n        return None, None, None\n    seen = {d: 0}\n    frontier = [d]\n    depth = 0\n    found = {}\n    while frontier and depth < MAX_DEPTH:\n        depth += 1\n        nxt = []\n        for n in frontier:\n            for p in Gdir.successors(n):\n                if p not in seen:\n                    seen[p] = depth\n                    nxt.append(p)\n                    if p in anchor_indices:\n                        found[p] = depth\n        frontier = nxt\n    if not found:\n        return None, None, None\n    min_depth = min(found.values())\n    best = min((a for a, dep in found.items() if dep == min_depth), key=mondo_order)\n    return best, min_depth, anchor_names.get(best)\n\n\nrows = []\nfor d in target_diseases:\n    d = int(d)\n    anchor, depth, name = nearest_anchor(d)\n    family_id = anchor if anchor is not None else d\n    split_key, rule = nearest_split_key(d)\n    if split_key is None:\n        split_key, rule = d, \"self (no key above)\"\n    rows.append({\"disease_index\": d, \"disease_family_id\": int(family_id),\n                 \"anchor_name\": name, \"hop_depth\": depth,\n                 \"disease_split_key\": int(split_key),\n                 \"split_key_name\": index_to_name.get(int(split_key)),\n                 \"split_key_rule\": rule,\n                 \"disease_split_key_mondo\": mondo_order(split_key)})\n\nout = pd.DataFrame(rows)\n# Two split keys sharing a MONDO number would only share a fold (no leakage), but report it.\n_shared = out.groupby(\"disease_split_key_mondo\").disease_split_key.nunique()\nif (_shared > 1).any():\n    print(\"WARNING: split keys sharing a MONDO number:\", _shared[_shared > 1].to_dict())\nprint(\"disease_family_id rows:\", out.shape,\n      \"| covered by an anchor:\", out.anchor_name.notna().sum(),\n      \"| self-fallback:\", out.anchor_name.isna().sum())\nprint(\"families (old anchor key) :\", out.disease_family_id.nunique())\nprint(\"families (lifted split key):\", out.disease_split_key.nunique())\nprint(out.split_key_rule.value_counts().to_string())\ndataiku.Dataset(\"disease_family_id\").write_with_schema(out)\n\n\n",
   "cypher": null,
   "inputs": [
    "enriched_graph_features_1",
@@ -2789,7 +2806,7 @@
   "code": null,
   "cypher": null,
   "inputs": [
-   "hJLGoYn4",
+   "W8VhjZOZ",
    "validation_set_personas_2"
   ],
   "outputs": [
@@ -2802,7 +2819,7 @@
   "code": null,
   "cypher": null,
   "inputs": [
-   "hJLGoYn4",
+   "W8VhjZOZ",
    "psplit_validation_set"
   ],
   "outputs": [
@@ -2843,14 +2860,15 @@
   "type": "sync",
   "visual": null
  },
- "train_m7-f14": {
+ "train_m7-f14-cal": {
   "code": null,
   "cypher": null,
   "inputs": [
+   "psplit_test_set",
    "psplit_train_set"
   ],
   "outputs": [
-   "hJLGoYn4"
+   "W8VhjZOZ"
   ],
   "type": "prediction_training",
   "visual": null

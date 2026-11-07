@@ -108,7 +108,7 @@ f1,thr=best
 tp=int(((ob.proba_1>=thr).to_numpy()&(ob.is_target.to_numpy()==1)).sum())
 print(f"THR|obesity known targets={tot} | F1-opt threshold={thr:.3f} F1={f1:.3f} | "
       f"recall={100*tp/max(tot,1):.1f}% | missed={tot-tp}")
-check("6.3 F1 threshold",0.875,round(thr,3),tol=0.08,fmt="{:.3f}")
+check("6.3 F1 threshold",0.22,round(thr,3),tol=0.08,fmt="{:.3f}")
 check("6.3 obesity known targets",762,tot)
 print(f"\nSUMMARY|{len(FAIL)} STALE")
 for n,d,l in FAIL: print(f"FAILED|{n}|doc={d}|live={l}")

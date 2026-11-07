@@ -27,7 +27,12 @@
     "shared_pathway_frac"
   ],
   "_champion_features_provenance": [
-    "m7-f14, saved model hJLGoYn4. RECONSTRUCTED, not read directly -- read the warning below.",
+    "m7-f14-cal, saved model W8VhjZOZ (champion since 2026-11-07): the same 14 features as m7-f14",
+    "(hJLGoYn4, retired), with sigmoid calibration. Before deploying it, the mltask was reset to these",
+    "14 inputs (prox_kernel INPUT, prox_mean and disease_split_key_mondo REJECT) and the deployed",
+    "training recipe train_m7-f14-cal was checked to list exactly these 14 as INPUT.",
+    "",
+    "Original note (m7-f14, hJLGoYn4): RECONSTRUCTED, not read directly -- read the warning below.",
     "",
     "TRAP: `dku ml settings I2csfIX2 krJwswcb` returns the CURRENT state of the mltask, NOT the",
     "config of any deployed model version. m8-f14-pm was trained in that same mltask by swapping",
