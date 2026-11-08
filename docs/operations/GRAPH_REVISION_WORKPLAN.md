@@ -309,6 +309,70 @@ indices, are mirrors of recipes no longer in DSS and need no change.
    Menche, disease grouping). Unpinned sources differ, and each difference is recorded with its new
    release version.
 
+**Done 2026-11-08.** `DEMO_KG_LS` itself was not changed.
+- **Project.**
+  - `DEMO_KG_PREP` ("KG source preparation (Life Sciences)") uses the same project defaults as
+    `DEMO_KG_LS`: code env `demo_kg-ls-ontology`, container `default`.
+  - It has the four domain zones plus a fifth, **Pinned downloads**.
+  - The 28 outputs are Parquet on `dataiku-managed-storage`, with the same names, schemas and column
+    descriptions as the `DEMO_KG_LS` copies (28/28 identical).
+- **Folders.**
+  - `raw_files` (filesystem) and `upload` (S3) are copies of `nIhuvFJm` and `kFQAspRA`, verified
+    byte-identical by SHA-256.
+- **D9, as built.** One recipe, `compute_pinned_sources`, downloads each unversioned source once into
+  folder **`pinned_sources`** (S3). It never overwrites a file already there. Six extracts read those
+  files and never the URLs: `extract_mondo`, `extract_hpo`, `compute_go_terms`, `extract_reactome`,
+  `extract_huri` and `compute_gene_names`.
+  - Two departures from the D9 wording, both chosen deliberately:
+    - the pins live in a new folder, not `raw_files`, so a rebuild can never touch the uploaded
+      files and the pinning step shows in the flow lineage;
+    - `compute_gene_names` (a live HGNC query) is pinned too. It is unversioned, though it was not
+      in the plan's list of five.
+  - `MANIFEST.json` records URL, retrieval time, size, SHA-256, `Last-Modified` and the release
+    version for each file.
+  - To take a new release: delete the file, then rebuild `compute_pinned_sources` and its reader.
+- **Code changes in the copies (mirrored in `dss_recipes/`).**
+  - the six readers above;
+  - the drafted GO `NOT` filter in `compute_go_terms`;
+  - `extract_ppi` reads its file with `get_download_stream`, because `get_path()` on the copied
+    folder raised `PermissionError`.
+  - `dss_recipes/` now holds the `DEMO_KG_PREP` versions. They differ from the `DEMO_KG_LS` live
+    code until R4 deletes those recipes.
+- **Code env.** `demo_kg-ls-ontology` had no `pyarrow`, which the six Open Targets recipes need to
+  read the 26.06 parquet files, so they could not have rebuilt in `DEMO_KG_LS` either. With the
+  user's approval `pyarrow>=18` was added (26.0.1 installed) and the env's container image rebuilt.
+  Only `DEMO_KG_LS` and `DEMO_KG_PREP` use the env.
+- **Shared.** All 28 outputs are exposed to `DEMO_KG_LS`.
+
+**The pull (2026-11-08), from `MANIFEST.json`:**
+
+| Source | Graph built from | This pull |
+|---|---|---|
+| MONDO | `releases/2026-08-04` | `releases/2026-11-03` |
+| HPO (`hp.obo`, annotations) | `releases/2026-06-23` | `releases/2026-09-01` (files dated 2026-09-02) |
+| GO `go-basic.obo` | `releases/2026-07-26` | `releases/2026-07-26`: **no new release** |
+| NCBI gene2go, gene2ensembl | early Aug 2026 | dated 2026-11-08 (NCBI rewrites them daily) |
+| Reactome | release 97 | release 98 |
+| HuRI HI-union | file dated 2020-04-12 | same file |
+| HGNC custom query | 2026-08-13 | 2026-11-08 |
+
+**Acceptance: row counts, `DEMO_KG_PREP` against `DEMO_KG_LS`.**
+- **Pinned sources reproduce exactly.**
+  - All nine Open Targets outputs: `raw_ot_assoc` 517,830, `ot_target_map` 78,691,
+    `ot_disease_map` 15,508, `raw_drug_protein` 7,959, `drug_vocab` 11,160, `raw_drug_indication`
+    40,044, druggability / safety 78,691 each, `raw_ot_known_drug` 107,593.
+  - `raw_string_ppi` 209,423, `raw_menche_ppi` 141,296, `disease_group_map` 6,392,
+    `hgnc_identity` 44,477.
+- **Unpinned sources differ.** Each difference follows from a release in the table above:
+  - MONDO: `raw_disease_disease` +324, `mondo_terms` +35, `mondo_references` +34.
+  - HPO: `hpo_terms` +58, `raw_phenotype_hierarchy` +58, `raw_disease_phenotype` +1,131,
+    `raw_phenotype_protein` +909.
+  - GO: `go_terms` and `raw_go_hierarchy` unchanged (same release). `raw_go_protein` −661: the
+    `NOT` filter dropped **1,402** human annotation rows before deduplication (`NOT involved_in`
+    584, `NOT enables` 567, `NOT located_in` 197, and rarer qualifiers), and gene2go drifted.
+  - Reactome 98: `reactome_terms` +6, `raw_pathway_pathway` +6, `raw_pathway_protein` −584.
+  - `gene_names` +102 (HGNC). `raw_huri_ppi` −1: same HuRI file, but newer gene2ensembl mapping.
+
 ### R4 — switch `DEMO_KG_LS` to the copies *(DSS)*
 1. For each moved output, delete the producing recipe in `DEMO_KG_LS` and add a sync recipe
    `DEMO_KG_PREP.<name>` → `<name>`, same dataset name, Parquet. Name it

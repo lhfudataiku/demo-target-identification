@@ -3,6 +3,8 @@
 # ----------------------------------------------------------------------------
 # SOURCE PROVENANCE  (recorded 2026-08-13)
 # Source        : HGNC custom download (live CGI query, not a versioned file)
+# PINNED (R3, 2026-11-08): DEMO_KG_PREP reads this file from `pinned_sources` (compute_pinned_sources);
+# the URL above is where it was pulled from, recorded in the folder's MANIFEST.json.
 # URL in use    : https://www.genenames.org/cgi-bin/download/custom?...   <-- LIVE QUERY
 # Retrieved     : 2026-08-13 (verified HTTP 200, 3,152,612 bytes) -> 44,406 rows in `gene_names`
 # TO FREEZE     : HGNC publishes no dated archive for this endpoint. Download the response
@@ -14,7 +16,16 @@
 import io
 import dataiku
 import pandas as pd
-import requests
+
+# Pinned by compute_pinned_sources (decision D9, R3 2026-11-08): this recipe reads the copy in
+# the `pinned_sources` folder and never the URL, so a rebuild reproduces the same pull. The
+# folder's MANIFEST.json records each file's URL, retrieval time, SHA-256 and release version.
+PINNED = dataiku.Folder("pinned_sources")
+
+
+def pinned(path):
+    with PINNED.get_download_stream(path) as s:
+        return s.read()
 
 URL = (
     "https://www.genenames.org/cgi-bin/download/custom"
@@ -24,10 +35,8 @@ URL = (
     "&format=text&submit=submit"
 )
 
-r = requests.get(URL, timeout=180, headers={"User-Agent": "Mozilla/5.0"})
-r.raise_for_status()
-
-df = pd.read_csv(io.StringIO(r.text), sep="\t", dtype=str)
+# URL above documents the query; the response is read from the pinned copy.
+df = pd.read_csv(io.BytesIO(pinned("hgnc/gene_names_custom.tsv")), sep="\t", dtype=str)
 # Columns are positional per the URL's col= order.
 df.columns = [
     "symbol", "name", "entrez_supplied", "entrez_ncbi",

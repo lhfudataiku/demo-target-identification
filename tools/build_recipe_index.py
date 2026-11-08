@@ -62,7 +62,7 @@ REGISTRY = os.path.join(ROOT, "tools", "model_registry.json")
 PROJECT = os.environ.get("DKU_PROJECT", "DEMO_TARGET_IDENTIFICATION")
 # dss_recipes/ mirrors recipes from the graph-building projects too. Names only (one cheap list call
 # each) so a mirror is called stale only when NO project owns it.
-SIBLING_PROJECTS = ["DEMO_KG_LS", "KNOWLEDGE_GRAPH_PRIMEKG", "PRIMEKG"]
+SIBLING_PROJECTS = ["DEMO_KG_PREP", "DEMO_KG_LS", "KNOWLEDGE_GRAPH_PRIMEKG", "PRIMEKG"]
 
 GATES = [
     (re.compile(r"module_size\s*>=\s*(\d+)"), "module_size >="),

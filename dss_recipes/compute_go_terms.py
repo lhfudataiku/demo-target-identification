@@ -8,6 +8,8 @@
 # ----------------------------------------------------------------------------
 # SOURCE PROVENANCE  (recorded 2026-08-13)
 # Source        : Gene Ontology, go-basic (OBO format)
+# PINNED (R3, 2026-11-08): DEMO_KG_PREP reads this file from `pinned_sources` (compute_pinned_sources);
+# the URL above is where it was pulled from, recorded in the folder's MANIFEST.json.
 # URL in use    : http://purl.obolibrary.org/obo/go/go-basic.obo   <-- UNPINNED, serves latest
 # Version used  : releases/2026-07-26   (confirmed 2026-08-13)
 # Verified      : 38,092 live terms == 38,092 rows in `go_terms`, zero null names.
@@ -23,7 +25,16 @@ import io
 import dataiku
 import obonet
 import pandas as pd
-import requests
+
+# Pinned by compute_pinned_sources (decision D9, R3 2026-11-08): this recipe reads the copy in
+# the `pinned_sources` folder and never the URL, so a rebuild reproduces the same pull. The
+# folder's MANIFEST.json records each file's URL, retrieval time, SHA-256 and release version.
+PINNED = dataiku.Folder("pinned_sources")
+
+
+def pinned(path):
+    with PINNED.get_download_stream(path) as s:
+        return s.read()
 
 NS_MAP = {"biological_process": "bioprocess", "molecular_function": "molfunc",
           "cellular_component": "cellcomp"}
@@ -32,7 +43,7 @@ CAT_MAP = {"Process": "bioprocess", "Function": "molfunc", "Component": "cellcom
 # (e.g. "NOT enables"). Matches NOT as a whole word, separated by space or "|".
 NOT_RE = r"(?:^|[\s|])NOT(?:$|[\s|])"
 
-g = obonet.read_obo("http://purl.obolibrary.org/obo/go/go-basic.obo")
+g = obonet.read_obo(io.StringIO(pinned("go/go-basic.obo").decode("utf-8")))
 
 terms, hier = [], []
 for node_id, data in g.nodes(data=True):
@@ -53,9 +64,7 @@ dataiku.Dataset("go_terms").write_with_schema(terms_df)
 dataiku.Dataset("raw_go_hierarchy").write_with_schema(hier_df)
 
 # gene2go (NCBI, human taxon 9606 only)
-r = requests.get("https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2go.gz", timeout=300)
-r.raise_for_status()
-g2g = pd.read_csv(io.BytesIO(r.content), sep="\t", dtype=str, compression="gzip",
+g2g = pd.read_csv(io.BytesIO(pinned("go/gene2go.gz")), sep="\t", dtype=str, compression="gzip",
                   na_values=["-"])
 g2g.columns = [c.lstrip("#").strip() for c in g2g.columns]
 g2g = g2g[g2g.tax_id == "9606"].copy()

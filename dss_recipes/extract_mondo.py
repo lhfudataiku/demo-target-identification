@@ -4,6 +4,8 @@
 # ----------------------------------------------------------------------------
 # SOURCE PROVENANCE  (recorded 2026-08-13)
 # Source        : MONDO disease ontology (OBO format)
+# PINNED (R3, 2026-11-08): DEMO_KG_PREP reads this file from `pinned_sources` (compute_pinned_sources);
+# the URL above is where it was pulled from, recorded in the folder's MANIFEST.json.
 # URL in use    : http://purl.obolibrary.org/obo/MONDO.obo      <-- UNPINNED, serves latest
 # Version used  : releases/2026-08-04   (confirmed 2026-08-13)
 # Verified      : 32,102 live terms + 306 obsolete-but-still-referenced = 32,408 rows in
@@ -14,9 +16,21 @@
 #                 referenced by is_a/xref, and those bare nodes carry no `name`.
 # ----------------------------------------------------------------------------
 
+import io
+
 import dataiku
 import obonet
 import pandas as pd
+
+# Pinned by compute_pinned_sources (decision D9, R3 2026-11-08): this recipe reads the copy in
+# the `pinned_sources` folder and never the URL, so a rebuild reproduces the same pull. The
+# folder's MANIFEST.json records each file's URL, retrieval time, SHA-256 and release version.
+PINNED = dataiku.Folder("pinned_sources")
+
+
+def pinned(path):
+    with PINNED.get_download_stream(path) as s:
+        return s.read()
 
 
 def mondo_int(cid):
@@ -26,7 +40,7 @@ def mondo_int(cid):
         return None
 
 
-g = obonet.read_obo("http://purl.obolibrary.org/obo/MONDO.obo")
+g = obonet.read_obo(io.StringIO(pinned("mondo/mondo.obo").decode("utf-8")))
 
 terms, parents, refs = [], [], []
 for node_id, data in g.nodes(data=True):
