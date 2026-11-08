@@ -23,15 +23,15 @@ whose wording already flags them as historical are dropped.
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 7 | 5 | 13 |
 | `docs/demo/WEBAPP_DESIGN.md` | 0 | 54 | 90 | 144 |
 | `docs/demo/panel_selection/README.md` | 0 | 5 | 25 | 30 |
-| `docs/graph/GRAPH_BUILDING.md` | 1 | 0 | 139 | 140 |
+| `docs/graph/GRAPH_BUILDING.md` | 1 | 0 | 143 | 144 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 4 | 14 | 18 |
 | `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 13 | 109 | 122 |
 | `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 11 | 54 | 65 |
-| **total** | **2** | **101** | **456** | **559** |
+| **total** | **2** | **101** | **460** | **563** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**112 rows.** Of 456 total orphans, these are the model-dependent ones: the numbers that move
+**114 rows.** Of 460 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -60,6 +60,8 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/WEBAPP_DESIGN.md:673` | 4 | 16.9 | **The distribution card is not optional.** 16.9× is a *mean of per-disease lifts on a heav |
 | `docs/demo/WEBAPP_DESIGN.md:774` | 6 | 0.9776 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
 | `docs/demo/WEBAPP_DESIGN.md:774` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
+| `docs/graph/GRAPH_BUILDING.md:531` | 7.3 | 129,606 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
+| `docs/graph/GRAPH_BUILDING.md:531` | 7.3 | 2,851,510 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
 | `docs/overview/PROJECT_CONTEXT.md:113` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
 | `docs/overview/PROJECT_CONTEXT.md:137` | 3 | 0.69 | measurement.** It is the *worst* term in the breast panel — AUC **0.69**, beaten by its ow |
 | `docs/overview/PROJECT_CONTEXT.md:270` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
@@ -94,10 +96,8 @@ when the champion changes and that no notebook would catch.
 | `docs/prioritizer/FEATURE_AUDIT.md:181` | 4 | 0.8175 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
 | `docs/prioritizer/FEATURE_AUDIT.md:181` | 4 | 0.8230 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
 | `docs/prioritizer/FEATURE_AUDIT.md:181` | 4 | 3.29 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:182` | 4 | 0.1737 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:182` | 4 | 0.1762 | \| association macro AUPRC \| 0.1737 \| 0.1762 \| 0.1711 \| 0.1749 \| **0.1778** \| **t =  |
 
-*52 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*54 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## Decision indexes
 

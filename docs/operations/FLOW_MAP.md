@@ -182,7 +182,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 
 ## Agent  (0 datasets, 0 recipes)
 
-Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.UBUlwwxT`
+Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.ouzaULiq`
 
 _No datasets in this zone._
 

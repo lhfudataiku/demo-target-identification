@@ -12,8 +12,8 @@
 > projects fit) · **[TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md)** (the modelling project that
 > consumes this graph).
 >
-> **Status: complete.** 113,391 nodes / 2,851,510 edges / 18 relations, rebuilt from source and
-> accepted against the frozen reference (§7). Decisions are logged in the **appendix**.
+> **Status: complete.** 113,391 nodes / 2,851,872 edges / 19 relations (after the 2026-11-08 relation
+> fix; 2,851,510 / 18 when accepted against the frozen reference, §7). Decisions are logged in the **appendix**.
 
 ## 1. Scope and approach
 
@@ -208,7 +208,7 @@ are resolved once, in assembly.
 | Function | ontology + gene annotation | protein + hierarchy | `go_protein_edges`, `go_hierarchy_edges` |
 | Phenotypes | ontology + annotations + gene links | overlap resolution + deduplication | 3 phenotype edge tables |
 | Assembly | 4 recipes (§4.4) | — | `kg`, `graph_nodes`, `graph_edges`, `edge_metadata` |
-| Graph build | Kuzu build recipe `build-graph-Mp25kL` | — | Kuzu folder `published_kg_ls-Mp25kL` (predecessor: `build-graph-6bRVGs` → `enriched_index_freezed-6bRVGs`, still present) |
+| Graph build | one Kuzu build recipe per saved snapshot: current `build-graph-ZKGaRg` (2026-11-08) | — | Kuzu folder `kg_ls_v0-2-ZKGaRg` (read by Part 2). Earlier snapshots are kept as references and not rebuilt: `build-graph-Mp25kL` → `published_kg_ls-Mp25kL` (pre-R2; the Explorer serves it). The older `6bRVGs` build is gone; its saved configuration row remains |
 
 ### 4.3 Harmonization logic — the scientific content
 
@@ -353,11 +353,15 @@ folder (`ytvuniN8`) by `compute_ytvuniN8`, and **both** the Graph Explorer webap
 feature recipes read that local folder. Nothing in `DEMO_TARGET_IDENTIFICATION` reads a Kuzu folder
 across the project boundary any more (PROJECT_CONTEXT §4.3).
 
-> ⚠ **Two Kuzu snapshots exist. `published_kg_ls-Mp25kL` is the only one anything reads.**
-> `published_kg_ls-Mp25kL` (`build-graph-Mp25kL`, 2026-09-03) is current and carries the saved queries
-> that back the webapp demo narratives. `enriched_index_freezed-6bRVGs` (`build-graph-6bRVGs`,
+> ⚠ **Each graph change gets a new snapshot, saved from the Visual Graph editor; older ones are kept
+> as references (2026-11-08).** `kg_ls_v0-2-ZKGaRg` (`build-graph-ZKGaRg`, R2) is what Part 2 reads
+> through `compute_ytvuniN8`. It keeps `Mp25kL`'s configuration, including the saved queries behind the
+> webapp demo narratives, and adds `disease_phenotype_disease`. `published_kg_ls-Mp25kL` (`build-graph-Mp25kL`,
+> 2026-09-03) is the pre-R2 reference, and the Explorer still serves it.
+> *History:* `enriched_index_freezed-6bRVGs` (`build-graph-6bRVGs`,
 > 2026-08-14) is the snapshot every published feature number was **originally** derived from. It is now
-> referenced by nothing and is retained deliberately as a provenance record, not as a dependency.
+> referenced by nothing. It was kept as a provenance record, but its build and folder are no longer
+> in the flow (checked 2026-11-08); only its saved configuration row remains.
 >
 > **The two graphs were verified equivalent before the switch, and the equivalence is why the numbers
 > did not have to move.** Both build recipes read the same `graph_nodes` and `graph_edges`, and the
@@ -402,7 +406,7 @@ across the project boundary any more (PROJECT_CONTEXT §4.3).
 | bioprocess_protein | 251,808 | function ontology + gene annotation |
 | cellcomp_protein | 186,806 | as above |
 | molfunc_protein | 156,246 | as above |
-| disease_disease | 129,606 | disease hierarchy |
+| disease_disease | 82,360 | disease hierarchy (MONDO only) |
 | pathway_protein | 97,618 | pathway database |
 | bioprocess_bioprocess | 80,972 | function hierarchy |
 | drug_investigated_for | 69,682 | clinical indication, in-trial stages |
@@ -412,11 +416,12 @@ across the project boundary any more (PROJECT_CONTEXT §4.3).
 | indication | 9,418 | clinical indication, approved stages |
 | cellcomp_cellcomp | 9,392 | function hierarchy |
 | pathway_pathway | 5,798 | pathway hierarchy |
+| disease_phenotype_disease | 47,608 | phenotype annotations on terms that are also diseases (§4.3) |
 | disease_phenotype_negative | 1,184 | phenotype annotations, negation qualifier |
-| **Total** | **2,851,510** | undirected; reverse edges included |
+| **Total** | **2,851,872** | undirected; reverse edges included |
 
 **Validated:** 0 duplicate rows, 0 self-loops, 0 dangling endpoints, reverse-all symmetry holds on
-every sampled relation. `kg` holds 2,854,754 rows — 3,244 more than `graph_edges`, which are
+every sampled relation. `kg` holds 2,855,116 rows — 3,244 more than `graph_edges`, which are
 duplicate `(relation, x_index, y_index)` triples in `disease_protein` carrying distinct evidence
 metadata. That difference is identical in the reference build.
 
@@ -523,7 +528,7 @@ exposure), not under-coverage of what we do build.
 | 2026-08-14 | **Rule: anchor every migrated step on a row count from the previous implementation.** Literal translation of code into visual recipes is not behaviour-preserving — three traps in one refactor, each producing a plausible graph rather than an error. |
 | 2026-08-14 | **Reconstruction accepted** (§7.2). 7 of 9 node groups and 14 of 18 relations reproduce **to the row**; total delta −0.03% of edges, all function-ontology. Root cause traced to the *reference* being stale, not the rebuild. |
 | 2026-08-17 | **The graph-building webapp and Kuzu snapshot belong to this project**, and the snapshot is shared out as the modelling project's primary input. |
-| 2026-11-06 | **Relation corrections and readable labels.** Disease→phenotype annotations on terms that are also diseases moved out of `disease_disease` into a new `disease_phenotype_disease` relation (they were 36% of `disease_disease` links, labelled `parent-child`); negated GO and reclassified phenotype annotations dropped; `display_relation` rewritten into readable labels at assembly. Edges stay stored in both directions. **Rejected:** dropping the reclassified links (loses information) and one-way storage (5 of 14 champion features assume two-way). *Not yet built — §7 statistics describe the previous build.* |
+| 2026-11-06 | **Relation corrections and readable labels.** Disease→phenotype annotations on terms that are also diseases moved out of `disease_disease` into a new `disease_phenotype_disease` relation (they were 36% of `disease_disease` links, labelled `parent-child`); negated GO and reclassified phenotype annotations dropped; `display_relation` rewritten into readable labels at assembly. Edges stay stored in both directions. **Rejected:** dropping the reclassified links (loses information) and one-way storage (5 of 14 champion features assume two-way). *Built 2026-11-08 (workplan R2): the relation move, the `NOT` drop and the labels; §7.1 reflects it. Before it, `disease_disease` held 129,606 rows and the graph 2,851,510. The negated-GO drop waits for the source rebuild (R5).* |
 
 ## References
 
