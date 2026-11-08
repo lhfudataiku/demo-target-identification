@@ -234,129 +234,129 @@ docs/graph/GRAPH_BUILDING.md	135	3	113,391	ORPHAN			hist	> 1. **The origin.** Th
 docs/graph/GRAPH_BUILDING.md	136	3	113,543	ORPHAN				> (0…113,543), as is the published schema — the Window row number starts at 1.
 docs/graph/GRAPH_BUILDING.md	162	3.2	1,247	ORPHAN				empty body. It is **load-bearing**: it creates the 1,247 grouped disease nodes, which are 883 of the
 docs/graph/GRAPH_BUILDING.md	163	3.2	6,821	ORPHAN				6,821 modelled diseases and 115 of 588 scored validation diseases. Deleting the recipe would remove
-docs/graph/GRAPH_BUILDING.md	166	3.2	6,392	ORPHAN				**Fix in place:** the recipe reads a 6,392-row snapshot from the `raw_files` managed folder via a
-docs/graph/GRAPH_BUILDING.md	243	4.4	1,474,753	ORPHAN				| 1 | `stack_edge_sources` | **Stack** (12 in) | union the 12 edge tables, deduplicate, drop self-loops | `kg_
-docs/graph/GRAPH_BUILDING.md	244	4.4	2,854,754	ORPHAN				| 2 | `compute_kg_edges` | Python (8 in) | reverse-all, attach names, ground, disease grouping, giant componen
-docs/graph/GRAPH_BUILDING.md	244	4.4	113,391	ORPHAN				| 2 | `compute_kg_edges` | Python (8 in) | reverse-all, attach names, ground, disease grouping, giant componen
-docs/graph/GRAPH_BUILDING.md	245	4.4	113,391	ORPHAN				| 3 | `assign_node_index` | **Window** | `node_index` over an explicit sort | `graph_nodes` — 113,391 |
-docs/graph/GRAPH_BUILDING.md	246	4.4	2,854,754	ORPHAN				| 4 | `attach_node_index` | Python (5 in) | join indices back onto both endpoints; rewrite `display_relation`
-docs/graph/GRAPH_BUILDING.md	246	4.4	2,851,510	ORPHAN				| 4 | `attach_node_index` | Python (5 in) | join indices back onto both endpoints; rewrite `display_relation`
-docs/graph/GRAPH_BUILDING.md	246	4.4	844,166	ORPHAN				| 4 | `attach_node_index` | Python (5 in) | join indices back onto both endpoints; rewrite `display_relation`
-docs/graph/GRAPH_BUILDING.md	295	4.5	983,040	ORPHAN				983,040 unresolved rows and produced no error.
-docs/graph/GRAPH_BUILDING.md	302	4.5	18,950	ORPHAN				produced 18,950 duplicates.
-docs/graph/GRAPH_BUILDING.md	374	6	18,510,084	ORPHAN				> Rebuilding all 10 feature datasets from the new folder confirmed it over 18,510,084 rows: row counts
-docs/graph/GRAPH_BUILDING.md	390	7.1	27,153	ORPHAN				| disease | 27,153 | disease ontology (25,906 + 1,247 grouped) |
-docs/graph/GRAPH_BUILDING.md	390	7.1	25,906	ORPHAN				| disease | 27,153 | disease ontology (25,906 + 1,247 grouped) |
-docs/graph/GRAPH_BUILDING.md	390	7.1	1,247	ORPHAN				| disease | 27,153 | disease ontology (25,906 + 1,247 grouped) |
-docs/graph/GRAPH_BUILDING.md	391	7.1	23,974	ORPHAN				| biological_process | 23,974 | function ontology |
-docs/graph/GRAPH_BUILDING.md	392	7.1	20,861	ORPHAN				| gene/protein | 20,861 | gene vocabulary |
-docs/graph/GRAPH_BUILDING.md	393	7.1	19,120	ORPHAN				| effect/phenotype | 19,120 | phenotype ontology |
-docs/graph/GRAPH_BUILDING.md	394	7.1	10,041	ORPHAN				| molecular_function | 10,041 | function ontology |
-docs/graph/GRAPH_BUILDING.md	395	7.1	5,282	ORPHAN			hist	| drug | 5,282 | drug layer via cross-reference |
-docs/graph/GRAPH_BUILDING.md	396	7.1	4,077	ORPHAN				| cellular_component | 4,077 | function ontology |
-docs/graph/GRAPH_BUILDING.md	397	7.1	2,883	ORPHAN				| pathway | 2,883 | pathway database |
-docs/graph/GRAPH_BUILDING.md	398	7.1	113,391	ORPHAN				| **Total** | **113,391** | |
-docs/graph/GRAPH_BUILDING.md	402	7.1	520,380	ORPHAN				| protein_protein | 520,380 | three interactomes merged; sources retained in `edge_metadata` |
-docs/graph/GRAPH_BUILDING.md	403	7.1	487,054	ORPHAN				| phenotype_protein | 487,054 | phenotype gene links |
-docs/graph/GRAPH_BUILDING.md	404	7.1	380,280	ORPHAN				| disease_phenotype_positive | 380,280 | phenotype annotations |
-docs/graph/GRAPH_BUILDING.md	405	7.1	378,888	ORPHAN				| disease_protein | 378,888 | genetic association + somatic mutation @ ≥ 0.3; reclassified phenotype gene link
-docs/graph/GRAPH_BUILDING.md	406	7.1	251,808	ORPHAN				| bioprocess_protein | 251,808 | function ontology + gene annotation |
-docs/graph/GRAPH_BUILDING.md	407	7.1	186,806	ORPHAN				| cellcomp_protein | 186,806 | as above |
-docs/graph/GRAPH_BUILDING.md	408	7.1	156,246	ORPHAN				| molfunc_protein | 156,246 | as above |
-docs/graph/GRAPH_BUILDING.md	409	7.1	82,360	ORPHAN				| disease_disease | 82,360 | disease hierarchy (MONDO only) |
-docs/graph/GRAPH_BUILDING.md	410	7.1	97,618	ORPHAN				| pathway_protein | 97,618 | pathway database |
-docs/graph/GRAPH_BUILDING.md	411	7.1	80,972	ORPHAN				| bioprocess_bioprocess | 80,972 | function hierarchy |
-docs/graph/GRAPH_BUILDING.md	412	7.1	69,682	ORPHAN				| drug_investigated_for | 69,682 | clinical indication, in-trial stages |
-docs/graph/GRAPH_BUILDING.md	413	7.1	45,912	ORPHAN				| phenotype_phenotype | 45,912 | phenotype hierarchy |
-docs/graph/GRAPH_BUILDING.md	414	7.1	24,548	ORPHAN				| molfunc_molfunc | 24,548 | function hierarchy |
-docs/graph/GRAPH_BUILDING.md	415	7.1	15,918	ORPHAN				| drug_protein | 15,918 | mechanism of action |
-docs/graph/GRAPH_BUILDING.md	416	7.1	9,418	ORPHAN				| indication | 9,418 | clinical indication, approved stages |
-docs/graph/GRAPH_BUILDING.md	417	7.1	9,392	ORPHAN				| cellcomp_cellcomp | 9,392 | function hierarchy |
-docs/graph/GRAPH_BUILDING.md	418	7.1	5,798	ORPHAN				| pathway_pathway | 5,798 | pathway hierarchy |
-docs/graph/GRAPH_BUILDING.md	419	7.1	47,608	ORPHAN				| disease_phenotype_disease | 47,608 | phenotype annotations on terms that are also diseases (§4.3) |
-docs/graph/GRAPH_BUILDING.md	420	7.1	1,184	ORPHAN				| disease_phenotype_negative | 1,184 | phenotype annotations, negation qualifier |
-docs/graph/GRAPH_BUILDING.md	421	7.1	2,851,872	ORPHAN				| **Total** | **2,851,872** | undirected; reverse edges included |
-docs/graph/GRAPH_BUILDING.md	424	7.1	2,855,116	ORPHAN				every sampled relation. `kg` holds 2,855,116 rows — 3,244 more than `graph_edges`, which are
-docs/graph/GRAPH_BUILDING.md	424	7.1	3,244	ORPHAN				every sampled relation. `kg` holds 2,855,116 rows — 3,244 more than `graph_edges`, which are
-docs/graph/GRAPH_BUILDING.md	435	7.2	113,544	ORPHAN				| `graph_nodes` | 113,544 | 113,391 | **−153 (−0.13%)** |
-docs/graph/GRAPH_BUILDING.md	435	7.2	113,391	ORPHAN				| `graph_nodes` | 113,544 | 113,391 | **−153 (−0.13%)** |
-docs/graph/GRAPH_BUILDING.md	435	7.2	0.13	ASSERTED	nb3b_hub_bias_meter.py:7.2 champion spread			| `graph_nodes` | 113,544 | 113,391 | **−153 (−0.13%)** |
-docs/graph/GRAPH_BUILDING.md	436	7.2	2,852,298	ORPHAN				| `graph_edges` | 2,852,298 | 2,851,510 | **−788 (−0.03%)** |
-docs/graph/GRAPH_BUILDING.md	436	7.2	2,851,510	ORPHAN				| `graph_edges` | 2,852,298 | 2,851,510 | **−788 (−0.03%)** |
-docs/graph/GRAPH_BUILDING.md	436	7.2	0.03	ORPHAN				| `graph_edges` | 2,852,298 | 2,851,510 | **−788 (−0.03%)** |
-docs/graph/GRAPH_BUILDING.md	437	7.2	2,855,542	ORPHAN				| `kg` | 2,855,542 | 2,854,754 | −788 |
-docs/graph/GRAPH_BUILDING.md	437	7.2	2,854,754	ORPHAN				| `kg` | 2,855,542 | 2,854,754 | −788 |
-docs/graph/GRAPH_BUILDING.md	438	7.2	844,166	ORPHAN				| `edge_metadata` | 844,166 | 844,166 | **0** |
-docs/graph/GRAPH_BUILDING.md	443	7.2	25,906	ORPHAN				are identical **to the row** — disease 25,906 + 1,247, gene 20,861, phenotype 19,120, drug 5,282,
-docs/graph/GRAPH_BUILDING.md	443	7.2	1,247	ORPHAN				are identical **to the row** — disease 25,906 + 1,247, gene 20,861, phenotype 19,120, drug 5,282,
-docs/graph/GRAPH_BUILDING.md	443	7.2	20,861	ORPHAN				are identical **to the row** — disease 25,906 + 1,247, gene 20,861, phenotype 19,120, drug 5,282,
-docs/graph/GRAPH_BUILDING.md	443	7.2	19,120	ORPHAN				are identical **to the row** — disease 25,906 + 1,247, gene 20,861, phenotype 19,120, drug 5,282,
-docs/graph/GRAPH_BUILDING.md	443	7.2	5,282	ORPHAN				are identical **to the row** — disease 25,906 + 1,247, gene 20,861, phenotype 19,120, drug 5,282,
-docs/graph/GRAPH_BUILDING.md	444	7.2	2,883	ORPHAN				pathway 2,883. On the edge side **14 of 18 relations reproduce exactly**, including all five of the
-docs/graph/GRAPH_BUILDING.md	464	7.3	28,642	ORPHAN				| Biological process | 28,642 | 23,974 | close |
-docs/graph/GRAPH_BUILDING.md	464	7.3	23,974	ORPHAN				| Biological process | 28,642 | 23,974 | close |
-docs/graph/GRAPH_BUILDING.md	465	7.3	27,671	ORPHAN				| Protein | 27,671 | 20,861 | no anatomy/exposure proteins |
-docs/graph/GRAPH_BUILDING.md	465	7.3	20,861	ORPHAN				| Protein | 27,671 | 20,861 | no anatomy/exposure proteins |
-docs/graph/GRAPH_BUILDING.md	466	7.3	17,080	ORPHAN				| Disease | 17,080 | 27,153 | higher — full ontology, less grouping |
-docs/graph/GRAPH_BUILDING.md	466	7.3	27,153	ORPHAN				| Disease | 17,080 | 27,153 | higher — full ontology, less grouping |
-docs/graph/GRAPH_BUILDING.md	467	7.3	15,311	ORPHAN				| Phenotype | 15,311 | 19,120 | higher — full ontology |
-docs/graph/GRAPH_BUILDING.md	467	7.3	19,120	ORPHAN				| Phenotype | 15,311 | 19,120 | higher — full ontology |
-docs/graph/GRAPH_BUILDING.md	468	7.3	14,035	ORPHAN				| Anatomy | 14,035 | 0 | not built |
-docs/graph/GRAPH_BUILDING.md	469	7.3	11,169	ORPHAN				| Molecular function | 11,169 | 10,041 | close |
-docs/graph/GRAPH_BUILDING.md	469	7.3	10,041	ORPHAN				| Molecular function | 11,169 | 10,041 | close |
-docs/graph/GRAPH_BUILDING.md	470	7.3	7,957	ORPHAN			hist	| Drug | 7,957 | 5,282 | only drugs with a cross-reference |
-docs/graph/GRAPH_BUILDING.md	470	7.3	5,282	ORPHAN			hist	| Drug | 7,957 | 5,282 | only drugs with a cross-reference |
-docs/graph/GRAPH_BUILDING.md	471	7.3	4,176	ORPHAN				| Cellular component | 4,176 | 4,077 | close |
-docs/graph/GRAPH_BUILDING.md	471	7.3	4,077	ORPHAN				| Cellular component | 4,176 | 4,077 | close |
-docs/graph/GRAPH_BUILDING.md	472	7.3	2,516	ORPHAN				| Pathway | 2,516 | 2,883 | close |
-docs/graph/GRAPH_BUILDING.md	472	7.3	2,883	ORPHAN				| Pathway | 2,516 | 2,883 | close |
-docs/graph/GRAPH_BUILDING.md	474	7.3	129,375	ORPHAN				| **Total** | **129,375** | **113,391** | |
-docs/graph/GRAPH_BUILDING.md	474	7.3	113,391	ORPHAN				| **Total** | **129,375** | **113,391** | |
-docs/graph/GRAPH_BUILDING.md	478	7.3	3,076,180	ORPHAN				| anatomy–protein | 3,076,180 | 0 | not built |
-docs/graph/GRAPH_BUILDING.md	479	7.3	2,672,628	ORPHAN				| drug–drug | 2,672,628 | 0 | out of scope |
-docs/graph/GRAPH_BUILDING.md	480	7.3	642,150	ORPHAN				| protein–protein | 642,150 | 520,380 | **gap closed** — was 276k with one source |
-docs/graph/GRAPH_BUILDING.md	480	7.3	520,380	ORPHAN				| protein–protein | 642,150 | 520,380 | **gap closed** — was 276k with one source |
-docs/graph/GRAPH_BUILDING.md	481	7.3	300,634	ORPHAN				| disease–phenotype (pos) | 300,634 | 380,280 | higher — full ontology |
-docs/graph/GRAPH_BUILDING.md	481	7.3	380,280	ORPHAN				| disease–phenotype (pos) | 300,634 | 380,280 | higher — full ontology |
-docs/graph/GRAPH_BUILDING.md	482	7.3	289,610	ORPHAN				| biological process–protein | 289,610 | 251,808 | close |
-docs/graph/GRAPH_BUILDING.md	482	7.3	251,808	ORPHAN				| biological process–protein | 289,610 | 251,808 | close |
-docs/graph/GRAPH_BUILDING.md	483	7.3	166,804	ORPHAN				| cellular component–protein | 166,804 | 186,806 | close |
-docs/graph/GRAPH_BUILDING.md	483	7.3	186,806	ORPHAN				| cellular component–protein | 166,804 | 186,806 | close |
-docs/graph/GRAPH_BUILDING.md	484	7.3	160,822	ORPHAN				| disease–protein | 160,822 | 378,888 | higher — genetic + somatic + reclassified phenotype links |
-docs/graph/GRAPH_BUILDING.md	484	7.3	378,888	ORPHAN				| disease–protein | 160,822 | 378,888 | higher — genetic + somatic + reclassified phenotype links |
-docs/graph/GRAPH_BUILDING.md	485	7.3	139,060	ORPHAN				| molecular function–protein | 139,060 | 156,246 | close |
-docs/graph/GRAPH_BUILDING.md	485	7.3	156,246	ORPHAN				| molecular function–protein | 139,060 | 156,246 | close |
-docs/graph/GRAPH_BUILDING.md	486	7.3	129,568	ORPHAN				| drug–phenotype | 129,568 | 0 | not built |
-docs/graph/GRAPH_BUILDING.md	487	7.3	105,772	ORPHAN				| bioprocess–bioprocess | 105,772 | 80,972 | close |
-docs/graph/GRAPH_BUILDING.md	487	7.3	80,972	ORPHAN				| bioprocess–bioprocess | 105,772 | 80,972 | close |
-docs/graph/GRAPH_BUILDING.md	488	7.3	85,292	ORPHAN				| pathway–protein | 85,292 | 97,618 | close |
-docs/graph/GRAPH_BUILDING.md	488	7.3	97,618	ORPHAN				| pathway–protein | 85,292 | 97,618 | close |
-docs/graph/GRAPH_BUILDING.md	489	7.3	64,388	ORPHAN				| disease–disease | 64,388 | 129,606 | higher — ontology version |
-docs/graph/GRAPH_BUILDING.md	489	7.3	129,606	ORPHAN				| disease–disease | 64,388 | 129,606 | higher — ontology version |
-docs/graph/GRAPH_BUILDING.md	490	7.3	61,350	ORPHAN				| drug–disease (contraindication) | 61,350 | 0 | source not built |
-docs/graph/GRAPH_BUILDING.md	491	7.3	51,306	ORPHAN				| drug–protein | 51,306 | 15,918 | mechanism-of-action only vs all roles |
-docs/graph/GRAPH_BUILDING.md	491	7.3	15,918	ORPHAN				| drug–protein | 51,306 | 15,918 | mechanism-of-action only vs all roles |
-docs/graph/GRAPH_BUILDING.md	492	7.3	37,472	ORPHAN				| phenotype–phenotype | 37,472 | 45,912 | close |
-docs/graph/GRAPH_BUILDING.md	492	7.3	45,912	ORPHAN				| phenotype–phenotype | 37,472 | 45,912 | close |
-docs/graph/GRAPH_BUILDING.md	493	7.3	27,148	ORPHAN				| molfunc–molfunc | 27,148 | 24,548 | close |
-docs/graph/GRAPH_BUILDING.md	493	7.3	24,548	ORPHAN				| molfunc–molfunc | 27,148 | 24,548 | close |
-docs/graph/GRAPH_BUILDING.md	494	7.3	18,776	ORPHAN				| drug–disease (indication) | 18,776 | 9,418 | approved stages only |
-docs/graph/GRAPH_BUILDING.md	494	7.3	9,418	ORPHAN				| drug–disease (indication) | 18,776 | 9,418 | approved stages only |
-docs/graph/GRAPH_BUILDING.md	495	7.3	69,682	ORPHAN				| drug–disease (investigational) | — | 69,682 | **no published equivalent** |
-docs/graph/GRAPH_BUILDING.md	496	7.3	9,690	ORPHAN				| cellcomp–cellcomp | 9,690 | 9,392 | close |
-docs/graph/GRAPH_BUILDING.md	496	7.3	9,392	ORPHAN				| cellcomp–cellcomp | 9,690 | 9,392 | close |
-docs/graph/GRAPH_BUILDING.md	497	7.3	6,660	ORPHAN				| phenotype–protein | 6,660 | 487,054 | **far higher** — the phenotype project's own gene file is much denser
-docs/graph/GRAPH_BUILDING.md	497	7.3	487,054	ORPHAN				| phenotype–protein | 6,660 | 487,054 | **far higher** — the phenotype project's own gene file is much denser
-docs/graph/GRAPH_BUILDING.md	498	7.3	5,070	ORPHAN				| pathway–pathway | 5,070 | 5,798 | close |
-docs/graph/GRAPH_BUILDING.md	498	7.3	5,798	ORPHAN				| pathway–pathway | 5,070 | 5,798 | close |
-docs/graph/GRAPH_BUILDING.md	499	7.3	2,386	ORPHAN				| disease–phenotype (neg) | 2,386 | 1,184 | lower |
-docs/graph/GRAPH_BUILDING.md	499	7.3	1,184	ORPHAN				| disease–phenotype (neg) | 2,386 | 1,184 | lower |
-docs/graph/GRAPH_BUILDING.md	500	7.3	8,100,498	ORPHAN				| **Total** | **8,100,498** | **2,851,510** | |
-docs/graph/GRAPH_BUILDING.md	500	7.3	2,851,510	ORPHAN				| **Total** | **8,100,498** | **2,851,510** | |
-docs/graph/GRAPH_BUILDING.md	526	7.3	113,391	ORPHAN				| 2026-08-14 | **Assembly decomposed into 4 recipes**, two visual (§4.4). All outputs reproduce the monolith e
-docs/graph/GRAPH_BUILDING.md	529	7.3	0.03	ORPHAN			hist	| 2026-08-14 | **Reconstruction accepted** (§7.2). 7 of 9 node groups and 14 of 18 relations reproduce **to th
-docs/graph/GRAPH_BUILDING.md	531	7.3	129,606	ORPHAN		y		| 2026-11-06 | **Relation corrections and readable labels.** Disease→phenotype annotations on terms that are a
-docs/graph/GRAPH_BUILDING.md	531	7.3	2,851,510	ORPHAN		y		| 2026-11-06 | **Relation corrections and readable labels.** Disease→phenotype annotations on terms that are a
+docs/graph/GRAPH_BUILDING.md	166	3.2	6,392	ORPHAN				**Fix in place:** the recipe reads a 6,392-row snapshot from the `upload` managed folder (in
+docs/graph/GRAPH_BUILDING.md	261	4.4	1,474,753	ORPHAN				| 1 | `stack_edge_sources` | **Stack** (12 in) | union the 12 edge tables, deduplicate, drop self-loops | `kg_
+docs/graph/GRAPH_BUILDING.md	262	4.4	2,854,754	ORPHAN				| 2 | `compute_kg_edges` | Python (8 in) | reverse-all, attach names, ground, disease grouping, giant componen
+docs/graph/GRAPH_BUILDING.md	262	4.4	113,391	ORPHAN				| 2 | `compute_kg_edges` | Python (8 in) | reverse-all, attach names, ground, disease grouping, giant componen
+docs/graph/GRAPH_BUILDING.md	263	4.4	113,391	ORPHAN				| 3 | `assign_node_index` | **Window** | `node_index` over an explicit sort | `graph_nodes` — 113,391 |
+docs/graph/GRAPH_BUILDING.md	264	4.4	2,854,754	ORPHAN				| 4 | `attach_node_index` | Python (5 in) | join indices back onto both endpoints; rewrite `display_relation`
+docs/graph/GRAPH_BUILDING.md	264	4.4	2,851,510	ORPHAN				| 4 | `attach_node_index` | Python (5 in) | join indices back onto both endpoints; rewrite `display_relation`
+docs/graph/GRAPH_BUILDING.md	264	4.4	844,166	ORPHAN				| 4 | `attach_node_index` | Python (5 in) | join indices back onto both endpoints; rewrite `display_relation`
+docs/graph/GRAPH_BUILDING.md	313	4.5	983,040	ORPHAN				983,040 unresolved rows and produced no error.
+docs/graph/GRAPH_BUILDING.md	320	4.5	18,950	ORPHAN				produced 18,950 duplicates.
+docs/graph/GRAPH_BUILDING.md	392	6	18,510,084	ORPHAN				> Rebuilding all 10 feature datasets from the new folder confirmed it over 18,510,084 rows: row counts
+docs/graph/GRAPH_BUILDING.md	408	7.1	27,153	ORPHAN				| disease | 27,153 | disease ontology (25,906 + 1,247 grouped) |
+docs/graph/GRAPH_BUILDING.md	408	7.1	25,906	ORPHAN				| disease | 27,153 | disease ontology (25,906 + 1,247 grouped) |
+docs/graph/GRAPH_BUILDING.md	408	7.1	1,247	ORPHAN				| disease | 27,153 | disease ontology (25,906 + 1,247 grouped) |
+docs/graph/GRAPH_BUILDING.md	409	7.1	23,974	ORPHAN				| biological_process | 23,974 | function ontology |
+docs/graph/GRAPH_BUILDING.md	410	7.1	20,861	ORPHAN				| gene/protein | 20,861 | gene vocabulary |
+docs/graph/GRAPH_BUILDING.md	411	7.1	19,120	ORPHAN				| effect/phenotype | 19,120 | phenotype ontology |
+docs/graph/GRAPH_BUILDING.md	412	7.1	10,041	ORPHAN				| molecular_function | 10,041 | function ontology |
+docs/graph/GRAPH_BUILDING.md	413	7.1	5,282	ORPHAN			hist	| drug | 5,282 | drug layer via cross-reference |
+docs/graph/GRAPH_BUILDING.md	414	7.1	4,077	ORPHAN				| cellular_component | 4,077 | function ontology |
+docs/graph/GRAPH_BUILDING.md	415	7.1	2,883	ORPHAN				| pathway | 2,883 | pathway database |
+docs/graph/GRAPH_BUILDING.md	416	7.1	113,391	ORPHAN				| **Total** | **113,391** | |
+docs/graph/GRAPH_BUILDING.md	420	7.1	520,380	ORPHAN				| protein_protein | 520,380 | three interactomes merged; sources retained in `edge_metadata` |
+docs/graph/GRAPH_BUILDING.md	421	7.1	487,054	ORPHAN				| phenotype_protein | 487,054 | phenotype gene links |
+docs/graph/GRAPH_BUILDING.md	422	7.1	380,280	ORPHAN				| disease_phenotype_positive | 380,280 | phenotype annotations |
+docs/graph/GRAPH_BUILDING.md	423	7.1	378,888	ORPHAN				| disease_protein | 378,888 | genetic association + somatic mutation @ ≥ 0.3; reclassified phenotype gene link
+docs/graph/GRAPH_BUILDING.md	424	7.1	251,808	ORPHAN				| bioprocess_protein | 251,808 | function ontology + gene annotation |
+docs/graph/GRAPH_BUILDING.md	425	7.1	186,806	ORPHAN				| cellcomp_protein | 186,806 | as above |
+docs/graph/GRAPH_BUILDING.md	426	7.1	156,246	ORPHAN				| molfunc_protein | 156,246 | as above |
+docs/graph/GRAPH_BUILDING.md	427	7.1	82,360	ORPHAN				| disease_disease | 82,360 | disease hierarchy (MONDO only) |
+docs/graph/GRAPH_BUILDING.md	428	7.1	97,618	ORPHAN				| pathway_protein | 97,618 | pathway database |
+docs/graph/GRAPH_BUILDING.md	429	7.1	80,972	ORPHAN				| bioprocess_bioprocess | 80,972 | function hierarchy |
+docs/graph/GRAPH_BUILDING.md	430	7.1	69,682	ORPHAN				| drug_investigated_for | 69,682 | clinical indication, in-trial stages |
+docs/graph/GRAPH_BUILDING.md	431	7.1	45,912	ORPHAN				| phenotype_phenotype | 45,912 | phenotype hierarchy |
+docs/graph/GRAPH_BUILDING.md	432	7.1	24,548	ORPHAN				| molfunc_molfunc | 24,548 | function hierarchy |
+docs/graph/GRAPH_BUILDING.md	433	7.1	15,918	ORPHAN				| drug_protein | 15,918 | mechanism of action |
+docs/graph/GRAPH_BUILDING.md	434	7.1	9,418	ORPHAN				| indication | 9,418 | clinical indication, approved stages |
+docs/graph/GRAPH_BUILDING.md	435	7.1	9,392	ORPHAN				| cellcomp_cellcomp | 9,392 | function hierarchy |
+docs/graph/GRAPH_BUILDING.md	436	7.1	5,798	ORPHAN				| pathway_pathway | 5,798 | pathway hierarchy |
+docs/graph/GRAPH_BUILDING.md	437	7.1	47,608	ORPHAN				| disease_phenotype_disease | 47,608 | phenotype annotations on terms that are also diseases (§4.3) |
+docs/graph/GRAPH_BUILDING.md	438	7.1	1,184	ORPHAN				| disease_phenotype_negative | 1,184 | phenotype annotations, negation qualifier |
+docs/graph/GRAPH_BUILDING.md	439	7.1	2,851,872	ORPHAN				| **Total** | **2,851,872** | undirected; reverse edges included |
+docs/graph/GRAPH_BUILDING.md	442	7.1	2,855,116	ORPHAN				every sampled relation. `kg` holds 2,855,116 rows — 3,244 more than `graph_edges`, which are
+docs/graph/GRAPH_BUILDING.md	442	7.1	3,244	ORPHAN				every sampled relation. `kg` holds 2,855,116 rows — 3,244 more than `graph_edges`, which are
+docs/graph/GRAPH_BUILDING.md	453	7.2	113,544	ORPHAN				| `graph_nodes` | 113,544 | 113,391 | **−153 (−0.13%)** |
+docs/graph/GRAPH_BUILDING.md	453	7.2	113,391	ORPHAN				| `graph_nodes` | 113,544 | 113,391 | **−153 (−0.13%)** |
+docs/graph/GRAPH_BUILDING.md	453	7.2	0.13	ASSERTED	nb3b_hub_bias_meter.py:7.2 champion spread			| `graph_nodes` | 113,544 | 113,391 | **−153 (−0.13%)** |
+docs/graph/GRAPH_BUILDING.md	454	7.2	2,852,298	ORPHAN				| `graph_edges` | 2,852,298 | 2,851,510 | **−788 (−0.03%)** |
+docs/graph/GRAPH_BUILDING.md	454	7.2	2,851,510	ORPHAN				| `graph_edges` | 2,852,298 | 2,851,510 | **−788 (−0.03%)** |
+docs/graph/GRAPH_BUILDING.md	454	7.2	0.03	ORPHAN				| `graph_edges` | 2,852,298 | 2,851,510 | **−788 (−0.03%)** |
+docs/graph/GRAPH_BUILDING.md	455	7.2	2,855,542	ORPHAN				| `kg` | 2,855,542 | 2,854,754 | −788 |
+docs/graph/GRAPH_BUILDING.md	455	7.2	2,854,754	ORPHAN				| `kg` | 2,855,542 | 2,854,754 | −788 |
+docs/graph/GRAPH_BUILDING.md	456	7.2	844,166	ORPHAN				| `edge_metadata` | 844,166 | 844,166 | **0** |
+docs/graph/GRAPH_BUILDING.md	461	7.2	25,906	ORPHAN				are identical **to the row** — disease 25,906 + 1,247, gene 20,861, phenotype 19,120, drug 5,282,
+docs/graph/GRAPH_BUILDING.md	461	7.2	1,247	ORPHAN				are identical **to the row** — disease 25,906 + 1,247, gene 20,861, phenotype 19,120, drug 5,282,
+docs/graph/GRAPH_BUILDING.md	461	7.2	20,861	ORPHAN				are identical **to the row** — disease 25,906 + 1,247, gene 20,861, phenotype 19,120, drug 5,282,
+docs/graph/GRAPH_BUILDING.md	461	7.2	19,120	ORPHAN				are identical **to the row** — disease 25,906 + 1,247, gene 20,861, phenotype 19,120, drug 5,282,
+docs/graph/GRAPH_BUILDING.md	461	7.2	5,282	ORPHAN				are identical **to the row** — disease 25,906 + 1,247, gene 20,861, phenotype 19,120, drug 5,282,
+docs/graph/GRAPH_BUILDING.md	462	7.2	2,883	ORPHAN				pathway 2,883. On the edge side **14 of 18 relations reproduce exactly**, including all five of the
+docs/graph/GRAPH_BUILDING.md	482	7.3	28,642	ORPHAN				| Biological process | 28,642 | 23,974 | close |
+docs/graph/GRAPH_BUILDING.md	482	7.3	23,974	ORPHAN				| Biological process | 28,642 | 23,974 | close |
+docs/graph/GRAPH_BUILDING.md	483	7.3	27,671	ORPHAN				| Protein | 27,671 | 20,861 | no anatomy/exposure proteins |
+docs/graph/GRAPH_BUILDING.md	483	7.3	20,861	ORPHAN				| Protein | 27,671 | 20,861 | no anatomy/exposure proteins |
+docs/graph/GRAPH_BUILDING.md	484	7.3	17,080	ORPHAN				| Disease | 17,080 | 27,153 | higher — full ontology, less grouping |
+docs/graph/GRAPH_BUILDING.md	484	7.3	27,153	ORPHAN				| Disease | 17,080 | 27,153 | higher — full ontology, less grouping |
+docs/graph/GRAPH_BUILDING.md	485	7.3	15,311	ORPHAN				| Phenotype | 15,311 | 19,120 | higher — full ontology |
+docs/graph/GRAPH_BUILDING.md	485	7.3	19,120	ORPHAN				| Phenotype | 15,311 | 19,120 | higher — full ontology |
+docs/graph/GRAPH_BUILDING.md	486	7.3	14,035	ORPHAN				| Anatomy | 14,035 | 0 | not built |
+docs/graph/GRAPH_BUILDING.md	487	7.3	11,169	ORPHAN				| Molecular function | 11,169 | 10,041 | close |
+docs/graph/GRAPH_BUILDING.md	487	7.3	10,041	ORPHAN				| Molecular function | 11,169 | 10,041 | close |
+docs/graph/GRAPH_BUILDING.md	488	7.3	7,957	ORPHAN			hist	| Drug | 7,957 | 5,282 | only drugs with a cross-reference |
+docs/graph/GRAPH_BUILDING.md	488	7.3	5,282	ORPHAN			hist	| Drug | 7,957 | 5,282 | only drugs with a cross-reference |
+docs/graph/GRAPH_BUILDING.md	489	7.3	4,176	ORPHAN				| Cellular component | 4,176 | 4,077 | close |
+docs/graph/GRAPH_BUILDING.md	489	7.3	4,077	ORPHAN				| Cellular component | 4,176 | 4,077 | close |
+docs/graph/GRAPH_BUILDING.md	490	7.3	2,516	ORPHAN				| Pathway | 2,516 | 2,883 | close |
+docs/graph/GRAPH_BUILDING.md	490	7.3	2,883	ORPHAN				| Pathway | 2,516 | 2,883 | close |
+docs/graph/GRAPH_BUILDING.md	492	7.3	129,375	ORPHAN				| **Total** | **129,375** | **113,391** | |
+docs/graph/GRAPH_BUILDING.md	492	7.3	113,391	ORPHAN				| **Total** | **129,375** | **113,391** | |
+docs/graph/GRAPH_BUILDING.md	496	7.3	3,076,180	ORPHAN				| anatomy–protein | 3,076,180 | 0 | not built |
+docs/graph/GRAPH_BUILDING.md	497	7.3	2,672,628	ORPHAN				| drug–drug | 2,672,628 | 0 | out of scope |
+docs/graph/GRAPH_BUILDING.md	498	7.3	642,150	ORPHAN				| protein–protein | 642,150 | 520,380 | **gap closed** — was 276k with one source |
+docs/graph/GRAPH_BUILDING.md	498	7.3	520,380	ORPHAN				| protein–protein | 642,150 | 520,380 | **gap closed** — was 276k with one source |
+docs/graph/GRAPH_BUILDING.md	499	7.3	300,634	ORPHAN				| disease–phenotype (pos) | 300,634 | 380,280 | higher — full ontology |
+docs/graph/GRAPH_BUILDING.md	499	7.3	380,280	ORPHAN				| disease–phenotype (pos) | 300,634 | 380,280 | higher — full ontology |
+docs/graph/GRAPH_BUILDING.md	500	7.3	289,610	ORPHAN				| biological process–protein | 289,610 | 251,808 | close |
+docs/graph/GRAPH_BUILDING.md	500	7.3	251,808	ORPHAN				| biological process–protein | 289,610 | 251,808 | close |
+docs/graph/GRAPH_BUILDING.md	501	7.3	166,804	ORPHAN				| cellular component–protein | 166,804 | 186,806 | close |
+docs/graph/GRAPH_BUILDING.md	501	7.3	186,806	ORPHAN				| cellular component–protein | 166,804 | 186,806 | close |
+docs/graph/GRAPH_BUILDING.md	502	7.3	160,822	ORPHAN				| disease–protein | 160,822 | 378,888 | higher — genetic + somatic + reclassified phenotype links |
+docs/graph/GRAPH_BUILDING.md	502	7.3	378,888	ORPHAN				| disease–protein | 160,822 | 378,888 | higher — genetic + somatic + reclassified phenotype links |
+docs/graph/GRAPH_BUILDING.md	503	7.3	139,060	ORPHAN				| molecular function–protein | 139,060 | 156,246 | close |
+docs/graph/GRAPH_BUILDING.md	503	7.3	156,246	ORPHAN				| molecular function–protein | 139,060 | 156,246 | close |
+docs/graph/GRAPH_BUILDING.md	504	7.3	129,568	ORPHAN				| drug–phenotype | 129,568 | 0 | not built |
+docs/graph/GRAPH_BUILDING.md	505	7.3	105,772	ORPHAN				| bioprocess–bioprocess | 105,772 | 80,972 | close |
+docs/graph/GRAPH_BUILDING.md	505	7.3	80,972	ORPHAN				| bioprocess–bioprocess | 105,772 | 80,972 | close |
+docs/graph/GRAPH_BUILDING.md	506	7.3	85,292	ORPHAN				| pathway–protein | 85,292 | 97,618 | close |
+docs/graph/GRAPH_BUILDING.md	506	7.3	97,618	ORPHAN				| pathway–protein | 85,292 | 97,618 | close |
+docs/graph/GRAPH_BUILDING.md	507	7.3	64,388	ORPHAN				| disease–disease | 64,388 | 129,606 | higher — ontology version |
+docs/graph/GRAPH_BUILDING.md	507	7.3	129,606	ORPHAN				| disease–disease | 64,388 | 129,606 | higher — ontology version |
+docs/graph/GRAPH_BUILDING.md	508	7.3	61,350	ORPHAN				| drug–disease (contraindication) | 61,350 | 0 | source not built |
+docs/graph/GRAPH_BUILDING.md	509	7.3	51,306	ORPHAN				| drug–protein | 51,306 | 15,918 | mechanism-of-action only vs all roles |
+docs/graph/GRAPH_BUILDING.md	509	7.3	15,918	ORPHAN				| drug–protein | 51,306 | 15,918 | mechanism-of-action only vs all roles |
+docs/graph/GRAPH_BUILDING.md	510	7.3	37,472	ORPHAN				| phenotype–phenotype | 37,472 | 45,912 | close |
+docs/graph/GRAPH_BUILDING.md	510	7.3	45,912	ORPHAN				| phenotype–phenotype | 37,472 | 45,912 | close |
+docs/graph/GRAPH_BUILDING.md	511	7.3	27,148	ORPHAN				| molfunc–molfunc | 27,148 | 24,548 | close |
+docs/graph/GRAPH_BUILDING.md	511	7.3	24,548	ORPHAN				| molfunc–molfunc | 27,148 | 24,548 | close |
+docs/graph/GRAPH_BUILDING.md	512	7.3	18,776	ORPHAN				| drug–disease (indication) | 18,776 | 9,418 | approved stages only |
+docs/graph/GRAPH_BUILDING.md	512	7.3	9,418	ORPHAN				| drug–disease (indication) | 18,776 | 9,418 | approved stages only |
+docs/graph/GRAPH_BUILDING.md	513	7.3	69,682	ORPHAN				| drug–disease (investigational) | — | 69,682 | **no published equivalent** |
+docs/graph/GRAPH_BUILDING.md	514	7.3	9,690	ORPHAN				| cellcomp–cellcomp | 9,690 | 9,392 | close |
+docs/graph/GRAPH_BUILDING.md	514	7.3	9,392	ORPHAN				| cellcomp–cellcomp | 9,690 | 9,392 | close |
+docs/graph/GRAPH_BUILDING.md	515	7.3	6,660	ORPHAN				| phenotype–protein | 6,660 | 487,054 | **far higher** — the phenotype project's own gene file is much denser
+docs/graph/GRAPH_BUILDING.md	515	7.3	487,054	ORPHAN				| phenotype–protein | 6,660 | 487,054 | **far higher** — the phenotype project's own gene file is much denser
+docs/graph/GRAPH_BUILDING.md	516	7.3	5,070	ORPHAN				| pathway–pathway | 5,070 | 5,798 | close |
+docs/graph/GRAPH_BUILDING.md	516	7.3	5,798	ORPHAN				| pathway–pathway | 5,070 | 5,798 | close |
+docs/graph/GRAPH_BUILDING.md	517	7.3	2,386	ORPHAN				| disease–phenotype (neg) | 2,386 | 1,184 | lower |
+docs/graph/GRAPH_BUILDING.md	517	7.3	1,184	ORPHAN				| disease–phenotype (neg) | 2,386 | 1,184 | lower |
+docs/graph/GRAPH_BUILDING.md	518	7.3	8,100,498	ORPHAN				| **Total** | **8,100,498** | **2,851,510** | |
+docs/graph/GRAPH_BUILDING.md	518	7.3	2,851,510	ORPHAN				| **Total** | **8,100,498** | **2,851,510** | |
+docs/graph/GRAPH_BUILDING.md	544	7.3	113,391	ORPHAN				| 2026-08-14 | **Assembly decomposed into 4 recipes**, two visual (§4.4). All outputs reproduce the monolith e
+docs/graph/GRAPH_BUILDING.md	547	7.3	0.03	ORPHAN			hist	| 2026-08-14 | **Reconstruction accepted** (§7.2). 7 of 9 node groups and 14 of 18 relations reproduce **to th
+docs/graph/GRAPH_BUILDING.md	549	7.3	129,606	ORPHAN		y		| 2026-11-06 | **Relation corrections and readable labels.** Disease→phenotype annotations on terms that are a
+docs/graph/GRAPH_BUILDING.md	549	7.3	2,851,510	ORPHAN		y		| 2026-11-06 | **Relation corrections and readable labels.** Disease→phenotype annotations on terms that are a
 docs/overview/PROJECT_CONTEXT.md	69	2.1	2.6	ORPHAN				| **Genetic evidence works** | Target–disease pairs with human genetic support have **2.6× relative clinical s
 docs/overview/PROJECT_CONTEXT.md	69	2.1	4.8	ORPHAN				| **Genetic evidence works** | Target–disease pairs with human genetic support have **2.6× relative clinical s
 docs/overview/PROJECT_CONTEXT.md	113	2.3	0.81	ORPHAN		y		disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche et al.,

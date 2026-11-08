@@ -379,8 +379,48 @@ indices, are mirrors of recipes no longer in DSS and need no change.
    `compute_DEMO_KG_PREP_<name>_copy`, following Part 2's convention.
 2. Put each copy in its domain's harmonisation zone. Move the four GO/Reactome harmonise recipes to
    a new "Function & pathways harmonisation" zone, then delete the emptied loading zones.
+   *(Revised the same day at the user's request: the loading zones stay, and hold the syncs.)*
 3. **Accept when:** the flow check is clean; every `DEMO_KG_LS` recipe input resolves; Part 2's 13
    sync recipes still resolve with no edits.
+
+**Done 2026-11-08.** Nothing was built: the copies point at `DEMO_KG_PREP` but still hold the old
+pull until R5.
+- **Recipe swap.**
+  - The 16 loading recipes in `DEMO_KG_LS` were deleted after their code and settings were backed
+    up. The code is also in `dss_recipes/` and `DEMO_KG_PREP`.
+  - Each of the 28 outputs now has a sync recipe `compute_DEMO_KG_PREP_<name>_copy` reading
+    `DEMO_KG_PREP.<name>`. Its settings are identical to Part 2's sync recipes (`STRICT_SYNC`).
+  - All 28 dataset definitions (names, Parquet location, schemas and descriptions, Part 2 shares)
+    are unchanged.
+  - `dku recipe create-sync` refuses an existing output, and deleting the dataset would drop its
+    share to Part 2. The working route is `dku recipe create <name> -t sync -i DEMO_KG_PREP.<name>
+    --output-ds <name>`.
+- **Zones** (final layout; the user revised it the same day, for readability).
+  - Each domain keeps a loading zone: **Gene & interactome (HGNC, PPI)** (the Default zone, as
+    before R4), **Drugs & gene-disease (Open Targets)**, **Disease & phenotypes (MONDO, HPO)** and
+    **Function & pathways (GO, Reactome)**. Each holds its `DEMO_KG_PREP` inputs, their syncs and
+    the copies: 5, 9, 8 and 6 respectively.
+  - The four GO/Reactome harmonise recipes moved out of the old mixed zone into a new **Function &
+    pathways harmonisation** zone, so every domain is now loading zone → harmonisation zone.
+  - The three non-default loading zones were recreated with new ids (`esHALIf`, `gfUTykN`,
+    `MT2nmHs`): a first pass had deleted them. The zone descriptions now say the tables are syncs
+    from `DEMO_KG_PREP`; the harmonisation zones keep their pre-R4 summaries.
+  - The CLI cannot move shared-in datasets between zones; the Python API can
+    (`flow.get_zone(id).add_item(client.get_project("DEMO_KG_PREP").get_dataset(name))`). It
+    stores them exactly as the UI stores Part 2's foreign items. `dku flow zones` still lists them
+    under Default, because its derived membership matches the bare id; trust the zone's own items.
+  - The folders `raw_files` (`nIhuvFJm`) and `upload` (`kFQAspRA`) were deleted at the user's
+    request: nothing read them, and their files are byte-identical in `DEMO_KG_PREP`. The folder
+    delete leaves the files in storage.
+- **Acceptance.**
+  - All 61 recipe inputs resolve. Each of the 28 `DEMO_KG_PREP` inputs feeds exactly one sync.
+  - Part 2's 13 sync recipes and `compute_ytvuniN8` resolve with no edits. Six of them now read
+    copies fed from `DEMO_KG_PREP`.
+  - The flow check matches the pre-R4 baseline exactly. The same 14 "column description changed"
+    errors remain on `join_gd_genes`, `join_dp_genes`, `filter_hp_mondo_overlap` and
+    `join_disease_phenotype_mondo`; they are older than R4 and descriptions only. The same 4 nodes
+    are unchecked, and the 12 extra nodes (net) pass. The R5 rebuild propagates schemas and should
+    clear the description errors.
 
 ### R5 — stage B: full rebuild from the fresh pull *(DSS)*
 1. Sync the copies, then rebuild `DEMO_KG_LS` end to end (propagate schema first; one job), the Kuzu

@@ -49,7 +49,7 @@ dss_recipes/compute_gene_localization.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_gene_names.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_go_terms.py	recipe-mirror	MIRROR (graph-build project)	1	docs/operations/GRAPH_REVISION_WORKPLAN.md
 dss_recipes/compute_hgnc_identity.py	recipe-mirror	MIRROR (graph-build project)	0	-
-dss_recipes/compute_hub_bias_meter.py	recipe-mirror	DRIFTED MIRROR (content differs from live DSS)	0	-
+dss_recipes/compute_hub_bias_meter.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_kg.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_kg_edges.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_known_drug_truth.py	recipe-mirror	MIRROR (evidence project)	0	-
@@ -57,9 +57,13 @@ dss_recipes/compute_lung_granularity_check.py	recipe-mirror	MIRROR (graph-build 
 dss_recipes/compute_model_comparison.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
 dss_recipes/compute_novel_discovery_eval.py	recipe-mirror	MIRROR (evidence project)	1	dss_recipes/compute_drug_evidence_pairs.py
 dss_recipes/compute_persona_candidates.py	recipe-mirror	MIRROR (evidence project)	1	docs/demo/WEBAPP_DESIGN.md
+dss_recipes/compute_pinned_sources.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_pool_reachability.py	recipe-mirror	MIRROR (evidence project)	0	-
 dss_recipes/compute_ppi_cn_zscore.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_ppi_evidence_depth.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_raw_ot_druggability.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/compute_raw_ot_known_drug.py	recipe-mirror	MIRROR	0	-
+dss_recipes/compute_raw_ot_safety.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_shap_top5.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_split_audit_2.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_target_reachability.py	recipe-mirror	MIRROR (graph-build project)	1	archive/DASHBOARD_BUILD_LOG.md
@@ -77,12 +81,15 @@ dss_recipes/cypher/compute_enriched_module_size_1.cypher	cypher-mirror	MIRROR	0	
 dss_recipes/cypher/compute_enriched_shared_pathway_count_1.cypher	cypher-mirror	MIRROR	0	-
 dss_recipes/extract_drug_ot.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_hetionet_disease_slim.py	recipe-mirror	MIRROR	0	-
+dss_recipes/extract_hpo.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/extract_huri.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_mondo.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_ot_assoc.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_ot_druggability.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_ot_maps.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_ppi.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/extract_reactome.py	recipe-mirror	MIRROR (graph-build project)	0	-
+dss_recipes/extract_string.py	recipe-mirror	MIRROR (graph-build project)	0	-
 index_remap.json	root-script	LIVE (referenced)	4	archive/decisions/DECISIONS_2026-08-31.md,archive/preservation/2026-08-28/DECISIONS_2026-08-28.snapshot,archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md,dss_recipes/compute_split_audit_2.py
 notebooks/nb1_features_and_config.py	notebook	LIVE (tripwire)	1	archive/EVIDENCE_PROJECT_DESIGN.md
 notebooks/nb2_splitting_and_pool.py	notebook	LIVE (tripwire)	2	archive/EVIDENCE_PROJECT_DESIGN.md,docs/prioritizer/CLAIM_REGISTRY.json

@@ -165,10 +165,6 @@
   "W8VhjZOZ": {
    "name": "m7-f14-cal",
    "type": "PREDICTION"
-  },
-  "hJLGoYn4": {
-   "name": "m7-f14",
-   "type": "PREDICTION"
   }
  },
  "_schemas": {
@@ -1453,9 +1449,38 @@
   "build-graph-AWefP6",
   "build-graph-Mp25kL",
   "build-graph-ViVCmL",
+  "build-graph-ZKGaRg",
   "build-graph-gFdnaU",
   "clean_gene_name_1",
   "clean_ph_parent",
+  "compute_DEMO_KG_PREP_disease_group_map_copy",
+  "compute_DEMO_KG_PREP_drug_vocab_copy",
+  "compute_DEMO_KG_PREP_gene_names_copy",
+  "compute_DEMO_KG_PREP_go_terms_copy",
+  "compute_DEMO_KG_PREP_hgnc_identity_copy",
+  "compute_DEMO_KG_PREP_hpo_terms_copy",
+  "compute_DEMO_KG_PREP_mondo_references_copy",
+  "compute_DEMO_KG_PREP_mondo_terms_copy",
+  "compute_DEMO_KG_PREP_ot_disease_map_copy",
+  "compute_DEMO_KG_PREP_ot_target_map_copy",
+  "compute_DEMO_KG_PREP_raw_disease_disease_copy",
+  "compute_DEMO_KG_PREP_raw_disease_phenotype_copy",
+  "compute_DEMO_KG_PREP_raw_drug_indication_copy",
+  "compute_DEMO_KG_PREP_raw_drug_protein_copy",
+  "compute_DEMO_KG_PREP_raw_go_hierarchy_copy",
+  "compute_DEMO_KG_PREP_raw_go_protein_copy",
+  "compute_DEMO_KG_PREP_raw_huri_ppi_copy",
+  "compute_DEMO_KG_PREP_raw_menche_ppi_copy",
+  "compute_DEMO_KG_PREP_raw_ot_assoc_copy",
+  "compute_DEMO_KG_PREP_raw_ot_druggability_copy",
+  "compute_DEMO_KG_PREP_raw_ot_known_drug_copy",
+  "compute_DEMO_KG_PREP_raw_ot_safety_copy",
+  "compute_DEMO_KG_PREP_raw_pathway_pathway_copy",
+  "compute_DEMO_KG_PREP_raw_pathway_protein_copy",
+  "compute_DEMO_KG_PREP_raw_phenotype_hierarchy_copy",
+  "compute_DEMO_KG_PREP_raw_phenotype_protein_copy",
+  "compute_DEMO_KG_PREP_raw_string_ppi_copy",
+  "compute_DEMO_KG_PREP_reactome_terms_copy",
   "compute_R6u6eIyO",
   "compute_RZMPuqSk",
   "compute_annotated_nodes",
@@ -1519,6 +1544,7 @@
   "compute_pad_holdout",
   "compute_pad_holdout_copy",
   "compute_pad_holdout_copy_joined",
+  "compute_pinned_sources",
   "compute_positive_labels",
   "compute_ppi_cn_zscore",
   "compute_ppi_evidence_depth",
@@ -2476,7 +2502,7 @@
   "visual": null
  },
  "compute_hub_bias_meter": {
-  "code": "# Hub-bias meter -- act 2's counter-measurement.\n#\n# Holds biology constant (KNOWN TARGETS ONLY) and asks whether the model scores\n# poorly-connected true targets as highly as hubs. It does not: the least-\n# connected fifth scores ~0.59 against ~0.79 for the most-connected.\n#\n# This existed only inside nb3b, whose own comment said \"it has no recipe, so\n# this notebook IS its artifact\". Act 2 needs it served, and an aggregate over\n# 3.96M rows cannot be computed per request.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\n# The F1-optimised operating point, NOT 0.5. At 0.5 the same table reads\n# 65.5% / 84.8% and the finding looks like the opposite of what it is.\nTHR = 0.860\n\n# scored_champion is a 45-column CSV: a column-pruned read still streams all 45,\n# so chunk it. Chunking, not sampling -- sampling would move the asserted values.\n_chunks = []\nfor _c in dataiku.Dataset(\"scored_champion\").iter_dataframes(\n        chunksize=250_000,\n        columns=[\"gene_index\", \"is_target\", \"proba_1\", \"gene_ppi_degree\"]):\n    _c = _c[_c.is_target == 1]\n    if len(_c):\n        _chunks.append(_c)\npos = pd.concat(_chunks, ignore_index=True)\n\n# Quintiles exactly as nb6 section 5.2 computes them -- raw degree over the\n# positive ROWS, duplicates dropped:\n#\n#     pos[\"q\"] = pd.qcut(pos.gene_ppi_degree, 5, labels=False, duplicates=\"drop\")\n#\n# NOTE the methodological quirk, deliberately preserved: rows are disease-gene\n# pairs, so a gene that is a known target for 50 diseases contributes 50 rows and\n# pulls the boundaries toward its degree. Deduplicating to distinct genes first\n# is arguably the better statistic -- it gives Q1 0.5675 / Q5 0.7744 instead of\n# 0.59 / 0.79. It is NOT used here: nb6 is the asserted source and the narrative\n# quotes its figures, and a serving dataset that silently disagrees with the\n# notebook is how a demo contradicts itself in the room. Change both together or\n# neither.\npos[\"dq\"] = pd.qcut(pos.gene_ppi_degree, 5, labels=False, duplicates=\"drop\")\n\nrows = []\nfor q, g in pos.groupby(\"dq\"):\n    rows.append({\n        \"quintile\": int(q) + 1,\n        \"n_rows\": int(len(g)),\n        \"n_genes\": int(g.gene_index.nunique()),\n        \"median_degree\": float(g.gene_ppi_degree.median()),\n        \"mean_proba\": float(g.proba_1.mean()),\n        \"pct_predicted_positive\": float(100.0 * (g.proba_1 >= THR).mean()),\n    })\nout = pd.DataFrame(rows).sort_values(\"quintile\")\n\n# Spearman between degree and score, on the same population.\nrho = float(pd.Series(pos.gene_ppi_degree).rank().corr(pd.Series(pos.proba_1).rank()))\nout[\"rho_degree_proba\"] = round(rho, 4)\nout[\"threshold\"] = THR\n\nprint(out.to_string(index=False))\nprint(f\"\\nQ1 mean_proba {out.mean_proba.iloc[0]:.4f} | Q5 {out.mean_proba.iloc[-1]:.4f} | rho {rho:+.4f}\")\n\ndataiku.Dataset(\"hub_bias_meter\").write_with_schema(out)\n\n",
+  "code": "# Hub-bias meter -- act 2's counter-measurement.\n#\n# Holds biology constant (KNOWN TARGETS ONLY) and asks whether the model scores\n# poorly-connected true targets as highly as hubs. It does not: the least-\n# connected fifth scores ~0.09 against ~0.22 for the most-connected (calibrated\n# probabilities, m7-f14-cal; the raw-score m7-f14 read ~0.59 / ~0.79).\n#\n# This existed only inside nb3b, whose own comment said \"it has no recipe, so\n# this notebook IS its artifact\". Act 2 needs it served, and an aggregate over\n# 3.96M rows cannot be computed per request.\nimport dataiku\nimport numpy as np\nimport pandas as pd\n\n# \"Predicted positive\" means what the deployed model calls positive: its own `prediction` column,\n# never a hard-coded cut-off. The former THR = 0.860 matched the raw m7-f14 scale; once the\n# sigmoid-calibrated m7-f14-cal became champion (2026-11-07, threshold ~0.225) it matched no row and\n# the card read 0%. THR below is derived for display only.\n\n# scored_champion is a 45-column CSV: a column-pruned read still streams all 45,\n# so chunk it. Chunking, not sampling -- sampling would move the asserted values.\n_chunks = []\nfor _c in dataiku.Dataset(\"scored_champion\").iter_dataframes(\n        chunksize=250_000,\n        columns=[\"gene_index\", \"is_target\", \"proba_1\", \"prediction\", \"gene_ppi_degree\"]):\n    _c = _c[_c.is_target == 1]\n    if len(_c):\n        _chunks.append(_c)\npos = pd.concat(_chunks, ignore_index=True)\nTHR = float(pos.loc[pos.prediction == 1, \"proba_1\"].min())\n\n# Quintiles exactly as nb6 section 5.2 computes them -- raw degree over the\n# positive ROWS, duplicates dropped:\n#\n#     pos[\"q\"] = pd.qcut(pos.gene_ppi_degree, 5, labels=False, duplicates=\"drop\")\n#\n# NOTE the methodological quirk, deliberately preserved: rows are disease-gene\n# pairs, so a gene that is a known target for 50 diseases contributes 50 rows and\n# pulls the boundaries toward its degree. Deduplicating to distinct genes first\n# is arguably the better statistic -- on the raw m7-f14 scale it gave Q1 0.5675 /\n# Q5 0.7744 instead of 0.59 / 0.79. It is NOT used here: nb6 is the asserted source and the narrative\n# quotes its figures, and a serving dataset that silently disagrees with the\n# notebook is how a demo contradicts itself in the room. Change both together or\n# neither.\npos[\"dq\"] = pd.qcut(pos.gene_ppi_degree, 5, labels=False, duplicates=\"drop\")\n\nrows = []\nfor q, g in pos.groupby(\"dq\"):\n    rows.append({\n        \"quintile\": int(q) + 1,\n        \"n_rows\": int(len(g)),\n        \"n_genes\": int(g.gene_index.nunique()),\n        \"median_degree\": float(g.gene_ppi_degree.median()),\n        \"mean_proba\": float(g.proba_1.mean()),\n        \"pct_predicted_positive\": float(100.0 * (g.prediction == 1).mean()),\n    })\nout = pd.DataFrame(rows).sort_values(\"quintile\")\n\n# Spearman between degree and score, on the same population.\nrho = float(pd.Series(pos.gene_ppi_degree).rank().corr(pd.Series(pos.proba_1).rank()))\nout[\"rho_degree_proba\"] = round(rho, 4)\nout[\"threshold\"] = round(THR, 4)\n\nprint(out.to_string(index=False))\nprint(f\"\\nQ1 mean_proba {out.mean_proba.iloc[0]:.4f} | Q5 {out.mean_proba.iloc[-1]:.4f} | rho {rho:+.4f}\")\n\ndataiku.Dataset(\"hub_bias_meter\").write_with_schema(out)\n\n\n",
   "cypher": null,
   "inputs": [
    "scored_champion"
@@ -2641,7 +2667,7 @@
   "code": null,
   "cypher": null,
   "inputs": [
-   "DEMO_KG_LS.UBUlwwxT"
+   "DEMO_KG_LS.ouzaULiq"
   ],
   "outputs": [
    "ytvuniN8"

@@ -163,32 +163,50 @@ empty body. It is **load-bearing**: it creates the 1,247 grouped disease nodes, 
 6,821 modelled diseases and 115 of 588 scored validation diseases. Deleting the recipe would remove
 a fifth of the validation population.
 
-**Fix in place:** the recipe reads a 6,392-row snapshot from the `raw_files` managed folder via a
-download stream, with the recipe pinned to run on the DSS engine. Never delete this recipe; if the
+**Fix in place:** the recipe reads a 6,392-row snapshot from the `upload` managed folder (in
+`DEMO_KG_PREP` since 2026-11-08) via a download stream, with the recipe pinned to run on the DSS
+engine. Never delete this recipe; if the
 snapshot is lost, the graph cannot be rebuilt as specified.
 
 ## 4. Data pipeline
 
 ### 4.1 Flow zones — grouped by biological domain
 
-Four biological domains, each split into an extract zone and a harmonisation zone, plus assembly.
+**Since 2026-11-08 (graph revision R3/R4) extraction lives in its own project.**
+- **`DEMO_KG_PREP`** downloads the sources, in four domain zones plus **Pinned downloads**. There,
+  `compute_pinned_sources` saves each unversioned source once (decision D9).
+- **`DEMO_KG_LS`** keeps one loading zone per domain, now made of sync recipes
+  (`compute_DEMO_KG_PREP_<name>_copy`). Each sync copies a `DEMO_KG_PREP` output under its original
+  name, and sits in the loading zone with its input and its copy. Part 2's sync recipes therefore
+  read `DEMO_KG_LS` unchanged (decision D8).
 
-| Zone | Items | Contents |
-|---|--:|---|
-| `Gene & interactome (HGNC, PPI)` | 7 | gene vocabulary + three interactome sources and their merge |
-| `Genes & interactome harmonisation` | 6 | → `ppi_edges` |
-| `Disease & phenotypes (MONDO, HPO)` | 12 | disease backbone + cross-reference hub; phenotype ontology, annotations, gene links |
-| `Diseases & phenotypes harmonisation` | 28 | phenotype↔disease overlap resolution, grounding, deduplication |
-| `Function & pathways (GO, Reactome)` | 16 | functional annotation and pathways — extraction *and* harmonisation |
-| `Drugs & gene-disease (Open Targets)` | 9 | one extraction serving both the drug layer and gene–disease |
-| `Drugs & gene-disease harmonisation` | 14 | → drug and gene–disease edges |
-| `Graph build` | 24 | the 4 assembly recipes, their outputs, the Kuzu build, webapp plumbing |
+| Project · zone | Contents |
+|---|---|
+| `DEMO_KG_PREP` · Pinned downloads | `compute_pinned_sources` → folder `pinned_sources` (+ `MANIFEST.json`) |
+| `DEMO_KG_PREP` · Gene & interactome | HGNC vocabulary and identity; HuRI, STRING, Menche extracts; folder `raw_files` |
+| `DEMO_KG_PREP` · Disease & phenotypes | MONDO, HPO, disease-grouping snapshot (folder `upload`) |
+| `DEMO_KG_PREP` · Function & pathways | GO terms, hierarchy and gene annotations; Reactome |
+| `DEMO_KG_PREP` · Open Targets | associations, id maps, drugs, druggability, safety, known drugs |
+| `DEMO_KG_LS` · Gene & interactome (HGNC, PPI) | 5 syncs: gene names, HGNC identity, HuRI, STRING, Menche |
+| `DEMO_KG_LS` · Genes & interactome harmonisation | → `ppi_edges` |
+| `DEMO_KG_LS` · Disease & phenotypes (MONDO, HPO) | 8 syncs: MONDO, HPO, disease grouping |
+| `DEMO_KG_LS` · Diseases & phenotypes harmonisation | → overlap resolution, grounding, deduplication |
+| `DEMO_KG_LS` · Function & pathways (GO, Reactome) | 6 syncs: GO and Reactome |
+| `DEMO_KG_LS` · Function & pathways harmonisation | → GO and Reactome edges |
+| `DEMO_KG_LS` · Drugs & gene-disease (Open Targets) | 9 syncs, including the druggability, safety and known-drug copies Part 2 reads |
+| `DEMO_KG_LS` · Drugs & gene-disease harmonisation | → drug and gene–disease edges |
+| `DEMO_KG_LS` · Graph build | the 4 assembly recipes and their outputs |
+| `DEMO_KG_LS` · Graph Snapshots | one Kuzu build per saved snapshot, Visual Graph support datasets |
+
+*Before 2026-11-08* the `DEMO_KG_LS` loading zones held the extract recipes themselves, and
+`Function & pathways (GO, Reactome)` held extraction and harmonisation together.
 
 **Why domains rather than pipeline phases.** A phase-based scheme (all sources → all harmonisation →
 all relationships → build) was drafted and rejected: it puts every source in one large box, so the
 flow stops answering the question a reader actually has, which is *"where does the disease data come
 from?"* Grouping by domain keeps each biological story traceable end to end, and pairing each domain
-with its own harmonisation zone keeps the extract/harmonise seam visible.
+with its own harmonisation zone keeps the extract/harmonise seam visible. The seam is now also a
+project boundary.
 
 ### 4.2 The per-source pattern
 
