@@ -82,13 +82,6 @@ export const tractLabel = (r: Pick<Row, 'ot_sm_tractable' | 'ot_ab_tractable'>) 
   r.ot_sm_tractable && r.ot_ab_tractable ? 'Small molecule + antibody'
     : r.ot_sm_tractable ? 'Small molecule' : r.ot_ab_tractable ? 'Antibody' : 'Not assessed'
 
-/** The three links from the shortlist to the evidence page (scope §4.1). */
-export const TRUST_LINKS = [
-  { section: 'graph', label: '1 · What the model can see' },
-  { section: 'reconstruction', label: '2 · How well it reconstructs this disease' },
-  { section: 'family', label: '3 · Does it hold across the family' },
-] as const
-
 /** `/api/candidates/sources`: what the six searches returned for the pair, after de-duplication
     and the mention filter. No LLM has touched it. */
 export type Corpus = 'trials' | 'papers'

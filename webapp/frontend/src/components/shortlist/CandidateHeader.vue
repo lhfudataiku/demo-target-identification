@@ -108,22 +108,12 @@
           <p><span class="text-muted-foreground">Locus type:</span> {{ identity.locus_type ?? '—' }}</p>
         </CollapsibleContent>
       </Collapsible>
-      <p class="font-mono text-2xs text-muted-foreground">
-        {{ identity.source }} · {{ identity.source_file }} · matched by NCBI Gene ID
-        {{ identity.ncbi_gene_id }}<template v-if="identity.date_modified">
-          · record modified {{ identity.date_modified.slice(0, 10) }}</template>
-      </p>
     </template>
     <p v-else-if="identity" class="text-xs text-muted-foreground">
       The HGNC file this app loads has no record for NCBI Gene ID {{ identity.ncbi_gene_id }}.
     </p>
     <p v-else-if="identityError" class="text-xs text-muted-foreground">
       Gene identity unavailable: {{ identityError }}
-    </p>
-
-    <p class="font-mono text-2xs text-muted-foreground">
-      <template v-if="row.rank_percentile !== null">top {{ row.rank_percentile }}% of the pool · </template>graph
-      node_index {{ row.gene_index }}
     </p>
   </div>
 </template>

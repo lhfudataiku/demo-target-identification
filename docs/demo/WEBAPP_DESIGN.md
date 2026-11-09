@@ -519,8 +519,8 @@ graph.
 | The drugs behind the badges | Drugs & graph tab · table under the badges | every drug that acts on the gene **and** is recorded for exactly this disease node: name, highest stage, action on the gene, DrugBank id, release. ERBB2 × HER2+: tucatinib (approval), poziotinib (phase 2). An empty table reads *no link in snapshot* |
 | Trials and papers that name the gene | Trials and Literature tabs, searched when either tab is first opened | the records the searches retrieved that name the gene, then up to five of each with a role, a subtype match, a reason and a quote found in the passage; the rest listed below. Counts say *retrieved*, never *all*; a trial's phase or status is never read as efficacy |
 | The mechanism, on the graph | Drugs & graph tab · shared Explorer card with five independent bounded presets | prepared interaction, pathway, molecular-function, biological-process and drug-context queries for the selected disease and gene |
-| Questions about the pair | *Ask about {gene}* under the card's header opens the assistant panel; *Explore in Agent Hub* beside it opens Agent Hub in a new tab | four starter questions and a free one, answered over the graph, CT.gov and PubMed; every sentence shows its citations or the *not from a retrieved source* mark, and every graph result its Cypher |
-| *How do we know?* | the intro row (all three sections); the Overview tab's model box (section 2) and association box (section 1) | links to *Why trust the list*, landing on the section |
+| Questions about the pair | *Ask about {gene}* under the card's header opens the assistant panel (the *Explore in Agent Hub* link beside it was removed 2026-11-09, webapp revision D1) | four starter questions and a free one, answered over the graph, CT.gov and PubMed; every sentence shows its citations or the *not from a retrieved source* mark, and every graph result its Cypher |
+| *How do we know?* | the Overview tab's model box (section 2) and association box (section 1); the intro row with all three links was removed 2026-11-09 (webapp revision W1) | links to *Why trust the list*, landing on the section |
 
 **Selection, not two pickers.** Clicking a row in the ranked list drives the header and every tab, and
 scrolls the page to the candidate card — the act's move is *judge a row, then ask why that row*, and
@@ -568,9 +568,9 @@ live in the page and are lost on reload. Measured on ERBB2 and SMARCA2 × HER2+:
 (Phase 7); a drug question over four pairs took 9–37 s (Phase 8), the model's own reasoning time being the
 main variable. The graph, search and wording rules the model follows are shared with the Agent Hub agent
 (`backend/services/agent_rules.py`).
-For open exploration, *Explore in Agent Hub* opens a separate Agent Hub webapp running the DSS agent
-`target_evidence_agent` over the same three tools and rules; it does not know the pair, its answers are not
-checked, and it keeps its own conversation history.
+The card no longer links to the separate Agent Hub webapp running the DSS agent `target_evidence_agent`
+over the same three tools and rules (removed 2026-11-09, webapp revision D1): it could not be handed the
+pair, its answers were not checked, and it duplicated *Ask about*.
 
 **Why this ranking? lists only the top five drivers** (scope D2). The tab shows the five features with
 the largest SHAP values, each with its sign and size and where this gene's value sits in this disease's
@@ -797,8 +797,7 @@ the pivot matters more than it looks.
 - **No writes to DSS.** The one exception worth considering later is act 3's clinician review form
   (`breast_shortlist`), and it is out of scope until someone asks. **Exception**
   (`DEC-DEMO-004`): retrieved trials and papers, with their selection, are cached per (disease,
-  gene) pair in the managed folder `act4_evidence_cache`. The in-app assistant's conversations are never stored; Agent Hub, a separate
-  webapp linked from the card, stores its own (`DEC-DEMO-004`).
+  gene) pair in the managed folder `act4_evidence_cache`. The in-app assistant's conversations are never stored.
 - **No LLM anything.** A chatbot over a ranked gene list is the kind of thing that makes a careful
   audience stop trusting the careful parts. The template's chat block, like its other optional blocks
   (wizard, charts, flow, documents), was never enabled and was deleted on 2026-10-15, together with the

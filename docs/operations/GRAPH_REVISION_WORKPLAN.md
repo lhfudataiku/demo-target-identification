@@ -431,6 +431,56 @@ pull until R5.
    - every relation count change is explained by a source release or by D1–D2;
    - an old→new `node_index` map exists for every surviving node, with lost and new nodes listed.
 
+**Status 2026-11-09: tables rebuilt and accepted; the Kuzu graph is blocked on a plugin bug.**
+- **Rebuild.** One `RECURSIVE_FORCED_BUILD` job (schema auto-update on) rebuilt every `DEMO_KG_LS`
+  dataset, from the 28 copies of the `DEMO_KG_PREP` pull to the seven sinks (`kg`, `graph_edges`,
+  `edge_metadata`, `hgnc_identity`, the three `raw_ot_*` tables Part 2 reads). It started no job in
+  `DEMO_KG_PREP` and did not touch either snapshot folder. Intermediate row counts reported by DSS
+  are stale metrics; the graph tables were downloaded and compared directly.
+- **Acceptance**, `graph_nodes` / `graph_edges` against the R2 build:
+  - **Integrity:** 0 full-row duplicates, 0 self-loops, every edge has its reverse, no unknown
+    endpoint, no isolated node. The 862 duplicate `(relation, x, y)` triples are the same as before R2.
+  - **Nodes** 113,391 → **113,497**: 113,325 survive, 66 lost (49 MONDO, 10 HPO, 4 Reactome, 3 genes),
+    172 new (88 MONDO, 70 HPO, 10 Reactome, 4 genes). Inserts renumber later nodes, so 76,786 survivors
+    changed `node_index`; the split is keyed on MONDO ids since R1, so it is unaffected. All 1,247
+    grouped disease nodes are unchanged; the 88 new MONDO diseases stay ungrouped (Risk table).
+  - **Edges** 2,851,872 → **2,853,534** (+1,662). Every change traces to a source release:
+    - MONDO: `disease_disease` +582, `disease_phenotype_disease` +130. Open Targets did not change, so
+      its edges moved only through disease grounding: OT-sourced `disease_protein` −164, and one
+      `drug_investigated_for` pair (2 rows) on the grouped disease `14720_20250_16646`.
+    - HPO: `phenotype_protein` +1,640, `disease_phenotype_positive` +1,124, `_negative` +12,
+      `phenotype_phenotype` +112, phenotype-derived `disease_protein` +216.
+    - GO (same release, hierarchies identical): gene annotations −1,234 directed rows, from gene2go
+      drift and the `NOT` filter, which dropped 1,402 rows in R3 (D2).
+    - Reactome 98: `pathway_protein` −742, `pathway_pathway` +12. HuRI: one `protein_protein` pair.
+    - Unchanged: `drug_protein`, `indication`, the GO hierarchies.
+  - **Flow check:** 11 of the 14 older description-only errors remain (`join_gd_genes`,
+    `join_dp_genes`, `join_disease_phenotype_mondo`).
+  - The `node_index` map and the lost and new node lists were written to the session scratchpad,
+    not yet to a durable location.
+- **Snapshot (user decision, 2026-11-09).** A saved snapshot holds only the graph definition and names
+  its datasets; each build replaces `built-graphs/<id>/`. A source refresh with an unchanged
+  definition therefore reruns the current snapshot: `build-graph-ZKGaRg` was rerun into `ouzaULiq`.
+  A change to the definition still gets a new snapshot, and `Mp25kL` is never rebuilt.
+- **⚠ Blocker: the Visual Graph plugin (1.5.0, Kuzu 0.11.3) silently drops nodes whose name has a
+  comma.** `python-lib/graph/ingestion/kuzu/batch_insert.py` writes each 10,000-row chunk of nodes
+  to CSV and loads it with `COPY … (IGNORE_ERRORS=true)`. Kuzu infers the CSV dialect from a file's
+  first rows; when none is quoted it assumes no quoting, every quoted row fails, and
+  `IGNORE_ERRORS` skips it and every edge to it without a log line.
+  - The R5 build lost **716 nodes: 673 diseases, 15 drugs, 28 phenotypes**, which explains the
+    entire edge shortfall in Kuzu. The editor's own working graph, rebuilt by the user on R5 data,
+    loses the same nodes (26,519 diseases).
+  - Every earlier build (`Mp25kL`, the R2 build of `ZKGaRg`) lost the same 15 drugs and 28
+    phenotypes; no disease was lost before R5, because which rows fail depends on how rows fall
+    into chunks.
+  - Verified fix: `AUTO_DETECT=false` (or `QUOTE='"'`) on both `COPY` statements loads every row.
+  - Decision (user, 2026-11-09): report the bug to the plugin's maintainers and wait for a fixed
+    version; do not patch the installed plugin. `compute_ytvuniN8` is **not** rebuilt, so Part 2's
+    `ytvuniN8` keeps the R2 build (27,153 diseases, all present).
+- **To close R5:** install the fixed plugin, rerun `build-graph-ZKGaRg`, check Kuzu's node and
+  relation counts against `graph_nodes` / `graph_edges` (same-type relations stored both ways,
+  cross-type once), then rebuild `compute_ytvuniN8`. The Explorer still serves `Mp25kL`.
+
 ### R6 — Part 2 rebuild and re-evaluation *(DSS in Part 2)*
 1. Rebuild the copies, features and split (MONDO-keyed since R1), and retrain the champion's configuration.
 2. Compare with the new R1 baseline per disease: report ties first, then the stratified paired test,
@@ -471,7 +521,8 @@ phenotype-derived `disease_protein` links), to see whether those links flatter t
    (`validation_auc_by_disease`: `n_pos`, `n_neg`; `disease_pool_sizes`).
 4. Webapp: keep rank and percentile primary; show the calibrated score as "chance of being a known
    association" beside the disease's base rate (or as an enrichment over it), with a tooltip that
-   negatives are unlabeled genes, so the value is a floor for novel candidates.
+   negatives are unlabeled genes, so the value is a floor for novel candidates. *(Carried out as
+   step W2 of [`WEBAPP_REVISION_WORKPLAN.md`](WEBAPP_REVISION_WORKPLAN.md), from 2026-11-09.)*
 5. **Accept when:**
    - every disease's ranking and per-disease AUC are identical to the uncalibrated version (sigmoid is
      strictly monotone and the base model is unchanged);
@@ -530,6 +581,7 @@ phenotype-derived `disease_protein` links), to see whether those links flatter t
 | Schema validation fails on rebuild | Propagate schema fully before each rebuild; build fused stages separately |
 | The fresh pull cannot be reproduced later | D9 pins every source at this pull |
 | The Explorer captions edges with `relation`, not `display_relation` | Check once after R2; if so, the new labels show only in edge details |
+| The Visual Graph build silently drops comma-named nodes (found in R5) | Count Kuzu nodes and relations against `graph_nodes` / `graph_edges` after every build, before Part 2 copies the graph |
 
 ## 6. Findings during the revision
 

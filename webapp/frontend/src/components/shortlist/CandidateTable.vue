@@ -54,7 +54,7 @@
   // View: filters the rows already loaded, without a refetch. The funnel still
   // describes the population, so nothing here can hide how big the list is.
   const search = ref('')
-  const tract = ref('')          // '' | sm | ab | either
+  const tract = ref('')          // '' | sm | ab  ("either" is the Population's Tractable checkbox)
   const klass = ref('')
   const strike = ref(false)      // strike out, never remove
 
@@ -64,7 +64,6 @@
     if (search.value && !r.gene_name.toLowerCase().includes(search.value.toLowerCase())) return false
     if (tract.value === 'sm' && !r.ot_sm_tractable) return false
     if (tract.value === 'ab' && !r.ot_ab_tractable) return false
-    if (tract.value === 'either' && !(r.ot_sm_tractable || r.ot_ab_tractable)) return false
     if (klass.value && r.ot_class_l1 !== klass.value) return false
     return true
   }))
@@ -91,13 +90,10 @@
       <CardTitle>Ranked candidates</CardTitle>
       <CardDescription>
         <template v-if="data && diseaseName">
-          {{ rows.length.toLocaleString() }} candidates at rank ≤ {{ maxRank }} for {{ diseaseName }},
-          strongest evidence first. Nothing is pre-filtered; select a row to review its evidence below.
+          {{ rows.length.toLocaleString() }}<template v-if="data.funnel.length">
+            of {{ data.funnel[0].n.toLocaleString() }}</template> candidates · rank ≤ {{ maxRank }}
         </template>
-        <template v-else>
-          Every gene the graph connects to the disease, ordered by the champion model's score within this
-          disease. Nothing is pre-filtered.
-        </template>
+        <template v-else>Every gene the graph connects to the disease, ranked within it.</template>
       </CardDescription>
     </CardHeader>
     <CardContent class="flex flex-col gap-4">
@@ -160,21 +156,21 @@
             <Search class="pointer-events-none absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
             <Input v-model="search" placeholder="Gene symbol" class="w-44 pl-8" />
           </div>
-          <span class="flex items-center">
-            <NativeSelect v-model="tract">
-              <NativeSelectOption value="">Any tractability</NativeSelectOption>
-              <NativeSelectOption value="sm">Small molecule</NativeSelectOption>
-              <NativeSelectOption value="ab">Antibody</NativeSelectOption>
-              <NativeSelectOption value="either">Either</NativeSelectOption>
-            </NativeSelect>
-            <ActInfo text="Small molecule: a drug-like pocket. Antibody: reachable from outside the cell. Either: at least one." />
-          </span>
+          <!-- Same order as the Class and Tractability columns below. -->
           <span class="flex items-center">
             <NativeSelect v-model="klass">
               <NativeSelectOption value="">Any target class</NativeSelectOption>
               <NativeSelectOption v-for="c in classes" :key="c" :value="c">{{ c }}</NativeSelectOption>
             </NativeSelect>
             <ActInfo text="Open Targets' protein family — enzyme, membrane receptor, transcription factor and so on." />
+          </span>
+          <span class="flex items-center">
+            <NativeSelect v-model="tract">
+              <NativeSelectOption value="">Any tractability</NativeSelectOption>
+              <NativeSelectOption value="sm">Small molecule</NativeSelectOption>
+              <NativeSelectOption value="ab">Antibody</NativeSelectOption>
+            </NativeSelect>
+            <ActInfo text="Small molecule: a drug-like pocket. Antibody: reachable from outside the cell. To keep genes reachable by either, use Tractable above." />
           </span>
           <label class="flex items-center gap-2 text-sm">
             <Checkbox v-model="strike" /> Strike out liabilities

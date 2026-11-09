@@ -69,6 +69,11 @@ skill.
 loading into `DEMO_KG_PREP`, corrects two relations, makes edge labels readable, and rebuilds from
 current sources.
 
+**Drafted:** the webapp revision, 2026-11-09:
+[`operations/WEBAPP_REVISION_WORKPLAN.md`](operations/WEBAPP_REVISION_WORKPLAN.md). It shortens the
+shortlist page, cleans up its filters, shows the calibrated score, keeps one assistant, and lets a
+scientist record a review per candidate.
+
 Completed plans move to [`../archive/`](../archive/): the most recent is the flow migration, done
 2026-10-29 (`DEC-ARCH-006`, `DEC-OPS-007`, `DEC-MEAS-005`, `DEC-ARCH-007`; its workplan and evidence
 design are [`FLOW_MIGRATION_WORKPLAN.md`](../archive/FLOW_MIGRATION_WORKPLAN.md) and

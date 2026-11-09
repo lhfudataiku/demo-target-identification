@@ -5,8 +5,7 @@
    * Open a disease you know, judge the top of the list, narrow it on your own
    * thresholds, then ask what supports one gene. One selection drives the
    * header and every tab below the list, so they can never describe different
-   * genes. The disease is shared with "Why trust the list", and the *How do we
-   * know?* links lead there.
+   * genes. The disease is shared with "Why trust the list".
    *
    * Guardrails held here and in the parts:
    *  - `prediction` is never fetched or shown, and no AUC appears on this page;
@@ -19,7 +18,7 @@
   import { computed, nextTick, onMounted, ref, watch } from 'vue'
   import { storeToRefs } from 'pinia'
   import { Button, Card, CardContent, Tabs, TabsContent, TabsList, TabsTrigger } from '@dataiku/ea-ui-kit'
-  import { AiAgent, ArrowExternalLink, Microscope } from '@dataiku/vue-icons'
+  import { AiAgent, Microscope } from '@dataiku/vue-icons'
   import { EmptyState, PageHeader } from 'bs-blueprint'
   import AssistantSheet from '@/components/shortlist/AssistantSheet.vue'
   import CandidateHeader from '@/components/shortlist/CandidateHeader.vue'
@@ -28,9 +27,8 @@
   import OverviewTab from '@/components/shortlist/OverviewTab.vue'
   import RankingTab from '@/components/shortlist/RankingTab.vue'
   import SourcesTab from '@/components/shortlist/SourcesTab.vue'
-  import { TRUST_LINKS, type Detail, type Drivers, type Payload, type Row, type Selection, type SourcesDoc } from '@/components/shortlist/types'
+  import { type Detail, type Drivers, type Payload, type Row, type Selection, type SourcesDoc } from '@/components/shortlist/types'
   import { useSelectionStore } from '@/stores/selection'
-  import { agentHubUrl } from '@/utils/visualGraphExplorer'
   import { apiUrl } from '@/utils/api'
 
   defineOptions({ name: 'ShortlistView' })
@@ -129,10 +127,9 @@
     })
   }
 
-  // The evidence assistant for the selected pair (Phase 7a) and, for open exploration, Agent Hub
-  // (Phase 7b) in a new tab. Agent Hub cannot be handed the pair: the link opens its home page.
+  // The evidence assistant for the selected pair (Phase 7a). The Agent Hub link it once sat beside
+  // was removed (webapp revision D1): Agent Hub cannot be handed the pair and checks no citation.
   const assistantOpen = ref(false)
-  const hubUrl = agentHubUrl()
 
   // Trials and literature are searched ON DEMAND for the selected pair only (scope D3): nothing
   // runs when a row is clicked, only when the Trials or Literature tab is opened. The search
@@ -206,26 +203,11 @@
 
 <template>
   <div class="flex h-full flex-col">
-    <PageHeader title="The shortlist" />
+    <PageHeader title="The shortlist"
+                description="Pick a disease, narrow the list, then select a gene to review its evidence." />
 
     <div ref="pane" class="min-h-0 flex-1 overflow-auto">
       <div class="mx-auto flex w-full max-w-6xl flex-col gap-6 p-8">
-        <header class="flex flex-col gap-1.5">
-          <p class="text-xs font-semibold uppercase tracking-wide text-primary">Candidate review</p>
-          <h2 class="text-3xl font-semibold tracking-tight">Does this look right to you?</h2>
-          <p class="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            Open a disease you know and judge the top of the list yourself; the scientist is the instrument.
-            Nothing is pre-filtered: narrow it on your own thresholds, then ask what supports each gene. The
-            model's reasons and the drug evidence stay in separate tabs, each with its source attached.
-          </p>
-          <nav class="flex flex-wrap items-center gap-1 text-sm">
-            <span class="mr-1 text-muted-foreground">How do we know?</span>
-            <Button v-for="l in TRUST_LINKS" :key="l.section" variant="ghost" size="sm" as-child>
-              <router-link :to="{ name: 'trust', query: { section: l.section } }">{{ l.label }}</router-link>
-            </Button>
-          </nav>
-        </header>
-
         <p v-if="error" class="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-2 text-sm text-destructive">
           {{ error }}
         </p>
@@ -243,9 +225,6 @@
               <CandidateHeader :row="sel" :detail="detail" :disease-name="diseaseName" />
               <div class="flex flex-wrap gap-2">
                 <Button size="sm" @click="assistantOpen = true"><AiAgent class="size-4" /> Ask about {{ sel.gene_name }}</Button>
-                <Button v-if="hubUrl" variant="outline" size="sm" as-child>
-                  <a :href="hubUrl" target="_blank" rel="noopener">Explore in Agent Hub <ArrowExternalLink class="size-3" /></a>
-                </Button>
               </div>
               <AssistantSheet v-model:open="assistantOpen" :disease-index="diseaseIndex!" :gene-index="sel.gene_index"
                               :gene="sel.gene_name" :disease-name="diseaseName" />
@@ -276,11 +255,6 @@
             </template>
           </CardContent>
         </Card>
-
-        <p class="text-xs text-muted-foreground">
-          Not shown anywhere on this page: any AUC, the model's prediction column, and any filter on drug or
-          liability badges. The app ranks and explains; it does not recommend what to pursue.
-        </p>
       </div>
     </div>
   </div>

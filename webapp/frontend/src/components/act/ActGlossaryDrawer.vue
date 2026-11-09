@@ -12,7 +12,7 @@
    * the two would start to disagree.
    */
   import { computed, nextTick, ref, watch } from 'vue'
-  import { Book, Search, X } from '@dataiku/vue-icons'
+  import { Book, Dismiss, Search } from '@dataiku/vue-icons'
   import { GLOSSARY, GLOSSARY_GROUPS, GROUP_LABEL } from '@/utils/glossary'
   import { useGlossaryStore } from '@/stores/glossary'
   import { Button, Input } from '@dataiku/ea-ui-kit'
@@ -80,7 +80,7 @@
           </div>
           <Button variant="ghost" size="icon-sm" aria-label="Close glossary" class="text-muted-foreground"
                   @click="store.close()">
-            <X class="size-4" />
+            <Dismiss class="size-4" />
           </Button>
         </header>
 
