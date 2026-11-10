@@ -11,8 +11,9 @@
 
 **Status:** written at release, 2026-11-10. Nothing here is scheduled. Every number below was measured
 once, on `dashboard_candidates` after the R6 rebuild (champion `m7-f14-cal`, saved-model version
-`1794305004361`, graph snapshot `ZKGaRg` of 2026-11-10). No notebook asserts them, so re-measure
-before quoting any of them.
+`1794305004361`, graph snapshot `ZKGaRg` of 2026-11-10), and the label measurements in §3.4 on
+`scored_champion` (graph-revision step R7). No notebook asserts them, so re-measure before quoting any
+of them.
 
 ## 1. In one paragraph
 
@@ -21,7 +22,9 @@ knows at the top of the list. The review shows *which* knowledge that is. In the
 means the general set of cancer-driver genes, so HER2-positive breast, lung and gastric cancer get
 almost the same list. Outside cancer, a single protein complex can fill the top, and approved drug
 targets that carry no genetic evidence rank low. Each pattern traces to a specific choice in the labels,
-the graph or the features (§3), and each has a candidate fix in the data Part 1 could add (§4).
+the graph or the features (§3). The labels matter most, and we measured by how much (§3.4): scored on
+germline evidence alone, HER2+ falls from AUC 0.94 to 0.81. So the first fix is to the labels, from data
+already in hand, before any new source is added (§4).
 
 ## 2. What the review found
 
@@ -39,8 +42,10 @@ The top 100 genes of each of the twelve served diseases.
 | **Scores are nearly flat at the top.** | The top score is about 0.40 for most diseases; HER2+'s top 100 spans 0.407 to 0.374. The order inside that band is fragile: ERBB2 moved #16 → #29 between two retrains on nearly the same data. |
 
 **For the demo.** The reconstruction claim holds. But the HER2+ opening is an easy pass, and it would
-look the same on lung. A disease-specific list makes the stronger opening: dilated cardiomyopathy, or
-psoriatic arthritis. HER2+ then works as the comparison.
+look the same on lung: most of HER2+'s AUC comes from pan-cancer labels (§3.4). A disease-specific list
+makes the stronger opening: dilated cardiomyopathy, whose labels are germline and phenotype rather than
+somatic and which scores *higher* (0.885) once its phenotype-only labels are removed, or psoriatic
+arthritis. HER2+ then works as the comparison.
 
 ## 3. Why: limitations inherited from the graph and the model
 
@@ -53,7 +58,7 @@ psoriatic arthritis. HER2+ then works as the comparison.
 - **Phenotype-derived links add genes by shared symptom, not mechanism.** They are 128 of dilated
   cardiomyopathy's 242 links and 198 of diabetes's 1,289. This route probably explains psoriatic
   arthritis's skeletal and glycan-enzyme genes and the mitochondrial genes in diabetes and
-  cardiomyopathy. Graph-revision step R7 measures it.
+  cardiomyopathy. §3.4 measures how much it matters: less than expected.
 - **Labels sit on the exact disease node,** so a gene recorded for a parent or sibling disease counts
   as novel.
 - **The label means genetic association, not drug target.** Many successful targets have no genetic
@@ -85,7 +90,39 @@ psoriatic arthritis. HER2+ then works as the comparison.
   features alone.
 - **Per-disease AUC rewards this.** A held-out cancer's known genes are the same drivers seen in
   training, so recognising a cancer driver scores well on any cancer. The grouped split stops a
-  disease leaking across folds, not the same labels recurring across diseases.
+  disease leaking across folds, not the same labels recurring across diseases. §3.4 shows the size of
+  the reward.
+
+### 3.4 Measured: how much the labels carry (graph-revision step R7)
+
+Every validation positive is exactly one disease–gene link in the graph, and the graph says what kind:
+of 65,546 validation positives, 35,981 are somatic-mutation links, 20,840 germline, 394 both, and
+8,331 (12.7%) phenotype-derived only. Re-scoring the champion's per-disease AUC without each kind:
+
+| scored on | diseases scored | unchanged | higher / lower | macro AUC (same diseases) | paired test |
+|---|--:|--:|--:|---|---|
+| all positives (the headline) | 603 | — | — | 0.8180 | — |
+| without phenotype-only positives | 564 (39 lose all positives) | 466 | 40 / 58 | 0.8177 → 0.8132 | Wilcoxon p = 0.035 |
+| germline positives only | 424 (179 lose all positives) | 260 | 51 / 113 | 0.7821 → 0.7591 | p = 3×10⁻⁸ |
+
+| disease | all positives | without phenotype-only | germline only |
+|---|--:|--:|--:|
+| HER2+ breast carcinoma | 0.938 | 0.938 | **0.809** (5 positives) |
+| lung adenocarcinoma | 0.934 | 0.934 | **0.775** |
+| gastric adenocarcinoma, both endometrial | 0.94–0.97 | unchanged | no germline positive |
+| dilated cardiomyopathy | 0.837 | **0.885** | 0.885 |
+| diabetes mellitus | 0.683 | **0.659** | 0.659 |
+
+What it settles:
+
+- **The somatic labels are the large effect.** On the 164 diseases the germline-only view changes,
+  macro AUC falls from 0.849 to 0.790. The cancers' high AUC is mostly the model recognising
+  pan-cancer drivers, the same mechanism that makes their lists identical.
+- **The phenotype-derived links are a small, two-sided effect.** 466 of 564 diseases have none; on the
+  98 that do, macro falls from 0.827 to 0.801. They help the model in diabetes and hurt it in
+  cardiomyopathy, so dropping them is a per-disease choice, not a general correction.
+- **The headline is robust to the phenotype question** (0.8180 → 0.8132) **but not to the somatic one.**
+  A reconstruction claim made on cancers should say which evidence it reconstructs.
 
 ## 4. Proposal: what Part 1 could add
 
@@ -93,7 +130,24 @@ Ordered by fit to the findings and by cost. Licences are as understood at writin
 before use, by the same triage as the current sources in
 [`DATA_SOURCE_LICENSE_REVIEW.md`](../graph/DATA_SOURCE_LICENSE_REVIEW.md).
 
-### 4.1 Disease-specific signal
+### 4.1 First: better labels from data already in hand
+
+§3.4 says this is where the leverage is, and none of it needs a new download.
+
+- **Split Open Targets evidence by source,** not just by type. Pan-cancer catalogues (Cancer Gene
+  Census) then stay apart from cohort-specific driver calls (IntOGen), and Mendelian evidence apart
+  from GWAS gene assignment, so the training label is chosen rather than inherited. This is the direct
+  fix for the largest measured effect: cancers trained and evaluated on labels that differ between
+  them.
+- **Report the germline-only evaluation as a standard second reading** beside the headline, as §3.4
+  does, so a reader can see how much of a cancer's AUC is pan-cancer recognition. It should get a
+  notebook assertion before it is quoted anywhere outside this document.
+- **Keep phenotype-derived links as their own relation** (R2 already labels them), so they can leave
+  the label without leaving the graph. Decide per disease: §3.4 shows they help some and hurt others.
+- **Inherit drug links through the MONDO hierarchy** for the drug badges and the benchmark (not the
+  label). This gives familial hypercholesterolemia its LDL-lowering drugs.
+
+### 4.2 Then: disease-specific signal
 
 | Addition | Nodes and edges | Addresses |
 |---|---|---|
@@ -103,16 +157,6 @@ before use, by the same triage as the current sources in
 | **Cell types** (Cell Ontology, single-cell markers) | `cell_type` node; gene marks cell type; disease involves cell type | Finer than tissue: cardiomyocytes, T cells |
 | **Cancer dependency** (DepMap CRISPR, by lineage) | gene dependent in a lineage, linked to diseases through MONDO | Separates breast, lung and gastric by what their cells need |
 | **Copy number** (TCGA via cBioPortal) | gene amplified / deleted in a cancer type | Captures ERBB2 amplification. Avoid COSMIC copy-number data (commercial licence) |
-
-### 4.2 Better labels from data already in hand
-
-- **Split Open Targets evidence by source,** not just by type. Pan-cancer catalogues (Cancer Gene
-  Census) then stay apart from cohort-specific driver calls (IntOGen), and Mendelian evidence apart
-  from GWAS gene assignment, so the training label is chosen rather than inherited.
-- **Inherit drug links through the MONDO hierarchy** for the drug badges and the benchmark (not the
-  label). This gives familial hypercholesterolemia its LDL-lowering drugs.
-- **Keep phenotype-derived links as their own relation** (R2 already labels them), so they can leave
-  the label without leaving the graph.
 
 ### 4.3 Structure
 
@@ -133,14 +177,15 @@ before use, by the same triage as the current sources in
 
 ### 4.5 Suggested order
 
-1. Open Targets `animal_model` and the per-source split: no new download.
-2. Bgee anatomy: restores PrimeKG parity on the existing pipeline pattern.
-3. Complex Portal: small, and fixes the complex inflation directly.
-4. DepMap and copy number, only if cancer subtypes become the story.
+1. **The per-source label split and the germline-only second reading** (§4.1): no new download, and
+   aimed at the largest effect §3.4 measured.
+2. Open Targets `animal_model`: the same pinned release, a new relation.
+3. Bgee anatomy: restores PrimeKG parity on the existing pipeline pattern.
+4. Complex Portal: small, and fixes the complex inflation directly.
+5. DepMap and copy number, only if cancer subtypes become the story.
 
-Alongside, two changes that need no new data: report a model **without** the four disease-independent
-features beside the champion, and evaluate on germline or cohort-specific labels instead of the
-pan-cancer somatic set.
+Alongside, one change that needs no new data: report a model **without** the four disease-independent
+features beside the champion.
 
 ## 5. Rules any extension must keep
 

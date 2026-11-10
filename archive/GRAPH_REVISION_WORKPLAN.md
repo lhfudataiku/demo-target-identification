@@ -1,18 +1,18 @@
 # Graph revision — workplan
 
-> **Lifecycle:** Active plan · **Audience:** Part 1 builders, DSS flow maintainers and Part 2
+> **Lifecycle:** Historical · **Audience:** Part 1 builders, DSS flow maintainers and Part 2
 > reviewers · **Authority:** the sequence, method and acceptance checks for revising the knowledge
 > graph: moving data loading into its own project, correcting two wrong relations, making edge labels
 > readable, and rebuilding from current sources · **Update when:** a decision is taken, a step is
 > accepted or re-scoped, or a fact in §2 is superseded · **Generated dependencies:** none ·
-> **Excludes:** the graph method itself, in [`GRAPH_BUILDING.md`](../graph/GRAPH_BUILDING.md); Part 2
-> modelling method, in [`TARGET_PRIORITIZER.md`](../prioritizer/TARGET_PRIORITIZER.md).
+> **Excludes:** the graph method itself, in [`GRAPH_BUILDING.md`](../docs/graph/GRAPH_BUILDING.md); Part 2
+> modelling method, in [`TARGET_PRIORITIZER.md`](../docs/prioritizer/TARGET_PRIORITIZER.md).
 
-**Status: IN PROGRESS — R1 revised 2026-11-06 (D7 changed); R1 step 1 (revert) done; next is R1 step 2.**
-`DEMO_KG_LS` is untouched. The repository
-holds the drafted code for steps R2 and R3 (`dss_recipes/attach_node_index.py`,
-`dss_recipes/compute_go_terms.py`), not yet pushed. Every DSS
-change and every build below needs explicit approval at the step where it happens.
+**Status: DONE 2026-11-10; archived.** R1–R8 are complete except D11, the family-column trim, which
+was never applied. The graph was rebuilt from a pinned source pull (`DEMO_KG_PREP`), Part 2 was rebuilt
+and its champion retrained on it, and the documented numbers were retargeted. The durable choices are in
+the decision register as `DEC-ARCH-008`, `DEC-MEAS-006`, `DEC-MODEL-002` and `DEC-OPS-008`; current
+graph facts are in [`GRAPH_BUILDING.md`](../docs/graph/GRAPH_BUILDING.md). This file is the dated record.
 
 ## 1. What changes, and why
 
@@ -90,7 +90,7 @@ zone today) and its output `raw_menche_ppi`.
 | D8 | **Part 2 keeps reading `DEMO_KG_LS`, not `DEMO_KG_PREP`.** The LS copies keep their current names, so Part 2's 13 sync recipes need no change, and Part 2's raw data always comes from the same pull as the graph. | taken 2026-11-06 |
 | D9 | **Pin every source at this pull:** each unpinned download is saved once to a `raw_files` folder in `DEMO_KG_PREP` and read from there afterwards. | taken 2026-11-06 |
 | D10 | **Two-stage rebuild** (R2, then R5) so the effect of the relation fixes is measured apart from source drift. | taken 2026-11-06 |
-| — | New relation name `disease_phenotype_disease`; label wording in [`GRAPH_BUILDING.md`](../graph/GRAPH_BUILDING.md) §4.4 | taken with D1 |
+| — | New relation name `disease_phenotype_disease`; label wording in [`GRAPH_BUILDING.md`](../docs/graph/GRAPH_BUILDING.md) §4.4 | taken with D1 |
 | D11 | **Trim the family columns that flow downstream** (§6.1). Keep `disease_index`, `disease_family_id`, `anchor_name`, `hop_depth`, `disease_split_key_mondo` and `split_key_name`. Retire `disease_split_key` after its three live readers move to the MONDO key. Keep `split_key_rule` in `disease_family_id` only, as the audit trail. Done in the R6 rebuild, since it changes schemas down to `scored_champion`. | proposed 2026-11-07 |
 | D12 | **Calibrate inside the model, not in a separate recipe** (§6.2): train a new version of the champion with the training recipe's built-in **sigmoid (Platt)** calibration, fitted on the test fold (`calibrateOnTestSet`). Rank and percentile stay the primary display; the calibrated score may be shown as "chance of being a known association" next to the disease's base rate, never as the probability of being a target. *(Revised 2026-11-07 from "post-processing recipe".)* | taken 2026-11-07 (built as a new Lab-trained model, R7b) |
 
@@ -579,6 +579,34 @@ first, so no intermediate dataset was skipped). D11 not applied.
 Re-score the champion's per-disease AUC on Open-Targets-only positives (excluding the 27,713
 phenotype-derived `disease_protein` links), to see whether those links flatter the results.
 
+**Outcome (2026-11-10) — done, read-only; measured once on `scored_champion` after R6, no notebook
+asserts these numbers.** Every validation positive has exactly one `disease_protein` link and no
+negative has one, so the label splits cleanly by the R2 `display_relation`: of 65,546 validation
+positives, 35,981 are somatic, 20,840 germline, 394 germline + somatic and **8,331 (12.7%)
+phenotype-derived only**. Per-disease AUC uses average ranks for ties.
+
+| view | diseases scored | ties (unchanged) | higher / lower | macro on the common set | paired test |
+|---|--:|--:|--:|---|---|
+| A: phenotype-only positives dropped | 564 (39 lose all positives) | 466 | 40 / 58 | 0.8177 → **0.8132** | Wilcoxon p = 0.035 |
+| B: phenotype-only positives counted negative | 564 | 466 | 38 / 60 | 0.8177 → 0.8128 | p = 0.012 |
+| C: germline positives only (somatic and phenotype dropped) | 424 (179 lose all positives) | 260 | 51 / 113 | 0.7821 → **0.7591** | p = 3×10⁻⁸ |
+
+- **Phenotype-derived links flatter the result a little, and it is real.** Ties first: 466 of 564
+  diseases have no phenotype-only positive and are unchanged. On the 98 that do, macro AUC falls from
+  0.8271 to 0.8013. The headline would read **0.8132 over 564 diseases** on Open Targets positives
+  alone, against 0.8180 over 603. The 39 diseases scored *only* through phenotype links average 0.8232,
+  slightly above the rest. The direction varies by disease: dilated cardiomyopathy *improves* without
+  them (0.8372 → 0.8845; 91 of its 181 positives are phenotype-only), diabetes falls (0.6825 →
+  0.6589; 169 of 970).
+- **Somatic links flatter the cancers much more.** On the 164 diseases view C changes, macro falls
+  from 0.8493 to 0.7898. HER2+ reads 0.9382 on the full label and **0.8091** on its 5 germline
+  positives; lung adenocarcinoma 0.9339 → 0.7752. Gastric and both endometrial diseases have no germline
+  positive at all. This quantifies the pan-cancer label effect described in
+  [`FUTURE_DIRECTIONS.md`](../docs/demo/FUTURE_DIRECTIONS.md) §3.1, where §3.4 now carries these numbers; view C is outside R7's original scope.
+- **Not changed:** the label, the model and every documented number. R7 is a sensitivity reading.
+  Whether to drop phenotype-derived links from the label is a modelling decision for a later phase;
+  under `DEC-OPS-004` it would be one pre-registered intervention.
+
 ### R7b — calibrated champion *(D12; DSS in Part 2 + webapp)*
 1. In `train_m7-f14`, set calibration to **sigmoid** and keep `calibrateOnTestSet: true`. With the
    recipe's explicit two-dataset split, the calibrator is fitted on `psplit_test_set` (130 diseases,
@@ -597,7 +625,7 @@ phenotype-derived `disease_protein` links), to see whether those links flatter t
 4. Webapp: keep rank and percentile primary; show the calibrated score as "chance of being a known
    association" beside the disease's base rate (or as an enrichment over it), with a tooltip that
    negatives are unlabeled genes, so the value is a floor for novel candidates. *(Carried out as
-   step W2 of [`WEBAPP_REVISION_WORKPLAN.md`](WEBAPP_REVISION_WORKPLAN.md), from 2026-11-09.)*
+   step W2 of [`WEBAPP_REVISION_WORKPLAN.md`](../docs/operations/WEBAPP_REVISION_WORKPLAN.md), from 2026-11-09.)*
 5. **Accept when:**
    - every disease's ranking and per-disease AUC are identical to the uncalibrated version (sigmoid is
      strictly monotone and the base model is unchanged);
@@ -644,6 +672,22 @@ phenotype-derived `disease_protein` links), to see whether those links flatter t
 4. Retarget documented Part 2 numbers by the skill's number-update procedure.
 5. Record D6–D12 in the decision register where the admission rule is met.
 6. Regenerate the indexes and move this plan to `archive/`.
+
+**Outcome (2026-11-10) — done.**
+1. `GRAPH_BUILDING.md`: status line, §2.2 (every source now pinned, with the versions of the
+   2026-11-08 pull), §4.4 assembly counts, §6 snapshot rule, §7.1 node and relation counts from the R5
+   tables, the validation note (including the Kuzu count check), and three decision-log rows
+   (pinning and `DEMO_KG_PREP`, the snapshot rule, the R5 rebuild).
+2. `FLOW_MAP.md` regenerated (zone 31's description).
+3. `DEMO_KG_PREP` added to the project map (`harness/PROJECT_INSTRUCTIONS.md`, regenerated into
+   `CLAUDE.md` / `AGENTS.md`) and to `PROJECT_CONTEXT.md` §4, whose §4.1 counts and folder-copy
+   sentence were also brought current.
+4. Done as R6 step 5.
+5. Admitted: D6 + D8 + D9 as `DEC-ARCH-008`, D7 (with the R6 notebook and cache findings) as
+   `DEC-MEAS-006`, D12 as `DEC-MODEL-002` (superseding `DEC-MODEL-001`, which still named `m7-f14`),
+   and the snapshot, Kuzu-count and Part 2 rebuild rule as `DEC-OPS-008`. Not admitted: D10 (a one-off
+   procedure) and D11 (never taken).
+6. Indexes regenerated; this plan moved to `archive/`.
 
 ## 5. Risks
 

@@ -12,8 +12,9 @@
 > projects fit) · **[TARGET_PRIORITIZER.md](../prioritizer/TARGET_PRIORITIZER.md)** (the modelling project that
 > consumes this graph).
 >
-> **Status: complete.** 113,391 nodes / 2,851,872 edges / 19 relations (after the 2026-11-08 relation
-> fix; 2,851,510 / 18 when accepted against the frozen reference, §7). Decisions are logged in the **appendix**.
+> **Status: complete.** 113,497 nodes / 2,853,534 edges / 19 relations, rebuilt from the pinned
+> 2026-11-08 source pull (graph revision, 2026-11-10; 113,391 / 2,851,510 / 18 when accepted against the
+> frozen reference, §7.2). Decisions are logged in the **appendix**.
 
 ## 1. Scope and approach
 
@@ -77,21 +78,27 @@ clinical terminology to be dropped entirely. Two caveats we enforce:
 ### 2.2 Source versions and reproducibility
 
 Each source recipe carries a `SOURCE PROVENANCE` header recording the version in use and how to
-freeze it. **Only 3 of 11 sources are pinned**; the rest resolve to "latest".
+freeze it. **Since 2026-11-08 every source is pinned.** Extraction lives in `DEMO_KG_PREP`: Open Targets
+and STRING are versioned in their URL, and recipe `compute_pinned_sources` downloads every unversioned
+source once into folder `pinned_sources`, never overwrites a file there, and records URL, retrieval
+time, size, SHA-256, `Last-Modified` and release in `MANIFEST.json`. To take a new release, delete the
+file and rebuild `compute_pinned_sources` and its reader.
 
-| Source | Version at build | Pinned? | How to freeze |
+| Source | Version in the current graph (2026-11-08 pull) | Pinned how | August build used |
 |---|---|---|---|
-| Open Targets | **26.06** | **yes**, in the path | — |
-| STRING | **v12.0** | **yes**, in the path | — |
-| Published disease-grouping map | pinned id, but **returns 0 bytes** | yes, and broken | snapshot — done (§3.2) |
-| MONDO | `releases/2026-08-04` | no | dated permanent URL, **verified working** |
-| HPO | `hp/releases/2026-06-23` | no | dated permanent URL, **verified working** |
-| GO | `releases/2026-07-26` | no | **no working archive** — snapshot the file |
-| Reactome | release 97 | no — path is literally `current/` | per-release archive exists; verify before relying on it |
-| HGNC | live query, retrieved 2026-08-13 | no | no archive — snapshot |
-| NCBI gene↔Ensembl map | rewritten continuously | no | **already drifted** — see below |
-| HuRI interactome | unversioned URL | no | snapshot |
-| Menche interactome | uploaded file | local | already frozen |
+| Open Targets | **26.06** | in the URL | 26.06 |
+| STRING | **v12.0** | in the URL | v12.0 |
+| Published disease-grouping map | pinned id, but **returns 0 bytes** | snapshot (§3.2) | same |
+| MONDO | `releases/2026-11-03` | `pinned_sources` | `releases/2026-08-04` |
+| HPO | `releases/2026-09-01` | `pinned_sources` | `releases/2026-06-23` |
+| GO | `releases/2026-07-26` | `pinned_sources` | same release |
+| Reactome | release 98 | `pinned_sources` | release 97 |
+| HGNC | live query, retrieved 2026-11-08 | `pinned_sources` | 2026-08-13 |
+| NCBI gene2go, gene↔Ensembl map | files dated 2026-11-08 | `pinned_sources` | early August |
+| HuRI interactome | file dated 2020-04-12 | `pinned_sources` | same file |
+| Menche interactome | uploaded file | local | same |
+
+The paragraphs below describe the August state that made pinning necessary.
 
 **All three ontologies were verified still at their build release** using a three-way check rather
 than a count coincidence: the parser keeps live terms *plus* bare placeholder nodes for obsolete
@@ -258,10 +265,10 @@ are resolved once, in assembly.
 
 | # | Recipe | Type | Does | Output |
 |---|---|---|---|---|
-| 1 | `stack_edge_sources` | **Stack** (12 in) | union the 12 edge tables, deduplicate, drop self-loops | `kg_stacked` — 1,474,753 |
-| 2 | `compute_kg_edges` | Python (8 in) | reverse-all, attach names, ground, disease grouping, giant component | `kg_grounded` 2,854,754 + unindexed nodes 113,391 |
-| 3 | `assign_node_index` | **Window** | `node_index` over an explicit sort | `graph_nodes` — 113,391 |
-| 4 | `attach_node_index` | Python (5 in) | join indices back onto both endpoints; rewrite `display_relation` into readable labels | `kg` 2,854,754 · `graph_edges` 2,851,510 · `edge_metadata` 844,166 |
+| 1 | `stack_edge_sources` | **Stack** (12 in) | union the 12 edge tables, deduplicate, drop self-loops | `kg_stacked` — 1,475,437 |
+| 2 | `compute_kg_edges` | Python (8 in) | reverse-all, attach names, ground, disease grouping, giant component | `kg_grounded` 2,856,740 + unindexed nodes 113,497 |
+| 3 | `assign_node_index` | **Window** | `node_index` over an explicit sort | `graph_nodes` — 113,497 |
+| 4 | `attach_node_index` | Python (5 in) | join indices back onto both endpoints; rewrite `display_relation` into readable labels | `kg` 2,856,740 · `graph_edges` 2,853,534 · `edge_metadata` 844,000 |
 
 All four outputs match the pre-split monolithic recipe exactly. What the decomposition bought:
 
@@ -371,9 +378,10 @@ folder (`ytvuniN8`) by `compute_ytvuniN8`, and **both** the Graph Explorer webap
 feature recipes read that local folder. Nothing in `DEMO_TARGET_IDENTIFICATION` reads a Kuzu folder
 across the project boundary any more (PROJECT_CONTEXT §4.3).
 
-> ⚠ **Each graph change gets a new snapshot, saved from the Visual Graph editor; older ones are kept
-> as references (2026-11-08).** `kg_ls_v0-2-ZKGaRg` (`build-graph-ZKGaRg`, R2) is what Part 2 reads
-> through `compute_ytvuniN8`. It keeps `Mp25kL`'s configuration, including the saved queries behind the
+> ⚠ **A graph-definition change gets a new snapshot, saved from the Visual Graph editor; a source
+> refresh reruns the current one (2026-11-09). Older snapshots are kept as references.**
+> `kg_ls_v0-2-ZKGaRg` (`build-graph-ZKGaRg`, created in R2, rerun on the R5 tables 2026-11-10) is what
+> Part 2 reads through `compute_ytvuniN8`. It keeps `Mp25kL`'s configuration, including the saved queries behind the
 > webapp demo narratives, and adds `disease_phenotype_disease`. `published_kg_ls-Mp25kL` (`build-graph-Mp25kL`,
 > 2026-09-03) is the pre-R2 reference, and the Explorer still serves it.
 > *History:* `enriched_index_freezed-6bRVGs` (`build-graph-6bRVGs`,
@@ -405,43 +413,46 @@ across the project boundary any more (PROJECT_CONTEXT §4.3).
 
 | Node type | Count | Source of record |
 |---|--:|---|
-| disease | 27,153 | disease ontology (25,906 + 1,247 grouped) |
+| disease | 27,192 | disease ontology (25,945 + 1,247 grouped) |
 | biological_process | 23,974 | function ontology |
-| gene/protein | 20,861 | gene vocabulary |
-| effect/phenotype | 19,120 | phenotype ontology |
+| gene/protein | 20,862 | gene vocabulary |
+| effect/phenotype | 19,180 | phenotype ontology |
 | molecular_function | 10,041 | function ontology |
 | drug | 5,282 | drug layer via cross-reference |
 | cellular_component | 4,077 | function ontology |
-| pathway | 2,883 | pathway database |
-| **Total** | **113,391** | |
+| pathway | 2,889 | pathway database |
+| **Total** | **113,497** | |
 
 | Relation | Count | Provenance |
 |---|--:|---|
-| protein_protein | 520,380 | three interactomes merged; sources retained in `edge_metadata` |
-| phenotype_protein | 487,054 | phenotype gene links |
-| disease_phenotype_positive | 380,280 | phenotype annotations |
-| disease_protein | 378,888 | genetic association + somatic mutation @ ≥ 0.3; reclassified phenotype gene links |
-| bioprocess_protein | 251,808 | function ontology + gene annotation |
-| cellcomp_protein | 186,806 | as above |
-| molfunc_protein | 156,246 | as above |
-| disease_disease | 82,360 | disease hierarchy (MONDO only) |
-| pathway_protein | 97,618 | pathway database |
+| protein_protein | 520,378 | three interactomes merged; sources retained in `edge_metadata` |
+| phenotype_protein | 488,694 | phenotype gene links |
+| disease_phenotype_positive | 381,404 | phenotype annotations |
+| disease_protein | 378,940 | genetic association + somatic mutation @ ≥ 0.3; reclassified phenotype gene links |
+| bioprocess_protein | 251,236 | function ontology + gene annotation |
+| cellcomp_protein | 186,848 | as above |
+| molfunc_protein | 155,542 | as above |
+| disease_disease | 82,942 | disease hierarchy (MONDO only) |
+| pathway_protein | 96,876 | pathway database |
 | bioprocess_bioprocess | 80,972 | function hierarchy |
-| drug_investigated_for | 69,682 | clinical indication, in-trial stages |
-| phenotype_phenotype | 45,912 | phenotype hierarchy |
+| drug_investigated_for | 69,658 | clinical indication, in-trial stages |
+| phenotype_phenotype | 46,024 | phenotype hierarchy |
 | molfunc_molfunc | 24,548 | function hierarchy |
 | drug_protein | 15,918 | mechanism of action |
 | indication | 9,418 | clinical indication, approved stages |
 | cellcomp_cellcomp | 9,392 | function hierarchy |
-| pathway_pathway | 5,798 | pathway hierarchy |
-| disease_phenotype_disease | 47,608 | phenotype annotations on terms that are also diseases (§4.3) |
-| disease_phenotype_negative | 1,184 | phenotype annotations, negation qualifier |
-| **Total** | **2,851,872** | undirected; reverse edges included |
+| pathway_pathway | 5,810 | pathway hierarchy |
+| disease_phenotype_disease | 47,738 | phenotype annotations on terms that are also diseases (§4.3) |
+| disease_phenotype_negative | 1,196 | phenotype annotations, negation qualifier |
+| **Total** | **2,853,534** | undirected; reverse edges included |
 
-**Validated:** 0 duplicate rows, 0 self-loops, 0 dangling endpoints, reverse-all symmetry holds on
-every sampled relation. `kg` holds 2,855,116 rows — 3,244 more than `graph_edges`, which are
-duplicate `(relation, x_index, y_index)` triples in `disease_protein` carrying distinct evidence
-metadata. That difference is identical in the reference build.
+**Validated (rebuild of 2026-11-09):** 0 full-row duplicates, 0 self-loops, every edge has its reverse,
+no unknown endpoint, no isolated node. The 862 duplicate `(relation, x_index, y_index)` triples in
+`disease_protein`, which carry distinct evidence metadata, are unchanged. The Kuzu build of snapshot
+`ZKGaRg` (Visual Graph 1.6.0) matches these tables on all 8 node labels and 19 relations; earlier
+plugin versions silently dropped nodes whose name contains a comma, so count Kuzu after every build.
+*(At the 2026-08-14 acceptance `kg` held 2,855,116 rows, 3,244 more than `graph_edges`, for the same
+reason; the reference build shows the same difference.)*
 
 ### 7.2 Accepted against the frozen reference
 
@@ -547,6 +558,9 @@ exposure), not under-coverage of what we do build.
 | 2026-08-14 | **Reconstruction accepted** (§7.2). 7 of 9 node groups and 14 of 18 relations reproduce **to the row**; total delta −0.03% of edges, all function-ontology. Root cause traced to the *reference* being stale, not the rebuild. |
 | 2026-08-17 | **The graph-building webapp and Kuzu snapshot belong to this project**, and the snapshot is shared out as the modelling project's primary input. |
 | 2026-11-06 | **Relation corrections and readable labels.** Disease→phenotype annotations on terms that are also diseases moved out of `disease_disease` into a new `disease_phenotype_disease` relation (they were 36% of `disease_disease` links, labelled `parent-child`); negated GO and reclassified phenotype annotations dropped; `display_relation` rewritten into readable labels at assembly. Edges stay stored in both directions. **Rejected:** dropping the reclassified links (loses information) and one-way storage (5 of 14 champion features assume two-way). *Built 2026-11-08 (workplan R2): the relation move, the `NOT` drop and the labels; §7.1 reflects it. Before it, `disease_disease` held 129,606 rows and the graph 2,851,510. The negated-GO drop waits for the source rebuild (R5).* |
+| 2026-11-06 | **Pin every source at the next pull** (graph-revision D9), superseding the 2026-08-13 choice to keep sources live: a rebuild must be reproducible, and the August GO and gene-map drift showed what "latest" costs. **Extraction moves to its own project, `DEMO_KG_PREP`** (D6), shared into this project through sync copies so the graph project's dataset names stay unchanged (D8). *Built 2026-11-08 (R3, R4).* |
+| 2026-11-09 | **A source refresh reruns the current snapshot; a graph-definition change gets a new one.** A saved Visual Graph snapshot holds only the definition, and each build replaces its `built-graphs/<id>/` folder, so `build-graph-ZKGaRg` was rerun on the refreshed tables. `Mp25kL` is kept and never rebuilt. |
+| 2026-11-10 | **Rebuilt from the pinned pull** (R5): 113,497 nodes and 2,853,534 edges, every count change traced to a source release, the negated-GO drop applied. The Kuzu build waited for Visual Graph 1.6.0, which fixes the comma-node drop found during R5; it then matched the tables exactly. A rebuild renumbers `node_index` (76,786 nodes this time), so the modelling project rebuilt its copies, features and model together (R6). |
 
 ## References
 

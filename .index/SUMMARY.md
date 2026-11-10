@@ -23,15 +23,15 @@ whose wording already flags them as historical are dropped.
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 8 | 4 | 13 |
 | `docs/demo/WEBAPP_DESIGN.md` | 0 | 50 | 96 | 146 |
 | `docs/demo/panel_selection/README.md` | 0 | 6 | 27 | 33 |
-| `docs/graph/GRAPH_BUILDING.md` | 1 | 2 | 141 | 144 |
-| `docs/overview/PROJECT_CONTEXT.md` | 0 | 2 | 16 | 18 |
+| `docs/graph/GRAPH_BUILDING.md` | 1 | 2 | 145 | 148 |
+| `docs/overview/PROJECT_CONTEXT.md` | 0 | 2 | 18 | 20 |
 | `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 10 | 112 | 122 |
 | `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 9 | 56 | 65 |
-| **total** | **2** | **95** | **473** | **570** |
+| **total** | **2** | **95** | **479** | **576** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**121 rows.** Of 473 total orphans, these are the model-dependent ones: the numbers that move
+**121 rows.** Of 479 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -67,15 +67,15 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/WEBAPP_DESIGN.md:776` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
 | `docs/demo/WEBAPP_DESIGN.md:915` | 9.6 | 1.85 | Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0 |
 | `docs/demo/WEBAPP_DESIGN.md:915` | 9.6 | 0.05 | Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0 |
-| `docs/graph/GRAPH_BUILDING.md:549` | 7.3 | 129,606 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
-| `docs/graph/GRAPH_BUILDING.md:549` | 7.3 | 2,851,510 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
+| `docs/graph/GRAPH_BUILDING.md:560` | 7.3 | 129,606 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
+| `docs/graph/GRAPH_BUILDING.md:560` | 7.3 | 2,851,510 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
 | `docs/overview/PROJECT_CONTEXT.md:113` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
 | `docs/overview/PROJECT_CONTEXT.md:137` | 3 | 0.69 | measurement.** It is the *worst* term in the breast panel — AUC **0.69**, beaten by its ow |
-| `docs/overview/PROJECT_CONTEXT.md:270` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `docs/overview/PROJECT_CONTEXT.md:270` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
-| `docs/overview/PROJECT_CONTEXT.md:271` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `docs/overview/PROJECT_CONTEXT.md:271` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
-| `docs/overview/PROJECT_CONTEXT.md:274` | 4.5 | 0.002 | Three individual personas reproduced to within **0.002**, which is stronger evidence than  |
+| `docs/overview/PROJECT_CONTEXT.md:278` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
+| `docs/overview/PROJECT_CONTEXT.md:278` | 4.5 | 0.8197 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
+| `docs/overview/PROJECT_CONTEXT.md:279` | 4.5 | 0.6836 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
+| `docs/overview/PROJECT_CONTEXT.md:279` | 4.5 | 0.6911 | \| drug-target AUC \| 0.6836 \| **0.6911** \| |
+| `docs/overview/PROJECT_CONTEXT.md:282` | 4.5 | 0.002 | Three individual personas reproduced to within **0.002**, which is stronger evidence than  |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.646 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.567 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
 | `docs/prioritizer/FEATURE_AUDIT.md:78` | 3 | 0.328 | \| **`prox_closest`** \| Python \| gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positi |
@@ -101,7 +101,7 @@ when the champion changes and that no notebook would catch.
 
 ## Decision indexes
 
-**38 current durable decisions.** Query `.index/decisions.tsv` by stable ID, domain or
+**42 current durable decisions.** Query `.index/decisions.tsv` by stable ID, domain or
 topic; open `docs/decisions/DECISION_REGISTER.md` only for the rationale and consequences.
 
 The retired log remains recoverable as **158 classified historical entries** in

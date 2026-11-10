@@ -366,13 +366,13 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 
 - **Date:** 2026-08-21
 - **Domain:** model
-- **Status:** accepted
+- **Status:** superseded
 - **Decision:** Use saved model `m7-f14` (`hJLGoYn4`) as the champion; retain `prox_kernel` rather than the higher-AUPRC `prox_mean` alternative.
 - **Rationale:** The selected model is the first improvement supported by paired evidence across the decision axes; the alternative did not improve tractability and worsened hub spread.
 - **Evidence:** [`VALIDATION.md` §§2, 4.2](../prioritizer/VALIDATION.md), [`TARGET_PRIORITIZER.md` §5](../prioritizer/TARGET_PRIORITIZER.md), `tools/model_registry.json`
 - **Consequences:** Champion consumers and governed claims point to `hJLGoYn4`; a future replacement must satisfy the same multi-axis selection rule.
 - **Supersedes:** `m3-f12`
-- **Superseded by:** —
+- **Superseded by:** `DEC-MODEL-002`
 - **Historical sources:** lines 130, 137, 139
 
 ## DEC-PH3-001 — Phase 3 is a pre-registered coverage intervention
@@ -504,5 +504,57 @@ not fit here. The retired turn log is preserved under [`archive/decisions/`](../
 - **Evidence:** [`WEBAPP_DATASET_MAP.md`](../operations/WEBAPP_DATASET_MAP.md) §§1–4 (47 → 41 → 32–33 recipes and datasets); [`FLOW_MIGRATION_WORKPLAN.md`](../../archive/FLOW_MIGRATION_WORKPLAN.md) §1, M3–M6, with the full option chosen on 2026-10-28.
 - **Consequences:** Two webapp routes read `disease` and `rank_enrichment` from `validation_auc_by_disease`. The identity recipe `compute_demo_panel_config` takes its disease names from `graph_nodes`, already one of its inputs, instead of `persona_enrichment`, in both projects, so the two copies stay identical (`DEC-OPS-006`). `Refresh_serving_layer` is rewritten around the final zones. Zone 20 is re-zoned into its three jobs and never rebuilt. No live project is changed by this approval; the workplan's M3–M6 execute it. **Executed 2026-10-29** ([workplan](../../archive/FLOW_MIGRATION_WORKPLAN.md) M3–M6, archived), with two deviations. An ordered window counts only up to the current row, so a group recipe gives the pool size and the flow ends at 33 recipes and 33 datasets, not 32. The panel config keeps reading `graph_nodes` for disease names: taking them from `family_panel` would break the shared recipe in the evidence project. S3's three audits also moved to a fifth serving zone, S5, and zone 20 split into zones 20–22.
 - **Supersedes:** the act-numbered zones A1–A4; the "shared core first" order in `DEC-DEMO-005`'s zone layout
+- **Superseded by:** —
+- **Historical sources:** —
+
+## DEC-ARCH-008 — Sources are pulled once into their own project and pinned
+
+- **Date:** 2026-11-06
+- **Domain:** architecture
+- **Status:** accepted
+- **Decision:** The download and vocabulary recipes live in `DEMO_KG_PREP`; every harmonise recipe stays in `DEMO_KG_LS`, which reads PREP's outputs through sync copies that keep their old names. Every unversioned source is downloaded once into folder `pinned_sources`, never overwritten, and recorded in `MANIFEST.json` (URL, time, size, SHA-256, release). `DEMO_TARGET_IDENTIFICATION` keeps reading `DEMO_KG_LS`, never PREP.
+- **Rationale:** A rebuild from "latest" was not reproducible: the August GO release and gene map had already drifted, and a rebuild silently took new releases. Separating "fetch the sources" from "build the graph" makes a refresh a deliberate act. The alternatives were pinning inside `DEMO_KG_LS` (mixes the two cadences again) and pointing Part 2 at PREP (Part 2's raw data could then come from a different pull than its graph).
+- **Evidence:** [`GRAPH_BUILDING.md`](../graph/GRAPH_BUILDING.md) §2.2, §4.1; [`GRAPH_REVISION_WORKPLAN.md`](../../archive/GRAPH_REVISION_WORKPLAN.md) D6, D8, D9, R3, R4 (archived)
+- **Consequences:** Taking a new release means deleting its pinned file and rebuilding `compute_pinned_sources` and its reader, then rebuilding `DEMO_KG_LS` and, because node indexes renumber, Part 2 (`DEC-OPS-008`). Part 2's 13 sync recipes did not change. Supersedes the 2026-08-13 choice in `GRAPH_BUILDING.md` to keep sources live.
+- **Supersedes:** "Sources stay live rather than pinned" (GRAPH_BUILDING decision log, 2026-08-13)
+- **Superseded by:** —
+- **Historical sources:** —
+
+## DEC-MEAS-006 — Disease identity is keyed on the MONDO id, never on `node_index`
+
+- **Date:** 2026-11-06
+- **Domain:** measurement
+- **Status:** accepted
+- **Decision:** The evaluation split routes on `disease_split_key_mondo` and reserves the demo families by MONDO id; tie-breaks in the family assignment use the MONDO id. Any notebook, recipe or cache that must name a disease or gene resolves it by a source identifier (MONDO id, gene symbol) and asserts the match is unique, instead of pinning a `node_index`.
+- **Rationale:** A graph rebuild renumbers `node_index` with no error: the R5 rebuild renumbered 76,786 nodes. Pinned indexes then select a different or empty row and the result looks plausible. Found twice: an earlier renumbering moved lung between split keys, and on 2026-11-10 two assertion notebooks pinned five disease indexes (one silently reported zero known targets, one crashed) and all 26 cached evidence files pointed at other pairs. The alternative, freezing today's folds in a lookup table, was built and reverted the same day as machinery that preserves a split nobody needs to preserve.
+- **Evidence:** [`GRAPH_REVISION_WORKPLAN.md`](../../archive/GRAPH_REVISION_WORKPLAN.md) D7, R1, R6 (archived); `notebooks/nb1_features_and_config.py`, `notebooks/nb7_panel_selection.py`; `webapp/backend/services/pair_sources.py`
+- **Consequences:** The split changed once (R1) and the champion was retrained on it. `disease_family_id` and `disease_split_key` stay `node_index` values because the panel config and webapp resolve them through `graph_nodes` in the same build. The evidence cache checks the stored symbol and disease name before serving a file. Complements `DEC-OPS-006`, which governs panel identity by variable.
+- **Supersedes:** the `node_index`-keyed split formula (`mod(key, 10)`)
+- **Superseded by:** —
+- **Historical sources:** —
+
+## DEC-MODEL-002 — `m7-f14-cal` is the current champion
+
+- **Date:** 2026-11-07
+- **Domain:** model
+- **Status:** accepted
+- **Decision:** Use saved model `W8VhjZOZ` (`m7-f14-cal`): the `m7-f14` configuration with the training recipe's built-in sigmoid (Platt) calibration fitted on the test fold, trained on the MONDO-ID split. Rank and percentile stay the primary display; the calibrated score may be shown as "chance of being a known association" beside the disease's base rate, never as the probability of being a target.
+- **Rationale:** The raw score averaged 0.272 against a true positive rate of 0.0185 (calibration error 0.254), so it could not be read as a number. Sigmoid calibration is strictly monotone; isotonic was rejected because it creates ties exactly where the shortlist is read, and a separate post-processing recipe because calibration belongs to the model. Retrained with the same settings, the model is quality-equivalent but not rank-identical: per-disease AUC 318 higher / 288 lower / 0 ties, Wilcoxon p = 0.27. The user accepted that difference.
+- **Evidence:** [`VALIDATION.md`](../prioritizer/VALIDATION.md) §§2, 4.2; [`GRAPH_REVISION_WORKPLAN.md`](../../archive/GRAPH_REVISION_WORKPLAN.md) §6.2, R7b (archived); `tools/model_registry.json`
+- **Consequences:** Champion consumers point to `W8VhjZOZ`; `hJLGoYn4` was deleted. Calibration error on validation is 0.0033. Retrained 2026-11-10 on the R5 graph (version `1794305004361`): 0 ties, 309 / 294, Wilcoxon p = 0.28 against the 2026-11-07 version. Phase 3 prediction P4 is no longer comparable on its spread arm and must be judged on its ρ arm. A future replacement must satisfy the multi-axis selection rule of `DEC-MODEL-001`.
+- **Supersedes:** `DEC-MODEL-001`
+- **Superseded by:** —
+- **Historical sources:** —
+
+## DEC-OPS-008 — A graph rebuild is counted, and Part 2 moves with it
+
+- **Date:** 2026-11-09
+- **Domain:** operations
+- **Status:** accepted
+- **Decision:** A change to the graph's definition gets a new Visual Graph snapshot, saved from the editor; a source refresh with an unchanged definition reruns the current snapshot. After every Kuzu build, its node labels and relations are counted against `graph_nodes` and `graph_edges` before Part 2 copies the graph. Part 2 rebuilds its 13 table copies and the Kuzu folder copy in one job, then its features, model and serving layer, never the graph copy alone.
+- **Rationale:** A saved snapshot holds only the definition, and each build replaces its folder, so a new snapshot per refresh adds nothing. Visual Graph 1.5.x silently dropped every node whose name contains a comma (716 nodes in the R5 build), visible only by counting; 1.6.0 fixes it, and the count stays as the check. Copying a renumbered graph without its tables put two numberings in Part 2 and pointed the webapp's graph queries at the wrong nodes.
+- **Evidence:** [`GRAPH_REVISION_WORKPLAN.md`](../../archive/GRAPH_REVISION_WORKPLAN.md) R5, R6 (archived); [`GRAPH_BUILDING.md`](../graph/GRAPH_BUILDING.md) §7.1
+- **Consequences:** `Mp25kL` is kept as a reference and never rebuilt; `ZKGaRg` is the snapshot Part 2 reads. Anything in Part 2 keyed on `node_index` must be rebuilt with the copies or check the names it was written for (`DEC-MEAS-006`). Renumbering also invalidates the evidence cache, which now rejects mismatched files on read.
+- **Supersedes:** —
 - **Superseded by:** —
 - **Historical sources:** —

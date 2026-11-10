@@ -65,17 +65,16 @@ skill.
 
 ## Planning
 
-**In progress:** the graph revision, drafted 2026-11-06:
-[`operations/GRAPH_REVISION_WORKPLAN.md`](operations/GRAPH_REVISION_WORKPLAN.md). It moves data
-loading into `DEMO_KG_PREP`, corrects two relations, makes edge labels readable, and rebuilds from
-current sources.
-
-**Drafted:** the webapp revision, 2026-11-09:
+**In progress:** the webapp revision, drafted 2026-11-09:
 [`operations/WEBAPP_REVISION_WORKPLAN.md`](operations/WEBAPP_REVISION_WORKPLAN.md). It shortens the
 shortlist page, cleans up its filters, shows the calibrated score, keeps one assistant, and lets a
 scientist record a review per candidate.
 
-Completed plans move to [`../archive/`](../archive/): the most recent is the flow migration, done
+Completed plans move to [`../archive/`](../archive/): the most recent is the graph revision, done
+2026-11-10 (`DEC-ARCH-008`, `DEC-MEAS-006`, `DEC-MODEL-002`, `DEC-OPS-008`;
+[`GRAPH_REVISION_WORKPLAN.md`](../archive/GRAPH_REVISION_WORKPLAN.md)). It moved data loading into
+`DEMO_KG_PREP` with pinned sources, corrected two relations, made edge labels readable, rebuilt the
+graph and Part 2, and measured label sensitivity (R7). Before it came the flow migration, done
 2026-10-29 (`DEC-ARCH-006`, `DEC-OPS-007`, `DEC-MEAS-005`, `DEC-ARCH-007`; its workplan and evidence
 design are [`FLOW_MIGRATION_WORKPLAN.md`](../archive/FLOW_MIGRATION_WORKPLAN.md) and
 [`EVIDENCE_PROJECT_DESIGN.md`](../archive/EVIDENCE_PROJECT_DESIGN.md)). Before it came the webapp

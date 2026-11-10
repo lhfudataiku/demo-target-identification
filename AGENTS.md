@@ -49,7 +49,8 @@ values rather than errors, including why replacing a metric across a document co
 
 ## Project map
 
-`DEMO_KG_LS` owns the graph and graph webapp; `DEMO_TARGET_IDENTIFICATION` owns features, modeling,
+`DEMO_KG_PREP` owns the pinned source downloads; `DEMO_KG_LS` owns the graph and graph webapp and reads
+PREP through sync copies; `DEMO_TARGET_IDENTIFICATION` owns features, modeling,
 validation, and serving; `DEMO_TI_EVIDENCE` owns the datasets the notebooks assert, and nothing reads
 it. Part 2 consumes shared graph objects from Part 1. Task-specific documents
 own detailed methods, platform behavior, and current status; indexes are the default retrieval path.

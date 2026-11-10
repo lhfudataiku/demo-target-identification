@@ -7,14 +7,14 @@
 > step is accepted or re-scoped · **Generated dependencies:** none · **Excludes:** the webapp's
 > architecture and data contracts, in [`WEBAPP_DESIGN.md`](../demo/WEBAPP_DESIGN.md) and
 > [`WEBAPP_DATASET_MAP.md`](WEBAPP_DATASET_MAP.md); the graph revision, in
-> [`GRAPH_REVISION_WORKPLAN.md`](GRAPH_REVISION_WORKPLAN.md).
+> [`GRAPH_REVISION_WORKPLAN.md`](../../archive/GRAPH_REVISION_WORKPLAN.md) (archived 2026-11-10).
 
 **Status: IN PROGRESS — D1–D4 decided 2026-11-09; W1 and W3 done 2026-11-09 (`check: ok`, checked in the browser against live data) and deployed to `OlmPX9a` 2026-11-10 from commit `cdf6810`, awaiting the user's review; next is W2.** Every DSS change
 and every `make deploy` below needs explicit approval at the step where it happens.
 
-This plan does not wait on the graph revision. The webapp reads `DEMO_TARGET_IDENTIFICATION`, which
-still holds the pre-R5 graph and is not touched until R6. Step W4 is the exception that has to plan
-for R6 (see D3).
+This plan did not wait on the graph revision, which finished 2026-11-10: `DEMO_TARGET_IDENTIFICATION`
+now holds the R5 graph and a champion retrained on it, and the served data was rebuilt with it. Step W4
+plans for future renumbering (see D3), as `DEC-MEAS-006` requires.
 
 ## 1. Feedback and what changes
 

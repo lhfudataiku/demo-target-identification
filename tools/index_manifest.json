@@ -33,7 +33,7 @@
       "docs/decisions/adrs/ADR-002-candidate-and-evaluation-boundary.md",
       "docs/decisions/adrs/ADR-003-evidence-project.md",
       "docs/graph/DATA_SOURCE_LICENSE_REVIEW.md",
-      "docs/operations/BUILD_GOVERNANCE.md", "docs/operations/GRAPH_REVISION_WORKPLAN.md",
+      "docs/operations/BUILD_GOVERNANCE.md",
       "docs/operations/WEBAPP_REVISION_WORKPLAN.md", "docs/demo/FUTURE_DIRECTIONS.md",
       "docs/reference/DISCOVERY_LANDSCAPE.md", "docs/reference/RESEARCH_NOTE.md",
       "harness/README.md", "notebooks/README.md", "webapp/AGENTS.md", "webapp/CLAUDE.md",
