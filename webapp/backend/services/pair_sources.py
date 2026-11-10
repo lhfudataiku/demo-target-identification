@@ -373,13 +373,30 @@ def _path(disease: int, gene: int) -> str:
     return f"{disease}/{gene}.json"
 
 
+def _same_pair(stored: dict[str, Any], disease: int, gene: int) -> bool:
+    """Whether a cached file was written for the pair these indexes name TODAY.
+
+    The file is named by `node_index`, which a graph rebuild renumbers (R5 renumbered 76,786 nodes):
+    after it, every one of the 26 cached files pointed at a different pair, and one of them a served
+    pair, which would have shown another pair's trials and papers with no error. So the stored
+    symbol and disease name must match the current ones, or the file counts as a miss.
+    """
+    try:
+        now = context(disease, gene)
+    except LookupError:
+        return False
+    return (stored.get("symbol"), stored.get("disease_name")) == (now["symbol"], now["disease_name"])
+
+
 def _read(disease: int, gene: int) -> dict[str, Any] | None:
     try:
         with _folder().get_file(_path(disease, gene)) as r:
             doc = json.loads(r.content)
     except Exception:
         return None
-    return doc if doc.get("versions") == VERSIONS else None
+    if doc.get("versions") != VERSIONS:
+        return None
+    return doc if _same_pair(doc.get("context") or {}, disease, gene) else None
 
 
 def _write(doc: dict[str, Any]) -> None:

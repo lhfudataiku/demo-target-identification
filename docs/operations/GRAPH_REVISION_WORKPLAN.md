@@ -480,8 +480,63 @@ pull until R5.
 - **To close R5:** install the fixed plugin, rerun `build-graph-ZKGaRg`, check Kuzu's node and
   relation counts against `graph_nodes` / `graph_edges` (same-type relations stored both ways,
   cross-type once), then rebuild `compute_ytvuniN8`. The Explorer still serves `Mp25kL`.
+- **2026-11-10: the graph is fixed.** `visual-graph` 1.6.0 installed from the store (not a dev
+  plugin). `build-graph-ZKGaRg` rerun (job `Build_kg_ls_v0_2_ZKGaRg__NP__2026-11-10T08-58-49.638`,
+  DONE). All 27 Kuzu labels and relations match the expected counts from `graph_nodes` /
+  `graph_edges` exactly: **113,497 nodes** (27,192 diseases, 5,282 drugs, 19,180 phenotypes), so
+  the 15 drugs and 28 phenotypes every earlier build lost are back too. `compute_ytvuniN8` is
+  **not yet rebuilt**: Part 2's synced tables still carry the pre-R5 `node_index`, so copying the
+  R5 graph alone would put two numberings in Part 2. Decided (user, 2026-11-10): copy it together
+  with the syncs as R6 step 1.
 
 ### R6 — Part 2 rebuild and re-evaluation *(DSS in Part 2)*
+**Progress 2026-11-10: copies done.** One non-recursive job rebuilt the 13 table syncs from
+`DEMO_KG_LS` and `compute_ytvuniN8` (the Kuzu folder). Every table's row count equals its source
+(`graph_nodes` 113,497, `graph_edges` 2,853,534, and the other 11), and `ytvuniN8` holds the
+2026-11-10 `ZKGaRg` build (`db.kz` 148.8 MB, same files as `ouzaULiq`). This closes R5.
+**Until the downstream rebuild finishes, Part 2 is mixed:** the copies and the graph carry the R5
+`node_index`; every feature table, the model's scores and the webapp's serving datasets still carry
+the old one. The deployed webapp's *Drugs & graph* presets (`a4ExplorerQueries.ts`) look nodes up by
+`node_index` in the Explorer `wBcApLN`, which reads `ytvuniN8`, so they resolve to the wrong nodes in
+this window. Nothing else in the webapp reads the graph or the copies.
+
+**Progress 2026-11-10: rebuild, retrain and rescore done** (Spark pipelines turned off by the user
+first, so no intermediate dataset was skipped). D11 not applied.
+- One RECURSIVE_BUILD to the three split sets and `split_audit_2` ran 22 recipes (pair index, every
+  enrichment and DWPC recipe, family id, path-evidence filter, split, audit). Audit: zero straddling
+  keys, zero key overlap. Validation 604 diseases / 3,523,775 rows / 65,546 positives (was 607 /
+  3,568,682 / 65,929); train 420 / 2,355,742 / 44,479; test 130 / 806,169 / 16,911. Three validation
+  diseases left with the source refresh: *combined hepatocellular carcinoma and cholangiocarcinoma*,
+  *leprosy*, and *acute myeloid leukemia with mutated NPM1* (no longer a graph node).
+- `train_m7-f14-cal` retrained: `W8VhjZOZ` version `1794305004361` active, `initial` kept
+  (`dku model set-active-version` restores it). Same 14 inputs (checked from its Shapley
+  importances). DSS's pooled test-fold AUC 0.908; not the project metric.
+- `scored_champion` rescored (3,523,775 rows), then one RECURSIVE_BUILD of the 34 serving datasets
+  of scenario `Refresh_serving_layer`.
+- **Per disease against the 2026-11-07 champion** (603 diseases scored in both; baseline mapped
+  through the R5 old→new index): **0 ties**, 309 higher / 294 lower; median |ΔAUC| 0.0066, 90th
+  percentile 0.042, max 0.208 (all of the largest moves have 2–28 positives). Wilcoxon p = 0.28;
+  van Elteren stratified by positives quartile z = +1.33, p = 0.18. Macro 0.8180 on 603 (was 0.8170
+  on 606; 0.8163 vs 0.8180 on the common 603); median 0.8512 (was 0.8530). **No detectable change.**
+  The step-3 attribution cannot be made from these numbers: the 2026-11-07 retrain on identical data
+  moved the same way (318 / 288 / 0 ties, p = 0.27), so retraining noise is as large as anything the
+  refresh did.
+- **The mixed-numbering window is closed:** every `gene_index` and `disease_index` in
+  `dashboard_candidates` (105,218 rows, 12 diseases) names the same node in the R5 graph, so the
+  *Drugs & graph* presets resolve correctly again. The webapp's table cache keys on build time and
+  needs no restart.
+- **Demo consequences:** HER2+ ERBB2 is now **#29** (was #16); the HER2+ top 16 holds 15 recorded
+  associations and HRAS (#6). The calibrated scores at the head are nearly flat: ranks 1–16 for HER2+
+  span 0.4067–0.3994, which webapp step W2 has to show without implying a ranking within ties.
+- **Found: the trials/papers cache is keyed by `node_index` and does not check its pair.**
+  `act4_evidence_cache` names each file `disease_index/gene_index.json`, and `pair_sources._read`
+  checks only the format version. After the renumbering all 26 cached files point at a different
+  pair; one is a served pair (endometrium adenocarcinoma × RAB5C, rank 3,910, which would show the
+  cached triple-negative × CCND1 records). The other 25 are orphaned, and the demo pairs, under their
+  new indexes, have no file and search afresh.
+- **Still to do:** fix the cache (above); step 2's comparison is done, step 4 (drug-target benchmark)
+  to report; re-run the notebooks and retarget the documented numbers (the skill's number-update
+  procedure), including the DSS flow-zone descriptions.
 1. Rebuild the copies, features and split (MONDO-keyed since R1), and retrain the champion's configuration.
 2. Compare with the new R1 baseline per disease: report ties first, then the stratified paired test,
    macro per-disease AUC (never pooled).

@@ -40,6 +40,7 @@ evidence and generated documents appear first; planning and historical material 
 | [`demo/WEBAPP_DESIGN.md`](demo/WEBAPP_DESIGN.md) | The technical companion to the narrative: Vue/FastAPI architecture, routes, interactions and data contracts. `FLOW_MAP.md` remains the generated flow authority |
 | [`demo/panel_selection.html`](demo/panel_selection.html) | **Which families and diseases the demo carries.** Measured 2026-08-27 over all 670 validation diseases: subtype structure exists only in oncology, so Act 3 is breast + uterine and therapeutic-area breadth comes from Act 4's singletons. Every candidate tested by looking up where the field's validated targets actually rank. **Read before repointing the persona filter.** Supporting tables in [`demo/panel_selection/`](demo/panel_selection/), all asserted by `nb7` |
 | [`demo/BREAST_SURGEON_BRIEFING.md`](demo/BREAST_SURGEON_BRIEFING.md) | Clinician-facing validation set for the breast panel, including the defects a surgeon finds immediately |
+| [`demo/FUTURE_DIRECTIONS.md`](demo/FUTURE_DIRECTIONS.md) | **Future research direction, written at release (2026-11-10).** What the served shortlist cannot yet tell apart (the large cancer lists are one list; complex inflation; drug targets without genetic evidence), the label, graph and feature limitations behind it, and candidate Part 1 additions (Open Targets animal models, tissue expression, protein complexes, cancer dependency). Not a plan of record |
 
 ## Platform, operations and reference
 
