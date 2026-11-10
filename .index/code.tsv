@@ -25,7 +25,7 @@ docs/operations/build-governance/machine-event.schema.json	docs	LIVE (referenced
 docs/operations/build-governance/pilot/phase5-breast-panel-accepted-baseline.json	docs	LIVE (referenced)	1	docs/operations/BUILD_GOVERNANCE.md
 docs/operations/build-governance/pilot/phase5-breast-panel-leaf-build-event.json	docs	LIVE (referenced)	1	docs/operations/BUILD_GOVERNANCE.md
 docs/operations/build-governance/review-packet.schema.json	docs	LIVE (referenced)	2	docs/operations/BUILD_GOVERNANCE.md,tools/tests/test_build_governance.py
-docs/prioritizer/CLAIM_REGISTRY.json	docs	LIVE (referenced)	8	docs/README.md,docs/decisions/DECISION_REGISTER.md,docs/demo/WEBAPP_DESIGN.md,docs/prioritizer/TARGET_PRIORITIZER.md
+docs/prioritizer/CLAIM_REGISTRY.json	docs	LIVE (referenced)	9	docs/README.md,docs/decisions/DECISION_REGISTER.md,docs/demo/WEBAPP_DESIGN.md,docs/operations/GRAPH_REVISION_WORKPLAN.md
 dss_lib/demo_identity.py	dss_lib	LIVE (referenced)	8	archive/EVIDENCE_PROJECT_DESIGN.md,archive/FLOW_MIGRATION_WORKPLAN.md,archive/flow-migration-tools-2026-10-29/build_evidence_flow.py,archive/flow-migration-tools-2026-10-29/setup_evidence_project.py
 dss_recipes/attach_node_index.py	recipe-mirror	MIRROR (graph-build project)	1	docs/operations/GRAPH_REVISION_WORKPLAN.md
 dss_recipes/compute_breast_panel.py	recipe-mirror	MIRROR (evidence project)	4	archive/DASHBOARD_BUILD_LOG.md,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V2.html,archive/dashboard-mockup-iterations/DASHBOARD_MOCKUP_V3.html,docs/operations/build-governance/POLICY.json

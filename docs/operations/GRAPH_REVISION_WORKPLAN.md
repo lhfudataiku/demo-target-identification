@@ -548,11 +548,11 @@ first, so no intermediate dataset was skipped). D11 not applied.
   assert it is unique. That left **63 stale values**, all retargeted in the notebooks, in
   `VALIDATION.md` and `CLAIM_REGISTRY.json` (validator green) and in their consumers
   (`DEMO_NARRATIVE.md`, `WEBAPP_DESIGN.md`, `PROJECT_CONTEXT.md`, dated notes added to
-  `BREAST_SURGEON_BRIEFING.md` and `panel_selection/README.md`). Values that still pass within their
+  `BREAST_SURGEON_BRIEFING.md` and `../demo/panel_selection/README.md`). Values that still pass within their
   tolerance (pooled AUROC 0.8908, HER2+ AUROC 0.9385, the 3.06× / 2.85× / 2.30× tractability lifts)
   were left as documented. Two claims changed wording, not only value: macro degree-matched lift now
-  beats the naive lift at every K, including K=10 (`TI-VAL-008`), and HER2+/TNBC share 2 novel top-50
-  genes, not 1 (`TI-VAL-009`). Demo-walkthrough numbers the notebooks do not assert were re-derived
+  beats the naive lift at every K, including K=10, and HER2+/TNBC share 2 novel top-50
+  genes, not 1. Demo-walkthrough numbers the notebooks do not assert were re-derived
   from the served list: the HER2+ filter funnel is 12,252 → **29** in the top 200 with SMARCA2 fourth
   (#46 unfiltered), 8 of the HER2+ top 15 carry a liability flag, and ERBB2 ranks #29. The one stale
   DSS flow-zone description (zone 31 still named the deleted `m7-f14` / `hJLGoYn4`) now names
