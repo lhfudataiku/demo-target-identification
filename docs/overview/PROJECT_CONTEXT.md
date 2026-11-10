@@ -184,9 +184,9 @@ Consumes the graph, derives network and functional-annotation features per (gene
 trains an explainable ranking model, and produces a per-disease shortlist of candidate targets with
 SHAP attributions and on-graph evidence paths.
 
-**Status: built and validated on the rebuilt graph; champion refreshed 2026-11-07.** Champion
-`m7-f14-cal` (14 features, sigmoid-calibrated output): macro per-disease AUC **0.8170** over 607
-diseases on the MONDO-ID split. Three-rung ablation
+**Status: built and validated on the rebuilt graph; champion refreshed 2026-11-07, retrained on the
+R5 graph 2026-11-10.** Champion `m7-f14-cal` (14 features, sigmoid-calibrated output): macro
+per-disease AUC **0.8180** over 604 diseases on the MONDO-ID split. Three-rung ablation
 ladder, two independent validation metrics cross-checking to 1.9×10⁻⁴, and a documented negative
 result.
 

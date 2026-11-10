@@ -29,6 +29,8 @@ to move.
 > 24 → 26, stomach 17 → 19. HER2+ vs TNBC share 1 novel (was 2) and 12 overall (was 14) of their
 > top 50. Known targets in the top 20: RA 4 → 5, DCM 3 → 2, endometrial serous 3 → 2, PsA 2 → 3.
 > The CSVs under `built/` and `analysis/` are the August snapshot and were not regenerated.
+>
+> **Re-measured again 2026-11-10** after the champion was retrained on the rebuilt graph (R6): validation diseases 604 in 478 families; oncology 200 diseases (125 usable); heme 31 terms (19 usable); autoimmune, CVRM, family shapes and breast / lung / uterine terms unchanged. Top-50 overlap: breast 0.4274 (near-duplicate pairs 25), uterine 0.5084 (3), stomach 0.4160; common genes breast 9, uterine 25, stomach 18. HER2+ vs TNBC share 2 novel and 11 overall of their top 50. Known targets in the top 20: RA 3, DCM 3, endometrial serous 3, gastric 2 (endometrioid 4, FH 3, PsA 3 unchanged). `nb7` asserts every value here; it now resolves family anchors by MONDO id, because the rebuild renumbered them.
 
 Six diseases in `analysis/eyeball_test.csv` are no longer served (obesity, multiple
 sclerosis, SLE, atopic eczema, myeloma, ALL). Their ranks are the *evidence for rejecting

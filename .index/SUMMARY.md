@@ -19,47 +19,54 @@ whose wording already flags them as historical are dropped.
 
 | file | asserted | value-only | orphan | total |
 |---|--:|--:|--:|--:|
-| `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 7 | 20 | 27 |
-| `docs/demo/DEMO_NARRATIVE.md` | 1 | 7 | 5 | 13 |
-| `docs/demo/WEBAPP_DESIGN.md` | 0 | 54 | 90 | 144 |
-| `docs/demo/panel_selection/README.md` | 0 | 5 | 25 | 30 |
-| `docs/graph/GRAPH_BUILDING.md` | 1 | 0 | 143 | 144 |
-| `docs/overview/PROJECT_CONTEXT.md` | 0 | 4 | 14 | 18 |
-| `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 13 | 109 | 122 |
-| `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 11 | 54 | 65 |
-| **total** | **2** | **101** | **460** | **563** |
+| `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 8 | 21 | 29 |
+| `docs/demo/DEMO_NARRATIVE.md` | 1 | 8 | 4 | 13 |
+| `docs/demo/WEBAPP_DESIGN.md` | 0 | 50 | 96 | 146 |
+| `docs/demo/panel_selection/README.md` | 0 | 6 | 27 | 33 |
+| `docs/graph/GRAPH_BUILDING.md` | 1 | 2 | 141 | 144 |
+| `docs/overview/PROJECT_CONTEXT.md` | 0 | 2 | 16 | 18 |
+| `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 10 | 112 | 122 |
+| `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 9 | 56 | 65 |
+| **total** | **2** | **95** | **473** | **570** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**114 rows.** Of 460 total orphans, these are the model-dependent ones: the numbers that move
+**121 rows.** Of 473 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
 |---|---|--:|---|
-| `docs/demo/BREAST_SURGEON_BRIEFING.md:112` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
-| `docs/demo/BREAST_SURGEON_BRIEFING.md:121` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
-| `docs/demo/BREAST_SURGEON_BRIEFING.md:123` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
-| `docs/demo/BREAST_SURGEON_BRIEFING.md:178` | 5 | 0.689 | evaluation *because of the relationship being evaluated*. Fixing it raises drug-target AUC |
-| `docs/demo/DEMO_NARRATIVE.md:57` | - | 12,272 | *tractable* and *exclude secreted*: 12,272 candidates become 38 in the top 200. The third  |
-| `docs/demo/WEBAPP_DESIGN.md:448` | 4 | 0.8530 | \| The spread across 607 diseases \| up front · histogram, 20 bins \| macro **0.8170**, me |
-| `docs/demo/WEBAPP_DESIGN.md:448` | 4 | 0.1597 | \| The spread across 607 diseases \| up front · histogram, 20 bins \| macro **0.8170**, me |
-| `docs/demo/WEBAPP_DESIGN.md:448` | 4 | 0.9972 | \| The spread across 607 diseases \| up front · histogram, 20 bins \| macro **0.8170**, me |
-| `docs/demo/WEBAPP_DESIGN.md:450` | 4 | 18.2 | \| **Usefulness is not uniform** \| up front · the quartiles in prose, beside the selected |
-| `docs/demo/WEBAPP_DESIGN.md:450` | 4 | 27.4 | \| **Usefulness is not uniform** \| up front · the quartiles in prose, beside the selected |
-| `docs/demo/WEBAPP_DESIGN.md:450` | 4 | 61.8 | \| **Usefulness is not uniform** \| up front · the quartiles in prose, beside the selected |
-| `docs/demo/WEBAPP_DESIGN.md:468` | 4 | 0.8230 | table — 670 `disease` rows and 443 `split_key` rows. Filtered: **0.8230**, the documented  |
-| `docs/demo/WEBAPP_DESIGN.md:493` | 4 | 0.9025 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
-| `docs/demo/WEBAPP_DESIGN.md:493` | 4 | 0.9364 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
-| `docs/demo/WEBAPP_DESIGN.md:493` | 4 | 0.9326 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
-| `docs/demo/WEBAPP_DESIGN.md:516` | 4 | 12,272 | \| The ranked list \| paged table, 15 rows a page \| 12,272 rows: rank, gene, class, tract |
-| `docs/demo/WEBAPP_DESIGN.md:656` | 4 | 2.7 | \| Fair fight, not a rigged one \| **3.1× / 2.7× / 2.3×** (pooled) at K=10/50/200 against  |
-| `docs/demo/WEBAPP_DESIGN.md:658` | 4 | 4.4 | \| The harder version \| known targets only, by connectivity quintile: calibrated score 0. |
-| `docs/demo/WEBAPP_DESIGN.md:668` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
-| `docs/demo/WEBAPP_DESIGN.md:668` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
-| `docs/demo/WEBAPP_DESIGN.md:670` | 4 | 3.2 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
-| `docs/demo/WEBAPP_DESIGN.md:673` | 4 | 16.9 | **The distribution card is not optional.** 16.9× is a *mean of per-disease lifts on a heav |
-| `docs/demo/WEBAPP_DESIGN.md:774` | 6 | 0.9776 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
-| `docs/demo/WEBAPP_DESIGN.md:774` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
+| `docs/demo/BREAST_SURGEON_BRIEFING.md:17` | - | 2,538 | > defects below moved: ESR1 is now rank **53** (was 17), PARP1 **94** (was 360) of a 2,538 |
+| `docs/demo/BREAST_SURGEON_BRIEFING.md:120` | 3 | 2,563 | 2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 36 |
+| `docs/demo/BREAST_SURGEON_BRIEFING.md:129` | 3 | 0.90 | target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90 |
+| `docs/demo/BREAST_SURGEON_BRIEFING.md:131` | 3 | 1,157 | ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1 |
+| `docs/demo/BREAST_SURGEON_BRIEFING.md:186` | 5 | 0.689 | evaluation *because of the relationship being evaluated*. Fixing it raises drug-target AUC |
+| `docs/demo/DEMO_NARRATIVE.md:57` | - | 12,252 | *tractable* and *exclude secreted*: 12,252 candidates become 29 in the top 200. The fourth |
+| `docs/demo/WEBAPP_DESIGN.md:450` | 4 | 0.8512 | \| The spread across 604 diseases \| up front · histogram, 20 bins \| macro **0.8180**, me |
+| `docs/demo/WEBAPP_DESIGN.md:450` | 4 | 0.2117 | \| The spread across 604 diseases \| up front · histogram, 20 bins \| macro **0.8180**, me |
+| `docs/demo/WEBAPP_DESIGN.md:450` | 4 | 0.9973 | \| The spread across 604 diseases \| up front · histogram, 20 bins \| macro **0.8180**, me |
+| `docs/demo/WEBAPP_DESIGN.md:452` | 4 | 18.5 | \| **Usefulness is not uniform** \| up front · the quartiles in prose, beside the selected |
+| `docs/demo/WEBAPP_DESIGN.md:452` | 4 | 27.6 | \| **Usefulness is not uniform** \| up front · the quartiles in prose, beside the selected |
+| `docs/demo/WEBAPP_DESIGN.md:452` | 4 | 61.2 | \| **Usefulness is not uniform** \| up front · the quartiles in prose, beside the selected |
+| `docs/demo/WEBAPP_DESIGN.md:470` | 4 | 0.8230 | table — 670 `disease` rows and 443 `split_key` rows. Filtered: **0.8230**, the documented  |
+| `docs/demo/WEBAPP_DESIGN.md:495` | 4 | 0.9025 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
+| `docs/demo/WEBAPP_DESIGN.md:495` | 4 | 0.9364 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
+| `docs/demo/WEBAPP_DESIGN.md:495` | 4 | 0.9326 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
+| `docs/demo/WEBAPP_DESIGN.md:518` | 4 | 12,272 | \| The ranked list \| paged table, 15 rows a page \| 12,272 rows: rank, gene, class, tract |
+| `docs/demo/WEBAPP_DESIGN.md:658` | 4 | 2.7 | \| Fair fight, not a rigged one \| **3.1× / 2.7× / 2.3×** (pooled) at K=10/50/200 against  |
+| `docs/demo/WEBAPP_DESIGN.md:660` | 4 | 5.1 | \| The harder version \| known targets only, by connectivity quintile: calibrated score 0. |
+| `docs/demo/WEBAPP_DESIGN.md:670` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/WEBAPP_DESIGN.md:670` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/WEBAPP_DESIGN.md:672` | 4 | 21.3 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
+| `docs/demo/WEBAPP_DESIGN.md:672` | 4 | 5.2 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
+| `docs/demo/WEBAPP_DESIGN.md:672` | 4 | 6.7 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
+| `docs/demo/WEBAPP_DESIGN.md:672` | 4 | 3.2 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
+| `docs/demo/WEBAPP_DESIGN.md:673` | 4 | 21.3 | \| Where the mean comes from \| the per-disease distribution behind 21.3× \| |
+| `docs/demo/WEBAPP_DESIGN.md:675` | 4 | 16.9 | **The distribution card is not optional.** 16.9× is a *mean of per-disease lifts on a heav |
+| `docs/demo/WEBAPP_DESIGN.md:776` | 6 | 0.9776 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
+| `docs/demo/WEBAPP_DESIGN.md:776` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
+| `docs/demo/WEBAPP_DESIGN.md:915` | 9.6 | 1.85 | Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0 |
+| `docs/demo/WEBAPP_DESIGN.md:915` | 9.6 | 0.05 | Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0 |
 | `docs/graph/GRAPH_BUILDING.md:549` | 7.3 | 129,606 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
 | `docs/graph/GRAPH_BUILDING.md:549` | 7.3 | 2,851,510 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
 | `docs/overview/PROJECT_CONTEXT.md:113` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
@@ -89,15 +96,8 @@ when the champion changes and that no notebook would catch.
 | `docs/prioritizer/FEATURE_AUDIT.md:161` | 4 | 0.104 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
 | `docs/prioritizer/FEATURE_AUDIT.md:161` | 4 | 0.534 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
 | `docs/prioritizer/FEATURE_AUDIT.md:161` | 4 | 0.4864 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
-| `docs/prioritizer/FEATURE_AUDIT.md:161` | 4 | 0.982 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
-| `docs/prioritizer/FEATURE_AUDIT.md:172` | 4 | 0.567 | saturates at 74% hop-1 and scores AUC 0.567. If the gain is uniform across module sizes, t |
-| `docs/prioritizer/FEATURE_AUDIT.md:181` | 4 | 0.8197 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:181` | 4 | 0.8200 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:181` | 4 | 0.8175 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:181` | 4 | 0.8230 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
-| `docs/prioritizer/FEATURE_AUDIT.md:181` | 4 | 3.29 | \| association macro AUROC \| 0.8197 \| 0.8200 \| 0.8175 \| 0.8197 \| **0.8230** \| **t =  |
 
-*54 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*61 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## Decision indexes
 

@@ -534,9 +534,29 @@ first, so no intermediate dataset was skipped). D11 not applied.
   pair; one is a served pair (endometrium adenocarcinoma × RAB5C, rank 3,910, which would show the
   cached triple-negative × CCND1 records). The other 25 are orphaned, and the demo pairs, under their
   new indexes, have no file and search afresh.
-- **Still to do:** fix the cache (above); step 2's comparison is done, step 4 (drug-target benchmark)
-  to report; re-run the notebooks and retarget the documented numbers (the skill's number-update
-  procedure), including the DSS flow-zone descriptions.
+- **Cache fixed 2026-11-10:** the 26 files were backed up and deleted, and `pair_sources._read` now
+  uses a file only if its stored symbol and disease name match the pair (commit `b7d0651`, deployed
+  to `OlmPX9a` the same day).
+- **Step 4, drug-target benchmark (a warning, not a target):** macro drug-target AUROC 0.6737 →
+  **0.6703**; route-supported 0.7392 → 0.7362. Association/drug correlation rose from r = +0.091 to
+  **+0.167** (R² 0.0278, t = 1.85 over 122 diseases; still not significant at 0.05).
+- **Step 5 done 2026-11-10: notebooks re-run and documented numbers retargeted.** The evidence project
+  `DEMO_TI_EVIDENCE` was rebuilt first (25 recipes, one forced recursive job), then all seven
+  assertion scripts ran. Two scripts were broken by the renumbering rather than stale: `nb1` and `nb7`
+  pinned five disease `node_index` values (obesity, breast, lung, uterine, heme), so `nb1` read
+  "0 known targets" with no error and `nb7` crashed. Both now resolve the disease by MONDO id and
+  assert it is unique. That left **63 stale values**, all retargeted in the notebooks, in
+  `VALIDATION.md` and `CLAIM_REGISTRY.json` (validator green) and in their consumers
+  (`DEMO_NARRATIVE.md`, `WEBAPP_DESIGN.md`, `PROJECT_CONTEXT.md`, dated notes added to
+  `BREAST_SURGEON_BRIEFING.md` and `panel_selection/README.md`). Values that still pass within their
+  tolerance (pooled AUROC 0.8908, HER2+ AUROC 0.9385, the 3.06× / 2.85× / 2.30× tractability lifts)
+  were left as documented. Two claims changed wording, not only value: macro degree-matched lift now
+  beats the naive lift at every K, including K=10 (`TI-VAL-008`), and HER2+/TNBC share 2 novel top-50
+  genes, not 1 (`TI-VAL-009`). Demo-walkthrough numbers the notebooks do not assert were re-derived
+  from the served list: the HER2+ filter funnel is 12,252 → **29** in the top 200 with SMARCA2 fourth
+  (#46 unfiltered), 8 of the HER2+ top 15 carry a liability flag, and ERBB2 ranks #29. The one stale
+  DSS flow-zone description (zone 31 still named the deleted `m7-f14` / `hJLGoYn4`) now names
+  `m7-f14-cal` / `W8VhjZOZ`; `FLOW_MAP.md` regenerated.
 1. Rebuild the copies, features and split (MONDO-keyed since R1), and retrain the champion's configuration.
 2. Compare with the new R1 baseline per disease: report ties first, then the stratified paired test,
    macro per-disease AUC (never pooled).

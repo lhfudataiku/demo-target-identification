@@ -185,7 +185,8 @@ def register(name: str, args: dict[str, Any], res: dict[str, Any], state: dict[s
     the order the model asked. Returns (text for the model, event payload for the page)."""
     out = res.get("output")
     if out is None:
-        raise RuntimeError("the tool returned no output")
+        # A failed tool call carries its reason in `error`; pass it on rather than a generic line.
+        raise RuntimeError(str(res.get("error") or "the tool returned no output"))
     if name == "graph_search":
         out = json.loads(out) if isinstance(out, str) else out
         if not out.get("success", True):

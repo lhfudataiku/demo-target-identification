@@ -18,7 +18,7 @@ print(f"LABEL|known_drug rows={len(kd):,}|at>=0.8={len(k8):,}|diseases={k8.disea
 raw=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.raw_ot_known_drug").get_dataframe(columns=[
     dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.raw_ot_known_drug").read_schema()[0]["name"]])
 check("8.1 raw known_drug rows",107593,len(raw),tol=0)
-check("8.1 resolving onto graph",67748,int(kd.disease_index.notna().sum()),tol=0)
+check("8.1 resolving onto graph",67688,int(kd.disease_index.notna().sum()),tol=0)
 
 # ==== 8.3  discovery on the novel head ====
 nde=dataiku.Dataset("novel_discovery_eval").get_dataframe()
@@ -29,10 +29,10 @@ for gt in ["approved","investigational","any"]:
     print(f"DISC|{gt:16s}|diseases={len(s):4d}|lift@10={l10:6.2f}|lift@200={l200:5.2f}|"
           f"hits@200={int(s.hits_top200.sum()):,}")
     if gt=="approved":
-        check("8.3 approved lift@10",21.26,round(float(l10),2),tol=0.02,fmt="{:.2f}")
-        check("8.3 approved lift@200",5.22,round(float(l200),2),tol=0.02,fmt="{:.2f}")
+        check("8.3 approved lift@10",22.94,round(float(l10),2),tol=0.02,fmt="{:.2f}")
+        check("8.3 approved lift@200",4.98,round(float(l200),2),tol=0.02,fmt="{:.2f}")
     if gt=="investigational":
-        check("8.3 investigational lift@10",6.71,round(float(l10),2),tol=0.02,fmt="{:.2f}")
+        check("8.3 investigational lift@10",7.24,round(float(l10),2),tol=0.02,fmt="{:.2f}")
 
 # ==== 8.3  FIGURE 1 — discovery lift vs K, by ground truth ====
 # Replaces the per-K table in section 8.3: the shape (monotone decay toward a ~4x floor) is the point,
@@ -125,8 +125,8 @@ for K in [10, 200]:
 print("CURATED|diseases=%d|lift@10=%.2f|lift@200=%.2f|expected@10=%.2f" % (
     len(_ag), _cl[10], _cl[200], (10*_ag.base).sum()))
 check("8.3 curated>=0.8 diseases", 103, len(_ag))
-check("8.3 curated>=0.8 lift@10", 20.36, round(_cl[10], 2), tol=0.02, fmt="{:.2f}")
-check("8.3 curated>=0.8 lift@200", 5.02, round(_cl[200], 2), tol=0.02, fmt="{:.2f}")
+check("8.3 curated>=0.8 lift@10", 29.33, round(_cl[10], 2), tol=0.02, fmt="{:.2f}")
+check("8.3 curated>=0.8 lift@200", 4.86, round(_cl[200], 2), tol=0.02, fmt="{:.2f}")
 del _nv2, _g2
 
 # ==== 8.4  tractability, naive vs degree-matched ====
@@ -152,7 +152,7 @@ for K in [10,20,50,100,200]:
         K, ">" if pdm>pnv else "<", ">" if mdm>mnv else "<"))
 # documented: dm WEAKENS at 10 under both; both estimators turn at 20 (m7-f14-cal on the MONDO-ID
 # split, 2026-11-07; on m7-f14 / the old split macro did not turn until 50)
-for K,want_p,want_m in [(10,False,False),(20,True,True),(50,True,True),(200,True,True)]:
+for K,want_p,want_m in [(10,False,True),(20,True,True),(50,True,True),(200,True,True)]:
     pdm,pnv,mdm,mnv=_lifts(K)
     check(f"8.4 dm>naive pooled @{K}", want_p, bool(pdm>pnv), tol=0, fmt="{}")
     check(f"8.4 dm>naive macro @{K}",  want_m, bool(mdm>mnv), tol=0, fmt="{}")
@@ -192,8 +192,8 @@ print(f"FILTER|rows={len(f3)}|cols={list(f3.columns)[:8]}")
 pc=dataiku.Dataset("persona_candidates").get_dataframe()
 n5=int((pc.n_criteria==5).sum())
 print(f"PERSONA|diseases={len(pc)}|passing all five={n5}")
-check("8.7 diseases passing 5 criteria",45,n5)
-check("8.7 validation diseases",607,len(pc))
+check("8.7 diseases passing 5 criteria",40,n5)
+check("8.7 validation diseases",604,len(pc))
 
 # ==== 8.10  the breast panel ====
 bm=dataiku.Dataset("breast_panel_metrics").get_dataframe()
@@ -210,6 +210,6 @@ bo=dataiku.Dataset("family_panel_overlap").get_dataframe()
 bo=bo[bo.act3_family=="breast"]
 kp=bo[(bo.disease_a.str.contains("HER2")&bo.disease_b.str.contains("triple"))|
       (bo.disease_b.str.contains("HER2")&bo.disease_a.str.contains("triple"))]
-if len(kp): check("8.10 HER2+ vs TNBC novel overlap",1,int(kp.novel_overlap.iloc[0]))
+if len(kp): check("8.10 HER2+ vs TNBC novel overlap",2,int(kp.novel_overlap.iloc[0]))
 print(f"\nSUMMARY|{len(FAIL)} STALE")
 for n,d,l in FAIL: print(f"FAILED|{n}|doc={d}|live={l}")

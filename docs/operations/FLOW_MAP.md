@@ -94,7 +94,7 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 |---|---|---|--:|---|
 | `edge_metadata` | — | `compute_DEMO_KG_edge_metadata_copy` | 3 | intermediate |
 | `graph_edges` | nb5 | `compute_DEMO_KG_graph_edges_copy` | 7 | notebook |
-| `graph_nodes` | nb5, nb6 | `compute_DEMO_KG_graph_nodes_copy` | 17 | notebook |
+| `graph_nodes` | nb1, nb5, nb6, nb7 | `compute_DEMO_KG_graph_nodes_copy` | 17 | notebook |
 
 ## 10 Features - graph traversal (Cypher)  (10 datasets, 10 recipes)
 

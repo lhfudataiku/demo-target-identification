@@ -19,8 +19,8 @@ def check(name,doc,live,tol=0.0,fmt="{:,}"):
 va=dataiku.Dataset("validation_auc_by_disease").get_dataframe()
 print(f"AUC|diseases={len(va)}|macro={va.auc_disease.mean():.4f}|"
       f"pos>=10 macro={va[va.n_pos>=10].auc_disease.mean():.4f}")
-check("10.1 macro per-disease AUC",0.8170,round(float(va.auc_disease.mean()),4),tol=0.0006,fmt="{:.4f}")
-check("10.1 validation diseases",607,len(va))
+check("10.1 macro per-disease AUC",0.818,round(float(va.auc_disease.mean()),4),tol=0.0006,fmt="{:.4f}")
+check("10.1 validation diseases",604,len(va))
 
 # ==== 7.3  per-family validation, and the plot that replaces a 45-number table ====
 
@@ -80,9 +80,9 @@ plot_buffer.seek(0)
 display(Image(data=plot_buffer.getvalue()))
 plt.close(fig)
 
-check("7.3 per-family macro AUC", 0.7988, round(float(macro_auc), 4),
+check("7.3 per-family macro AUC", 0.8003, round(float(macro_auc), 4),
       tol=0.0006, fmt="{:.4f}")
-check("7.3 families", 481, len(fa))
+check("7.3 families", 478, len(fa))
 
 # ==== 7.4  THE key plot: association AUC does not predict therapeutic relevance ====
 
@@ -113,8 +113,8 @@ print(
 )
 print(f"ORTH|well-powered n={len(wp)}|pearson={rw:+.4f}")
 
-check("7.4 orthogonality pearson r", 0.091, round(float(r), 3), tol=0.004, fmt="{:+.3f}")
-check("7.4 orthogonality R2", 0.0082, round(float(r*r), 4), tol=0.0004, fmt="{:.4f}")
+check("7.4 orthogonality pearson r", 0.167, round(float(r), 3), tol=0.004, fmt="{:+.3f}")
+check("7.4 orthogonality R2", 0.0278, round(float(r*r), 4), tol=0.0004, fmt="{:.4f}")
 
 fig, ax = plt.subplots(figsize=(7.2, 6))
 
@@ -170,7 +170,7 @@ plt.close(fig)
 
 print(f"DRUG|diseases={len(db)}|macro drug AUC={db.auc_drug_targets.mean():.4f}|"
       f"below 0.5={int((db.auc_drug_targets<0.5).sum())}")
-check("7.4 drug-target macro AUC",0.6737,round(float(db.auc_drug_targets.mean()),4),tol=0.0006,fmt="{:.4f}")
+check("7.4 drug-target macro AUC",0.6703,round(float(db.auc_drug_targets.mean()),4),tol=0.0006,fmt="{:.4f}")
 
 # ==== 7.2  hub-bias meter -- it has no recipe, so this notebook IS its artifact ====
 
@@ -210,7 +210,7 @@ def _macro(key):
 _sk,_nsk=_macro("disease_split_key")
 print(f"HEADER|pooled={_pooled:.4f}|per_split_key={_sk:.4f}|split_keys={_nsk}")
 check("header pooled AUC",0.8908,round(float(_pooled),4),tol=0.0006,fmt="{:.4f}")
-check("header per-split-key AUC",0.7992,round(float(_sk),4),tol=0.0006,fmt="{:.4f}")
+check("header per-split-key AUC",0.7999,round(float(_sk),4),tol=0.0006,fmt="{:.4f}")
 
 print(f"\nSUMMARY|{len(FAIL)} STALE")
 for nm,_d,_l in FAIL: print(f"FAILED|{nm}|doc={_d}|live={_l}")

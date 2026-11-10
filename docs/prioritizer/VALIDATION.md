@@ -36,17 +36,17 @@ Three distinctions are non-negotiable:
 
 | claim | governed reading | computational authority |
 |---|---|---|
-| `TI-DATA-001` | Candidate pool: **6,754,128** deduplicated pairs at **1.89%** positives, admitted through GGD, GPGD or GCD. | `nb2` §5.2 |
-| `TI-MOD-001` | Champion: **`m7-f14-cal`**, saved model **`W8VhjZOZ`**, 14 features (`m7-f14` with sigmoid-calibrated output, since 2026-11-07). | `tools/model_registry.json` |
-| `TI-VAL-001` | Reconstruction fidelity: macro per-disease AUROC **0.8170** across **607** held-out diseases. | `nb3` §10.1 |
-| `TI-VAL-002` | Pooled AUROC **0.8908** versus macro **0.8170**; pooled is a warning, never the headline. | `nb3` header + §10.1 |
-| `TI-VAL-003` | Family view: **481** families, macro AUROC **0.7988**. | `nb3` §7.3 |
-| `TI-VAL-004` | Therapeutic agreement: drug-target macro AUROC **0.6737**; association/drug Pearson **+0.091**, R² **0.0082** over 122 diseases (not significant). | `nb3` §7.4 |
-| `TI-VAL-005` | Hub-bias weakness, grown since the 2026-11 retrain: ρ(degree, probability) **0.3500** on known targets; predicted-positive share **12.7% → 55.5%** from lowest to highest degree quintile; mean calibrated probability **0.0887 / 0.2230**, spread **0.1344** (calibrated scale — not comparable with earlier raw-score spreads). | `nb3b` §7.2 |
-| `TI-VAL-006` | Drug-target AUROC: **0.6737** on all positives and **0.7392** on route-supported positives. | `nb2` §5.2.1 |
-| `TI-VAL-007` | Novel approved-target lift: **21.26×** at K=10 and **5.22×** at K=200. | `nb4` §8.3 |
-| `TI-VAL-008` | Degree-matched tractability lift: pooled **3.06×** and macro **2.85×** at K=10; pooled **2.30×** at K=200. Above the naive lift from K=20 on; just below it at K=10. | `nb4` §8.4; duplicated in `nb6` §5.1 |
-| `TI-VAL-009` | HER2-positive AUROC **0.9385**; HER2-positive/TNBC novel top-50 overlap **1**; TNBC has only **8** known targets. | `nb4` §8.10; overlap also asserted in `nb6`/`nb7` |
+| `TI-DATA-001` | Candidate pool: **6,685,686** deduplicated pairs at **1.89%** positives, admitted through GGD, GPGD or GCD. | `nb2` §5.2 |
+| `TI-MOD-001` | Champion: **`m7-f14-cal`**, saved model **`W8VhjZOZ`**, 14 features (`m7-f14` with sigmoid-calibrated output, since 2026-11-07; retrained 2026-11-10 on the R5 graph, version `1794305004361`). | `tools/model_registry.json` |
+| `TI-VAL-001` | Reconstruction fidelity: macro per-disease AUROC **0.8180** across **604** held-out diseases. | `nb3` §10.1 |
+| `TI-VAL-002` | Pooled AUROC **0.8908** versus macro **0.8180**; pooled is a warning, never the headline. | `nb3` header + §10.1 |
+| `TI-VAL-003` | Family view: **478** families, macro AUROC **0.8003**. | `nb3` §7.3 |
+| `TI-VAL-004` | Therapeutic agreement: drug-target macro AUROC **0.6703**; association/drug Pearson **+0.167**, R² **0.0278** over 122 diseases (t = 1.85, not significant at 0.05). | `nb3` §7.4 |
+| `TI-VAL-005` | Hub-bias weakness, grown since the 2026-11 retrain: ρ(degree, probability) **0.3472** on known targets; predicted-positive share **10.2% → 52.1%** from lowest to highest degree quintile; mean calibrated probability **0.0915 / 0.2257**, spread **0.1341** (calibrated scale — not comparable with earlier raw-score spreads). | `nb3b` §7.2 |
+| `TI-VAL-006` | Drug-target AUROC: **0.6703** on all positives and **0.7362** on route-supported positives. | `nb2` §5.2.1 |
+| `TI-VAL-007` | Novel approved-target lift: **22.94×** at K=10 and **4.98×** at K=200. | `nb4` §8.3 |
+| `TI-VAL-008` | Degree-matched tractability lift: pooled **3.06×** and macro **2.85×** at K=10; pooled **2.30×** at K=200. Pooled is just below the naive lift at K=10 and above it from K=20 on; macro is above it at every K (since the 2026-11-10 retrain; it was below at K=10). | `nb4` §8.4; duplicated in `nb6` §5.1 |
+| `TI-VAL-009` | HER2-positive AUROC **0.9385**; HER2-positive/TNBC novel top-50 overlap **2**; TNBC has only **8** known targets. | `nb4` §8.10; overlap also asserted in `nb6`/`nb7` |
 | `TI-LIM-001` | Curated drug-target reachability **98.5%**; pool-size/coverage ρ **+0.081**; only **2** diseases below 50%. | `nb2` §10.4 |
 
 The registry governs these claims as bundles because their interpretation depends on the denominator
@@ -124,9 +124,10 @@ model.
 | `m6-f13-new-pc` | 0.8197 | 0.1749 | **0.1900** | 0.6949 | 0.7418 | 2.391 | 7.43 / 4.78 | intermediate; pre-registered mechanism refuted |
 | **`m7-f14`** | **0.8230** | 0.1778 | 0.1935 | 0.6886 | **0.7471** | **2.418** | **9.43 / 5.04** | adopted; superseded 2026-11-07 by `m7-f14-cal` |
 | `m8-f14-pm` | 0.8225 | **0.1816** | 0.1968 | — | — | flat-to-declining | mostly ties | rejected despite higher AUPRC |
-| **`m7-f14-cal`** † | **0.8170** | 0.1831 | 0.1344 ‡ | 0.6737 | 0.7392 | 2.30 | — / 5.22 | current champion (`TI-MOD-001`) |
+| `m7-f14-cal` (2026-11-07) † | 0.8170 | 0.1831 | 0.1344 ‡ | 0.6737 | 0.7392 | 2.30 | — / 5.22 | champion on the R2-era graph; retrained 2026-11-10 |
+| **`m7-f14-cal`** (2026-11-10) § | **0.8180** | — | 0.1341 ‡ | 0.6703 | 0.7362 | 2.30 | — / 4.98 | current champion (`TI-MOD-001`) |
 
-† Retrained 2026-11-07 on the MONDO-ID split (607 validation diseases, not 670), so its row is not a paired comparison with the rows above: on the 382 diseases both splits validate, paired per-disease AUC differences are reported in `docs/operations/GRAPH_REVISION_WORKPLAN.md` (R1). Against the uncalibrated retrain on the same 607 diseases it is equivalent (318 higher, 288 lower, 0 ties; Wilcoxon p = 0.27). ‡ Calibrated probability scale; not comparable with the raw-score spreads above.
+† Retrained 2026-11-07 on the MONDO-ID split (607 validation diseases, not 670), so its row is not a paired comparison with the rows above: on the 382 diseases both splits validate, paired per-disease AUC differences are reported in `docs/operations/GRAPH_REVISION_WORKPLAN.md` (R1). Against the uncalibrated retrain on the same 607 diseases it is equivalent (318 higher, 288 lower, 0 ties; Wilcoxon p = 0.27). ‡ Calibrated probability scale; not comparable with the raw-score spreads above. § Same configuration retrained on the R5 graph (604 validation diseases; three left with the source refresh). Against the 2026-11-07 version on the 603 diseases both score: 0 ties, 309 higher, 294 lower; Wilcoxon p = 0.28, van Elteren (stratified by positives quartile) p = 0.18 — no detectable change, and of the same size as the 2026-11-07 retrain on identical data. Macro AUPRC was not re-derived.
 
 Ties come before means. `m3`–`m6` were the same ranker for roughly 90% of diseases; discovery
 differences rested on 9–15 high-leverage diseases. `m7` was the break: against `m6`, association and

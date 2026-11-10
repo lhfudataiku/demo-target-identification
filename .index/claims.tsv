@@ -1,218 +1,225 @@
 file	line	section	value	status	guarded_by	model_dep	hint	context
-docs/demo/BREAST_SURGEON_BRIEFING.md	17	-	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		> the top 15. HER2+ AUC is 0.9385 and HER2+/TNBC share 1 novel top-50 gene (was 2). The tables and
-docs/demo/BREAST_SURGEON_BRIEFING.md	30	1	76,465	ORPHAN				`target_candidates_2` from 76,465 rows over 7 diseases to **129,253 over 13**.
-docs/demo/BREAST_SURGEON_BRIEFING.md	30	1	129,253	ORPHAN				`target_candidates_2` from 76,465 rows over 7 diseases to **129,253 over 13**.
-docs/demo/BREAST_SURGEON_BRIEFING.md	36	1	8,157	ORPHAN				| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
-docs/demo/BREAST_SURGEON_BRIEFING.md	36	1	0.85	ORPHAN				| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
-docs/demo/BREAST_SURGEON_BRIEFING.md	36	1	0.80	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
-docs/demo/BREAST_SURGEON_BRIEFING.md	36	1	0.89	VALUE_ONLY	nb3_validation_and_plots.py:header pooled AUC			| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
-docs/demo/BREAST_SURGEON_BRIEFING.md	37	1	12,272	ORPHAN				| HER2+ | HER2 positive breast carcinoma | 12,272 | 599 | **0.94 (0.92–0.95)** |
-docs/demo/BREAST_SURGEON_BRIEFING.md	37	1	0.94	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC			| HER2+ | HER2 positive breast carcinoma | 12,272 | 599 | **0.94 (0.92–0.95)** |
-docs/demo/BREAST_SURGEON_BRIEFING.md	37	1	0.92	ORPHAN				| HER2+ | HER2 positive breast carcinoma | 12,272 | 599 | **0.94 (0.92–0.95)** |
-docs/demo/BREAST_SURGEON_BRIEFING.md	37	1	0.95	ORPHAN				| HER2+ | HER2 positive breast carcinoma | 12,272 | 599 | **0.94 (0.92–0.95)** |
-docs/demo/BREAST_SURGEON_BRIEFING.md	38	1	2,563	ORPHAN				| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
-docs/demo/BREAST_SURGEON_BRIEFING.md	38	1	0.89	VALUE_ONLY	nb3_validation_and_plots.py:header pooled AUC			| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
-docs/demo/BREAST_SURGEON_BRIEFING.md	38	1	0.75	ORPHAN				| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
-docs/demo/BREAST_SURGEON_BRIEFING.md	38	1	1.04	ORPHAN				| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
-docs/demo/BREAST_SURGEON_BRIEFING.md	39	1	13,290	ORPHAN			hist	| *reference* | breast carcinoma (umbrella) | 13,290 | 864 | 0.86 (0.84–0.88) |
-docs/demo/BREAST_SURGEON_BRIEFING.md	39	1	0.86	ORPHAN			hist	| *reference* | breast carcinoma (umbrella) | 13,290 | 864 | 0.86 (0.84–0.88) |
-docs/demo/BREAST_SURGEON_BRIEFING.md	39	1	0.84	ORPHAN			hist	| *reference* | breast carcinoma (umbrella) | 13,290 | 864 | 0.86 (0.84–0.88) |
-docs/demo/BREAST_SURGEON_BRIEFING.md	39	1	0.88	ORPHAN			hist	| *reference* | breast carcinoma (umbrella) | 13,290 | 864 | 0.86 (0.84–0.88) |
-docs/demo/BREAST_SURGEON_BRIEFING.md	112	3	2,563	ORPHAN		y		2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 360 of 2,563
-docs/demo/BREAST_SURGEON_BRIEFING.md	121	3	0.90	ORPHAN		y		target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90). So the
-docs/demo/BREAST_SURGEON_BRIEFING.md	123	3	1,157	ORPHAN		y		ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1,157
-docs/demo/BREAST_SURGEON_BRIEFING.md	162	5	0.69	ORPHAN				(0.69) — the parent term is beaten by its own children.
-docs/demo/BREAST_SURGEON_BRIEFING.md	172	5	98.5	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 reachability ceiling %			pool contains **98.5%** of curated target–disease pairs, and coverage does **not** track how sparsely
-docs/demo/BREAST_SURGEON_BRIEFING.md	173	5	0.081	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 Spearman pool_size vs coverage	y		a disease is annotated (Spearman +0.081). TNBC is one of only two diseases below 50% coverage. Do not
-docs/demo/BREAST_SURGEON_BRIEFING.md	178	5	0.689	ORPHAN		y		evaluation *because of the relationship being evaluated*. Fixing it raises drug-target AUC from 0.689
-docs/demo/BREAST_SURGEON_BRIEFING.md	179	5	0.747	ORPHAN				to 0.747. Not clinician-facing, but it changes numbers that are.
+docs/demo/BREAST_SURGEON_BRIEFING.md	16	-	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC			> 0.9385 (within tolerance); HER2+/TNBC share **2** novel top-50 genes and 11 overall. The TNBC
+docs/demo/BREAST_SURGEON_BRIEFING.md	17	-	2,538	ORPHAN		y		> defects below moved: ESR1 is now rank **53** (was 17), PARP1 **94** (was 360) of a 2,538-gene pool,
+docs/demo/BREAST_SURGEON_BRIEFING.md	25	-	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		> the top 15. HER2+ AUC is 0.9385 and HER2+/TNBC share 1 novel top-50 gene (was 2). The tables and
+docs/demo/BREAST_SURGEON_BRIEFING.md	38	1	76,465	ORPHAN				`target_candidates_2` from 76,465 rows over 7 diseases to **129,253 over 13**.
+docs/demo/BREAST_SURGEON_BRIEFING.md	38	1	129,253	ORPHAN				`target_candidates_2` from 76,465 rows over 7 diseases to **129,253 over 13**.
+docs/demo/BREAST_SURGEON_BRIEFING.md	44	1	8,157	ORPHAN				| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
+docs/demo/BREAST_SURGEON_BRIEFING.md	44	1	0.85	ORPHAN				| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
+docs/demo/BREAST_SURGEON_BRIEFING.md	44	1	0.80	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
+docs/demo/BREAST_SURGEON_BRIEFING.md	44	1	0.89	VALUE_ONLY	nb3_validation_and_plots.py:header pooled AUC			| HR+/HER2− | luminal A breast carcinoma | 8,157 | 101 | 0.85 (0.80–0.89) |
+docs/demo/BREAST_SURGEON_BRIEFING.md	45	1	12,272	ORPHAN				| HER2+ | HER2 positive breast carcinoma | 12,272 | 599 | **0.94 (0.92–0.95)** |
+docs/demo/BREAST_SURGEON_BRIEFING.md	45	1	0.94	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC			| HER2+ | HER2 positive breast carcinoma | 12,272 | 599 | **0.94 (0.92–0.95)** |
+docs/demo/BREAST_SURGEON_BRIEFING.md	45	1	0.92	ORPHAN				| HER2+ | HER2 positive breast carcinoma | 12,272 | 599 | **0.94 (0.92–0.95)** |
+docs/demo/BREAST_SURGEON_BRIEFING.md	45	1	0.95	ORPHAN				| HER2+ | HER2 positive breast carcinoma | 12,272 | 599 | **0.94 (0.92–0.95)** |
+docs/demo/BREAST_SURGEON_BRIEFING.md	46	1	2,563	ORPHAN				| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
+docs/demo/BREAST_SURGEON_BRIEFING.md	46	1	0.89	VALUE_ONLY	nb3_validation_and_plots.py:header pooled AUC			| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
+docs/demo/BREAST_SURGEON_BRIEFING.md	46	1	0.75	ORPHAN				| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
+docs/demo/BREAST_SURGEON_BRIEFING.md	46	1	1.04	ORPHAN				| Triple-negative | triple-negative breast carcinoma | 2,563 | **8** | 0.89 (0.75–1.04) |
+docs/demo/BREAST_SURGEON_BRIEFING.md	47	1	13,290	ORPHAN			hist	| *reference* | breast carcinoma (umbrella) | 13,290 | 864 | 0.86 (0.84–0.88) |
+docs/demo/BREAST_SURGEON_BRIEFING.md	47	1	0.86	ORPHAN			hist	| *reference* | breast carcinoma (umbrella) | 13,290 | 864 | 0.86 (0.84–0.88) |
+docs/demo/BREAST_SURGEON_BRIEFING.md	47	1	0.84	ORPHAN			hist	| *reference* | breast carcinoma (umbrella) | 13,290 | 864 | 0.86 (0.84–0.88) |
+docs/demo/BREAST_SURGEON_BRIEFING.md	47	1	0.88	ORPHAN			hist	| *reference* | breast carcinoma (umbrella) | 13,290 | 864 | 0.86 (0.84–0.88) |
+docs/demo/BREAST_SURGEON_BRIEFING.md	120	3	2,563	ORPHAN		y		2. **PARP1 at rank 360.** PARP inhibition is *the* targeted therapy in TNBC. Ranking it 360 of 2,563
+docs/demo/BREAST_SURGEON_BRIEFING.md	129	3	0.90	ORPHAN		y		target–disease pairs the curated therapeutic label asserts for triple-negative (score 0.90). So the
+docs/demo/BREAST_SURGEON_BRIEFING.md	131	3	1,157	ORPHAN		y		ranking one, and TACSTD2 is a genuinely hard case — it is reachable for only **1% of all 1,157
+docs/demo/BREAST_SURGEON_BRIEFING.md	170	5	0.69	ORPHAN				(0.69) — the parent term is beaten by its own children.
+docs/demo/BREAST_SURGEON_BRIEFING.md	180	5	98.5	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 reachability ceiling %			pool contains **98.5%** of curated target–disease pairs, and coverage does **not** track how sparsely
+docs/demo/BREAST_SURGEON_BRIEFING.md	181	5	0.081	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 Spearman pool_size vs coverage	y		a disease is annotated (Spearman +0.081). TNBC is one of only two diseases below 50% coverage. Do not
+docs/demo/BREAST_SURGEON_BRIEFING.md	186	5	0.689	ORPHAN		y		evaluation *because of the relationship being evaluated*. Fixing it raises drug-target AUC from 0.689
+docs/demo/BREAST_SURGEON_BRIEFING.md	187	5	0.747	ORPHAN				to 0.747. Not clinician-facing, but it changes numbers that are.
 docs/demo/DEMO_NARRATIVE.md	51	-	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		model reconstructs this disease's known targets at **AUC 0.9385**, but the page shows no AUC: the
-docs/demo/DEMO_NARRATIVE.md	57	-	12,272	ORPHAN		y		*tractable* and *exclude secreted*: 12,272 candidates become 38 in the top 200. The third is
-docs/demo/DEMO_NARRATIVE.md	104	-	21.26	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10			the top is enriched for genes that later became drug targets, **21.26× at top 10** against approved
+docs/demo/DEMO_NARRATIVE.md	57	-	12,252	ORPHAN		y		*tractable* and *exclude secreted*: 12,252 candidates become 29 in the top 200. The fourth is
+docs/demo/DEMO_NARRATIVE.md	104	-	22.94	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10			the top is enriched for genes that later became drug targets, **22.94× at top 10** against approved
 docs/demo/DEMO_NARRATIVE.md	122	-	113,391	ORPHAN				from a knowledge graph of **113,391 nodes and 2,851,510 edges** assembled from six public sources. The
 docs/demo/DEMO_NARRATIVE.md	122	-	2,851,510	ORPHAN				from a knowledge graph of **113,391 nodes and 2,851,510 edges** assembled from six public sources. The
-docs/demo/DEMO_NARRATIVE.md	123	-	0.03	ORPHAN			hist	graph was rebuilt in DSS and checked against a frozen reference, with edge counts within **0.03%**.
-docs/demo/DEMO_NARRATIVE.md	128	-	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			"diabetes" and "type 2 diabetes" never sit on opposite sides. Over **6,754,128 disease–gene pairs**
-docs/demo/DEMO_NARRATIVE.md	129	-	0.8170	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		and **607 held-out diseases**, the macro per-disease AUC is **0.8170**. Show the distribution with
+docs/demo/DEMO_NARRATIVE.md	123	-	0.03	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality R2		hist	graph was rebuilt in DSS and checked against a frozen reference, with edge counts within **0.03%**.
+docs/demo/DEMO_NARRATIVE.md	128	-	6,685,686	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			"diabetes" and "type 2 diabetes" never sit on opposite sides. Over **6,685,686 disease–gene pairs**
+docs/demo/DEMO_NARRATIVE.md	129	-	0.8180	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		and **604 held-out diseases**, the macro per-disease AUC is **0.8180**. Show the distribution with
 docs/demo/DEMO_NARRATIVE.md	131	-	0.8908	ASSERTED	nb3_validation_and_plots.py:header pooled AUC			more than the average. Pooling all pairs would read **0.8908**, about seven points higher, because
 docs/demo/DEMO_NARRATIVE.md	135	-	3.06	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @10			model leans toward them. Compared with genes of the same connectivity, the top 10 is still **3.06×**
-docs/demo/DEMO_NARRATIVE.md	142	-	0.7988	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			little. Across **481 disease families**, reconstruction holds at **0.7988**. Within breast cancer, each
-docs/demo/DEMO_NARRATIVE.md	162	-	0.091	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		across diseases the two are essentially uncorrelated (r = **+0.091**, R² under 1%). On a drug-target benchmark
-docs/demo/DEMO_NARRATIVE.md	175	-	12,272	ORPHAN				**Before the demo.** Re-check the scripted path on the live app: the funnel from 12,272 to 38, and
+docs/demo/DEMO_NARRATIVE.md	142	-	0.8003	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			little. Across **478 disease families**, reconstruction holds at **0.8003**. Within breast cancer, each
+docs/demo/DEMO_NARRATIVE.md	162	-	0.167	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		across diseases the two are essentially uncorrelated (r = **+0.167**, R² under 3%, not significant). On a drug
+docs/demo/DEMO_NARRATIVE.md	175	-	12,252	ORPHAN				**Before the demo.** Re-check the scripted path on the live app: the funnel from 12,252 to 29, and
 docs/demo/WEBAPP_DESIGN.md	76	2	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		**Why a spine at all:** the eyeball test needs a disease the audience knows cold. HER2+ reconstructs at AUC 0.
-docs/demo/WEBAPP_DESIGN.md	81	2	12,272	ORPHAN				**The clinical sanity check, unprompted.** HER2+ breast carcinoma scores 12,272 candidates. Top 15:
-docs/demo/WEBAPP_DESIGN.md	98	2	12,272	ORPHAN				The model was never told which gene this disease is named after. **ERBB2 lands at 16 of 12,272**, and the
-docs/demo/WEBAPP_DESIGN.md	100	2	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC			**0.9385** on 599 known targets, **18.8×** enrichment at 50. A breast oncologist validates this in about
-docs/demo/WEBAPP_DESIGN.md	100	2	18.8	ORPHAN				**0.9385** on 599 known targets, **18.8×** enrichment at 50. A breast oncologist validates this in about
-docs/demo/WEBAPP_DESIGN.md	119	2	18.8	ORPHAN				**#264** and the head-of-list novel candidate is **HRAS at #7**; enrichment is equivalent (18.8× vs 18.6×),
-docs/demo/WEBAPP_DESIGN.md	119	2	18.6	ORPHAN				**#264** and the head-of-list novel candidate is **HRAS at #7**; enrichment is equivalent (18.8× vs 18.6×),
-docs/demo/WEBAPP_DESIGN.md	223	3.3	1,086	ORPHAN				Act 4 absorbed the earlier hand-written webapp (`V2ZpfdV`, 1,086 lines): the disease picker, the
-docs/demo/WEBAPP_DESIGN.md	248	3.4	0.8230	ORPHAN				3. **A wrong number is visible in a diff.** A hard-coded `0.8230` in a reviewed file is safer than a
-docs/demo/WEBAPP_DESIGN.md	412	4	113,391	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
-docs/demo/WEBAPP_DESIGN.md	412	4	27,153	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
-docs/demo/WEBAPP_DESIGN.md	412	4	23,974	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
-docs/demo/WEBAPP_DESIGN.md	412	4	20,861	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
-docs/demo/WEBAPP_DESIGN.md	412	4	19,120	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
-docs/demo/WEBAPP_DESIGN.md	412	4	10,041	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
-docs/demo/WEBAPP_DESIGN.md	412	4	5,282	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
-docs/demo/WEBAPP_DESIGN.md	412	4	4,077	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
-docs/demo/WEBAPP_DESIGN.md	412	4	2,883	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
-docs/demo/WEBAPP_DESIGN.md	413	4	2,851,510	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
-docs/demo/WEBAPP_DESIGN.md	413	4	520,380	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
-docs/demo/WEBAPP_DESIGN.md	413	4	487,054	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
-docs/demo/WEBAPP_DESIGN.md	413	4	380,280	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
-docs/demo/WEBAPP_DESIGN.md	413	4	378,888	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
-docs/demo/WEBAPP_DESIGN.md	413	4	251,808	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
-docs/demo/WEBAPP_DESIGN.md	413	4	186,806	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
-docs/demo/WEBAPP_DESIGN.md	413	4	156,246	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
-docs/demo/WEBAPP_DESIGN.md	414	4	520,380	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
-docs/demo/WEBAPP_DESIGN.md	414	4	189,982	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
-docs/demo/WEBAPP_DESIGN.md	414	4	151,254	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
-docs/demo/WEBAPP_DESIGN.md	414	4	92,536	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
-docs/demo/WEBAPP_DESIGN.md	414	4	54,554	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
-docs/demo/WEBAPP_DESIGN.md	414	4	28,478	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
-docs/demo/WEBAPP_DESIGN.md	414	4	2,714	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
-docs/demo/WEBAPP_DESIGN.md	414	4	86,608	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
-docs/demo/WEBAPP_DESIGN.md	414	4	16.6	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
-docs/demo/WEBAPP_DESIGN.md	415	4	323,786	ORPHAN				| **What "known target" actually means** | up front · bars, with the unannotated edges named in prose | of 323
-docs/demo/WEBAPP_DESIGN.md	415	4	171,810	ORPHAN				| **What "known target" actually means** | up front · bars, with the unannotated edges named in prose | of 323
-docs/demo/WEBAPP_DESIGN.md	415	4	150,266	ORPHAN				| **What "known target" actually means** | up front · bars, with the unannotated edges named in prose | of 323
-docs/demo/WEBAPP_DESIGN.md	415	4	1,710	ORPHAN				| **What "known target" actually means** | up front · bars, with the unannotated edges named in prose | of 323
-docs/demo/WEBAPP_DESIGN.md	416	4	0.13	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion spread		hist	| Accepted against a frozen reference | detail · one-line note; the page states the acceptance, not these figu
-docs/demo/WEBAPP_DESIGN.md	416	4	0.03	ORPHAN			hist	| Accepted against a frozen reference | detail · one-line note; the page states the acceptance, not these figu
-docs/demo/WEBAPP_DESIGN.md	419	4	844,166	ORPHAN				**The provenance data is two disjoint stories.** `edge_metadata`'s 844,166 rows split cleanly: 520,380
-docs/demo/WEBAPP_DESIGN.md	419	4	520,380	ORPHAN				**The provenance data is two disjoint stories.** `edge_metadata`'s 844,166 rows split cleanly: 520,380
-docs/demo/WEBAPP_DESIGN.md	420	4	323,786	ORPHAN				protein_protein rows carry `ppi_sources` with blank `datatypes`; 323,786 disease_protein rows carry the
-docs/demo/WEBAPP_DESIGN.md	428	4	378,888	ORPHAN				⚠ **`disease_protein` has 378,888 edges but only 323,786 metadata rows** — 55,102 (14.5%) carry no
-docs/demo/WEBAPP_DESIGN.md	428	4	323,786	ORPHAN				⚠ **`disease_protein` has 378,888 edges but only 323,786 metadata rows** — 55,102 (14.5%) carry no
-docs/demo/WEBAPP_DESIGN.md	428	4	55,102	ORPHAN				⚠ **`disease_protein` has 378,888 edges but only 323,786 metadata rows** — 55,102 (14.5%) carry no
-docs/demo/WEBAPP_DESIGN.md	428	4	14.5	ORPHAN				⚠ **`disease_protein` has 378,888 edges but only 323,786 metadata rows** — 55,102 (14.5%) carry no
-docs/demo/WEBAPP_DESIGN.md	447	4	2,371,922	ORPHAN				| **Zero straddling keys — read this first** | up front · one line; the split table under detail | 3 rows; all
-docs/demo/WEBAPP_DESIGN.md	447	4	3,568,682	ORPHAN				| **Zero straddling keys — read this first** | up front · one line; the split table under detail | 3 rows; all
-docs/demo/WEBAPP_DESIGN.md	447	4	813,524	ORPHAN				| **Zero straddling keys — read this first** | up front · one line; the split table under detail | 3 rows; all
-docs/demo/WEBAPP_DESIGN.md	448	4	0.8170	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| The spread across 607 diseases | up front · histogram, 20 bins | macro **0.8170**, median 0.8530, range 0.15
-docs/demo/WEBAPP_DESIGN.md	448	4	0.8530	ORPHAN		y		| The spread across 607 diseases | up front · histogram, 20 bins | macro **0.8170**, median 0.8530, range 0.15
-docs/demo/WEBAPP_DESIGN.md	448	4	0.1597	ORPHAN		y		| The spread across 607 diseases | up front · histogram, 20 bins | macro **0.8170**, median 0.8530, range 0.15
-docs/demo/WEBAPP_DESIGN.md	448	4	0.9972	ORPHAN		y		| The spread across 607 diseases | up front · histogram, 20 bins | macro **0.8170**, median 0.8530, range 0.15
-docs/demo/WEBAPP_DESIGN.md	449	4	0.7988	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		| It holds across 481 families | detail · one line | macro **0.7988** over the **480** that score |
-docs/demo/WEBAPP_DESIGN.md	450	4	18.2	ORPHAN		y		| **Usefulness is not uniform** | up front · the quartiles in prose, beside the selected disease's own enrichm
-docs/demo/WEBAPP_DESIGN.md	450	4	27.4	ORPHAN		y		| **Usefulness is not uniform** | up front · the quartiles in prose, beside the selected disease's own enrichm
-docs/demo/WEBAPP_DESIGN.md	450	4	61.8	ORPHAN		y		| **Usefulness is not uniform** | up front · the quartiles in prose, beside the selected disease's own enrichm
-docs/demo/WEBAPP_DESIGN.md	451	4	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		| Where your disease sits | up front · marker on the histogram, rank and share of diseases beaten | HER2+ at *
-docs/demo/WEBAPP_DESIGN.md	468	4	0.8230	ORPHAN		y		table — 670 `disease` rows and 443 `split_key` rows. Filtered: **0.8230**, the documented champion
-docs/demo/WEBAPP_DESIGN.md	469	4	0.8157	ORPHAN				figure. Unfiltered: **0.8157**. A view without the filter is off by 73 basis points and looks fine.
-docs/demo/WEBAPP_DESIGN.md	471	4	2.9	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10			cell lung carcinoma and 2.9× on chronic kidney disease"* — true **of the 13-persona panel**. Across
-docs/demo/WEBAPP_DESIGN.md	472	4	18.2	ORPHAN				all 607 diseases the median `rank_enrichment` is **18.2×** and the max is **61.8×** (2026-11-07). NSCLC is the
-docs/demo/WEBAPP_DESIGN.md	472	4	61.8	ORPHAN				all 607 diseases the median `rank_enrichment` is **18.2×** and the max is **61.8×** (2026-11-07). NSCLC is the
-docs/demo/WEBAPP_DESIGN.md	478	4	0.7988	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			documented **0.7988 is a mean over 480 families presented as 481**.
-docs/demo/WEBAPP_DESIGN.md	493	4	0.9025	ORPHAN		y		| The panel | up front · every term with its 95% interval, thin terms flagged; the rest in each row's tooltip
-docs/demo/WEBAPP_DESIGN.md	493	4	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		| The panel | up front · every term with its 95% interval, thin terms flagged; the rest in each row's tooltip
-docs/demo/WEBAPP_DESIGN.md	493	4	0.9364	ORPHAN		y		| The panel | up front · every term with its 95% interval, thin terms flagged; the rest in each row's tooltip
-docs/demo/WEBAPP_DESIGN.md	493	4	0.9326	ORPHAN		y		| The panel | up front · every term with its 95% interval, thin terms flagged; the rest in each row's tooltip
-docs/demo/WEBAPP_DESIGN.md	516	4	12,272	ORPHAN		y		| The ranked list | paged table, 15 rows a page | 12,272 rows: rank, gene, class, tractability, the associatio
-docs/demo/WEBAPP_DESIGN.md	517	4	12,272	ORPHAN		y	hist	| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tr
-docs/demo/WEBAPP_DESIGN.md	517	4	11,673	ORPHAN		y	hist	| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tr
-docs/demo/WEBAPP_DESIGN.md	517	4	7,950	ORPHAN		y	hist	| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tr
-docs/demo/WEBAPP_DESIGN.md	517	4	7,273	ORPHAN		y	hist	| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tr
-docs/demo/WEBAPP_DESIGN.md	517	4	7,951	ORPHAN		y	hist	| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tr
-docs/demo/WEBAPP_DESIGN.md	517	4	7,274	ORPHAN		y	hist	| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tr
-docs/demo/WEBAPP_DESIGN.md	536	4	20,860	ORPHAN				From `hgnc_complete_set_2026-10-06.txt`, 20,860 of 20,861 gene nodes match (PGM5P1's record carries no
-docs/demo/WEBAPP_DESIGN.md	536	4	20,861	ORPHAN				From `hgnc_complete_set_2026-10-06.txt`, 20,860 of 20,861 gene nodes match (PGM5P1's record carries no
-docs/demo/WEBAPP_DESIGN.md	544	4	86,123	ORPHAN				It holds every linked pair (86,123 records over 55,270 pairs), so it does not depend on the scoring
-docs/demo/WEBAPP_DESIGN.md	544	4	55,270	ORPHAN				It holds every linked pair (86,123 records over 55,270 pairs), so it does not depend on the scoring
-docs/demo/WEBAPP_DESIGN.md	545	4	2,294	ORPHAN				chain; grouped by pair, the 2,294 records on candidate pairs reproduce both flags for all 105,702 pairs
-docs/demo/WEBAPP_DESIGN.md	545	4	105,702	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows			chain; grouped by pair, the 2,294 records on candidate pairs reproduce both flags for all 105,702 pairs
-docs/demo/WEBAPP_DESIGN.md	556	4	0.16	ORPHAN				`act4_evidence_cache`, so a second visit reads the file (0.16 s); **Refresh** re-runs it. Measured on
-docs/demo/WEBAPP_DESIGN.md	580	4	105,702	VALUE_ONLY	nb7_panel_selection.py:7.3 served rows			105,702 pairs (2026-10-26). The Overview tab's strongest driver reads the same list. Percentiles are
-docs/demo/WEBAPP_DESIGN.md	656	4	3.1	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @10	y		| Fair fight, not a rigged one | **3.1× / 2.7× / 2.3×** (pooled) at K=10/50/200 against **equally-connected**
-docs/demo/WEBAPP_DESIGN.md	656	4	2.7	ORPHAN		y		| Fair fight, not a rigged one | **3.1× / 2.7× / 2.3×** (pooled) at K=10/50/200 against **equally-connected**
-docs/demo/WEBAPP_DESIGN.md	656	4	2.3	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @200	y		| Fair fight, not a rigged one | **3.1× / 2.7× / 2.3×** (pooled) at K=10/50/200 against **equally-connected**
-docs/demo/WEBAPP_DESIGN.md	658	4	0.09	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		| The harder version | known targets only, by connectivity quintile: calibrated score 0.09 → 0.22, detection 1
-docs/demo/WEBAPP_DESIGN.md	658	4	0.22	VALUE_ONLY	nb1_features_and_config.py:6.3 F1 threshold	y		| The harder version | known targets only, by connectivity quintile: calibrated score 0.09 → 0.22, detection 1
-docs/demo/WEBAPP_DESIGN.md	658	4	12.7	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q1 predicted-positive %	y		| The harder version | known targets only, by connectivity quintile: calibrated score 0.09 → 0.22, detection 1
-docs/demo/WEBAPP_DESIGN.md	658	4	55.5	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q5 predicted-positive %	y		| The harder version | known targets only, by connectivity quintile: calibrated score 0.09 → 0.22, detection 1
-docs/demo/WEBAPP_DESIGN.md	658	4	4.4	ORPHAN		y		| The harder version | known targets only, by connectivity quintile: calibrated score 0.09 → 0.22, detection 1
-docs/demo/WEBAPP_DESIGN.md	668	4	12,272	ORPHAN		y		| Delete the answer key | 12,272 scored → 599 known → **11,673** re-ranked |
-docs/demo/WEBAPP_DESIGN.md	668	4	11,673	ORPHAN		y		| Delete the answer key | 12,272 scored → 599 known → **11,673** re-ranked |
-docs/demo/WEBAPP_DESIGN.md	670	4	21.3	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10	y		| Lift vs K, by ground truth | approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, decaying to a ~3× floor |
-docs/demo/WEBAPP_DESIGN.md	670	4	5.2	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@200	y		| Lift vs K, by ground truth | approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, decaying to a ~3× floor |
-docs/demo/WEBAPP_DESIGN.md	670	4	6.7	VALUE_ONLY	nb4_results_three_axes.py:8.3 investigational lift@10	y		| Lift vs K, by ground truth | approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, decaying to a ~3× floor |
-docs/demo/WEBAPP_DESIGN.md	670	4	3.2	ORPHAN		y		| Lift vs K, by ground truth | approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, decaying to a ~3× floor |
-docs/demo/WEBAPP_DESIGN.md	671	4	21.3	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10	y		| Where the mean comes from | the per-disease distribution behind 21.3× |
-docs/demo/WEBAPP_DESIGN.md	673	4	16.9	ORPHAN		y		**The distribution card is not optional.** 16.9× is a *mean of per-disease lifts on a heavy-tailed
-docs/demo/WEBAPP_DESIGN.md	674	4	252.4	ORPHAN				distribution* — Sjögren syndrome alone is **252.4×** at top-10, and the notebook drops infinities before
-docs/demo/WEBAPP_DESIGN.md	683	4	21.3	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10			| Re-run on a curated source | **21.3×** vs 16.9× — the finding got **stronger** |
-docs/demo/WEBAPP_DESIGN.md	683	4	16.9	ORPHAN				| Re-run on a curated source | **21.3×** vs 16.9× — the finding got **stronger** |
-docs/demo/WEBAPP_DESIGN.md	684	4	0.091	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		| Association ≠ therapeutic relevance | one point per disease, association AUC × therapeutic AUC. **r = +0.091
-docs/demo/WEBAPP_DESIGN.md	684	4	0.008	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality R2	y		| Association ≠ therapeutic relevance | one point per disease, association AUC × therapeutic AUC. **r = +0.091
-docs/demo/WEBAPP_DESIGN.md	721	4	3.02	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
-docs/demo/WEBAPP_DESIGN.md	721	4	0.80	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
-docs/demo/WEBAPP_DESIGN.md	721	4	3.0	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
-docs/demo/WEBAPP_DESIGN.md	721	4	1.25	ORPHAN				| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
-docs/demo/WEBAPP_DESIGN.md	722	4	1.99	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant assoc_lift			| "Filter out genes the body cannot live without" | intolerant genes: `assoc_lift` **1.99**, `drug_lift` **1.4
-docs/demo/WEBAPP_DESIGN.md	722	4	1.46	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant drug_lift			| "Filter out genes the body cannot live without" | intolerant genes: `assoc_lift` **1.99**, `drug_lift` **1.4
-docs/demo/WEBAPP_DESIGN.md	723	4	4.69	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			| "Exclude known safety liabilities" | flagged genes carry `drug_lift` **4.69** — liabilities are discovered *
-docs/demo/WEBAPP_DESIGN.md	726	4	0.9354	ORPHAN				| The slide no vendor shows you | a lookup table — *"how many diseases is this gene already a drug target for"
-docs/demo/WEBAPP_DESIGN.md	737	4	2.6	ORPHAN				genetically supported targets are 2.6× more likely to survive the clinic *(Minikel et al., Nature 2024)*.
-docs/demo/WEBAPP_DESIGN.md	766	6	252.4	ORPHAN				| `AVG(lift_top10)` in a chart | Sjögren is 252.4× and the notebook drops infinities first | the aggregate car
-docs/demo/WEBAPP_DESIGN.md	774	6	1.9	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %	y		| A headline number typed into card copy | act 2 carried a literal `1.9%` positive rate and a literal `0.9776`
-docs/demo/WEBAPP_DESIGN.md	774	6	0.9776	ORPHAN		y		| A headline number typed into card copy | act 2 carried a literal `1.9%` positive rate and a literal `0.9776`
-docs/demo/WEBAPP_DESIGN.md	774	6	16.6	ORPHAN		y		| A headline number typed into card copy | act 2 carried a literal `1.9%` positive rate and a literal `0.9776`
-docs/demo/WEBAPP_DESIGN.md	837	9.1	3.06	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @10	y		| pooled degree-matched lift @10 | 3.06× | `nb6` §5.1, `nb4` §8.4 |
-docs/demo/WEBAPP_DESIGN.md	838	9.1	2.30	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @200	y		| pooled degree-matched lift @200 | 2.30× | same |
-docs/demo/WEBAPP_DESIGN.md	839	9.1	2.85	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10	y		| macro degree-matched lift @10 | 2.85× | same |
-docs/demo/WEBAPP_DESIGN.md	843	9.1	0.09	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		only — and the model still scores the lowest degree quintile 0.09 against 0.22 for the highest (calibrated pro
-docs/demo/WEBAPP_DESIGN.md	843	9.1	0.22	VALUE_ONLY	nb1_features_and_config.py:6.3 F1 threshold	y		only — and the model still scores the lowest degree quintile 0.09 against 0.22 for the highest (calibrated pro
-docs/demo/WEBAPP_DESIGN.md	849	9.2	0.8908	VALUE_ONLY	nb3_validation_and_plots.py:header pooled AUC	y		Pooled per-disease AUC reads **0.8908**; macro reads **0.8170**. The gap is ~7 points and it is not
-docs/demo/WEBAPP_DESIGN.md	849	9.2	0.8170	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		Pooled per-disease AUC reads **0.8908**; macro reads **0.8170**. The gap is ~7 points and it is not
-docs/demo/WEBAPP_DESIGN.md	857	9.3	0.7988	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		label — and inflates the score. Family-level macro AUC across 481 families is **0.7988**, and zero
-docs/demo/WEBAPP_DESIGN.md	866	9.4	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		known targets at AUC **0.9385**; that is the number Act 4 is built to make visible, because a
-docs/demo/WEBAPP_DESIGN.md	874	9.4	21.26	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10			| approved drugs | 21.26× | 5.22× |
-docs/demo/WEBAPP_DESIGN.md	874	9.4	5.22	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@200			| approved drugs | 21.26× | 5.22× |
-docs/demo/WEBAPP_DESIGN.md	875	9.4	6.71	VALUE_ONLY	nb4_results_three_axes.py:8.3 investigational lift@10			| drugs in trials | 6.71× | — |
-docs/demo/WEBAPP_DESIGN.md	876	9.4	20.36	VALUE_ONLY	nb4_results_three_axes.py:8.3 curated>=0.8 lift@10			| curated target–disease | 20.36× | 5.02× |
-docs/demo/WEBAPP_DESIGN.md	876	9.4	5.02	VALUE_ONLY	nb4_results_three_axes.py:8.3 curated>=0.8 lift@200			| curated target–disease | 20.36× | 5.02× |
-docs/demo/WEBAPP_DESIGN.md	899	9.5	0.80	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			| membrane receptor as a feature | 0.80× | 3.02× | REJECTED — the model would learn "score lower" |
-docs/demo/WEBAPP_DESIGN.md	899	9.5	3.02	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			| membrane receptor as a feature | 0.80× | 3.02× | REJECTED — the model would learn "score lower" |
-docs/demo/WEBAPP_DESIGN.md	900	9.5	10.10	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 ion channel drug_lift			| ion channel *(same shape, larger)* | — | 10.10× | — |
-docs/demo/WEBAPP_DESIGN.md	901	9.5	1.99	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant assoc_lift			| filter out LoF-intolerant genes | 1.99× | 1.46× | REJECTED — enriched on **both** |
-docs/demo/WEBAPP_DESIGN.md	901	9.5	1.46	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant drug_lift			| filter out LoF-intolerant genes | 1.99× | 1.46× | REJECTED — enriched on **both** |
-docs/demo/WEBAPP_DESIGN.md	902	9.5	4.69	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			| exclude safety liabilities | — | 4.69× | REJECTED — the flag marks the best-studied targets |
-docs/demo/WEBAPP_DESIGN.md	905	9.5	869,707	VALUE_ONLY	nb6_interrogation_and_close.py:6.0 lift base rows			869,707 scored pairs belonging to diseases with at least one drug-validated target. Measuring them on
-docs/demo/WEBAPP_DESIGN.md	913	9.6	0.091	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0.091**, R² = **0.008
-docs/demo/WEBAPP_DESIGN.md	913	9.6	0.0082	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality R2	y		Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0.091**, R² = **0.008
-docs/demo/WEBAPP_DESIGN.md	937	11	87.5	ORPHAN				- **Do not quote 82% / 8% for ground-truth inflation.** Measured at source it is ~87.5% / ~12.5%, on a
-docs/demo/WEBAPP_DESIGN.md	937	11	12.5	ORPHAN				- **Do not quote 82% / 8% for ground-truth inflation.** Measured at source it is ~87.5% / ~12.5%, on a
+docs/demo/WEBAPP_DESIGN.md	81	2	12,252	ORPHAN				**The clinical sanity check, unprompted.** HER2+ breast carcinoma scores 12,252 candidates. Top 15:
+docs/demo/WEBAPP_DESIGN.md	100	2	12,272	ORPHAN				The model was never told which gene this disease is named after. **ERBB2 lands at 16 of 12,272**, and the
+docs/demo/WEBAPP_DESIGN.md	102	2	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC			**0.9385** on 599 known targets, **18.8×** enrichment at 50. A breast oncologist validates this in about
+docs/demo/WEBAPP_DESIGN.md	102	2	18.8	ORPHAN				**0.9385** on 599 known targets, **18.8×** enrichment at 50. A breast oncologist validates this in about
+docs/demo/WEBAPP_DESIGN.md	121	2	18.8	ORPHAN				**#264** and the head-of-list novel candidate is **HRAS at #7**; enrichment is equivalent (18.8× vs 18.6×),
+docs/demo/WEBAPP_DESIGN.md	121	2	18.6	ORPHAN				**#264** and the head-of-list novel candidate is **HRAS at #7**; enrichment is equivalent (18.8× vs 18.6×),
+docs/demo/WEBAPP_DESIGN.md	225	3.3	1,086	ORPHAN				Act 4 absorbed the earlier hand-written webapp (`V2ZpfdV`, 1,086 lines): the disease picker, the
+docs/demo/WEBAPP_DESIGN.md	250	3.4	0.8230	ORPHAN				3. **A wrong number is visible in a diff.** A hard-coded `0.8230` in a reviewed file is safer than a
+docs/demo/WEBAPP_DESIGN.md	414	4	113,391	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
+docs/demo/WEBAPP_DESIGN.md	414	4	27,153	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
+docs/demo/WEBAPP_DESIGN.md	414	4	23,974	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
+docs/demo/WEBAPP_DESIGN.md	414	4	20,861	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
+docs/demo/WEBAPP_DESIGN.md	414	4	19,120	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
+docs/demo/WEBAPP_DESIGN.md	414	4	10,041	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
+docs/demo/WEBAPP_DESIGN.md	414	4	5,282	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
+docs/demo/WEBAPP_DESIGN.md	414	4	4,077	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
+docs/demo/WEBAPP_DESIGN.md	414	4	2,883	ORPHAN				| Node inventory | detail · bars, *What's in the graph* | **113,391** nodes over 8 types: disease 27,153 · bio
+docs/demo/WEBAPP_DESIGN.md	415	4	2,851,510	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
+docs/demo/WEBAPP_DESIGN.md	415	4	520,380	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
+docs/demo/WEBAPP_DESIGN.md	415	4	487,054	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
+docs/demo/WEBAPP_DESIGN.md	415	4	380,280	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
+docs/demo/WEBAPP_DESIGN.md	415	4	378,888	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
+docs/demo/WEBAPP_DESIGN.md	415	4	251,808	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
+docs/demo/WEBAPP_DESIGN.md	415	4	186,806	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
+docs/demo/WEBAPP_DESIGN.md	415	4	156,246	ORPHAN				| Relation inventory | detail · bars, *How things connect* | **2,851,510** edges over **18** relations. Verifi
+docs/demo/WEBAPP_DESIGN.md	416	4	520,380	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
+docs/demo/WEBAPP_DESIGN.md	416	4	189,982	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
+docs/demo/WEBAPP_DESIGN.md	416	4	151,254	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
+docs/demo/WEBAPP_DESIGN.md	416	4	92,536	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
+docs/demo/WEBAPP_DESIGN.md	416	4	54,554	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
+docs/demo/WEBAPP_DESIGN.md	416	4	28,478	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
+docs/demo/WEBAPP_DESIGN.md	416	4	2,714	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
+docs/demo/WEBAPP_DESIGN.md	416	4	86,608	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
+docs/demo/WEBAPP_DESIGN.md	416	4	16.6	ORPHAN				| **Every edge knows where it came from** | up front · bars, with the corroborated share in prose | of 520,380
+docs/demo/WEBAPP_DESIGN.md	417	4	323,786	ORPHAN				| **What "known target" actually means** | up front · bars, with the unannotated edges named in prose | of 323
+docs/demo/WEBAPP_DESIGN.md	417	4	171,810	ORPHAN				| **What "known target" actually means** | up front · bars, with the unannotated edges named in prose | of 323
+docs/demo/WEBAPP_DESIGN.md	417	4	150,266	ORPHAN				| **What "known target" actually means** | up front · bars, with the unannotated edges named in prose | of 323
+docs/demo/WEBAPP_DESIGN.md	417	4	1,710	ORPHAN				| **What "known target" actually means** | up front · bars, with the unannotated edges named in prose | of 323
+docs/demo/WEBAPP_DESIGN.md	418	4	0.13	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion spread		hist	| Accepted against a frozen reference | detail · one-line note; the page states the acceptance, not these figu
+docs/demo/WEBAPP_DESIGN.md	418	4	0.03	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality R2		hist	| Accepted against a frozen reference | detail · one-line note; the page states the acceptance, not these figu
+docs/demo/WEBAPP_DESIGN.md	421	4	844,166	ORPHAN				**The provenance data is two disjoint stories.** `edge_metadata`'s 844,166 rows split cleanly: 520,380
+docs/demo/WEBAPP_DESIGN.md	421	4	520,380	ORPHAN				**The provenance data is two disjoint stories.** `edge_metadata`'s 844,166 rows split cleanly: 520,380
+docs/demo/WEBAPP_DESIGN.md	422	4	323,786	ORPHAN				protein_protein rows carry `ppi_sources` with blank `datatypes`; 323,786 disease_protein rows carry the
+docs/demo/WEBAPP_DESIGN.md	430	4	378,888	ORPHAN				⚠ **`disease_protein` has 378,888 edges but only 323,786 metadata rows** — 55,102 (14.5%) carry no
+docs/demo/WEBAPP_DESIGN.md	430	4	323,786	ORPHAN				⚠ **`disease_protein` has 378,888 edges but only 323,786 metadata rows** — 55,102 (14.5%) carry no
+docs/demo/WEBAPP_DESIGN.md	430	4	55,102	ORPHAN				⚠ **`disease_protein` has 378,888 edges but only 323,786 metadata rows** — 55,102 (14.5%) carry no
+docs/demo/WEBAPP_DESIGN.md	430	4	14.5	ORPHAN				⚠ **`disease_protein` has 378,888 edges but only 323,786 metadata rows** — 55,102 (14.5%) carry no
+docs/demo/WEBAPP_DESIGN.md	449	4	2,355,742	ORPHAN				| **Zero straddling keys — read this first** | up front · one line; the split table under detail | 3 rows; all
+docs/demo/WEBAPP_DESIGN.md	449	4	3,523,775	ORPHAN				| **Zero straddling keys — read this first** | up front · one line; the split table under detail | 3 rows; all
+docs/demo/WEBAPP_DESIGN.md	449	4	806,169	ORPHAN				| **Zero straddling keys — read this first** | up front · one line; the split table under detail | 3 rows; all
+docs/demo/WEBAPP_DESIGN.md	450	4	0.8180	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		| The spread across 604 diseases | up front · histogram, 20 bins | macro **0.8180**, median 0.8512, range 0.21
+docs/demo/WEBAPP_DESIGN.md	450	4	0.8512	ORPHAN		y		| The spread across 604 diseases | up front · histogram, 20 bins | macro **0.8180**, median 0.8512, range 0.21
+docs/demo/WEBAPP_DESIGN.md	450	4	0.2117	ORPHAN		y		| The spread across 604 diseases | up front · histogram, 20 bins | macro **0.8180**, median 0.8512, range 0.21
+docs/demo/WEBAPP_DESIGN.md	450	4	0.9973	ORPHAN		y		| The spread across 604 diseases | up front · histogram, 20 bins | macro **0.8180**, median 0.8512, range 0.21
+docs/demo/WEBAPP_DESIGN.md	451	4	0.8003	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		| It holds across 478 families | detail · one line | macro **0.8003** over the **477** that score |
+docs/demo/WEBAPP_DESIGN.md	452	4	18.5	ORPHAN		y		| **Usefulness is not uniform** | up front · the quartiles in prose, beside the selected disease's own enrichm
+docs/demo/WEBAPP_DESIGN.md	452	4	27.6	ORPHAN		y		| **Usefulness is not uniform** | up front · the quartiles in prose, beside the selected disease's own enrichm
+docs/demo/WEBAPP_DESIGN.md	452	4	61.2	ORPHAN		y		| **Usefulness is not uniform** | up front · the quartiles in prose, beside the selected disease's own enrichm
+docs/demo/WEBAPP_DESIGN.md	453	4	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		| Where your disease sits | up front · marker on the histogram, rank and share of diseases beaten | HER2+ at *
+docs/demo/WEBAPP_DESIGN.md	470	4	0.8230	ORPHAN		y		table — 670 `disease` rows and 443 `split_key` rows. Filtered: **0.8230**, the documented champion
+docs/demo/WEBAPP_DESIGN.md	471	4	0.8157	ORPHAN				figure. Unfiltered: **0.8157**. A view without the filter is off by 73 basis points and looks fine.
+docs/demo/WEBAPP_DESIGN.md	473	4	2.9	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10			cell lung carcinoma and 2.9× on chronic kidney disease"* — true **of the 13-persona panel**. Across
+docs/demo/WEBAPP_DESIGN.md	474	4	18.2	ORPHAN				all 607 diseases the median `rank_enrichment` is **18.2×** and the max is **61.8×** (2026-11-07). NSCLC is the
+docs/demo/WEBAPP_DESIGN.md	474	4	61.8	ORPHAN				all 607 diseases the median `rank_enrichment` is **18.2×** and the max is **61.8×** (2026-11-07). NSCLC is the
+docs/demo/WEBAPP_DESIGN.md	480	4	0.8003	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			documented **0.8003 is a mean over 477 families presented as 478**.
+docs/demo/WEBAPP_DESIGN.md	495	4	0.9025	ORPHAN		y		| The panel | up front · every term with its 95% interval, thin terms flagged; the rest in each row's tooltip
+docs/demo/WEBAPP_DESIGN.md	495	4	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		| The panel | up front · every term with its 95% interval, thin terms flagged; the rest in each row's tooltip
+docs/demo/WEBAPP_DESIGN.md	495	4	0.9364	ORPHAN		y		| The panel | up front · every term with its 95% interval, thin terms flagged; the rest in each row's tooltip
+docs/demo/WEBAPP_DESIGN.md	495	4	0.9326	ORPHAN		y		| The panel | up front · every term with its 95% interval, thin terms flagged; the rest in each row's tooltip
+docs/demo/WEBAPP_DESIGN.md	518	4	12,272	ORPHAN		y		| The ranked list | paged table, 15 rows a page | 12,272 rows: rank, gene, class, tractability, the associatio
+docs/demo/WEBAPP_DESIGN.md	519	4	12,272	ORPHAN		y	hist	| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tr
+docs/demo/WEBAPP_DESIGN.md	519	4	11,673	ORPHAN		y	hist	| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tr
+docs/demo/WEBAPP_DESIGN.md	519	4	7,950	ORPHAN		y	hist	| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tr
+docs/demo/WEBAPP_DESIGN.md	519	4	7,273	ORPHAN		y	hist	| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tr
+docs/demo/WEBAPP_DESIGN.md	519	4	7,951	ORPHAN		y	hist	| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tr
+docs/demo/WEBAPP_DESIGN.md	519	4	7,274	ORPHAN		y	hist	| The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tr
+docs/demo/WEBAPP_DESIGN.md	538	4	20,860	ORPHAN				From `hgnc_complete_set_2026-10-06.txt`, 20,860 of 20,861 gene nodes match (PGM5P1's record carries no
+docs/demo/WEBAPP_DESIGN.md	538	4	20,861	ORPHAN				From `hgnc_complete_set_2026-10-06.txt`, 20,860 of 20,861 gene nodes match (PGM5P1's record carries no
+docs/demo/WEBAPP_DESIGN.md	546	4	86,123	ORPHAN				It holds every linked pair (86,123 records over 55,270 pairs), so it does not depend on the scoring
+docs/demo/WEBAPP_DESIGN.md	546	4	55,270	ORPHAN				It holds every linked pair (86,123 records over 55,270 pairs), so it does not depend on the scoring
+docs/demo/WEBAPP_DESIGN.md	547	4	2,294	ORPHAN				chain; grouped by pair, the 2,294 records on candidate pairs reproduce both flags for all 105,702 pairs
+docs/demo/WEBAPP_DESIGN.md	547	4	105,702	ORPHAN				chain; grouped by pair, the 2,294 records on candidate pairs reproduce both flags for all 105,702 pairs
+docs/demo/WEBAPP_DESIGN.md	558	4	0.16	ORPHAN				`act4_evidence_cache`, so a second visit reads the file (0.16 s); **Refresh** re-runs it. Measured on
+docs/demo/WEBAPP_DESIGN.md	582	4	105,702	ORPHAN				105,702 pairs (2026-10-26). The Overview tab's strongest driver reads the same list. Percentiles are
+docs/demo/WEBAPP_DESIGN.md	658	4	3.1	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @10	y		| Fair fight, not a rigged one | **3.1× / 2.7× / 2.3×** (pooled) at K=10/50/200 against **equally-connected**
+docs/demo/WEBAPP_DESIGN.md	658	4	2.7	ORPHAN		y		| Fair fight, not a rigged one | **3.1× / 2.7× / 2.3×** (pooled) at K=10/50/200 against **equally-connected**
+docs/demo/WEBAPP_DESIGN.md	658	4	2.3	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @200	y		| Fair fight, not a rigged one | **3.1× / 2.7× / 2.3×** (pooled) at K=10/50/200 against **equally-connected**
+docs/demo/WEBAPP_DESIGN.md	660	4	0.09	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability	y		| The harder version | known targets only, by connectivity quintile: calibrated score 0.09 → 0.23, detection 1
+docs/demo/WEBAPP_DESIGN.md	660	4	0.23	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability	y		| The harder version | known targets only, by connectivity quintile: calibrated score 0.09 → 0.23, detection 1
+docs/demo/WEBAPP_DESIGN.md	660	4	10.2	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q1 predicted-positive %	y		| The harder version | known targets only, by connectivity quintile: calibrated score 0.09 → 0.23, detection 1
+docs/demo/WEBAPP_DESIGN.md	660	4	52.1	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 Q5 predicted-positive %	y		| The harder version | known targets only, by connectivity quintile: calibrated score 0.09 → 0.23, detection 1
+docs/demo/WEBAPP_DESIGN.md	660	4	5.1	ORPHAN		y		| The harder version | known targets only, by connectivity quintile: calibrated score 0.09 → 0.23, detection 1
+docs/demo/WEBAPP_DESIGN.md	670	4	12,272	ORPHAN		y		| Delete the answer key | 12,272 scored → 599 known → **11,673** re-ranked |
+docs/demo/WEBAPP_DESIGN.md	670	4	11,673	ORPHAN		y		| Delete the answer key | 12,272 scored → 599 known → **11,673** re-ranked |
+docs/demo/WEBAPP_DESIGN.md	672	4	21.3	ORPHAN		y		| Lift vs K, by ground truth | approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, decaying to a ~3× floor |
+docs/demo/WEBAPP_DESIGN.md	672	4	5.2	ORPHAN		y		| Lift vs K, by ground truth | approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, decaying to a ~3× floor |
+docs/demo/WEBAPP_DESIGN.md	672	4	6.7	ORPHAN		y		| Lift vs K, by ground truth | approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, decaying to a ~3× floor |
+docs/demo/WEBAPP_DESIGN.md	672	4	3.2	ORPHAN		y		| Lift vs K, by ground truth | approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, decaying to a ~3× floor |
+docs/demo/WEBAPP_DESIGN.md	673	4	21.3	ORPHAN		y		| Where the mean comes from | the per-disease distribution behind 21.3× |
+docs/demo/WEBAPP_DESIGN.md	675	4	16.9	ORPHAN		y		**The distribution card is not optional.** 16.9× is a *mean of per-disease lifts on a heavy-tailed
+docs/demo/WEBAPP_DESIGN.md	676	4	252.4	ORPHAN				distribution* — Sjögren syndrome alone is **252.4×** at top-10, and the notebook drops infinities before
+docs/demo/WEBAPP_DESIGN.md	685	4	29.3	VALUE_ONLY	nb4_results_three_axes.py:8.3 curated>=0.8 lift@10			| Re-run on a curated source | **29.3×** vs 22.9× — the finding got **stronger** |
+docs/demo/WEBAPP_DESIGN.md	685	4	22.9	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10			| Re-run on a curated source | **29.3×** vs 22.9× — the finding got **stronger** |
+docs/demo/WEBAPP_DESIGN.md	686	4	0.167	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		| Association ≠ therapeutic relevance | one point per disease, association AUC × therapeutic AUC. **r = +0.167
+docs/demo/WEBAPP_DESIGN.md	686	4	0.028	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality R2	y		| Association ≠ therapeutic relevance | one point per disease, association AUC × therapeutic AUC. **r = +0.167
+docs/demo/WEBAPP_DESIGN.md	723	4	3.02	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
+docs/demo/WEBAPP_DESIGN.md	723	4	0.80	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
+docs/demo/WEBAPP_DESIGN.md	723	4	3.0	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
+docs/demo/WEBAPP_DESIGN.md	723	4	1.25	ORPHAN				| "Use druggability as a model input" | two bars per class, **pointing opposite ways**. Membrane receptor: `dr
+docs/demo/WEBAPP_DESIGN.md	724	4	1.99	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant assoc_lift			| "Filter out genes the body cannot live without" | intolerant genes: `assoc_lift` **1.99**, `drug_lift` **1.4
+docs/demo/WEBAPP_DESIGN.md	724	4	1.46	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant drug_lift			| "Filter out genes the body cannot live without" | intolerant genes: `assoc_lift` **1.99**, `drug_lift` **1.4
+docs/demo/WEBAPP_DESIGN.md	725	4	4.69	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			| "Exclude known safety liabilities" | flagged genes carry `drug_lift` **4.69** — liabilities are discovered *
+docs/demo/WEBAPP_DESIGN.md	728	4	0.9354	ORPHAN				| The slide no vendor shows you | a lookup table — *"how many diseases is this gene already a drug target for"
+docs/demo/WEBAPP_DESIGN.md	739	4	2.6	ORPHAN				genetically supported targets are 2.6× more likely to survive the clinic *(Minikel et al., Nature 2024)*.
+docs/demo/WEBAPP_DESIGN.md	768	6	252.4	ORPHAN				| `AVG(lift_top10)` in a chart | Sjögren is 252.4× and the notebook drops infinities first | the aggregate car
+docs/demo/WEBAPP_DESIGN.md	776	6	1.9	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %	y		| A headline number typed into card copy | act 2 carried a literal `1.9%` positive rate and a literal `0.9776`
+docs/demo/WEBAPP_DESIGN.md	776	6	0.9776	ORPHAN		y		| A headline number typed into card copy | act 2 carried a literal `1.9%` positive rate and a literal `0.9776`
+docs/demo/WEBAPP_DESIGN.md	776	6	16.6	ORPHAN		y		| A headline number typed into card copy | act 2 carried a literal `1.9%` positive rate and a literal `0.9776`
+docs/demo/WEBAPP_DESIGN.md	839	9.1	3.06	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @10	y		| pooled degree-matched lift @10 | 3.06× | `nb6` §5.1, `nb4` §8.4 |
+docs/demo/WEBAPP_DESIGN.md	840	9.1	2.30	VALUE_ONLY	nb4_results_three_axes.py:8.4 pooled dm lift @200	y		| pooled degree-matched lift @200 | 2.30× | same |
+docs/demo/WEBAPP_DESIGN.md	841	9.1	2.85	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10	y		| macro degree-matched lift @10 | 2.85× | same |
+docs/demo/WEBAPP_DESIGN.md	845	9.1	0.09	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q1 probability	y		only — and the model still scores the lowest degree quintile 0.09 against 0.23 for the highest (calibrated pro
+docs/demo/WEBAPP_DESIGN.md	845	9.1	0.23	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability	y		only — and the model still scores the lowest degree quintile 0.09 against 0.23 for the highest (calibrated pro
+docs/demo/WEBAPP_DESIGN.md	851	9.2	0.8908	VALUE_ONLY	nb3_validation_and_plots.py:header pooled AUC	y		Pooled per-disease AUC reads **0.8908**; macro reads **0.8180**. The gap is ~7 points and it is not
+docs/demo/WEBAPP_DESIGN.md	851	9.2	0.8180	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		Pooled per-disease AUC reads **0.8908**; macro reads **0.8180**. The gap is ~7 points and it is not
+docs/demo/WEBAPP_DESIGN.md	859	9.3	0.8003	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC	y		label — and inflates the score. Family-level macro AUC across 478 families is **0.8003**, and zero
+docs/demo/WEBAPP_DESIGN.md	868	9.4	0.9385	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ AUC	y		known targets at AUC **0.9385**; that is the number Act 4 is built to make visible, because a
+docs/demo/WEBAPP_DESIGN.md	876	9.4	22.94	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@10			| approved drugs | 22.94× | 4.98× |
+docs/demo/WEBAPP_DESIGN.md	876	9.4	4.98	VALUE_ONLY	nb4_results_three_axes.py:8.3 approved lift@200			| approved drugs | 22.94× | 4.98× |
+docs/demo/WEBAPP_DESIGN.md	877	9.4	7.24	VALUE_ONLY	nb4_results_three_axes.py:8.3 investigational lift@10			| drugs in trials | 7.24× | — |
+docs/demo/WEBAPP_DESIGN.md	878	9.4	29.33	VALUE_ONLY	nb4_results_three_axes.py:8.3 curated>=0.8 lift@10			| curated target–disease | 29.33× | 4.86× |
+docs/demo/WEBAPP_DESIGN.md	878	9.4	4.86	VALUE_ONLY	nb4_results_three_axes.py:8.3 curated>=0.8 lift@200			| curated target–disease | 29.33× | 4.86× |
+docs/demo/WEBAPP_DESIGN.md	901	9.5	0.80	VALUE_ONLY	nb3_validation_and_plots.py:7.3 per-family macro AUC			| membrane receptor as a feature | 0.80× | 3.02× | REJECTED — the model would learn "score lower" |
+docs/demo/WEBAPP_DESIGN.md	901	9.5	3.02	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 membrane receptor drug_lift			| membrane receptor as a feature | 0.80× | 3.02× | REJECTED — the model would learn "score lower" |
+docs/demo/WEBAPP_DESIGN.md	902	9.5	10.10	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 ion channel drug_lift			| ion channel *(same shape, larger)* | — | 10.10× | — |
+docs/demo/WEBAPP_DESIGN.md	903	9.5	1.99	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant assoc_lift			| filter out LoF-intolerant genes | 1.99× | 1.46× | REJECTED — enriched on **both** |
+docs/demo/WEBAPP_DESIGN.md	903	9.5	1.46	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 lof_intolerant drug_lift			| filter out LoF-intolerant genes | 1.99× | 1.46× | REJECTED — enriched on **both** |
+docs/demo/WEBAPP_DESIGN.md	904	9.5	4.69	VALUE_ONLY	nb6_interrogation_and_close.py:6.1 liability drug_lift			| exclude safety liabilities | — | 4.69× | REJECTED — the flag marks the best-studied targets |
+docs/demo/WEBAPP_DESIGN.md	907	9.5	862,663	VALUE_ONLY	nb6_interrogation_and_close.py:6.0 lift base rows			862,663 scored pairs belonging to diseases with at least one drug-validated target. Measuring them on
+docs/demo/WEBAPP_DESIGN.md	915	9.6	0.167	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality pearson r	y		Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0.167**, R² = **0.027
+docs/demo/WEBAPP_DESIGN.md	915	9.6	0.0278	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality R2	y		Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0.167**, R² = **0.027
+docs/demo/WEBAPP_DESIGN.md	915	9.6	1.85	ORPHAN		y		Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0.167**, R² = **0.027
+docs/demo/WEBAPP_DESIGN.md	915	9.6	0.05	ORPHAN		y		Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0.167**, R² = **0.027
+docs/demo/WEBAPP_DESIGN.md	939	11	87.5	ORPHAN				- **Do not quote 82% / 8% for ground-truth inflation.** Measured at source it is ~87.5% / ~12.5%, on a
+docs/demo/WEBAPP_DESIGN.md	939	11	12.5	ORPHAN				- **Do not quote 82% / 8% for ground-truth inflation.** Measured at source it is ~87.5% / ~12.5%, on a
 docs/demo/panel_selection/README.md	27	-	0.4299	ORPHAN				> oncology. Top-50 overlap: breast 0.4299 → 0.4491 (near-duplicate pairs 22 → 27), uterine
-docs/demo/panel_selection/README.md	27	-	0.4491	VALUE_ONLY	nb7_panel_selection.py:7.4 breast mean overlap			> oncology. Top-50 overlap: breast 0.4299 → 0.4491 (near-duplicate pairs 22 → 27), uterine
+docs/demo/panel_selection/README.md	27	-	0.4491	ORPHAN				> oncology. Top-50 overlap: breast 0.4299 → 0.4491 (near-duplicate pairs 22 → 27), uterine
 docs/demo/panel_selection/README.md	28	-	0.4777	ORPHAN				> 0.4777 → 0.5084 (1 → 5), stomach 0.4510 → 0.3976; common genes breast 8 → 10, uterine
 docs/demo/panel_selection/README.md	28	-	0.5084	VALUE_ONLY	nb7_panel_selection.py:7.4 uterine mean overlap			> 0.4777 → 0.5084 (1 → 5), stomach 0.4510 → 0.3976; common genes breast 8 → 10, uterine
 docs/demo/panel_selection/README.md	28	-	0.4510	ORPHAN				> 0.4777 → 0.5084 (1 → 5), stomach 0.4510 → 0.3976; common genes breast 8 → 10, uterine
-docs/demo/panel_selection/README.md	28	-	0.3976	VALUE_ONLY	nb7_panel_selection.py:7.4 stomach mean overlap			> 0.4777 → 0.5084 (1 → 5), stomach 0.4510 → 0.3976; common genes breast 8 → 10, uterine
-docs/demo/panel_selection/README.md	50	-	0.402	ORPHAN				| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated candidate subtypes** — breast 0.402 / ut
-docs/demo/panel_selection/README.md	50	-	0.494	ORPHAN				| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated candidate subtypes** — breast 0.402 / ut
-docs/demo/panel_selection/README.md	50	-	0.475	ORPHAN				| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated candidate subtypes** — breast 0.402 / ut
-docs/demo/panel_selection/README.md	73	-	0.4021	ORPHAN				| breast | **0.4021** (15) | 0.4346 (90) | 0.4299 (105) |
-docs/demo/panel_selection/README.md	73	-	0.4346	ORPHAN				| breast | **0.4021** (15) | 0.4346 (90) | 0.4299 (105) |
-docs/demo/panel_selection/README.md	73	-	0.4299	ORPHAN				| breast | **0.4021** (15) | 0.4346 (90) | 0.4299 (105) |
-docs/demo/panel_selection/README.md	74	-	0.4935	ORPHAN				| uterine | **0.4935** (10) | 0.4689 (18) | 0.4777 (28) |
-docs/demo/panel_selection/README.md	74	-	0.4689	ORPHAN				| uterine | **0.4935** (10) | 0.4689 (18) | 0.4777 (28) |
-docs/demo/panel_selection/README.md	74	-	0.4777	ORPHAN				| uterine | **0.4935** (10) | 0.4689 (18) | 0.4777 (28) |
-docs/demo/panel_selection/README.md	75	-	0.4746	ORPHAN				| stomach | **0.4746** (6) | 0.4353 (9) | 0.4510 (15) |
-docs/demo/panel_selection/README.md	75	-	0.4353	ORPHAN				| stomach | **0.4746** (6) | 0.4353 (9) | 0.4510 (15) |
-docs/demo/panel_selection/README.md	75	-	0.4510	ORPHAN				| stomach | **0.4746** (6) | 0.4353 (9) | 0.4510 (15) |
-docs/demo/panel_selection/README.md	86	-	0.4346	ORPHAN				(0.4346 > 0.4021). Uterine's and stomach's extras include genuinely distinct subtypes such as
-docs/demo/panel_selection/README.md	86	-	0.4021	ORPHAN				(0.4346 > 0.4021). Uterine's and stomach's extras include genuinely distinct subtypes such as
-docs/demo/panel_selection/README.md	88	-	0.350	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)	y		distance either way: Spearman −0.350 over the 148 shipped pairs.
-docs/demo/panel_selection/README.md	92	-	0.4746	ORPHAN				- `analysis/subtype_overlap.csv` holds **stomach on four terms** (mean 0.4746), measured
-docs/demo/panel_selection/README.md	94	-	0.35	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)			later three-term recomputation gave ≈0.35 but was never written to a file; an earlier
-docs/demo/panel_selection/README.md	112	-	0.241	ORPHAN				**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
-docs/demo/panel_selection/README.md	112	-	0.150	ORPHAN				**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
-docs/demo/panel_selection/README.md	112	-	0.109	ORPHAN				**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
-docs/demo/panel_selection/README.md	112	-	0.054	ORPHAN				**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
-docs/demo/panel_selection/README.md	114	-	0.749	ORPHAN				30 — triple-negative breast, with 8 positives and an interval of 0.749–1.041, is the
-docs/demo/panel_selection/README.md	114	-	1.041	ORPHAN				30 — triple-negative breast, with 8 positives and an interval of 0.749–1.041, is the
-docs/demo/panel_selection/README.md	121	-	0.887	ORPHAN				members are clinically. Lung is the case in point: adenocarcinoma vs squamous is 0.887.
+docs/demo/panel_selection/README.md	28	-	0.3976	ORPHAN				> 0.4777 → 0.5084 (1 → 5), stomach 0.4510 → 0.3976; common genes breast 8 → 10, uterine
+docs/demo/panel_selection/README.md	33	-	0.4274	VALUE_ONLY	nb7_panel_selection.py:7.4 breast mean overlap	y		> **Re-measured again 2026-11-10** after the champion was retrained on the rebuilt graph (R6): validation dise
+docs/demo/panel_selection/README.md	33	-	0.5084	VALUE_ONLY	nb7_panel_selection.py:7.4 uterine mean overlap	y		> **Re-measured again 2026-11-10** after the champion was retrained on the rebuilt graph (R6): validation dise
+docs/demo/panel_selection/README.md	33	-	0.4160	VALUE_ONLY	nb7_panel_selection.py:7.4 stomach mean overlap	y		> **Re-measured again 2026-11-10** after the champion was retrained on the rebuilt graph (R6): validation dise
+docs/demo/panel_selection/README.md	52	-	0.402	ORPHAN				| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated candidate subtypes** — breast 0.402 / ut
+docs/demo/panel_selection/README.md	52	-	0.494	ORPHAN				| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated candidate subtypes** — breast 0.402 / ut
+docs/demo/panel_selection/README.md	52	-	0.475	ORPHAN				| `subtype_overlap.csv` + summary | 47 + 5 | Overlap on the **curated candidate subtypes** — breast 0.402 / ut
+docs/demo/panel_selection/README.md	75	-	0.4021	ORPHAN				| breast | **0.4021** (15) | 0.4346 (90) | 0.4299 (105) |
+docs/demo/panel_selection/README.md	75	-	0.4346	ORPHAN				| breast | **0.4021** (15) | 0.4346 (90) | 0.4299 (105) |
+docs/demo/panel_selection/README.md	75	-	0.4299	ORPHAN				| breast | **0.4021** (15) | 0.4346 (90) | 0.4299 (105) |
+docs/demo/panel_selection/README.md	76	-	0.4935	ORPHAN				| uterine | **0.4935** (10) | 0.4689 (18) | 0.4777 (28) |
+docs/demo/panel_selection/README.md	76	-	0.4689	ORPHAN				| uterine | **0.4935** (10) | 0.4689 (18) | 0.4777 (28) |
+docs/demo/panel_selection/README.md	76	-	0.4777	ORPHAN				| uterine | **0.4935** (10) | 0.4689 (18) | 0.4777 (28) |
+docs/demo/panel_selection/README.md	77	-	0.4746	ORPHAN				| stomach | **0.4746** (6) | 0.4353 (9) | 0.4510 (15) |
+docs/demo/panel_selection/README.md	77	-	0.4353	ORPHAN				| stomach | **0.4746** (6) | 0.4353 (9) | 0.4510 (15) |
+docs/demo/panel_selection/README.md	77	-	0.4510	ORPHAN				| stomach | **0.4746** (6) | 0.4353 (9) | 0.4510 (15) |
+docs/demo/panel_selection/README.md	88	-	0.4346	ORPHAN				(0.4346 > 0.4021). Uterine's and stomach's extras include genuinely distinct subtypes such as
+docs/demo/panel_selection/README.md	88	-	0.4021	ORPHAN				(0.4346 > 0.4021). Uterine's and stomach's extras include genuinely distinct subtypes such as
+docs/demo/panel_selection/README.md	90	-	0.350	VALUE_ONLY	nb6_interrogation_and_close.py:5.2 champion rho(degree, proba)	y		distance either way: Spearman −0.350 over the 148 shipped pairs.
+docs/demo/panel_selection/README.md	94	-	0.4746	ORPHAN				- `analysis/subtype_overlap.csv` holds **stomach on four terms** (mean 0.4746), measured
+docs/demo/panel_selection/README.md	96	-	0.35	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)			later three-term recomputation gave ≈0.35 but was never written to a file; an earlier
+docs/demo/panel_selection/README.md	114	-	0.241	ORPHAN				**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
+docs/demo/panel_selection/README.md	114	-	0.150	ORPHAN				**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
+docs/demo/panel_selection/README.md	114	-	0.109	ORPHAN				**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
+docs/demo/panel_selection/README.md	114	-	0.054	ORPHAN				**0.241** under 30 positives, **0.150** from 30 to 49, **0.109** from 50 to 99 and **0.054**
+docs/demo/panel_selection/README.md	116	-	0.749	ORPHAN				30 — triple-negative breast, with 8 positives and an interval of 0.749–1.041, is the
+docs/demo/panel_selection/README.md	116	-	1.041	ORPHAN				30 — triple-negative breast, with 8 positives and an interval of 0.749–1.041, is the
+docs/demo/panel_selection/README.md	123	-	0.887	ORPHAN				members are clinically. Lung is the case in point: adenocarcinoma vs squamous is 0.887.
 docs/graph/GRAPH_BUILDING.md	15	-	113,391	ORPHAN				> **Status: complete.** 113,391 nodes / 2,851,872 edges / 19 relations (after the 2026-11-08 relation
 docs/graph/GRAPH_BUILDING.md	15	-	2,851,872	ORPHAN				> **Status: complete.** 113,391 nodes / 2,851,872 edges / 19 relations (after the 2026-11-08 relation
 docs/graph/GRAPH_BUILDING.md	16	-	2,851,510	ORPHAN			hist	> fix; 2,851,510 / 18 when accepted against the frozen reference, §7). Decisions are logged in the **appendix*
@@ -283,7 +290,7 @@ docs/graph/GRAPH_BUILDING.md	453	7.2	113,391	ORPHAN				| `graph_nodes` | 113,544
 docs/graph/GRAPH_BUILDING.md	453	7.2	0.13	ASSERTED	nb3b_hub_bias_meter.py:7.2 champion spread			| `graph_nodes` | 113,544 | 113,391 | **−153 (−0.13%)** |
 docs/graph/GRAPH_BUILDING.md	454	7.2	2,852,298	ORPHAN				| `graph_edges` | 2,852,298 | 2,851,510 | **−788 (−0.03%)** |
 docs/graph/GRAPH_BUILDING.md	454	7.2	2,851,510	ORPHAN				| `graph_edges` | 2,852,298 | 2,851,510 | **−788 (−0.03%)** |
-docs/graph/GRAPH_BUILDING.md	454	7.2	0.03	ORPHAN				| `graph_edges` | 2,852,298 | 2,851,510 | **−788 (−0.03%)** |
+docs/graph/GRAPH_BUILDING.md	454	7.2	0.03	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality R2			| `graph_edges` | 2,852,298 | 2,851,510 | **−788 (−0.03%)** |
 docs/graph/GRAPH_BUILDING.md	455	7.2	2,855,542	ORPHAN				| `kg` | 2,855,542 | 2,854,754 | −788 |
 docs/graph/GRAPH_BUILDING.md	455	7.2	2,854,754	ORPHAN				| `kg` | 2,855,542 | 2,854,754 | −788 |
 docs/graph/GRAPH_BUILDING.md	456	7.2	844,166	ORPHAN				| `edge_metadata` | 844,166 | 844,166 | **0** |
@@ -354,7 +361,7 @@ docs/graph/GRAPH_BUILDING.md	517	7.3	1,184	ORPHAN				| disease–phenotype (neg)
 docs/graph/GRAPH_BUILDING.md	518	7.3	8,100,498	ORPHAN				| **Total** | **8,100,498** | **2,851,510** | |
 docs/graph/GRAPH_BUILDING.md	518	7.3	2,851,510	ORPHAN				| **Total** | **8,100,498** | **2,851,510** | |
 docs/graph/GRAPH_BUILDING.md	544	7.3	113,391	ORPHAN				| 2026-08-14 | **Assembly decomposed into 4 recipes**, two visual (§4.4). All outputs reproduce the monolith e
-docs/graph/GRAPH_BUILDING.md	547	7.3	0.03	ORPHAN			hist	| 2026-08-14 | **Reconstruction accepted** (§7.2). 7 of 9 node groups and 14 of 18 relations reproduce **to th
+docs/graph/GRAPH_BUILDING.md	547	7.3	0.03	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality R2		hist	| 2026-08-14 | **Reconstruction accepted** (§7.2). 7 of 9 node groups and 14 of 18 relations reproduce **to th
 docs/graph/GRAPH_BUILDING.md	549	7.3	129,606	ORPHAN		y		| 2026-11-06 | **Relation corrections and readable labels.** Disease→phenotype annotations on terms that are a
 docs/graph/GRAPH_BUILDING.md	549	7.3	2,851,510	ORPHAN		y		| 2026-11-06 | **Relation corrections and readable labels.** Disease→phenotype annotations on terms that are a
 docs/overview/PROJECT_CONTEXT.md	69	2.1	2.6	ORPHAN				| **Genetic evidence works** | Target–disease pairs with human genetic support have **2.6× relative clinical s
@@ -364,16 +371,16 @@ docs/overview/PROJECT_CONTEXT.md	134	3	0.93	ORPHAN				0.93 on 599 known targets)
 docs/overview/PROJECT_CONTEXT.md	137	3	0.69	ORPHAN		y		measurement.** It is the *worst* term in the breast panel — AUC **0.69**, beaten by its own subtypes.
 docs/overview/PROJECT_CONTEXT.md	174	4.1	113,391	ORPHAN				**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
 docs/overview/PROJECT_CONTEXT.md	174	4.1	2,851,510	ORPHAN				**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
-docs/overview/PROJECT_CONTEXT.md	188	4.2	0.8170	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		`m7-f14-cal` (14 features, sigmoid-calibrated output): macro per-disease AUC **0.8170** over 607
+docs/overview/PROJECT_CONTEXT.md	189	4.2	0.8180	VALUE_ONLY	nb3_validation_and_plots.py:10.1 macro per-disease AUC	y		per-disease AUC **0.8180** over 604 diseases on the MONDO-ID split. Three-rung ablation
 docs/overview/PROJECT_CONTEXT.md	190	4.2	1.9	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			ladder, two independent validation metrics cross-checking to 1.9×10⁻⁴, and a documented negative
 docs/overview/PROJECT_CONTEXT.md	230	4.3	18,510,084	ORPHAN				switch, over 18,510,084 rows, and is recorded in GRAPH_BUILDING §6 and
-docs/overview/PROJECT_CONTEXT.md	264	4.5	0.01	VALUE_ONLY	nb3_validation_and_plots.py:7.4 orthogonality R2		hist	2026-08-17 and **the reconstruction is confirmed**: every metric landed within ±0.01 of the frozen
+docs/overview/PROJECT_CONTEXT.md	264	4.5	0.01	ORPHAN			hist	2026-08-17 and **the reconstruction is confirmed**: every metric landed within ±0.01 of the frozen
 docs/overview/PROJECT_CONTEXT.md	265	4.5	0.02	ORPHAN			hist	reference, against a ±0.02 tolerance set in advance (historical comparison in
 docs/overview/PROJECT_CONTEXT.md	270	4.5	0.8228	ORPHAN		y		| macro per-disease AUC | 0.8228 | **0.8197** |
 docs/overview/PROJECT_CONTEXT.md	270	4.5	0.8197	ORPHAN		y		| macro per-disease AUC | 0.8228 | **0.8197** |
 docs/overview/PROJECT_CONTEXT.md	271	4.5	0.6836	ORPHAN		y		| drug-target AUC | 0.6836 | **0.6911** |
 docs/overview/PROJECT_CONTEXT.md	271	4.5	0.6911	ORPHAN		y		| drug-target AUC | 0.6836 | **0.6911** |
-docs/overview/PROJECT_CONTEXT.md	272	4.5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| candidate pool | 6,754,128 | **6,754,128** *(identical)* |
+docs/overview/PROJECT_CONTEXT.md	272	4.5	6,754,128	ORPHAN				| candidate pool | 6,754,128 | **6,754,128** *(identical)* |
 docs/overview/PROJECT_CONTEXT.md	274	4.5	0.002	ORPHAN		y		Three individual personas reproduced to within **0.002**, which is stronger evidence than the macro
 docs/prioritizer/FEATURE_AUDIT.md	42	1	0.00	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 			§6.1 measured that `gene_ppi_degree` and `gene_n_pathways` show **0.00% variation across diseases**.
 docs/prioritizer/FEATURE_AUDIT.md	44	1	1.23	ORPHAN				> **For 43 diseases (1.23% of pool rows) the model has no disease-specific signal at all. It is
@@ -385,7 +392,7 @@ docs/prioritizer/FEATURE_AUDIT.md	78	3	0.567	ORPHAN		y		| **`prox_closest`** | P
 docs/prioritizer/FEATURE_AUDIT.md	78	3	0.328	ORPHAN		y		| **`prox_closest`** | Python | gated ≥20; `MAX_HOPS = 3` saturates; **NULL is a positive indicator at k = 1**
 docs/prioritizer/FEATURE_AUDIT.md	81	3	0.00	VALUE_ONLY	nb2_splitting_and_pool.py:5.4 			| **`gene_ppi_degree` / `gene_n_pathways`** | Cypher | **0.00% cross-disease variation** (§6.1) | keep, but st
 docs/prioritizer/FEATURE_AUDIT.md	83	3	0.857	ORPHAN		y		| `gene_n_diseases` | Cypher | label-derived; single-feature AUC **0.857**, above the champion | **keep reject
-docs/prioritizer/FEATURE_AUDIT.md	84	3	1.000	VALUE_ONLY	nb4_results_three_axes.py:8.10 HER2+ vs TNBC novel overlap	y		| `degree`, `pagerank`, `triangles`, `eigenvector_centrality`, `clustering_coefficient` | plugin | collinear w
+docs/prioritizer/FEATURE_AUDIT.md	84	3	1.000	VALUE_ONLY	nb6_interrogation_and_close.py:6.2 ERBB2 carries a liability flag	y		| `degree`, `pagerank`, `triangles`, `eigenvector_centrality`, `clustering_coefficient` | plugin | collinear w
 docs/prioritizer/FEATURE_AUDIT.md	128	4	6.57	ORPHAN				| pool NULL rate | 6.57% | **5.41%** |
 docs/prioritizer/FEATURE_AUDIT.md	128	4	5.41	ORPHAN				| pool NULL rate | 6.57% | **5.41%** |
 docs/prioritizer/FEATURE_AUDIT.md	129	4	1,114	ORPHAN				| pool diseases with prox coverage | 1,114 | **1,156 of 1,157** |
@@ -393,7 +400,7 @@ docs/prioritizer/FEATURE_AUDIT.md	129	4	1,156	ORPHAN				| pool diseases with pro
 docs/prioritizer/FEATURE_AUDIT.md	129	4	1,157	ORPHAN				| pool diseases with prox coverage | 1,114 | **1,156 of 1,157** |
 docs/prioritizer/FEATURE_AUDIT.md	130	4	4.99	ORPHAN		y		| null gap by label | −4.99 pp | **−3.94 pp** |
 docs/prioritizer/FEATURE_AUDIT.md	130	4	3.94	ORPHAN		y		| null gap by label | −4.99 pp | **−3.94 pp** |
-docs/prioritizer/FEATURE_AUDIT.md	131	4	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| pool rows / splits | 6,754,128 | **6,754,128 — unchanged** |
+docs/prioritizer/FEATURE_AUDIT.md	131	4	6,754,128	ORPHAN				| pool rows / splits | 6,754,128 | **6,754,128 — unchanged** |
 docs/prioritizer/FEATURE_AUDIT.md	134	4	0.0022	ORPHAN		y		**63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0.8171 → 0.8323)
 docs/prioritizer/FEATURE_AUDIT.md	134	4	0.0021	ORPHAN		y		**63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0.8171 → 0.8323)
 docs/prioritizer/FEATURE_AUDIT.md	134	4	1.29	ORPHAN		y		**63% of controls**, medians **+0.0022 vs +0.0021**, **t = 1.29**. The macro AUROC gain (0.8171 → 0.8323)
@@ -404,7 +411,7 @@ docs/prioritizer/FEATURE_AUDIT.md	143	4	1.23	ORPHAN				- **Pre-registered predic
 docs/prioritizer/FEATURE_AUDIT.md	146	4	1,114	ORPHAN		y		1,114. A 1.23% slice cannot move a pooled number but can transform those diseases — and macro
 docs/prioritizer/FEATURE_AUDIT.md	146	4	1.23	ORPHAN		y		1,114. A 1.23% slice cannot move a pooled number but can transform those diseases — and macro
 docs/prioritizer/FEATURE_AUDIT.md	147	4	3.7	ORPHAN				averages weight every disease equally, so 3.7% of the population is where to look.
-docs/prioritizer/FEATURE_AUDIT.md	154	4	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			6,754,128; splits unchanged.
+docs/prioritizer/FEATURE_AUDIT.md	154	4	6,754,128	ORPHAN				6,754,128; splits unchanged.
 docs/prioritizer/FEATURE_AUDIT.md	158	4	0.378	ORPHAN				| `prox_closest` | −0.378 | −0.378 | 0.5956 | incumbent |
 docs/prioritizer/FEATURE_AUDIT.md	158	4	0.5956	ORPHAN				| `prox_closest` | −0.378 | −0.378 | 0.5956 | incumbent |
 docs/prioritizer/FEATURE_AUDIT.md	159	4	0.697	ORPHAN				| `prox_mean` | **−0.697** | −0.697 | **0.6499** | best discriminator, **most hub-entangled** — deferred |
@@ -469,7 +476,7 @@ docs/prioritizer/FEATURE_AUDIT.md	243	5	1,157	ORPHAN				| currently eligible (�
 docs/prioritizer/FEATURE_AUDIT.md	243	5	2,960	ORPHAN				| currently eligible (≥20) | 1,157 | ~3.42M *(sampled n=120)* | 2,960 |
 docs/prioritizer/FEATURE_AUDIT.md	244	5	424,523	ORPHAN				| **the 5–19 gap** | **931** | **424,523** | **456** |
 docs/prioritizer/FEATURE_AUDIT.md	246	5	3,424,604	ORPHAN				**+80% more diseases for ~+12% more pool rows.** The sampled estimate implies 3,424,604 rows for the
-docs/prioritizer/FEATURE_AUDIT.md	247	5	3,380,853	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 GGD rows			current gate against the 3,380,853 actually in `enriched_dwpc_GGD` — a 1.3% error, which is what
+docs/prioritizer/FEATURE_AUDIT.md	247	5	3,380,853	ORPHAN				current gate against the 3,380,853 actually in `enriched_dwpc_GGD` — a 1.3% error, which is what
 docs/prioritizer/FEATURE_AUDIT.md	247	5	1.3	ORPHAN				current gate against the 3,380,853 actually in `enriched_dwpc_GGD` — a 1.3% error, which is what
 docs/prioritizer/FEATURE_AUDIT.md	251	5	2.10	ORPHAN				> — 2.10% against the pool's 1.89%. **That compared the gap's GGD-route-only row count against the
 docs/prioritizer/FEATURE_AUDIT.md	251	5	1.89	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			> — 2.10% against the pool's 1.89%. **That compared the gap's GGD-route-only row count against the
@@ -479,7 +486,7 @@ docs/prioritizer/FEATURE_AUDIT.md	261	5	3.19	ORPHAN				| currently eligible (≥
 docs/prioritizer/FEATURE_AUDIT.md	262	5	424,523	ORPHAN				| **the 5–19 gap** | 931 | 424,523 | 3,067 | **0.72%** |
 docs/prioritizer/FEATURE_AUDIT.md	262	5	3,067	ORPHAN				| **the 5–19 gap** | 931 | 424,523 | 3,067 | **0.72%** |
 docs/prioritizer/FEATURE_AUDIT.md	262	5	0.72	VALUE_ONLY	nb1_features_and_config.py:6.1 dwpc_GPGD single-feature AUC			| **the 5–19 gap** | 931 | 424,523 | 3,067 | **0.72%** |
-docs/prioritizer/FEATURE_AUDIT.md	264	5	0.23	ORPHAN				**The gap is 0.23× as dense — 4.4× more dilute.** Worse, **only 3,067 of the gap's 8,919 seeds are
+docs/prioritizer/FEATURE_AUDIT.md	264	5	0.23	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion Q5 probability			**The gap is 0.23× as dense — 4.4× more dilute.** Worse, **only 3,067 of the gap's 8,919 seeds are
 docs/prioritizer/FEATURE_AUDIT.md	264	5	4.4	ORPHAN				**The gap is 0.23× as dense — 4.4× more dilute.** Worse, **only 3,067 of the gap's 8,919 seeds are
 docs/prioritizer/FEATURE_AUDIT.md	264	5	3,067	ORPHAN				**The gap is 0.23× as dense — 4.4× more dilute.** Worse, **only 3,067 of the gap's 8,919 seeds are
 docs/prioritizer/FEATURE_AUDIT.md	264	5	8,919	ORPHAN				**The gap is 0.23× as dense — 4.4× more dilute.** Worse, **only 3,067 of the gap's 8,919 seeds are
@@ -492,7 +499,7 @@ docs/prioritizer/FEATURE_AUDIT.md	274	5	2.00	VALUE_ONLY	nb2_splitting_and_pool.p
 docs/prioritizer/FEATURE_AUDIT.md	278	5	6.3	ORPHAN				a quarter for current ones, and on the union they are **6.3× more dilute** — worse than the 4.4× on GGD
 docs/prioritizer/FEATURE_AUDIT.md	278	5	4.4	ORPHAN				a quarter for current ones, and on the union they are **6.3× more dilute** — worse than the 4.4× on GGD
 docs/prioritizer/FEATURE_AUDIT.md	282	5	19.6	ORPHAN				> **+19.6%** (6,754,128 → 8,080,566) and the positive rate falls to **1.63%**. So the trade is
-docs/prioritizer/FEATURE_AUDIT.md	282	5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			> **+19.6%** (6,754,128 → 8,080,566) and the positive rate falls to **1.63%**. So the trade is
+docs/prioritizer/FEATURE_AUDIT.md	282	5	6,754,128	ORPHAN				> **+19.6%** (6,754,128 → 8,080,566) and the positive rate falls to **1.63%**. So the trade is
 docs/prioritizer/FEATURE_AUDIT.md	282	5	8,080,566	ORPHAN				> **+19.6%** (6,754,128 → 8,080,566) and the positive rate falls to **1.63%**. So the trade is
 docs/prioritizer/FEATURE_AUDIT.md	282	5	1.63	ORPHAN				> **+19.6%** (6,754,128 → 8,080,566) and the positive rate falls to **1.63%**. So the trade is
 docs/prioritizer/FEATURE_AUDIT.md	284	5	0.3	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)			> Method validated at **0.3%** error against the real pool size. See
@@ -513,7 +520,7 @@ docs/prioritizer/PHASE3_PREREGISTRATION.md	119	5	0.80	VALUE_ONLY	nb3_validation_
 docs/prioritizer/PHASE3_PREREGISTRATION.md	119	5	0.55	ORPHAN		y		| **P2** | Admitted diseases score **well below** the existing population: macro AUC in **0.62–0.75** against
 docs/prioritizer/PHASE3_PREREGISTRATION.md	121	5	0.1935	ORPHAN		y		| **P4** | **Hub bias worsens**: spread **> 0.1935**, ρ(degree, probability) **> 0.3273**. Thin modules mean t
 docs/prioritizer/PHASE3_PREREGISTRATION.md	121	5	0.3273	ORPHAN		y		| **P4** | **Hub bias worsens**: spread **> 0.1935**, ρ(degree, probability) **> 0.3273**. Thin modules mean t
-docs/prioritizer/PHASE3_PREREGISTRATION.md	122	5	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			| **P5** ⚠ | ~~+9% to +15%~~ **REVISED 2026-08-21 pre-experiment: +18% to +22%**, 6,754,128 → **8.0M–8.25M** r
+docs/prioritizer/PHASE3_PREREGISTRATION.md	122	5	6,754,128	ORPHAN				| **P5** ⚠ | ~~+9% to +15%~~ **REVISED 2026-08-21 pre-experiment: +18% to +22%**, 6,754,128 → **8.0M–8.25M** r
 docs/prioritizer/PHASE3_PREREGISTRATION.md	123	5	1.72	ORPHAN				| **P6** ⚠ | ~~1.72–1.86%~~ **REVISED 2026-08-21 pre-experiment: falls from 1.89% to 1.60–1.67%**, because adm
 docs/prioritizer/PHASE3_PREREGISTRATION.md	123	5	1.86	ORPHAN				| **P6** ⚠ | ~~1.72–1.86%~~ **REVISED 2026-08-21 pre-experiment: falls from 1.89% to 1.60–1.67%**, because adm
 docs/prioritizer/PHASE3_PREREGISTRATION.md	123	5	1.89	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool positive rate %			| **P6** ⚠ | ~~1.72–1.86%~~ **REVISED 2026-08-21 pre-experiment: falls from 1.89% to 1.60–1.67%**, because adm
@@ -554,7 +561,7 @@ docs/prioritizer/PHASE3_PREREGISTRATION.md	216	9	702,407	ORPHAN				| | **union**
 docs/prioritizer/PHASE3_PREREGISTRATION.md	216	9	14,025	ORPHAN				| | **union** | **702,407** | **14,025** | **73%** | **2.00%** |
 docs/prioritizer/PHASE3_PREREGISTRATION.md	216	9	2.00	VALUE_ONLY	nb2_splitting_and_pool.py:10.4 diseases below 50%			| | **union** | **702,407** | **14,025** | **73%** | **2.00%** |
 docs/prioritizer/PHASE3_PREREGISTRATION.md	218	9	6,772,374	ORPHAN				*Method validated: the same computation predicts the current pool at 6,772,374 rows against an actual
-docs/prioritizer/PHASE3_PREREGISTRATION.md	219	9	6,754,128	VALUE_ONLY	nb2_splitting_and_pool.py:5.2 pool rows			6,754,128 — a **0.3%** error.*
+docs/prioritizer/PHASE3_PREREGISTRATION.md	219	9	6,754,128	ORPHAN				6,754,128 — a **0.3%** error.*
 docs/prioritizer/PHASE3_PREREGISTRATION.md	219	9	0.3	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)			6,754,128 — a **0.3%** error.*
 docs/prioritizer/PHASE3_PREREGISTRATION.md	224	9	6.3	ORPHAN				**6.3× more dilute** (0.32% against 2.00%) — worse than the 4.4× measured on GGD alone, because pathway
 docs/prioritizer/PHASE3_PREREGISTRATION.md	224	9	0.32	ORPHAN				**6.3× more dilute** (0.32% against 2.00%) — worse than the 4.4× measured on GGD alone, because pathway

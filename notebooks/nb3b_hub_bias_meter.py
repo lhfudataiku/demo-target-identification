@@ -36,11 +36,11 @@ def check(name,doc,live,tol=0.0,fmt="{:,}"):
     if not ok: FAIL.append((name,doc,live))
     print(f"CHK|{'PASS ' if ok else 'STALE'}|{name:44s} doc={fmt.format(doc):>12s} live={fmt.format(live):>12s}")
 
-check("7.2 known-target rows",65929,len(kt))
-check("7.2 champion Q1 probability",0.0887,round(q1,4),tol=0.0006,fmt="{:.4f}")
-check("7.2 champion Q5 probability",0.2230,round(q5,4),tol=0.0006,fmt="{:.4f}")
-check("7.2 champion spread",0.1344,round(q5-q1,4),tol=0.0006,fmt="{:+.4f}")
-check("7.2 champion rho(degree,proba)",0.3500,round(float(rho),4),tol=0.0006,fmt="{:+.4f}")
+check("7.2 known-target rows",65546,len(kt))
+check("7.2 champion Q1 probability",0.0915,round(q1,4),tol=0.0006,fmt="{:.4f}")
+check("7.2 champion Q5 probability",0.2257,round(q5,4),tol=0.0006,fmt="{:.4f}")
+check("7.2 champion spread",0.1341,round(q5-q1,4),tol=0.0006,fmt="{:+.4f}")
+check("7.2 champion rho(degree,proba)",0.3472,round(float(rho),4),tol=0.0006,fmt="{:+.4f}")
 # the verdict itself: the champion is WORSE than the retired generation on spread and rho
 check("7.2 REFUTED: spread worse than retired",True,bool((q5-q1)>0.1099),tol=0,fmt="{}")
 check("7.2 REFUTED: rho worse than retired",True,bool(float(rho)>0.2424),tol=0,fmt="{}")

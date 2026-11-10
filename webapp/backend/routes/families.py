@@ -103,7 +103,7 @@ def _in_a3(df):
 
 @router.get("")
 def families() -> list[dict[str, Any]]:
-    """The families Act 3 carries — three, not all 481 in the validation set."""
+    """The families Act 3 carries — three, not all 478 in the validation set."""
     try:
         cfg = _ds(CONFIG)
         met = _ds(METRICS)

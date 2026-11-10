@@ -13,20 +13,20 @@ pool=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.enriched_graph_features_candida
     columns=["disease_index","gene_index","is_target"])
 print(f"POOL|rows={len(pool):,} diseases={pool.disease_index.nunique()} "
       f"positives={int(pool.is_target.sum()):,} rate={100*pool.is_target.mean():.3f}%")
-check("5.2 pool rows",6754128,len(pool))
+check("5.2 pool rows",6685686,len(pool))
 check("5.2 pool positive rate %",1.89,round(100*pool.is_target.mean(),2),tol=0.02,fmt="{:.2f}")
 pk=np.unique((pool.disease_index.to_numpy(np.int64)*M)+pool.gene_index.to_numpy(np.int64))
 def keys(ds):
     d=dataiku.Dataset(ds).get_dataframe(columns=["disease_index","gene_index"])
     return np.unique((d.disease_index.to_numpy(np.int64)*M)+d.gene_index.to_numpy(np.int64))
 GGD,GPGD,GCD=keys("DEMO_TARGET_IDENTIFICATION.enriched_dwpc_GGD"),keys("DEMO_TARGET_IDENTIFICATION.enriched_dwpc_GPGD"),keys("DEMO_TARGET_IDENTIFICATION.enriched_dwpc_GCD")
-check("5.2 GGD rows",3380853,len(GGD)); check("5.2 GPGD rows",5373706,len(GPGD))
-check("5.2 GCD rows",42227,len(GCD))
+check("5.2 GGD rows",3380964,len(GGD)); check("5.2 GPGD rows",5260433,len(GPGD))
+check("5.2 GCD rows",42178,len(GCD))
 union=np.union1d(np.union1d(GGD,GPGD),GCD)
 print(f"ROUTE|union={len(union):,} equals pool: {len(union)==len(pk)}")
 gcd_only=np.setdiff1d(GCD,np.union1d(GGD,GPGD))
-check("5.2.1 GCD-only pairs",10337,len(gcd_only))
-check("5.2.1 GCD-only pct of pool",0.153,round(100*len(gcd_only)/len(pk),3),tol=0.002,fmt="{:.3f}")
+check("5.2.1 GCD-only pairs",10351,len(gcd_only))
+check("5.2.1 GCD-only pct of pool",0.155,round(100*len(gcd_only)/len(pk),3),tol=0.002,fmt="{:.3f}")
 
 # ==== 5.2.1  the selection bias — COMPUTED here (step 4; was compute_pool_selection_bias, 55 loc) ====
 # gcd_only, M and the key trick are already built above, so only the AUC loop had to move.
@@ -63,7 +63,7 @@ for _lname,_sub in [("approved join",kd[kd.in_approved_join==1]),
 sb=pd.DataFrame(_sbrows)
 sb["auc_delta"]=sb.auc_supported_only-sb.auc_all
 print(f"SELBIAS|computed rows={len(sb)}|labels={sb.label.nunique()}")
-for lab,docA,docS in [("approved join",0.6737,0.7392),("curated known_drug >=0.8",0.6644,0.7148)]:
+for lab,docA,docS in [("approved join",0.6703,0.7362),("curated known_drug >=0.8",0.6644,0.7193)]:
     r=sb[sb.label==lab]
     if not len(r): print(f"MISS|{lab}"); continue
     a=r.auc_all.mean(); s=r.auc_supported_only.mean()

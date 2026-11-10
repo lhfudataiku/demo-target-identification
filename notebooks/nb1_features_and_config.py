@@ -96,7 +96,13 @@ del tr, sm
 # ==== 6.3  the threshold is not the ranking ====
 sc=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.scored_champion").get_dataframe(
     columns=["disease_index","is_target","proba_1"])
-ob=sc[sc.disease_index==37143]
+# Resolved by MONDO id, never pinned: R5 renumbered node_index (obesity 37143 -> 37220) and a pinned
+# index then selects nothing, which this check read as "0 known targets" with no error.
+_gn=dataiku.Dataset("DEMO_TARGET_IDENTIFICATION.graph_nodes").get_dataframe(
+    columns=["node_id","node_type","node_index"])
+_hit=_gn[(_gn.node_type=="disease")&(_gn.node_id.astype(str)=="11122")]   # MONDO:0011122 obesity disorder
+assert len(_hit)==1, f"MONDO:0011122 resolves to {len(_hit)} disease nodes"
+ob=sc[sc.disease_index==int(_hit.node_index.iloc[0])]
 tot=int(ob.is_target.sum())
 best=(0.0,0.0)
 for t in np.arange(0.05,0.99,0.01):
@@ -109,6 +115,6 @@ tp=int(((ob.proba_1>=thr).to_numpy()&(ob.is_target.to_numpy()==1)).sum())
 print(f"THR|obesity known targets={tot} | F1-opt threshold={thr:.3f} F1={f1:.3f} | "
       f"recall={100*tp/max(tot,1):.1f}% | missed={tot-tp}")
 check("6.3 F1 threshold",0.22,round(thr,3),tol=0.08,fmt="{:.3f}")
-check("6.3 obesity known targets",762,tot)
+check("6.3 obesity known targets",758,tot)
 print(f"\nSUMMARY|{len(FAIL)} STALE")
 for n,d,l in FAIL: print(f"FAILED|{n}|doc={d}|live={l}")

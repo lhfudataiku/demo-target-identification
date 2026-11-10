@@ -78,22 +78,24 @@ see act 2.
 The only candidate area where the **entire** deck survives without leaving it. Every figure below was
 computed from `dashboard_candidates` while writing this document.
 
-**The clinical sanity check, unprompted.** HER2+ breast carcinoma scores 12,272 candidates. Top 15:
+**The clinical sanity check, unprompted.** HER2+ breast carcinoma scores 12,252 candidates. Top 15:
 
 | rank | gene | | rank | gene |
 |--:|---|---|--:|---|
-| 1 | EP300 | | 9 | CREBBP |
-| 2 | TP53 | | 10 | AKT1 |
-| 3 | KRAS | | 11 | JAK2 |
-| 4 | PIK3R1 | | 12 | BRCA1 |
-| 5 | PIK3CA | | 13 | SMAD3 |
-| 6 | CTNNB1 | | 14 | RUNX1 |
-| 7 | **HRAS** — **novel** | | 15 | EGFR |
-| 8 | STAT3 | | *16* | ***ERBB2*** — the approved-for-this-disease gene, just outside the top 15 |
+| 1 | PIK3CA | | 9 | ATM |
+| 2 | EP300 | | 10 | ERBB4 |
+| 3 | TP53 | | 11 | JAK2 |
+| 4 | CTNNB1 | | 12 | EGFR |
+| 5 | PIK3R1 | | 13 | BRCA1 |
+| 6 | **HRAS** — **novel** | | 14 | STAT3 |
+| 7 | CREBBP | | 15 | SMAD3 |
+| 8 | KRAS | | *29* | ***ERBB2*** — the approved-for-this-disease gene, well outside the top 15 |
 
-Every gene in the top 15 except HRAS is a known association. *(Ranks re-derived 2026-11-07 on
-`m7-f14-cal`. On the previous champion ERBB2 sat at #14 and HRAS at #9; retraining reshuffles close
-ranks, so the table must be re-derived after every champion change.)*
+Every gene in the top 15 except HRAS is a known association. *(Ranks re-derived 2026-11-10 on
+`m7-f14-cal` retrained on the rebuilt graph. On 2026-11-07 ERBB2 sat at #16 and HRAS at #7, and on the
+champion before that at #14 and #9; retraining reshuffles close ranks, so the table must be re-derived
+after every champion change. The same top 15 also leads lung and gastric adenocarcinoma: see
+[`FUTURE_DIRECTIONS.md`](FUTURE_DIRECTIONS.md).)*
 
 The model was never told which gene this disease is named after. **ERBB2 lands at 16 of 12,272**, and the
 surrounding list is the PI3K/AKT and RAS–MAPK axis — the biology that drives trastuzumab resistance. AUC
@@ -109,9 +111,9 @@ target carrying a liability flag. On HER2+:
 *"Exclude targets with known safety liabilities"* would delete the target this disease is named after,
 and the target of its standard-of-care antibody.
 
-**The hard case is in the same panel.** Triple-negative breast carcinoma ranks TP53 #1, RAD50 #2, NBN #3,
-BRCA2 #4, ATM #5 — the homologous-recombination panel, all novel — with only **8** known associations, so
-we cannot score it. `breast_panel_overlap` shows HER2+ and TNBC share **1 of 50** novel candidates, so subtype resolution
+**The hard case is in the same panel.** Triple-negative breast carcinoma ranks RAD50 #1, ATM #2, BRCA2 #3,
+TP53 #4, NBN #5 — the homologous-recombination panel, all novel — with only **8** known associations, so
+we cannot score it. `breast_panel_overlap` shows HER2+ and TNBC share **2 of 50** novel candidates, so subtype resolution
 becomes an argument *for* the platform to a subtype-organised team.
 
 **What the spine costs.** Obesity's funnel and the GHSR/ADRB2/MCHR1 coherence beat leave the deck (HER2+
@@ -444,11 +446,11 @@ executor, graph/table toggle or graph renderer.
 
 | claim | where | asserts |
 |---|---|---|
-| **Zero straddling keys — read this first** | up front · one line; the split table under detail | 3 rows; all four overlap/straddling columns at **zero** across train (2,371,922 rows / 420 diseases), validation (3,568,682 / 607), test (813,524 / 130) |
-| The spread across 607 diseases | up front · histogram, 20 bins | macro **0.8170**, median 0.8530, range 0.1597–0.9972 over the **606** that score |
-| It holds across 481 families | detail · one line | macro **0.7988** over the **480** that score |
-| **Usefulness is not uniform** | up front · the quartiles in prose, beside the selected disease's own enrichment | rank enrichment median **18.2×**, quartiles **7.4–27.4×**, range **0–61.8×** across 607 diseases |
-| Where your disease sits | up front · marker on the histogram, rank and share of diseases beaten | HER2+ at **0.9385**, rank 91 of 606 — upper tail, stated as a *position in a spread* |
+| **Zero straddling keys — read this first** | up front · one line; the split table under detail | 3 rows; all four overlap/straddling columns at **zero** across train (2,355,742 rows / 420 diseases), validation (3,523,775 / 604), test (806,169 / 130) |
+| The spread across 604 diseases | up front · histogram, 20 bins | macro **0.8180**, median 0.8512, range 0.2117–0.9973 over the **603** that score |
+| It holds across 478 families | detail · one line | macro **0.8003** over the **477** that score |
+| **Usefulness is not uniform** | up front · the quartiles in prose, beside the selected disease's own enrichment | rank enrichment median **18.5×**, quartiles **7.0–27.6×**, range **0–61.2×** across 604 diseases |
+| Where your disease sits | up front · marker on the histogram, rank and share of diseases beaten | HER2+ at **0.9385**, rank 89 of 603 — upper tail, stated as a *position in a spread* |
 
 **The framing rule.** The distribution leads; the macro number is its summary. The narrative forbids raw
 AUC as an opening number — *"it is the answer to a question they did not ask"* — and the TxGNN result is
@@ -473,9 +475,9 @@ glossary.
    panel's best and the population's *typical*. Presenting 19× as the high end understates the model and
    invites correction by anyone who opens the dataset.
 
-Also: `family_auc_by_family` carries a literal `NaN` AUC — family `51843`, zero positives, so AUC is
+Also: `family_auc_by_family` carries a literal `NaN` AUC — family `51886` since the 2026-11-10 rebuild (was `51843`), zero positives, so AUC is
 undefined (two such families before the 2026-11 split change). `nb3` uses pandas, which skips it, so the
-documented **0.7988 is a mean over 480 families presented as 481**.
+documented **0.8003 is a mean over 477 families presented as 478**.
 
 > **Must not appear:** pooled AUC anywhere near the macro one (pooled overstates by ~7 points). The
 > ablation ladder. Any hyperparameter. A single number in large type with no distribution beside it.
@@ -655,7 +657,7 @@ single-disease deck from being a single-disease anecdote.
 |---|---|
 | Fair fight, not a rigged one | **3.1× / 2.7× / 2.3×** (pooled) at K=10/50/200 against **equally-connected** genes |
 | The direction nobody volunteers | below rank 20 the degree control makes us look **better**; at rank 10 **worse** — and we say so |
-| The harder version | known targets only, by connectivity quintile: calibrated score 0.09 → 0.22, detection 12.7% → 55.5%. **4.4× swing, biology held constant** |
+| The harder version | known targets only, by connectivity quintile: calibrated score 0.09 → 0.23, detection 10.2% → 52.1%. **5.1× swing, biology held constant** |
 | What it costs you | *"we will find you targets adjacent to biology you already know; we will not fix your neglected-gene problem"* — and that we tested the obvious cause and it was **not** the cause |
 
 Two findings, opposite directions, both true: the *ranking* is not explained by popularity, **and** the
@@ -680,8 +682,8 @@ averaging. A scientist who asks *"is that a median?"* and gets an evasive answer
 |---|---|
 | How the pairs are manufactured | the data says *drug treats disease* and *drug hits targets*, never *target treats disease*. A drug hitting 40 proteins approved for 13 diseases manufactures 520 "validated" pairs |
 | How bad it is | **82%** of validated pairs come from multi-target drugs; **8%** survive a single-target demand |
-| Re-run on a curated source | **21.3×** vs 16.9× — the finding got **stronger** |
-| Association ≠ therapeutic relevance | one point per disease, association AUC × therapeutic AUC. **r = +0.091** (R² 0.008) |
+| Re-run on a curated source | **29.3×** vs 22.9× — the finding got **stronger** |
+| Association ≠ therapeutic relevance | one point per disease, association AUC × therapeutic AUC. **r = +0.167** (R² 0.028, not significant) |
 
 The scatter is the best single visual in the deck: two axes, a visibly flat cloud, the fit line on the
 horizontal. It turns an abstract caveat into something the room sees in one second. **Ship the picture,
@@ -829,24 +831,24 @@ is scored against hubs.
 **Why both a pooled and a macro figure.** Pooled sums observed and expected across all diseases;
 macro averages per-disease lifts. They disagree at small K because a handful of large diseases
 dominate the pooled sum. Reporting one alone hides the disagreement, which is itself the finding —
-the crossover point (K=20 under both estimators) is where controlling for degree starts to make
-the result look *better*.
+the crossover point (K=20 for pooled; macro is above naive at every K since the 2026-11-10 retrain) is
+where controlling for degree starts to make the result look *better*.
 
 | claim | value | re-derived in |
 |---|--:|---|
 | pooled degree-matched lift @10 | 3.06× | `nb6` §5.1, `nb4` §8.4 |
 | pooled degree-matched lift @200 | 2.30× | same |
 | macro degree-matched lift @10 | 2.85× | same |
-| crossover: dm > naive | K=20 under both (macro was K=50 before the 2026-11 retrain) | asserted as booleans, so it cannot drift silently |
+| crossover: dm > naive | pooled K=20; macro every K (was K=20 on 2026-11-07, K=50 before) | asserted as booleans, so it cannot drift silently |
 
 **The counter-measurement, and why it belongs next to it.** Hold biology constant — known targets
-only — and the model still scores the lowest degree quintile 0.09 against 0.22 for the highest (calibrated probabilities). The
+only — and the model still scores the lowest degree quintile 0.09 against 0.23 for the highest (calibrated probabilities). The
 ranking is not explained by popularity *and* the model under-scores under-studied true targets. Both
 are true; a claim that omits the second is the one that gets caught.
 
 ### 9.2 Act 2 — "macro, never pooled"
 
-Pooled per-disease AUC reads **0.8908**; macro reads **0.8170**. The gap is ~7 points and it is not
+Pooled per-disease AUC reads **0.8908**; macro reads **0.8180**. The gap is ~7 points and it is not
 noise: pooled lets one large disease carry many small ones. **The macro figure is the honest one and
 the only one that goes in front of anybody.** Both are asserted in `nb3` so the gap itself is guarded.
 
@@ -854,7 +856,7 @@ the only one that goes in front of anybody.** Both are asserted in `nb3` so the 
 
 The train/test divide is by **disease family from a curated ontology**, not by random assignment.
 Random splitting puts "diabetes" and "type 2 diabetes" on opposite sides — same programme, different
-label — and inflates the score. Family-level macro AUC across 481 families is **0.7988**, and zero
+label — and inflates the score. Family-level macro AUC across 478 families is **0.8003**, and zero
 split keys straddle.
 
 This is also the concrete example of customer knowledge entering the pipeline: a biologist's judgment
@@ -871,9 +873,9 @@ re-rank the remainder, and the novel head is enriched for genes that later prove
 
 | ground truth | @10 | @200 |
 |---|--:|--:|
-| approved drugs | 21.26× | 5.22× |
-| drugs in trials | 6.71× | — |
-| curated target–disease | 20.36× | 5.02× |
+| approved drugs | 22.94× | 4.98× |
+| drugs in trials | 7.24× | — |
+| curated target–disease | 29.33× | 4.86× |
 
 **The UI must not let this become the headline.** It is the one number that can turn a reconstruction
 pitch into a discovery pitch, and the narrative explicitly does not make a discovery claim. Present it
@@ -902,15 +904,15 @@ actually wants). In every case the two point in different directions.
 | exclude safety liabilities | — | 4.69× | REJECTED — the flag marks the best-studied targets |
 
 **The restriction that makes this valid:** both labels are measured on exactly the same rows — the
-869,707 scored pairs belonging to diseases with at least one drug-validated target. Measuring them on
+862,663 scored pairs belonging to diseases with at least one drug-validated target. Measuring them on
 different populations would make the comparison meaningless, so the row count is itself asserted.
 
-**The ten-second version for the room:** 9 of the HER2+ top 15 carry a liability flag, and one of them
-is ERBB2 — the target of trastuzumab.
+**The ten-second version for the room:** 8 of the HER2+ top 15 carry a liability flag, and so does
+ERBB2 (#29) — the target of trastuzumab.
 
 ### 9.6 The orthogonality result, and why it is a warning not a score
 
-Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0.091**, R² = **0.0082** (122 diseases, not significant).
+Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0.167**, R² = **0.0278** (122 diseases, t = 1.85, not significant at 0.05).
 A disease the model ranks well on association tells you nothing about whether it ranks drug targets
 well.
 

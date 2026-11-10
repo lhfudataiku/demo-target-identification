@@ -76,7 +76,7 @@ check("5.1 pooled dm lift @200", 2.30, round(float(p200), 2), tol=0.02, fmt="{:.
 check("5.1 macro dm lift @10", 2.85, round(float(nv.demonstrated_dm10.mean()), 2), tol=0.02, fmt="{:.2f}")
 
 # The crossover, stated as a boolean so it cannot drift silently.
-for K, want_pooled, want_macro in [(10, False, False), (20, True, True), (50, True, True), (200, True, True)]:
+for K, want_pooled, want_macro in [(10, False, True), (20, True, True), (50, True, True), (200, True, True)]:
     o = nv[f"demonstrated_obs{K}"].sum()
     pdm = o / nv[f"demonstrated_exp{K}"].sum()
     pnv = o / (nv[f"demonstrated_obs{K}"] / nv[f"demonstrated_naive{K}"].replace(0, np.nan)).sum()
@@ -123,8 +123,8 @@ for q, g in pos.groupby("q"):
 lo, hi = band[min(band)], band[max(band)]
 check("5.2 champion Q1 probability", 0.09, round(lo[1], 2), tol=0.02, fmt="{:.2f}")
 check("5.2 champion Q5 probability", 0.22, round(hi[1], 2), tol=0.02, fmt="{:.2f}")
-check("5.2 Q1 predicted-positive %", 12.7, round(lo[2], 1), tol=1.0, fmt="{:.1f}")
-check("5.2 Q5 predicted-positive %", 55.5, round(hi[2], 1), tol=1.5, fmt="{:.1f}")
+check("5.2 Q1 predicted-positive %", 10.20, round(lo[2], 1), tol=1.0, fmt="{:.1f}")
+check("5.2 Q5 predicted-positive %", 52.10, round(hi[2], 1), tol=1.5, fmt="{:.1f}")
 print(f"HUBSPREAD|detection swing Q1->Q5 = {hi[2] / max(lo[2], 1e-9):.1f}x on network position alone")
 
 # Spearman between connectivity and score, ON KNOWN TARGETS — the same population as the quintiles
@@ -145,10 +145,10 @@ for gt in ["approved", "investigational"]:
     l10 = s.lift_top10.replace([np.inf], np.nan).mean()
     l200 = s.lift_top200.replace([np.inf], np.nan).mean()
     if gt == "approved":
-        check("5.3 approved lift@10", 21.26, round(float(l10), 2), tol=0.02, fmt="{:.2f}")
-        check("5.3 approved lift@200", 5.22, round(float(l200), 2), tol=0.02, fmt="{:.2f}")
+        check("5.3 approved lift@10", 22.94, round(float(l10), 2), tol=0.02, fmt="{:.2f}")
+        check("5.3 approved lift@200", 4.98, round(float(l200), 2), tol=0.02, fmt="{:.2f}")
     else:
-        check("5.3 investigational lift@10", 6.71, round(float(l10), 2), tol=0.02, fmt="{:.2f}")
+        check("5.3 investigational lift@10", 7.24, round(float(l10), 2), tol=0.02, fmt="{:.2f}")
 
 # The tail is the honest part: the mean is not the median and the deck must show the distribution.
 ap = nde[nde.ground_truth == "approved"].lift_top10.replace([np.inf], np.nan).dropna()
@@ -196,9 +196,9 @@ x, y, n = j.auc_disease.to_numpy(), j.auc_drug_targets.to_numpy(), len(j)
 r = float(np.corrcoef(x, y)[0, 1])
 slope = float(np.polyfit(x, y, 1)[0])
 print(f"ORTH|n={n}|pearson={r:+.4f}|R2={r * r:.4f}|slope={slope:+.4f}")
-check("5.5 orthogonality pearson r", 0.091, round(r, 3), tol=0.004, fmt="{:+.3f}")
-check("5.5 orthogonality R2", 0.0082, round(r * r, 4), tol=0.0004, fmt="{:.4f}")
-check("5.5 drug-target macro AUC", 0.6737, round(float(db.auc_drug_targets.mean()), 4), tol=0.0006, fmt="{:.4f}")
+check("5.5 orthogonality pearson r", 0.167, round(r, 3), tol=0.004, fmt="{:+.3f}")
+check("5.5 orthogonality R2", 0.0278, round(r * r, 4), tol=0.0004, fmt="{:.4f}")
+check("5.5 drug-target macro AUC", 0.6703, round(float(db.auc_drug_targets.mean()), 4), tol=0.0006, fmt="{:.4f}")
 
 # The slide no vendor shows: a popularity lookup beats the trained model on this benchmark.
 if "n_validated_targets" in db.columns:
@@ -268,7 +268,7 @@ print(f"LIFTBASE|rows={len(liftbase):,}|diseases={liftbase.disease_index.nunique
 # If the codified truth-table build or the chunked read drifts, the lifts would move quietly;
 # this fails loudly first. (safety_flag sums to 905,651 — 1,595 rows sit in groups below the
 # n>=2000 floor and are dropped from the table, not from the base.)
-check("6.0 lift base rows", 869707, len(liftbase), fmt="{:,}")
+check("6.0 lift base rows", 862663, len(liftbase), fmt="{:,}")
 # Diseases carrying >=1 drug-validated target. compute_tractability_lift's docstring says 112, but
 # that is a code comment with no run behind it — printed, deliberately not asserted.
 print(f"LIFTBASE|diseases with >=1 drug-validated target: {liftbase.disease_index.nunique()}"
@@ -372,7 +372,7 @@ k15 = int(top15.has_safety_liability.sum())
 k50 = int(top50.has_safety_liability.sum())
 print(f"COST|HER2+ top15 flagged={k15}/15 | top50 flagged={k50}/50")
 check("6.2 HER2+ top-15 liability-flagged", 8, k15)
-check("6.2 HER2+ top-50 liability-flagged", 21, k50)
+check("6.2 HER2+ top-50 liability-flagged", 20, k50)
 erbb2 = top15[top15.gene_name == "ERBB2"]
 if len(erbb2):
     print(f"COST|ERBB2 rank={int(erbb2.rank_in_disease.iloc[0])} "
@@ -392,8 +392,8 @@ try:
     if len(kp):
         print(f"SUBTYPE|HER2+ vs TNBC: novel_overlap={int(kp.novel_overlap.iloc[0])} "
               f"all_overlap={int(kp.all_overlap.iloc[0])} of 50")
-        check("6.3 HER2+ vs TNBC novel overlap", 1, int(kp.novel_overlap.iloc[0]))
-        check("6.3 HER2+ vs TNBC all-gene overlap", 12, int(kp.all_overlap.iloc[0]))
+        check("6.3 HER2+ vs TNBC novel overlap", 2, int(kp.novel_overlap.iloc[0]))
+        check("6.3 HER2+ vs TNBC all-gene overlap", 11, int(kp.all_overlap.iloc[0]))
 except Exception as e:  # noqa: BLE001
     print(f"SUBTYPE|skipped: {e}")
 

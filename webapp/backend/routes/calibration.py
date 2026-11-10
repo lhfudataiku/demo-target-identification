@@ -7,7 +7,7 @@ this route still derives live values where available.
   GET /api/calibration   the AUC distribution, each scored disease's place in it,
                          the hub-bias meter, orthogonality
 
-Read the AUC as RECONSTRUCTION FIDELITY, not predictive power: across 607
+Read the AUC as RECONSTRUCTION FIDELITY, not predictive power: across 604
 diseases, how reliably do already-validated targets land near the top.
 
 Three things this act must show together, because each is dishonest alone:
