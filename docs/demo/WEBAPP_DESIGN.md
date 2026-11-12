@@ -623,15 +623,16 @@ presets are generated from the selected live candidate row rather than copied fr
 ```cypher
 // Why the head of the HER2+ list? The PI3K/AKT + RAS-MAPK axis, and its
 // interaction evidence to genes already annotated for this disease.
-MATCH (D:disease {node_index: 48537})
-MATCH (g:protein) WHERE g.node_index IN [91764, 91759, 88097, 89095, 84123, 84431, 93120]
+MATCH (D:disease {node_index: 48578})
+MATCH (g:protein) WHERE g.node_index IN [91865, 91860, 88199, 89196, 84225, 84533, 93221]
 MATCH (g)-[ppi:protein_protein]-(m:protein)-[assoc:disease_protein]-(D)
 WHERE m.node_index <> g.node_index
 RETURN g, ppi, m, assoc, D LIMIT 300
 ```
 
-`91764` PIK3R1 #4 · `91759` PIK3CA #5 · `88097` **HRAS #7, novel** · `89095` KRAS #3 · `84123` EGFR #15
-· `84431` **ERBB2 #16** · `93120` MAPK1 #30 (ranks on `m7-f14-cal`, 2026-11-07).
+`91865` PIK3R1 #5 · `91860` PIK3CA #1 · `88199` **HRAS #6, novel** · `89196` KRAS #8 · `84225` EGFR #12
+· `84533` **ERBB2 #29** · `93221` MAPK1 #44 (R5 node indexes, snapshot `j2B2cE`; ranks from served
+`dashboard_candidates` on the R6 champion `m7-f14-cal`, 2026-11-12).
 
 One connected module, the disease's own annotated genes in the middle of it, and a novel candidate (HRAS)
 inside the same mechanism as the approved target. That is the second of the deliverable's two

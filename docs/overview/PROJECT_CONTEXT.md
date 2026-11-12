@@ -218,7 +218,7 @@ in one undifferentiated box:
 | `04 Graph backbone (imported)` | `graph_nodes`, `graph_edges`, `edge_metadata`, and the `published_kg_ls` folder | Graph build |
 
 Zone 04 is separated from 00–03 on purpose: those carry the raw sources, this carries what
-`DEMO_KG_LS` assembly *produced* from them. It also holds `llm_hx`, the Graph Explorer webapp's query
+`DEMO_KG_LS` assembly *produced* from them. It also holds `graph_exp_llm_hx` (`llm_hx` until 2026-11-12), the Graph Explorer webapp's query
 history — no recipe produces or reads it, which is expected, since its consumer is a webapp rather
 than the flow. The retired snapshot `enriched_index_freezed-6bRVGs` is no longer referenced from this
 project at all; it remains in `DEMO_KG_LS` as the provenance record for the published feature numbers.
@@ -230,7 +230,7 @@ surface auditable in one place and stops a rename in the graph project breaking 
 
 **The Kuzu folder was the exception, and since 2026-09-03 it no longer is.** A folder cannot be
 Sync'd, but it can be merged: `compute_ytvuniN8` is a Merge-Folder recipe that copies the Kuzu folder
-`DEMO_KG_LS.kg_ls_v0-2-ZKGaRg` (`ouzaULiq`; `published_kg_ls-Mp25kL` until 2026-11-08) into the local
+`DEMO_KG_LS.kg_ls_v0-3-j2B2cE` (`6kiPwQC7`; `kg_ls_v0-2-ZKGaRg` until 2026-11-12, `published_kg_ls-Mp25kL` until 2026-11-08) into the local
 managed folder **`graph` (`ytvuniN8`)**. The Graph
 Explorer webapp and all 10 Cypher feature recipes now read that local folder, so **every foreign
 reference — all 14 — passes through exactly one Sync or Merge recipe**, and nothing reads a Kuzu

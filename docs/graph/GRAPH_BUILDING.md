@@ -233,7 +233,7 @@ are resolved once, in assembly.
 | Function | ontology + gene annotation | protein + hierarchy | `go_protein_edges`, `go_hierarchy_edges` |
 | Phenotypes | ontology + annotations + gene links | overlap resolution + deduplication | 3 phenotype edge tables |
 | Assembly | 4 recipes (§4.4) | — | `kg`, `graph_nodes`, `graph_edges`, `edge_metadata` |
-| Graph build | one Kuzu build recipe per saved snapshot: current `build-graph-ZKGaRg` (2026-11-08) | — | Kuzu folder `kg_ls_v0-2-ZKGaRg` (read by Part 2). Earlier snapshots are kept as references and not rebuilt: `build-graph-Mp25kL` → `published_kg_ls-Mp25kL` (pre-R2; the Explorer serves it). The older `6bRVGs` build is gone; its saved configuration row remains |
+| Graph build | one Kuzu build recipe per saved snapshot: current `build-graph-j2B2cE` (2026-11-12) | — | Kuzu folder `kg_ls_v0-3-j2B2cE` (read by Part 2 and by both Graph Explorers). Earlier snapshots are kept as references and not rebuilt: `build-graph-ZKGaRg` → `kg_ls_v0-2-ZKGaRg` (R2–R6; Part 2's features were computed from it) and `build-graph-Mp25kL` → `published_kg_ls-Mp25kL` (pre-R2). The older `6bRVGs` build is gone; its saved configuration row remains |
 
 ### 4.3 Harmonization logic — the scientific content
 
@@ -359,7 +359,7 @@ Which source is the system of record for each node and edge type, and how it gro
 ## 6. The graph-building webapp
 
 The assembled node and edge tables are materialized into a **Kuzu** graph database by a plugin
-recipe, written to the managed folder `published_kg_ls-Mp25kL`. An interactive explorer
+recipe, written to one managed folder per saved snapshot (currently `kg_ls_v0-3-j2B2cE`). An interactive explorer
 webapp reads the same tables and renders the graph for exploration; it runs as a local process
 rather than in a container.
 
@@ -373,17 +373,25 @@ Schema mapping: node id = `node_index`, label = `node_name`, grouping by `node_t
   drops that relation without an error — this happened twice.
 
 The Kuzu folder is the **primary shared deliverable** to the modelling project, and since 2026-09-03
-it is delivered one way: `published_kg_ls-Mp25kL` is merged into the modelling project's local `graph`
+it is delivered one way: the current snapshot's folder (`kg_ls_v0-3-j2B2cE` since 2026-11-12) is merged into the modelling project's local `graph`
 folder (`ytvuniN8`) by `compute_ytvuniN8`, and **both** the Graph Explorer webapp and all 10 Cypher
 feature recipes read that local folder. Nothing in `DEMO_TARGET_IDENTIFICATION` reads a Kuzu folder
 across the project boundary any more (PROJECT_CONTEXT §4.3).
 
 > ⚠ **A graph-definition change gets a new snapshot, saved from the Visual Graph editor; a source
 > refresh reruns the current one (2026-11-09). Older snapshots are kept as references.**
-> `kg_ls_v0-2-ZKGaRg` (`build-graph-ZKGaRg`, created in R2, rerun on the R5 tables 2026-11-10) is what
-> Part 2 reads through `compute_ytvuniN8`. It keeps `Mp25kL`'s configuration, including the saved queries behind the
-> webapp demo narratives, and adds `disease_phenotype_disease`. `published_kg_ls-Mp25kL` (`build-graph-Mp25kL`,
-> 2026-09-03) is the pre-R2 reference, and the Explorer still serves it.
+> `kg_ls_v0-3-j2B2cE` (`build-graph-j2B2cE`, 2026-11-12) is what Part 2 reads through
+> `compute_ytvuniN8`, and what both Graph Explorers serve. It is `ZKGaRg` plus a `node_type` property on
+> every node group, so the Explorer can style nodes by type. Its Kuzu build matches `ZKGaRg` on all 27
+> node and relation counts, which is why Part 2's copy was swapped without rebuilding the features.
+> Its saved queries no longer use pre-R5 node indexes. Those indexes had silently come to point at
+> other nodes: 48537 became endometrial undifferentiated carcinoma instead of HER2 positive breast
+> carcinoma. They are now 48578 for HER2 positive breast carcinoma, 84535 for ERBB3 and 95573 for SMARCA2.
+> The Explorer's conditional styling is held in the browser, not in the snapshot.
+> `kg_ls_v0-2-ZKGaRg` (`build-graph-ZKGaRg`, created in R2, rerun on the R5 tables 2026-11-10) is the
+> graph Part 2's features and the R6 champion were computed from. It keeps `Mp25kL`'s configuration,
+> including the saved queries behind the webapp demo narratives, and adds `disease_phenotype_disease`.
+> `published_kg_ls-Mp25kL` (`build-graph-Mp25kL`, 2026-09-03) is the pre-R2 reference.
 > *History:* `enriched_index_freezed-6bRVGs` (`build-graph-6bRVGs`,
 > 2026-08-14) is the snapshot every published feature number was **originally** derived from. It is now
 > referenced by nothing. It was kept as a provenance record, but its build and folder are no longer
@@ -405,7 +413,8 @@ across the project boundary any more (PROJECT_CONTEXT §4.3).
 > [`GRAPH_SNAPSHOT_SWITCH_2026-09-03.md`](../../archive/GRAPH_SNAPSHOT_SWITCH_2026-09-03.md) (archived).
 >
 > The older `enriched_clean-gFdnaU` named in earlier revisions of this section **has since been
-> deleted**; the graph project now holds these two Kuzu folders and no third.
+> deleted**. Since 2026-11-12 the graph project holds three Kuzu folders: `Mp25kL`, `ZKGaRg` and
+> `j2B2cE`.
 
 ## 7. Final graph statistics
 
@@ -449,7 +458,8 @@ across the project boundary any more (PROJECT_CONTEXT §4.3).
 **Validated (rebuild of 2026-11-09):** 0 full-row duplicates, 0 self-loops, every edge has its reverse,
 no unknown endpoint, no isolated node. The 862 duplicate `(relation, x_index, y_index)` triples in
 `disease_protein`, which carry distinct evidence metadata, are unchanged. The Kuzu build of snapshot
-`ZKGaRg` (Visual Graph 1.6.0) matches these tables on all 8 node labels and 19 relations; earlier
+`ZKGaRg` (Visual Graph 1.6.0) matches these tables on all 8 node labels and 19 relations, and so does
+the build of `j2B2cE` (2026-11-12); earlier
 plugin versions silently dropped nodes whose name contains a comma, so count Kuzu after every build.
 *(At the 2026-08-14 acceptance `kg` held 2,855,116 rows, 3,244 more than `graph_edges`, for the same
 reason; the reference build shows the same difference.)*

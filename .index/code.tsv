@@ -49,7 +49,7 @@ dss_recipes/compute_gene_localization.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_gene_names.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_go_terms.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_hgnc_identity.py	recipe-mirror	MIRROR (graph-build project)	0	-
-dss_recipes/compute_hub_bias_meter.py	recipe-mirror	DRIFTED MIRROR (content differs from live DSS)	0	-
+dss_recipes/compute_hub_bias_meter.py	recipe-mirror	MIRROR	0	-
 dss_recipes/compute_kg.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_kg_edges.py	recipe-mirror	MIRROR (graph-build project)	0	-
 dss_recipes/compute_known_drug_truth.py	recipe-mirror	MIRROR (evidence project)	0	-

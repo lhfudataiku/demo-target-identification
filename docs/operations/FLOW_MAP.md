@@ -15,7 +15,7 @@
 
 Project `DEMO_TARGET_IDENTIFICATION`. The other Part 2 project is mapped in [`FLOW_MAP_EVIDENCE.md`](FLOW_MAP_EVIDENCE.md): the evidence project, which the notebooks read and nothing here reads.
 
-Live DSS: **82 datasets across 20 zones**, cross-referenced against the recipe graph (81 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
+Live DSS: **83 datasets across 20 zones**, cross-referenced against the recipe graph (81 recipes), `notebooks/*.py` and `webapp/backend/**/*.py`.
 
 A dataset counts as **read** only when its name appears *quoted* in reader code. A bare
 mention is prose: `calibration.py` names the three DWPC feature datasets in a display
@@ -33,10 +33,13 @@ so zones A1-A4 are read by named routes rather than by an unbuilt UI.
 
 ## Summary
 
-- datasets: **82**
+- datasets: **83**
 - endpoints (read by a webapp route or a notebook): **34**
 - flow intermediates (consumed by a recipe, no direct reader): **48**
-- genuine orphans: **0**
+- genuine orphans: **1** — `graph_exp_llm_hx`
+
+> Every orphan here is a deliberate decision, not a finding. See
+> `.index/_dead.json` `keep_do_not_prune` for why each one survives.
 
 ### Shared-recipe caution
 
@@ -180,11 +183,13 @@ Foreign references in this zone (3), each feeding exactly one Sync or Merge reci
 | `family_panel` | — | `compute_family_panel` | 2 | intermediate |
 | `validation_set_personas_2` | — | `filter_persona_diseases` | 1 | intermediate |
 
-## Agent  (0 datasets, 0 recipes)
+## Agent  (1 datasets, 0 recipes)
 
-Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.ouzaULiq`
+Foreign references in this zone (1), each feeding exactly one Sync or Merge recipe: `DEMO_KG_LS.6kiPwQC7`
 
-_No datasets in this zone._
+| dataset | read by | producing recipe | recipe consumers | flag |
+|---|---|---|--:|---|
+| `graph_exp_llm_hx` | — | — *(source)* | 0 | **ORPHAN** |
 
 ## S1 Shortlist  (9 datasets, 9 recipes)
 

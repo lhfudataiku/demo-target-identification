@@ -66,3 +66,4 @@ print(f"\nQ1 mean_proba {out.mean_proba.iloc[0]:.4f} | Q5 {out.mean_proba.iloc[-
 
 dataiku.Dataset("hub_bias_meter").write_with_schema(out)
 
+

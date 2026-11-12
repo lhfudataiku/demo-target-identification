@@ -131,7 +131,7 @@ no family.
 
 - **Outside the serving zones, metadata only:** the three zone-10 DWPC metrics and the saved model's
   metrics (§2.2), and the Kuzu folder `ytvuniN8` in zone 04. The graph tool reads that folder; it is
-  merged from `DEMO_KG_LS.UBUlwwxT` by `compute_ytvuniN8`. D14 says the backend reads only serving
+  merged from `DEMO_KG_LS.6kiPwQC7` (`kg_ls_v0-3-j2B2cE`, since 2026-11-12) by `compute_ytvuniN8`. D14 says the backend reads only serving
   zones, so it should name these as exceptions.
 - **`act4_evidence_cache`** (`CB9xqCGg`): written by the webapp and the `prefill_evidence_cache`
   scenario. No recipe touches it, and `dku flow zones` lists it in no zone.

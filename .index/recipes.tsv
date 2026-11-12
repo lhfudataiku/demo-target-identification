@@ -63,7 +63,7 @@ compute_validation_auc_by_disease	shaker	-	-		DSS-only	validation_set_scored_nam
 compute_validation_set_scored_grouped	grouping	-	-		DSS-only	validation_set_scored_windows	validation_set_scored_grouped
 compute_validation_set_scored_named	join	-	-		DSS-only	graph_nodes,validation_set_scored_grouped	validation_set_scored_named
 compute_validation_set_scored_windows	window	-	-		DSS-only	scored_champion	validation_set_scored_windows
-compute_ytvuniN8	merge_folder	-	-		DSS-only	DEMO_KG_LS.ouzaULiq	ytvuniN8
+compute_ytvuniN8	merge_folder	-	-		DSS-only	DEMO_KG_LS.6kiPwQC7	ytvuniN8
 extract_hetionet_disease_slim	python	-	-		dss_recipes/extract_hetionet_disease_slim.py	-	hetionet_disease_slim
 filter_has_path_evidence	sampling	-	-		DSS-only	enriched_graph_features_1_family	enriched_graph_features_candidate_psplit
 filter_persona_diseases	join	-	-		DSS-only	demo_panel_config,psplit_validation_set	validation_set_personas_2
