@@ -9,7 +9,7 @@
 > [`WEBAPP_DATASET_MAP.md`](WEBAPP_DATASET_MAP.md); the graph revision, in
 > [`GRAPH_REVISION_WORKPLAN.md`](../../archive/GRAPH_REVISION_WORKPLAN.md) (archived 2026-11-10).
 
-**Status: IN PROGRESS — D1–D4 decided 2026-11-09; W1 and W3 done 2026-11-09 (`check: ok`, checked in the browser against live data) and deployed to `OlmPX9a` 2026-11-10 from commit `cdf6810`, awaiting the user's review; next is W2.** Every DSS change
+**Status: IN PROGRESS — D1–D4 decided 2026-11-09; W1 and W3 deployed 2026-11-10 (`cdf6810`); W2, W4 and W5 done 2026-11-12 and checked locally against live data (`check: ok`); W6 (commit, deploy, live check, archive) remains.** Every DSS change
 and every `make deploy` below needs explicit approval at the step where it happens.
 
 This plan did not wait on the graph revision, which finished 2026-11-10: `DEMO_TARGET_IDENTIFICATION`
@@ -84,6 +84,17 @@ prose.
 **Accept when:** for one disease the displayed values match `dashboard_candidates.score` for the
 same rows; no text on the page or glossary calls the score uncalibrated; `npm run check` clean.
 
+**Done 2026-11-12.** Step 1: calibration re-measured on the R6 champion (version `1794305004361`)
+over `scored_champion`, 3,523,775 validation pairs in 604 diseases: ECE **0.0034** (10 equal-mass
+bins; 0.0040 equal-width), mean predicted 1.91% against 1.86% observed, per-disease correlation of
+observed and predicted rates 0.970, top 20 per disease predicted **26.1%** against **31.0%**
+observed. It is now asserted in nb3 §7.5 (three checks; nb3 12 checks, 0 stale), so the wording no
+longer rests on §6.2's prose. Steps 2–5: `/api/candidates` returns `n_known` and `base_rate`; the
+Score column, its tooltip and the card's top line are in; the Rank tooltip, *How genes are ranked*,
+and the glossary's `ranking-method` and `rank` entries no longer say uncalibrated, and the
+`uncalibrated` entry became `calibrated-score`. Checked in the browser on HER2+: PIK3CA 0.4067 shows
+41%, HRAS 0.4047 shows 40%, base rate 4.9% (599 of 12,252). Step 6 done.
+
 ### W3 — one assistant *(frontend)*
 1. Remove the Agent Hub button (D1), `agentHubUrl()` and its two `VITE_AGENT_HUB_*` values from
    `app.env` and `config.ts` when nothing else reads them.
@@ -109,6 +120,16 @@ same rows; no text on the page or glossary calls the score uncalibrated; `npm ru
 `shortlist_reviews_log`, and on the card after a page reload; the reviewer field holds the real DSS
 login; `npm run check` clean.
 
+**Done 2026-11-12, except the reviewer check, which needs the deployed app.** Step 1 (approved
+2026-11-12): folder `shortlist_reviews` (`987Q2HfO`, S3 on `dataiku-managed-storage`) and
+FilesInFolder dataset `shortlist_reviews_log` (JSON), both in zone S1 with descriptions. Steps 2–3:
+`services/reviews.py`, `routes/reviews.py`, `ReviewPanel.vue` and the table badge. Two test reviews
+of HRAS × HER2+ were recorded from the local backend, one by API and one through the dialog: both
+are files in the folder, rows in `shortlist_reviews_log`, and on the card after a reload, the newer
+leading and the older marked superseded. An empty comment, an unknown verdict and a gene outside the
+list are refused (422, 422, 404). Locally the reviewer is the API key's owner marked *(local dev)*;
+the browser-login path runs only inside DSS. Step 4 done.
+
 ### W5 — trust page *(frontend)*
 1. Reproduce the link-3 landing fault in the browser. The likely cause: the page scrolls once the
    three payloads arrive, but the family panel loads after that (its own request) and charts
@@ -118,6 +139,16 @@ login; `npm run check` clean.
    by then (it reaches Part 2 only with R6).
 
 **Accept when:** each of the three section links lands on its section's heading.
+
+**Done 2026-11-12.** Two faults reproduced in the browser: clicking the link of the section already
+in the URL did nothing, because the route did not change; and for diseases with a short family panel
+(rheumatoid arthritis, familial hypercholesterolemia, diabetes) section 3 stopped 236 px down,
+because the page ended first. Fixed with a reveal on every link click, a bottom spacer sized to what
+the last section lacks, and one more reveal when the family panel's own request lands within five
+seconds of arriving. All 17 cases checked (four diseases × three links, the repeated link, a cold
+load) land at the heading. Step 2: `graph_relation_counts` groups by `relation` only, and one
+relation carries several display labels, so the section names the 19 relations in readable words
+worded after the graph's labels, with the key in the tooltip.
 
 ### W6 — deploy and close *(user runs the deploy)*
 1. Show the change summary; commit only on approval.

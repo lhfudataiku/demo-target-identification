@@ -32,6 +32,7 @@ from .routes.sources import router as sources_router
 from .routes.assistant import router as assistant_router
 from .routes.evidence import router as evidence_router
 from .routes.calibration import router as calibration_router
+from .routes.reviews import router as reviews_router
 from .routes.families import router as families_router
 from .routes.system import router as system_router
 
@@ -94,6 +95,7 @@ def configure(app: FastAPI) -> None:
     app.include_router(evidence_router)
     app.include_router(families_router)
     app.include_router(calibration_router)
+    app.include_router(reviews_router)
 
     # ── Per-user impersonation (opt-in) ───────────────────────────────────────
     # Uncomment to enforce row-level DSS permissions in every request.

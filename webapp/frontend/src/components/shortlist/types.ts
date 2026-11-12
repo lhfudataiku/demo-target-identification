@@ -16,6 +16,31 @@ export interface Row {
 
 export interface Payload {
   disease_name: string; funnel: { step: string; n: number }[]; rows: Row[]; returned: number
+  /** Recorded associations in the whole pool, and that count over the pool size: what a score compares with. */
+  n_known: number; base_rate: number
+}
+
+/** `/api/reviews`: one recorded review (webapp revision W4). Stored with names beside the indexes,
+    because a graph rebuild renumbers node indexes; `gene_index_now` is today's gene for the stored
+    graph symbol, null when that symbol is no longer in the disease's list. */
+export const VERDICTS = { advance: 'Advance', more_evidence: 'Needs more evidence', reject: 'Reject' } as const
+export type Verdict = keyof typeof VERDICTS
+export const verdictStatus = (v: string) => (v === 'advance' ? 'success' : v === 'reject' ? 'destructive' : 'warning')
+
+export interface Review {
+  review_id: string; reviewed_at: string; reviewer: string
+  verdict: Verdict; verdict_label?: string; comment: string
+  disease_index: number; disease_name: string; gene_index: number; graph_symbol: string
+  hgnc_symbol: string | null; hgnc_id: string | null; rank: number; score: number
+  model_name: string; saved_model: string; model_version: string | null
+  gene_index_now: number | null
+}
+
+/** `score` is the calibrated champion's probability of a RECORDED association (nb3 7.5 asserts the
+    calibration). One decimal below 10%, whole percent above. */
+export const pct = (v: number) => {
+  const p = 100 * v
+  return p < 10 ? `${p.toFixed(1)}%` : `${Math.round(p)}%`
 }
 
 /** One model feature, placed against this disease's own pool.

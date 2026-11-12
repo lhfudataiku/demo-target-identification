@@ -184,6 +184,20 @@ for q in range(5):
     print(f"HUB|Q{q+1}|{ps:6.2f}|{ts:6.2f}|{ts/ps:5.2f}x")
 q5=100*(top.dq==4).mean()/(100*(sc3.dq==4).mean())
 print(f"HUBTOP|highest-degree quintile over-representation at top-50: {q5:.2f}x")
+
+# ==== 7.5  calibration -- what the webapp's Score column may say ====
+# The shortlist shows proba_1 as the chance of a RECORDED association. That wording holds only while the
+# calibrated score tracks the observed rate on held-out diseases, so it is asserted here, not quoted.
+# ECE over 10 equal-mass bins; the top-20 pair shows the head is slightly cautious (predicted < observed).
+_y=sc3.is_target.to_numpy().astype(float); _p=sc3.proba_1.to_numpy().astype(float)
+_b=np.clip(np.digitize(_p,np.quantile(_p,np.linspace(0,1,11))[1:-1]),0,9)
+_ece=sum((_b==k).mean()*abs(_p[_b==k].mean()-_y[_b==k].mean()) for k in range(10) if (_b==k).any())
+_t20=sc3.sort_values(["disease_index","proba_1"],ascending=[True,False]).groupby("disease_index").head(20)
+print(f"CAL|ece={_ece:.4f}|mean_pred={_p.mean():.4f}|observed={_y.mean():.4f}|"
+      f"top20_pred={_t20.proba_1.mean():.4f}|top20_obs={_t20.is_target.mean():.4f}")
+check("7.5 calibration ECE (10 equal-mass bins)",0.0034,round(float(_ece),4),tol=0.001,fmt="{:.4f}")
+check("7.5 top-20 per disease, mean calibrated score",0.2612,round(float(_t20.proba_1.mean()),4),tol=0.005,fmt="{:.4f}")
+check("7.5 top-20 per disease, observed association rate",0.31,round(float(_t20.is_target.mean()),4),tol=0.005,fmt="{:.4f}")
 print(f"\nSUMMARY|{len(FAIL)} STALE")
 for nm,d,l in FAIL: print(f"FAILED|{nm}|doc={d}|live={l}")
 

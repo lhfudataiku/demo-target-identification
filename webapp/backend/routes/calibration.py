@@ -79,6 +79,7 @@ def _champion() -> dict[str, Any]:
                 else getattr(details, "details", {}).get("perf", {})) or {}
         out = {k: float(snip[src]) for k, src in keys.items()}
         out["source"] = f"live · version {vid}"
+        out["version"] = str(vid)
         return out
     except Exception as e:  # noqa: BLE001 -- the reason is the point
         logger.warning("champion metrics: live read failed, using recorded values: %s", e)

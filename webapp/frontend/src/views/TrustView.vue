@@ -90,14 +90,29 @@
   // fixed-height ancestors and push the sidebar off screen.
   const route = useRoute()
   const pane = ref<HTMLElement | null>(null)
+  // Room below the last section so its heading can reach the top: for a disease with a short family
+  // panel the page otherwise ends first and section 3 stops part-way down the screen.
+  const spacer = ref(0)
+  let revealedAt = 0
   function reveal(id: unknown) {
+    revealedAt = Date.now()
     nextTick(() => {
       const el = typeof id === 'string' ? document.getElementById(`section-${id}`) : null
-      if (!el || !pane.value) return
-      pane.value.scrollTop += el.getBoundingClientRect().top - pane.value.getBoundingClientRect().top - 16
+      const p = pane.value
+      if (!el || !p) return
+      const target = p.scrollTop + el.getBoundingClientRect().top - p.getBoundingClientRect().top - 16
+      const natural = p.scrollHeight - spacer.value - p.clientHeight
+      spacer.value = Math.max(0, Math.ceil(target - natural))
+      nextTick(() => { p.scrollTop = target })
     })
   }
   watch(() => route.query.section, reveal)
+  // The family panel has its own request and lands after the others; heights above or at the target
+  // change with it, so reveal again if the reader arrived moments ago (never later, which would yank
+  // a reader who has scrolled on).
+  watch(panelLoading, (busy) => {
+    if (!busy && Date.now() - revealedAt < 5000) reveal(route.query.section)
+  })
 
   onMounted(async () => {
     // Land on the section at once, against the placeholders' height, so a slow
@@ -140,7 +155,7 @@
           </label>
           <nav class="flex flex-wrap gap-2">
             <Button v-for="s in SECTIONS" :key="s.id" variant="ghost" size="sm" as-child>
-              <router-link :to="{ name: 'trust', query: { section: s.id } }">{{ s.act }} · {{ s.title }}</router-link>
+              <router-link :to="{ name: 'trust', query: { section: s.id } }" @click="reveal(s.id)">{{ s.act }} · {{ s.title }}</router-link>
             </Button>
           </nav>
         </header>
@@ -183,6 +198,7 @@
           Not shown anywhere on this page: pooled AUC, the ablation ladder, any hyperparameter, and any
           headline number without the spread beside it.
         </p>
+        <div v-if="spacer" aria-hidden="true" class="shrink-0" :style="{ height: `${spacer}px` }" />
       </div>
     </div>
   </div>

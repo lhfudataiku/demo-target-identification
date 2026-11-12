@@ -11,7 +11,7 @@
   import { ArrowExternalLink, ChevronDown, ChevronRight } from '@dataiku/vue-icons'
   import { StatusBadge } from 'bs-blueprint'
   import { apiUrl } from '@/utils/api'
-  import { tractLabel, type Detail, type Identity, type Row } from './types'
+  import { pct, tractLabel, type Detail, type Identity, type Row } from './types'
 
   const props = defineProps<{ row: Row; detail: Detail | null; diseaseName: string }>()
 
@@ -49,6 +49,7 @@
     <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
       Selected candidate · rank {{ row.rank_in_disease.toLocaleString() }}<template v-if="detail?.pool_size">
         of {{ detail.pool_size.toLocaleString() }}</template> for {{ diseaseName }}
+      · {{ pct(row.score) }} chance of a recorded association
     </p>
     <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
       <h2 class="font-mono text-3xl font-semibold tracking-tight">{{ row.gene_name }}</h2>

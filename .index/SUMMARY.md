@@ -21,17 +21,17 @@ whose wording already flags them as historical are dropped.
 |---|--:|--:|--:|--:|
 | `docs/demo/BREAST_SURGEON_BRIEFING.md` | 0 | 8 | 21 | 29 |
 | `docs/demo/DEMO_NARRATIVE.md` | 1 | 8 | 4 | 13 |
-| `docs/demo/WEBAPP_DESIGN.md` | 0 | 50 | 96 | 146 |
+| `docs/demo/WEBAPP_DESIGN.md` | 0 | 52 | 97 | 149 |
 | `docs/demo/panel_selection/README.md` | 0 | 6 | 27 | 33 |
 | `docs/graph/GRAPH_BUILDING.md` | 1 | 2 | 145 | 148 |
 | `docs/overview/PROJECT_CONTEXT.md` | 0 | 2 | 18 | 20 |
-| `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 10 | 112 | 122 |
+| `docs/prioritizer/FEATURE_AUDIT.md` | 0 | 11 | 111 | 122 |
 | `docs/prioritizer/PHASE3_PREREGISTRATION.md` | 0 | 9 | 56 | 65 |
-| **total** | **2** | **95** | **479** | **576** |
+| **total** | **2** | **98** | **479** | **579** |
 
 ## Risk surface — model-derived, unguarded, no historical wording
 
-**121 rows.** Of 479 total orphans, these are the model-dependent ones: the numbers that move
+**120 rows.** Of 479 total orphans, these are the model-dependent ones: the numbers that move
 when the champion changes and that no notebook would catch.
 
 | file:line | §  | value | context |
@@ -52,21 +52,21 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/WEBAPP_DESIGN.md:495` | 4 | 0.9025 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
 | `docs/demo/WEBAPP_DESIGN.md:495` | 4 | 0.9364 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
 | `docs/demo/WEBAPP_DESIGN.md:495` | 4 | 0.9326 | \| The panel \| up front · every term with its 95% interval, thin terms flagged; the rest  |
-| `docs/demo/WEBAPP_DESIGN.md:518` | 4 | 12,272 | \| The ranked list \| paged table, 15 rows a page \| 12,272 rows: rank, gene, class, tract |
-| `docs/demo/WEBAPP_DESIGN.md:659` | 4 | 2.7 | \| Fair fight, not a rigged one \| **3.1× / 2.7× / 2.3×** (pooled) at K=10/50/200 against  |
-| `docs/demo/WEBAPP_DESIGN.md:661` | 4 | 5.1 | \| The harder version \| known targets only, by connectivity quintile: calibrated score 0. |
-| `docs/demo/WEBAPP_DESIGN.md:671` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
-| `docs/demo/WEBAPP_DESIGN.md:671` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
-| `docs/demo/WEBAPP_DESIGN.md:673` | 4 | 21.3 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
-| `docs/demo/WEBAPP_DESIGN.md:673` | 4 | 5.2 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
-| `docs/demo/WEBAPP_DESIGN.md:673` | 4 | 6.7 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
-| `docs/demo/WEBAPP_DESIGN.md:673` | 4 | 3.2 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
-| `docs/demo/WEBAPP_DESIGN.md:674` | 4 | 21.3 | \| Where the mean comes from \| the per-disease distribution behind 21.3× \| |
-| `docs/demo/WEBAPP_DESIGN.md:676` | 4 | 16.9 | **The distribution card is not optional.** 16.9× is a *mean of per-disease lifts on a heav |
-| `docs/demo/WEBAPP_DESIGN.md:777` | 6 | 0.9776 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
-| `docs/demo/WEBAPP_DESIGN.md:777` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
-| `docs/demo/WEBAPP_DESIGN.md:916` | 9.6 | 1.85 | Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0 |
-| `docs/demo/WEBAPP_DESIGN.md:916` | 9.6 | 0.05 | Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0 |
+| `docs/demo/WEBAPP_DESIGN.md:518` | 4 | 12,272 | \| The ranked list \| paged table, 15 rows a page \| 12,272 rows: rank, **score**, gene (w |
+| `docs/demo/WEBAPP_DESIGN.md:660` | 4 | 2.7 | \| Fair fight, not a rigged one \| **3.1× / 2.7× / 2.3×** (pooled) at K=10/50/200 against  |
+| `docs/demo/WEBAPP_DESIGN.md:662` | 4 | 5.1 | \| The harder version \| known targets only, by connectivity quintile: calibrated score 0. |
+| `docs/demo/WEBAPP_DESIGN.md:672` | 4 | 12,272 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/WEBAPP_DESIGN.md:672` | 4 | 11,673 | \| Delete the answer key \| 12,272 scored → 599 known → **11,673** re-ranked \| |
+| `docs/demo/WEBAPP_DESIGN.md:674` | 4 | 21.3 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
+| `docs/demo/WEBAPP_DESIGN.md:674` | 4 | 5.2 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
+| `docs/demo/WEBAPP_DESIGN.md:674` | 4 | 6.7 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
+| `docs/demo/WEBAPP_DESIGN.md:674` | 4 | 3.2 | \| Lift vs K, by ground truth \| approved 21.3× → 5.2× ; investigational 6.7× → 3.2×, deca |
+| `docs/demo/WEBAPP_DESIGN.md:675` | 4 | 21.3 | \| Where the mean comes from \| the per-disease distribution behind 21.3× \| |
+| `docs/demo/WEBAPP_DESIGN.md:677` | 4 | 16.9 | **The distribution card is not optional.** 16.9× is a *mean of per-disease lifts on a heav |
+| `docs/demo/WEBAPP_DESIGN.md:778` | 6 | 0.9776 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
+| `docs/demo/WEBAPP_DESIGN.md:778` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
+| `docs/demo/WEBAPP_DESIGN.md:922` | 9.6 | 1.85 | Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0 |
+| `docs/demo/WEBAPP_DESIGN.md:922` | 9.6 | 0.05 | Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0 |
 | `docs/graph/GRAPH_BUILDING.md:570` | 7.3 | 129,606 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
 | `docs/graph/GRAPH_BUILDING.md:570` | 7.3 | 2,851,510 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
 | `docs/overview/PROJECT_CONTEXT.md:113` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
@@ -97,7 +97,7 @@ when the champion changes and that no notebook would catch.
 | `docs/prioritizer/FEATURE_AUDIT.md:161` | 4 | 0.534 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
 | `docs/prioritizer/FEATURE_AUDIT.md:161` | 4 | 0.4864 | \| `prox_n_reach` \| +0.104 \| −0.534 \| 0.4864 \| **dropped** — ρ = +0.982 with kernel, b |
 
-*61 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
+*60 more in `claims.tsv` — filter `status=ORPHAN` and empty `hint`.*
 
 ## Decision indexes
 

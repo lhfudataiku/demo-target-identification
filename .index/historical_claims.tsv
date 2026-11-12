@@ -77,7 +77,7 @@ archive/DASHBOARD_BUILD_LOG.md	391	12.7	0.749	ORPHAN				| **triple-negative brea
 archive/DASHBOARD_BUILD_LOG.md	391	12.7	1.041	ORPHAN				| **triple-negative breast** | **8** | 0.8949 | **[0.749, 1.041]** |
 archive/DASHBOARD_BUILD_LOG.md	393	12.7	1.041	ORPHAN		y		**TNBC's upper bound is 1.041 — impossible for an AUC.** That single fact demonstrates the point better
 archive/DASHBOARD_BUILD_LOG.md	433	12.8	12,272	ORPHAN				| 3 | Funnel as a Sankey | ⚠ **prototype before committing.** The last stage is 38 of 12,272 — 0.3% — which re
-archive/DASHBOARD_BUILD_LOG.md	433	12.8	0.3	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)			| 3 | Funnel as a Sankey | ⚠ **prototype before committing.** The last stage is 38 of 12,272 — 0.3% — which re
+archive/DASHBOARD_BUILD_LOG.md	433	12.8	0.3	VALUE_ONLY	nb3_validation_and_plots.py:7.5 top-20 per disease, mean calibrated score			| 3 | Funnel as a Sankey | ⚠ **prototype before committing.** The last stage is 38 of 12,272 — 0.3% — which re
 archive/DASHBOARD_BUILD_LOG.md	450	12.9	0.002	ORPHAN		y		| Orthogonality (r = +0.002) | **act 2** — the AUC spread | *"a high AUC in act 2 does not buy therapeutic rel
 archive/DASHBOARD_BUILD_LOG.md	453	12.9	0.9354	ORPHAN				| The 0.9354 lookup | **act 2** | *"this is why act 2 led with a distribution and not a score"* |
 archive/DASHBOARD_BUILD_LOG.md	486	12.11	2.9	VALUE_ONLY	nb4_results_three_axes.py:8.4 macro dm lift @10	y		1. **`2.9×` degree-matched at top-10 is unguarded and matches no current estimator.** The guarded
@@ -569,7 +569,7 @@ archive/decisions/DECISIONS_2026-08-31.md	131	-	0.0023	ORPHAN		y		| 2026-08-21 |
 archive/decisions/DECISIONS_2026-08-31.md	131	-	3.29	ORPHAN		y		| 2026-08-21 | **`m7-f14` deployed (saved model `hJLGoYn4`, session s11 XGBoost) and is the first model in the
 archive/decisions/DECISIONS_2026-08-31.md	131	-	3.18	ORPHAN		y		| 2026-08-21 | **`m7-f14` deployed (saved model `hJLGoYn4`, session s11 XGBoost) and is the first model in the
 archive/decisions/DECISIONS_2026-08-31.md	132	-	0.567	ORPHAN		y	hist	| 2026-08-21 | **REFUTED — the module-size mechanism `prox_kernel` was built on.** Predicted the gain would co
-archive/decisions/DECISIONS_2026-08-31.md	132	-	0.003	ORPHAN		y	hist	| 2026-08-21 | **REFUTED — the module-size mechanism `prox_kernel` was built on.** Predicted the gain would co
+archive/decisions/DECISIONS_2026-08-31.md	132	-	0.003	VALUE_ONLY	nb3_validation_and_plots.py:7.5 calibration ECE (10 equal-mass bins)	y	hist	| 2026-08-21 | **REFUTED — the module-size mechanism `prox_kernel` was built on.** Predicted the gain would co
 archive/decisions/DECISIONS_2026-08-31.md	132	-	0.0055	ORPHAN		y	hist	| 2026-08-21 | **REFUTED — the module-size mechanism `prox_kernel` was built on.** Predicted the gain would co
 archive/decisions/DECISIONS_2026-08-31.md	132	-	0.0025	ORPHAN		y	hist	| 2026-08-21 | **REFUTED — the module-size mechanism `prox_kernel` was built on.** Predicted the gain would co
 archive/decisions/DECISIONS_2026-08-31.md	132	-	0.0117	ORPHAN		y	hist	| 2026-08-21 | **REFUTED — the module-size mechanism `prox_kernel` was built on.** Predicted the gain would co
@@ -614,7 +614,7 @@ archive/decisions/DECISIONS_2026-08-31.md	136	-	1.34	ORPHAN		y		| 2026-08-21 | *
 archive/decisions/DECISIONS_2026-08-31.md	137	-	3.29	ORPHAN		y	hist	| 2026-08-21 | **RECOMMENDED CHAMPION: `m7-f14` (`hJLGoYn4`).** Its two gains over m6 were **association (t =
 archive/decisions/DECISIONS_2026-08-31.md	137	-	3.18	ORPHAN		y	hist	| 2026-08-21 | **RECOMMENDED CHAMPION: `m7-f14` (`hJLGoYn4`).** Its two gains over m6 were **association (t =
 archive/decisions/DECISIONS_2026-08-31.md	137	-	2.56	ORPHAN		y	hist	| 2026-08-21 | **RECOMMENDED CHAMPION: `m7-f14` (`hJLGoYn4`).** Its two gains over m6 were **association (t =
-archive/decisions/DECISIONS_2026-08-31.md	137	-	0.003	ORPHAN		y	hist	| 2026-08-21 | **RECOMMENDED CHAMPION: `m7-f14` (`hJLGoYn4`).** Its two gains over m6 were **association (t =
+archive/decisions/DECISIONS_2026-08-31.md	137	-	0.003	VALUE_ONLY	nb3_validation_and_plots.py:7.5 calibration ECE (10 equal-mass bins)	y	hist	| 2026-08-21 | **RECOMMENDED CHAMPION: `m7-f14` (`hJLGoYn4`).** Its two gains over m6 were **association (t =
 archive/decisions/DECISIONS_2026-08-31.md	137	-	0.1900	ORPHAN		y	hist	| 2026-08-21 | **RECOMMENDED CHAMPION: `m7-f14` (`hJLGoYn4`).** Its two gains over m6 were **association (t =
 archive/decisions/DECISIONS_2026-08-31.md	137	-	0.1935	ORPHAN		y	hist	| 2026-08-21 | **RECOMMENDED CHAMPION: `m7-f14` (`hJLGoYn4`).** Its two gains over m6 were **association (t =
 archive/decisions/DECISIONS_2026-08-31.md	139	-	0.8230	ORPHAN		y		| 2026-08-21 | **`m7-f14` adopted as champion and every headline number re-measured on it.** Header now reads
@@ -693,7 +693,7 @@ archive/decisions/DECISIONS_2026-08-31.md	170	-	1.72	ORPHAN			hist	| 2026-08-21 
 archive/decisions/DECISIONS_2026-08-31.md	170	-	1.86	ORPHAN			hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
 archive/decisions/DECISIONS_2026-08-31.md	170	-	19.6	ORPHAN			hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
 archive/decisions/DECISIONS_2026-08-31.md	170	-	1.63	ORPHAN			hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
-archive/decisions/DECISIONS_2026-08-31.md	170	-	0.3	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)		hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
+archive/decisions/DECISIONS_2026-08-31.md	170	-	0.3	VALUE_ONLY	nb3_validation_and_plots.py:7.5 top-20 per disease, mean calibrated score		hist	| 2026-08-21 | **Phase 3's open question ANSWERED, and it falsified two of my own pre-registered predictions b
 archive/decisions/DECISIONS_2026-08-31.md	172	-	1,157	ORPHAN				| 2026-08-21 | **Phase 3 verdict for the handoff: defensible as a COVERAGE play, weak as a quality play.** The
 archive/decisions/DECISIONS_2026-08-31.md	172	-	2,088	ORPHAN				| 2026-08-21 | **Phase 3 verdict for the handoff: defensible as a COVERAGE play, weak as a quality play.** The
 archive/decisions/DECISIONS_2026-08-31.md	172	-	6.3	ORPHAN				| 2026-08-21 | **Phase 3 verdict for the handoff: defensible as a COVERAGE play, weak as a quality play.** The
@@ -968,7 +968,7 @@ archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	722	6.4	0.328	ORPHAN		y		**
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	738	6.4	1.2	ORPHAN				So lowering it converts the same 43 diseases and ~1.2% of pool rows from NULL to real **across three
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	740	6.4	22.89	ORPHAN		y		worst null gaps by label (`dwpc_GFGD` **−22.89 pp**, `dwpc_GBGD` **−17.75 pp**), which is the very
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	740	6.4	17.75	ORPHAN		y		worst null gaps by label (`dwpc_GFGD` **−22.89 pp**, `dwpc_GBGD` **−17.75 pp**), which is the very
-archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	778	6.4	0.003	ORPHAN		y	hist	> | graded distance instead of the minimum | ✅ **done** (`m7`, `prox_kernel`) — and the saturation mechanism p
+archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	778	6.4	0.003	VALUE_ONLY	nb3_validation_and_plots.py:7.5 calibration ECE (10 equal-mass bins)	y	hist	> | graded distance instead of the minimum | ✅ **done** (`m7`, `prox_kernel`) — and the saturation mechanism p
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	796	6.4	0.8197	ORPHAN		y		| association — macro AUROC | 0.8197 | 0.8200 | 0.8175 | 0.8197 | **0.8230** | **t = +3.29, 0 ties** |
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	796	6.4	0.8200	ORPHAN		y		| association — macro AUROC | 0.8197 | 0.8200 | 0.8175 | 0.8197 | **0.8230** | **t = +3.29, 0 ties** |
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	796	6.4	0.8175	ORPHAN		y		| association — macro AUROC | 0.8197 | 0.8200 | 0.8175 | 0.8197 | **0.8230** | **t = +3.29, 0 ties** |
@@ -1041,7 +1041,7 @@ archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	854	6.4	0.1099	ORPHAN		y	hi
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	855	6.4	0.6886	ORPHAN				> **worst of the five** (0.6886) while route-supported is the **best** (0.7471) — the largest gap in the
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	855	6.4	0.7471	ORPHAN				> **worst of the five** (0.6886) while route-supported is the **best** (0.7471) — the largest gap in the
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	856	6.4	0.0585	ORPHAN				> sequence (**0.0585**), which under §5.2.1 reads as the gain concentrating where features actually
-archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	860	6.4	0.003	ORPHAN		y		> **Spearman(module size, per-disease delta) = −0.003**; the gain is flat above size 20 and *largest in
+archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	860	6.4	0.003	VALUE_ONLY	nb3_validation_and_plots.py:7.5 calibration ECE (10 equal-mass bins)	y		> **Spearman(module size, per-disease delta) = −0.003**; the gain is flat above size 20 and *largest in
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	861	6.4	0.0055	ORPHAN				> the smallest* modules (20–60: +0.0055; >300: +0.0025), while the <20 bucket got **worse** (−0.0117,
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	861	6.4	0.0025	ORPHAN				> the smallest* modules (20–60: +0.0055; >300: +0.0025), while the <20 bucket got **worse** (−0.0117,
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	861	6.4	0.0117	ORPHAN				> the smallest* modules (20–60: +0.0055; >300: +0.0025), while the <20 bucket got **worse** (−0.0117,
@@ -1200,7 +1200,7 @@ archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1116	7.4	3.16	ORPHAN				| *
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1117	7.4	1.60	ORPHAN				| `Ion channel` class | 1.60 | **11.9** |
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1118	7.4	1.45	ORPHAN				| `Structural protein` class | 1.45 | **12.3** |
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1119	7.4	0.90	ORPHAN				| `Secreted protein` class | 0.90 | 0.26 |
-archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1119	7.4	0.26	ORPHAN				| `Secreted protein` class | 0.90 | 0.26 |
+archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1119	7.4	0.26	VALUE_ONLY	nb3_validation_and_plots.py:7.5 top-20 per disease, mean calibrated score			| `Secreted protein` class | 0.90 | 0.26 |
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1125	7.4	0.76	ORPHAN			hist	The reference measured 0.76× / 3× for membrane receptors and 13× / 15.6× for ion channels and
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1125	7.4	15.6	ORPHAN			hist	The reference measured 0.76× / 3× for membrane receptors and 13× / 15.6× for ion channels and
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1126	7.4	0.78	ORPHAN				structural proteins; the rebuild gives 0.78× / 3.16× and 11.9× / 12.3×. Same direction, same order of
@@ -1472,7 +1472,7 @@ archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1871	10.2	11.9	ORPHAN				| 
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1872	10.2	1.45	ORPHAN				| `Structural protein` | 1.45 | 12.3× |
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1872	10.2	12.3	ORPHAN				| `Structural protein` | 1.45 | 12.3× |
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1873	10.2	0.90	ORPHAN				| `Secreted protein` | 0.90 | 0.26× |
-archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1873	10.2	0.26	ORPHAN				| `Secreted protein` | 0.90 | 0.26× |
+archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1873	10.2	0.26	VALUE_ONLY	nb3_validation_and_plots.py:7.5 top-20 per disease, mean calibrated score			| `Secreted protein` | 0.90 | 0.26× |
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1886	10.2	0.35	VALUE_ONLY	nb3b_hub_bias_meter.py:7.2 champion rho(degree,proba)			| < 0.35 *(intolerant)* | **1.37×** | 2.07× |
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1886	10.2	1.37	ORPHAN				| < 0.35 *(intolerant)* | **1.37×** | 2.07× |
 archive/prioritizer/TARGET_PRIORITIZER_PRE_PHASE3.md	1886	10.2	2.07	ORPHAN				| < 0.35 *(intolerant)* | **1.37×** | 2.07× |

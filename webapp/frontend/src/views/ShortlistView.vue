@@ -26,8 +26,9 @@
   import LineageTab from '@/components/shortlist/LineageTab.vue'
   import OverviewTab from '@/components/shortlist/OverviewTab.vue'
   import RankingTab from '@/components/shortlist/RankingTab.vue'
+  import ReviewPanel from '@/components/shortlist/ReviewPanel.vue'
   import SourcesTab from '@/components/shortlist/SourcesTab.vue'
-  import { type Detail, type Drivers, type Payload, type Row, type Selection, type SourcesDoc } from '@/components/shortlist/types'
+  import { type Detail, type Drivers, type Payload, type Review, type Row, type Selection, type SourcesDoc } from '@/components/shortlist/types'
   import { useSelectionStore } from '@/stores/selection'
   import { apiUrl } from '@/utils/api'
 
@@ -71,6 +72,27 @@
   })
   // Immediate: returning from the evidence page, the shared disease is already set.
   watch([diseaseIndex, novelOnly, tractableOnly, excludeSecreted, maxRank], loadCandidates, { immediate: true })
+
+  /* ── Recorded reviews (W4) ───────────────────────────────────────────────── */
+  // The disease's reviews, newest first. A failure here is shown on the card and blocks nothing else.
+  const reviews = ref<Review[]>([])
+  const reviewsError = ref<string | null>(null)
+  async function loadReviews() {
+    reviews.value = []; reviewsError.value = null
+    const d = diseaseIndex.value
+    if (d === undefined) return
+    try {
+      const res = await fetch(apiUrl(`/api/reviews?disease=${d}`))
+      const body = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(body?.detail ?? `HTTP ${res.status}`)
+      if (diseaseIndex.value === d) reviews.value = body.reviews
+    } catch (e) {
+      if (diseaseIndex.value === d) reviewsError.value = `Reviews unavailable: ${e instanceof Error ? e.message : String(e)}`
+    }
+  }
+  watch(diseaseIndex, loadReviews, { immediate: true })
+  const reviewed = computed(() => new Set(reviews.value.map((r) => r.gene_index_now).filter((g): g is number => g !== null)))
+  const onRecorded = (r: Review) => { reviews.value = [r, ...reviews.value] }
 
   /* ── The selected candidate ──────────────────────────────────────────────── */
   const sel = ref<Row | null>(null)
@@ -215,7 +237,7 @@
         <CandidateTable v-model:novel-only="novelOnly" v-model:tractable-only="tractableOnly"
                         v-model:exclude-secreted="excludeSecreted" v-model:max-rank="maxRank"
                         :data="data" :loading="loading" :selected-gene="sel?.gene_index ?? null"
-                        @select="select" />
+                        :reviewed="reviewed" @select="select" />
 
         <Card id="candidate">
           <CardContent class="flex flex-col gap-6">
@@ -226,6 +248,9 @@
               <div class="flex flex-wrap gap-2">
                 <Button size="sm" @click="assistantOpen = true"><AiAgent class="size-4" /> Ask about {{ sel.gene_name }}</Button>
               </div>
+              <ReviewPanel :row="sel" :disease-index="diseaseIndex!" :disease-name="diseaseName" :reviews="reviews"
+                           @recorded="onRecorded" />
+              <p v-if="reviewsError" class="text-xs text-muted-foreground">{{ reviewsError }}</p>
               <AssistantSheet v-model:open="assistantOpen" :disease-index="diseaseIndex!" :gene-index="sel.gene_index"
                               :gene="sel.gene_name" :disease-name="diseaseName" />
               <Tabs v-model="tab">

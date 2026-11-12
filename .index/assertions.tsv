@@ -36,6 +36,9 @@ nb3_validation_and_plots.py	7.3	7.3 per-family macro AUC	0.8003
 nb3_validation_and_plots.py	7.4	7.4 drug-target macro AUC	0.6703
 nb3_validation_and_plots.py	7.4	7.4 orthogonality R2	0.0278
 nb3_validation_and_plots.py	7.4	7.4 orthogonality pearson r	0.167
+nb3_validation_and_plots.py	7.5	7.5 calibration ECE (10 equal-mass bins)	0.0034
+nb3_validation_and_plots.py	7.5	7.5 top-20 per disease, mean calibrated score	0.2612
+nb3_validation_and_plots.py	7.5	7.5 top-20 per disease, observed association rate	0.31
 nb3_validation_and_plots.py	-	header per-split-key AUC	0.7999
 nb3_validation_and_plots.py	-	header pooled AUC	0.8908
 nb3b_hub_bias_meter.py	7.2	7.2 champion Q1 probability	0.0915

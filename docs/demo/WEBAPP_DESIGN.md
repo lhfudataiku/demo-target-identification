@@ -515,13 +515,14 @@ graph.
 | claim | where | asserts |
 |---|---|---|
 | The contract | not a block of its own: the Overview tab's *What these sources cannot tell you* carries the therapeutic-relevance clause, and the liability tooltip and note carry the safety one. The subtype clause is not on the page | the deliverable in one sentence, and **the three things it does not do** |
-| The ranked list | paged table, 15 rows a page | 12,272 rows: rank, gene, class, tractability, the association badge, the drug-evidence badges and the safety badge. The SHAP drivers moved to the candidate's *Why this ranking?* tab |
+| The ranked list | paged table, 15 rows a page | 12,272 rows: rank, **score**, gene (with a *Reviewed* badge once a review is recorded), class, tractability, the association badge, the drug-evidence badges and the safety badge. The SHAP drivers moved to the candidate's *Why this ranking?* tab. The score column (webapp revision W2, 2026-11-12) shows the calibrated champion's `score` as a percentage, one decimal below 10%, and its tooltip gives the disease's base rate (recorded associations over the whole pool) and says the value is a floor for novel genes |
 | The validated filter | three checkboxes, the rank cut-off and the live funnel | **12,272 → novel 11,673 → tractable 7,950 → not secreted 7,273 → rank ≤ 200 → 38** (re-derived 2026-10-26 through the backend's own filter; previously 7,951 and 7,274) |
-| Candidate detail | the card below the list: a header, then the Overview and *Why this ranking?* tabs | rank against the pool, every flag and the gene's HGNC identity in the header; the top five SHAP drivers, each with its percentile in **this disease's own distribution** |
+| Candidate detail | the card below the list: a header, then the Overview and *Why this ranking?* tabs | rank against the pool and the score as *N% chance of a recorded association*, every flag and the gene's HGNC identity in the header; the top five SHAP drivers, each with its percentile in **this disease's own distribution** |
 | The drugs behind the badges | Drugs & graph tab · table under the badges | every drug that acts on the gene **and** is recorded for exactly this disease node: name, highest stage, action on the gene, DrugBank id, release. ERBB2 × HER2+: tucatinib (approval), poziotinib (phase 2). An empty table reads *no link in snapshot* |
 | Trials and papers that name the gene | Trials and Literature tabs, searched when either tab is first opened | the records the searches retrieved that name the gene, then up to five of each with a role, a subtype match, a reason and a quote found in the passage; the rest listed below. Counts say *retrieved*, never *all*; a trial's phase or status is never read as efficacy |
 | The mechanism, on the graph | Drugs & graph tab · shared Explorer card with five independent bounded presets | prepared interaction, pathway, molecular-function, biological-process and drug-context queries for the selected disease and gene |
 | Questions about the pair | *Ask about {gene}* under the card's header opens the assistant panel (the *Explore in Agent Hub* link beside it was removed 2026-11-09, webapp revision D1) | four starter questions and a free one, answered over the graph, CT.gov and PubMed; every sentence shows its citations or the *not from a retrieved source* mark, and every graph result its Cypher |
+| Recorded reviews | *Record review* under the card's header opens a dialog: *Advance*, *Needs more evidence* or *Reject*, and a required comment (webapp revision W4, D2) | written to the folder `shortlist_reviews` with the reviewer's DSS login, rank, score and model; the pair's reviews are listed on the card, the newest leading and earlier ones marked superseded. The app proposes no verdict |
 | *How do we know?* | the Overview tab's model box (section 2) and association box (section 1); the intro row with all three links was removed 2026-11-09 (webapp revision W1) | links to *Why trust the list*, landing on the section |
 
 **Selection, not two pickers.** Clicking a row in the ranked list drives the header and every tab, and
@@ -778,6 +779,7 @@ the pivot matters more than it looks.
 | Language that prescribes research direction — *"you should pursue…"*, *"the next target is…"* | we are a platform company, not a domain authority. Prescribing costs the room | the app ranks and explains; every verb in the copy is about evidence, never about what to do next |
 | *Live* (`DEC-DEMO-004`): an assistant sentence from general knowledge rendered like a sourced one | the LLM's background knowledge reads as retrieved evidence, and the careful parts of the demo stop being trusted with it | every sourced sentence cites a record; a general-knowledge sentence is marked *not from a retrieved source* and is never a citation; a graph answer shows its Cypher |
 | *Live* (`DEC-DEMO-004`): an LLM role label taken on trust | a label with no checkable basis is an unreviewed claim about a paper or trial | every label carries a quote the backend finds in the passage after whitespace normalisation; a label that fails is dropped and the record stays, unlabelled |
+| *Live* (webapp revision W2): the calibrated score read as the chance of a good target | the label is a **recorded** association (Open Targets genetic or somatic evidence, or a phenotype-derived link), and unlabeled genes are not negatives | the column and card say *chance of a recorded association*, the tooltip gives the disease's base rate and calls the value a floor for novel genes; nb3 §7.5 asserts the calibration the wording relies on (ECE 0.0034 over 604 held-out diseases; top 20 per disease predicted 26.1% against 31.0% observed) |
 | *Live*: "no drug" inferred from a missing drug link | drug links are exact-node: lapatinib's and neratinib's approvals sit on *breast cancer*, not on the HER2+ subtype | the copy says *no link in snapshot*, never *no drug* |
 
 ---
@@ -796,11 +798,15 @@ the pivot matters more than it looks.
 
 ## 8. Chrome, and what the app is not
 
-- **No login, no user management, no persistence.** This is a demo surface over read-only flow output.
+- **No login, no user management.** This is a demo surface over read-only flow output, with two
+  writes named below.
 - **No writes to DSS.** The one exception worth considering later is act 3's clinician review form
   (`breast_shortlist`), and it is out of scope until someone asks. **Exception**
   (`DEC-DEMO-004`): retrieved trials and papers, with their selection, are cached per (disease,
-  gene) pair in the managed folder `act4_evidence_cache`. The in-app assistant's conversations are never stored.
+  gene) pair in the managed folder `act4_evidence_cache`. **Exception** (webapp revision W4,
+  2026-11-12): a recorded review is written to the managed folder `shortlist_reviews`, one file per
+  review, never edited, with the DSS login of the browser that sent it. The in-app assistant's
+  conversations are never stored.
 - **No LLM anything.** A chatbot over a ranked gene list is the kind of thing that makes a careful
   audience stop trusting the careful parts. The template's chat block, like its other optional blocks
   (wizard, charts, flow, documents), was never enabled and was deleted on 2026-10-15, together with the
