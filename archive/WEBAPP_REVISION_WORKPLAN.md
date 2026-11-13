@@ -1,16 +1,20 @@
 # Webapp revision — workplan
 
-> **Lifecycle:** Active plan · **Audience:** webapp maintainers and demo reviewers · **Authority:**
+> **Lifecycle:** Historical · **Audience:** webapp maintainers and demo reviewers · **Authority:**
 > the scope, sequence and acceptance checks for the shortlist-page revision drawn from the
 > 2026-11-09 review: a shorter page top, cleaner filters, the calibrated score in the table, one
 > assistant, and a recorded review per candidate · **Update when:** a decision in §3 is taken, a
 > step is accepted or re-scoped · **Generated dependencies:** none · **Excludes:** the webapp's
-> architecture and data contracts, in [`WEBAPP_DESIGN.md`](../demo/WEBAPP_DESIGN.md) and
-> [`WEBAPP_DATASET_MAP.md`](WEBAPP_DATASET_MAP.md); the graph revision, in
-> [`GRAPH_REVISION_WORKPLAN.md`](../../archive/GRAPH_REVISION_WORKPLAN.md) (archived 2026-11-10).
+> architecture and data contracts, in [`WEBAPP_DESIGN.md`](../docs/demo/WEBAPP_DESIGN.md) and
+> [`WEBAPP_DATASET_MAP.md`](../docs/operations/WEBAPP_DATASET_MAP.md); the graph revision, in
+> [`GRAPH_REVISION_WORKPLAN.md`](GRAPH_REVISION_WORKPLAN.md) (archived 2026-11-10).
 
-**Status: IN PROGRESS — D1–D4 decided 2026-11-09; W1 and W3 deployed 2026-11-10 (`cdf6810`); W2, W4 and W5 done 2026-11-12 and checked locally against live data (`check: ok`); W6 (commit, deploy, live check, archive) remains.** Every DSS change
-and every `make deploy` below needs explicit approval at the step where it happens.
+**Status: DONE 2026-11-13; archived.** D1–D4 decided 2026-11-09. W1 and W3 deployed 2026-11-10
+(`cdf6810`); W2, W4 and W5 deployed to `OlmPX9a` 2026-11-12 (`45239cb`), after local checks against
+live data. Not done, by the user's choice at close: the live check that a review records the
+reviewer's real DSS login (the code path runs only inside DSS), and the removal of the two HRAS ×
+HER2+ test reviews recorded on 2026-11-12, which stay in `shortlist_reviews`. D2 and D3 entered the
+register as `DEC-DEMO-006`; D1 is noted under `DEC-DEMO-004` and D4 is covered by `DEC-MODEL-002`.
 
 This plan did not wait on the graph revision, which finished 2026-11-10: `DEMO_TARGET_IDENTIFICATION`
 now holds the R5 graph and a champion retrained on it, and the served data was rebuilt with it. Step W4
@@ -20,14 +24,14 @@ plans for future renumbering (see D3), as `DEC-MEAS-006` requires.
 
 | # | Feedback | Finding in the code | Change |
 |---|---|---|---|
-| 1 | An X (Twitter) logo appears in the app | The glossary drawer's close button imports `X` from `@dataiku/vue-icons` ([ActGlossaryDrawer.vue](../../webapp/frontend/src/components/act/ActGlossaryDrawer.vue)). In the DSS icon set that is the X logo; the close glyph is `Dismiss`. No other file uses `X`. | Use `Dismiss`. |
-| 2 | The page top is too wordy and reads as hard-coded; the links to the trust page do not belong; link 3 lands in the wrong place | [ShortlistView.vue](../../webapp/frontend/src/views/ShortlistView.vue) says the same thing three times: the hero paragraph, the table's description ("Nothing is pre-filtered" twice) and a footer listing what the page does not show. | Page title plus one short line; remove the eyebrow, hero paragraph, "How do we know?" links and footer; the table description becomes a count. The link-3 landing is a bug in the trust page's scroll, which its own section links share, so it is fixed there (W5). |
+| 1 | An X (Twitter) logo appears in the app | The glossary drawer's close button imports `X` from `@dataiku/vue-icons` ([ActGlossaryDrawer.vue](../webapp/frontend/src/components/act/ActGlossaryDrawer.vue)). In the DSS icon set that is the X logo; the close glyph is `Dismiss`. No other file uses `X`. | Use `Dismiss`. |
+| 2 | The page top is too wordy and reads as hard-coded; the links to the trust page do not belong; link 3 lands in the wrong place | [ShortlistView.vue](../webapp/frontend/src/views/ShortlistView.vue) says the same thing three times: the hero paragraph, the table's description ("Nothing is pre-filtered" twice) and a footer listing what the page does not show. | Page title plus one short line; remove the eyebrow, hero paragraph, "How do we know?" links and footer; the table description becomes a count. The link-3 landing is a bug in the trust page's scroll, which its own section links share, so it is fixed there (W5). |
 | 3 | "Any tractability" and "Either" look the same | "Any" keeps every gene, including those not tractable at all; "Either" keeps genes tractable by a small molecule or an antibody, which is exactly what the **Tractable** checkbox above already does. | Drop "Either"; keep Any / Small molecule / Antibody. |
 | 4 | Tractability and target class should sit in the order of their columns | The filters read Tractability, Class; the columns read Class, Tractability. | Swap the two filters. |
 | 5 | Show the score next to the rank | The table already receives `score`, which is the calibrated champion's `proba_1` (`top_candidates` → `candidates_annotated` → `dashboard_candidates`, traced with `dku dataset lineage` on 2026-11-09). Three texts still call it uncalibrated. | A score column, worded as R7b step 4 of the graph workplan specifies (W2). |
-| 6 | "Ask about" and "Explore in Agent Hub": the same agent? | No. **Ask about** is the in-app assistant: it knows the selected pair, uses the graph, trials and papers tools, and checks every citation ([assistant.py](../../webapp/backend/services/assistant.py)). **Agent Hub** opens DSS's own chat on its home page; it cannot be handed the pair and checks nothing. | Keep **Ask about**; the Agent Hub button per D1. |
+| 6 | "Ask about" and "Explore in Agent Hub": the same agent? | No. **Ask about** is the in-app assistant: it knows the selected pair, uses the graph, trials and papers tools, and checks every citation ([assistant.py](../webapp/backend/services/assistant.py)). **Agent Hub** opens DSS's own chat on its home page; it cannot be handed the pair and checks nothing. | Keep **Ask about**; the Agent Hub button per D1. |
 | 7 | Let the user validate a candidate with a comment, so the investigation persists and is handed to the next stage | Nothing on the page writes anything today, except the trials/papers cache. | A **Record review** action, stored in DSS and shown back on the page (W4). |
-| 8 | Drop the two source lines at the bottom of the gene card (2026-11-09, screenshot) | [CandidateHeader.vue](../../webapp/frontend/src/components/shortlist/CandidateHeader.vue) ends with the HGNC provenance line (file, match key, record date) and a "top N% of the pool · graph node_index" line. | Remove both. The rank and score stay in the card's top line. |
+| 8 | Drop the two source lines at the bottom of the gene card (2026-11-09, screenshot) | [CandidateHeader.vue](../webapp/frontend/src/components/shortlist/CandidateHeader.vue) ends with the HGNC provenance line (file, match key, record date) and a "top N% of the pool · graph node_index" line. | Remove both. The rank and score stay in the card's top line. |
 
 ## 2. Guardrails kept
 
@@ -154,6 +158,10 @@ worded after the graph's labels, with the key in the tooltip.
 1. Show the change summary; commit only on approval.
 2. The user runs `make deploy`; then a read-only check of the live webapp.
 3. Check whether D2–D3 meet the decision register's admission rule; move this plan to `archive/`.
+
+**Done 2026-11-13.** Committed as `45239cb` and deployed by `make deploy` on the user's instruction
+(2026-11-12); the live backend started with no crash and served `GET /api/reviews`. Step 3: D2 and D3
+admitted as `DEC-DEMO-006`; this plan moved to `archive/`.
 
 ## 5. Risks
 

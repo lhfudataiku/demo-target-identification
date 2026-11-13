@@ -625,7 +625,7 @@ phenotype-derived only**. Per-disease AUC uses average ranks for ties.
 4. Webapp: keep rank and percentile primary; show the calibrated score as "chance of being a known
    association" beside the disease's base rate (or as an enrichment over it), with a tooltip that
    negatives are unlabeled genes, so the value is a floor for novel candidates. *(Carried out as
-   step W2 of [`WEBAPP_REVISION_WORKPLAN.md`](../docs/operations/WEBAPP_REVISION_WORKPLAN.md), from 2026-11-09.)*
+   step W2 of [`WEBAPP_REVISION_WORKPLAN.md`](WEBAPP_REVISION_WORKPLAN.md), from 2026-11-09.)*
 5. **Accept when:**
    - every disease's ranking and per-disease AUC are identical to the uncalibrated version (sigmoid is
      strictly monotone and the base model is unchanged);

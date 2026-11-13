@@ -65,12 +65,12 @@ skill.
 
 ## Planning
 
-**In progress:** the webapp revision, drafted 2026-11-09:
-[`operations/WEBAPP_REVISION_WORKPLAN.md`](operations/WEBAPP_REVISION_WORKPLAN.md). It shortens the
-shortlist page, cleans up its filters, shows the calibrated score, keeps one assistant, and lets a
-scientist record a review per candidate.
+**In progress:** nothing.
 
-Completed plans move to [`../archive/`](../archive/): the most recent is the graph revision, done
+Completed plans move to [`../archive/`](../archive/): the most recent is the webapp revision, done
+2026-11-13 (`DEC-DEMO-006`; [`WEBAPP_REVISION_WORKPLAN.md`](../archive/WEBAPP_REVISION_WORKPLAN.md)).
+It shortened the shortlist page, cleaned up its filters, showed the calibrated score, kept one
+assistant, and let a scientist record a review per candidate. Before it came the graph revision, done
 2026-11-10 (`DEC-ARCH-008`, `DEC-MEAS-006`, `DEC-MODEL-002`, `DEC-OPS-008`;
 [`GRAPH_REVISION_WORKPLAN.md`](../archive/GRAPH_REVISION_WORKPLAN.md)). It moved data loading into
 `DEMO_KG_PREP` with pinned sources, corrected two relations, made edge labels readable, rebuilt the
