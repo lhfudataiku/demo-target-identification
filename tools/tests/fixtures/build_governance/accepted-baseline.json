@@ -17,7 +17,7 @@
   "required_assertions": ["TI-VAL-009", "breast-panel-contract"],
   "claim_values": {
     "TI-VAL-009": {
-      "her2_positive_auroc": 0.9365,
+      "her2_positive_auroc": 0.9385,
       "her2_tnbc_novel_overlap": 2,
       "tnbc_known_targets": 8
     }
