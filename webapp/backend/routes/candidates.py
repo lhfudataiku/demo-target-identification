@@ -133,6 +133,12 @@ def candidates(
     if d.empty:
         raise HTTPException(status_code=404, detail=f"No candidates for disease_index {disease}")
 
+    # The disease's base rate: recorded associations / pool, over the WHOLE pool before any filter.
+    # `score` is the calibrated champion's proba_1, so it reads as a chance of a recorded association
+    # (nb3 7.5 asserts the calibration); the base rate is what that chance is compared with.
+    n_known = int(d.is_target.sum())
+    base_rate = n_known / len(d)
+
     funnel = [{"step": "all candidates", "n": int(len(d))}]
     if novel_only:
         d = d[d.is_target == 0]
@@ -162,6 +168,8 @@ def candidates(
         "disease_index": disease,
         "disease_name": str(df[df.disease_index == disease].disease_name.iloc[0]),
         "funnel": funnel,
+        "n_known": n_known,
+        "base_rate": base_rate,
         "rows": rows,
         "returned": len(rows),
     }

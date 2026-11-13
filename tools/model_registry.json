@@ -12,7 +12,7 @@
   "under a feature count that still matches the name m7-f14. See tools/recipe_classes.json.",
   "2026-08-26: seven retired saved models were deleted from the flow (recoverable from analysis I2csfIX2 / mltask krJwswcb). `name`, `lab_session` and `lab_id` were added here so .index/models.tsv can still list them -- the index is built from live DSS objects, so without this the ablation ladder would vanish from the index the moment the models were dropped."
  ],
- "champion": "hJLGoYn4",
+ "champion": "W8VhjZOZ",
  "ablation_ladder": [
   "Lx5Mz2hY",
   "6hEivCx0",
@@ -122,7 +122,7 @@
   "hJLGoYn4": {
    "n_features": 14,
    "delta": "+prox_kernel (chosen over prox_mean to avoid feeding the hub axis)",
-   "verdict": "CHAMPION -- first model whose gain survives a paired test: association t=+3.29 and tractability t=+2.56, both with ZERO ties over 668 diseases. Mechanism REFUTED (Spearman(module size, delta) = -0.003): it works and we cannot say why",
+   "verdict": "CHAMPION -- first model whose gain survives a paired test: association t=+3.29 and tractability t=+2.56, both with ZERO ties over 668 diseases. Mechanism REFUTED (Spearman(module size, delta) = -0.003): it works and we cannot say why | RETIRED 2026-11-07: replaced by m7-f14-cal (W8VhjZOZ), the same configuration with sigmoid calibration, trained on the MONDO-keyed split. Its training recipe and calibrated version were deleted, and on 2026-11-07 the saved model itself (versions 1794002440246 and initial) was deleted from DSS at the user's request; the metrics above are the September record.",
    "assoc_auroc": 0.823,
    "assoc_auprc": 0.1778,
    "hub_spread": 0.1935,
@@ -153,6 +153,23 @@
   "SybkzSdu": {
    "name": "graph_explorer",
    "verdict": "NOT A PRIORITIZER MODEL, and DELETED 2026-09-03. It was an LLM_GENERIC_RAW agent object left behind when Wave 6 removed the Act 1 graph agent path: the code went, the object stayed. Verified unused before deletion -- the Target Prioritizer has no /api/graph/* route, the Graph Explorer webapp reaches an LLM directly via config.llm_id rather than through an agent, and no recipe or scenario referenced it. Retained as a row here so the ladder history stays complete; it never had prioritizer metrics."
+  },
+  "W8VhjZOZ": {
+   "n_features": 14,
+   "delta": "+sigmoid calibration fitted on the test fold (calibrateOnTestSet); same 14 features and hyperparameters as m7-f14",
+   "verdict": "CHAMPION 2026-11-07 -- m7-f14's configuration with sigmoid-calibrated output, trained in the Lab on the MONDO-keyed split (graph revision R1/R7b). Equivalent to the uncalibrated flow retrain on the same 607 diseases (per-disease AUC 318 higher / 288 lower / 0 ties, Wilcoxon p = 0.27), but NOT the same ranker: identical settings retrained to a different model (median within-disease Spearman 0.959, top-20 overlap 80%, same top SHAP driver 50%), most likely GPU XGBoost non-determinism. Calibration itself is monotone; ECE 0.254 -> 0.0033. Hub bias grew (rho 0.3273 -> 0.3500). Metrics are on the 607-disease split and are not paired with the 670-disease rows.",
+   "assoc_auroc": 0.817,
+   "assoc_auprc": 0.1831,
+   "hub_spread": 0.1344,
+   "hub_spread_note": "calibrated probability scale; not comparable with the raw-score spreads of earlier models",
+   "drug_all": 0.6737,
+   "drug_supported": 0.7392,
+   "tract_dm200": 2.3,
+   "disc_lift50": null,
+   "disc_lift200": 5.22,
+   "name": "m7-f14-cal",
+   "lab_session": "s13",
+   "lab_id": "A-DEMO_TARGET_IDENTIFICATION-I2csfIX2-krJwswcb-s13-pp2-m1"
   }
  }
 }

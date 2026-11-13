@@ -159,7 +159,13 @@ node in the graph.
    Kuzu snapshot + graph webapp  ───────────────→ (evidence paths render on the webapp)
 ```
 
-A third project, **`DEMO_TI_EVIDENCE`**, has held the supporting evidence for model development since
+Upstream of both, **`DEMO_KG_PREP`** has held the source downloads since 2026-11-08: the extract and
+vocabulary recipes, with every unversioned source pinned once into folder `pinned_sources` and recorded
+in `MANIFEST.json`. `DEMO_KG_LS` reads its outputs through sync copies that keep their old names, so a
+source refresh is a deliberate act and nothing downstream of `DEMO_KG_LS` changed shape (graph revision,
+[`GRAPH_BUILDING.md`](../graph/GRAPH_BUILDING.md) §2.2 and §4.1).
+
+A further project, **`DEMO_TI_EVIDENCE`**, has held the supporting evidence for model development since
 2026-10-29 ([ADR-003](../decisions/adrs/ADR-003-evidence-project.md)): the datasets the assertion
 notebooks read, computed from objects `DEMO_TARGET_IDENTIFICATION` exposes. Nothing reads it, and it reads
 no serving zone, so the demo and the evidence no longer share datasets. Its flow is in
@@ -171,8 +177,9 @@ Ingests public biomedical sources over HTTP, harmonizes them onto a single ident
 assembles a PrimeKG-conformant knowledge graph, then materializes it as a queryable Kuzu graph with
 an interactive explorer webapp.
 
-**Status: complete.** 113,391 nodes / 2,851,510 edges across 18 relation types, 8 node types.
-Rebuilt from source and accepted against the frozen reference on a structural criterion.
+**Status: complete.** 113,497 nodes / 2,853,534 edges across 19 relation types, 8 node types, rebuilt
+2026-11-10 from the pinned source pull in `DEMO_KG_PREP`. First rebuilt from source and accepted against
+the frozen reference on a structural criterion (113,391 / 2,851,510 / 18 relations, 2026-08-14).
 `node_index` is now **deterministic**, which it was not before — every prior rebuild silently
 renumbered all 113k nodes.
 
@@ -184,8 +191,9 @@ Consumes the graph, derives network and functional-annotation features per (gene
 trains an explainable ranking model, and produces a per-disease shortlist of candidate targets with
 SHAP attributions and on-graph evidence paths.
 
-**Status: built and validated on the rebuilt graph; champion refreshed 2026-08-21.** Champion
-`m7-f14` (14 features): macro per-disease AUC **0.8230** over 670 diseases. Three-rung ablation
+**Status: built and validated on the rebuilt graph; champion refreshed 2026-11-07, retrained on the
+R5 graph 2026-11-10.** Champion `m7-f14-cal` (14 features, sigmoid-calibrated output): macro
+per-disease AUC **0.8180** over 604 diseases on the MONDO-ID split. Three-rung ablation
 ladder, two independent validation metrics cross-checking to 1.9×10⁻⁴, and a documented negative
 result.
 
@@ -210,7 +218,7 @@ in one undifferentiated box:
 | `04 Graph backbone (imported)` | `graph_nodes`, `graph_edges`, `edge_metadata`, and the `published_kg_ls` folder | Graph build |
 
 Zone 04 is separated from 00–03 on purpose: those carry the raw sources, this carries what
-`DEMO_KG_LS` assembly *produced* from them. It also holds `llm_hx`, the Graph Explorer webapp's query
+`DEMO_KG_LS` assembly *produced* from them. It also holds `graph_exp_llm_hx` (`llm_hx` until 2026-11-12), the Graph Explorer webapp's query
 history — no recipe produces or reads it, which is expected, since its consumer is a webapp rather
 than the flow. The retired snapshot `enriched_index_freezed-6bRVGs` is no longer referenced from this
 project at all; it remains in `DEMO_KG_LS` as the provenance record for the published feature numbers.
@@ -221,8 +229,9 @@ nothing else; every downstream recipe reads the local copy of the same name. Tha
 surface auditable in one place and stops a rename in the graph project breaking 26 recipes at once.
 
 **The Kuzu folder was the exception, and since 2026-09-03 it no longer is.** A folder cannot be
-Sync'd, but it can be merged: `compute_ytvuniN8` is a Merge-Folder recipe that copies
-`DEMO_KG_LS.published_kg_ls-Mp25kL` into the local managed folder **`graph` (`ytvuniN8`)**. The Graph
+Sync'd, but it can be merged: `compute_ytvuniN8` is a Merge-Folder recipe that copies the Kuzu folder
+`DEMO_KG_LS.kg_ls_v0-3-j2B2cE` (`6kiPwQC7`; `kg_ls_v0-2-ZKGaRg` until 2026-11-12, `published_kg_ls-Mp25kL` until 2026-11-08) into the local
+managed folder **`graph` (`ytvuniN8`)**. The Graph
 Explorer webapp and all 10 Cypher feature recipes now read that local folder, so **every foreign
 reference — all 14 — passes through exactly one Sync or Merge recipe**, and nothing reads a Kuzu
 folder across the boundary. The equivalence of the old and new snapshots was verified before the

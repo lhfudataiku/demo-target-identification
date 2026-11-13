@@ -10,6 +10,22 @@
 Built 2026-08-19, **re-measured 2026-08-21 on champion `m7-f14`** (previously `m3-f12`). Read this
 before sending `breast_shortlist.csv` to anyone clinical.
 
+> **Re-measured 2026-11-10, after the champion was retrained on the rebuilt graph (R6).** HER2+
+> anchors: ERBB2 **29**, TP53 3, PIK3CA 1, AKT1 23, EGFR 12, ERBB3 21, CDK4 / CDK6 41 / 108, ESR1 43;
+> the novel head is HRAS, NRAS, STAT1, SMARCA2, SMARCD3 — still RAS/MAPK-led. HER2+ AUC still reads
+> 0.9385 (within tolerance); HER2+/TNBC share **2** novel top-50 genes and 11 overall. The TNBC
+> defects below moved: ESR1 is now rank **53** (was 17), PARP1 **94** (was 360) of a 2,538-gene pool,
+> BRCA1 88, BRCA2 3, and TACSTD2 is still outside the pool. The tables below remain the 2026-08-21
+> record; regenerate `breast_shortlist.csv` before the review.
+>
+> **Re-measure before sending (2026-11-07).** The champion is now `m7-f14-cal` on the MONDO-ID split,
+> and retraining reshuffled close ranks. The HER2+ anchors now read ERBB2 **16**, TP53 2, PIK3CA 5,
+> AKT1 10, EGFR 15, ERBB3 26, CDK4 / CDK6 67 / 64, ESR1 40; the novel head is HRAS, STAT1, NRAS,
+> SMARCA2, PTPN6 — still RAS/MAPK-led, so the verdict below stands, but ERBB2 now sits just outside
+> the top 15. HER2+ AUC is 0.9385 and HER2+/TNBC share 1 novel top-50 gene (was 2). The tables and
+> the 35/50 overlap below are the 2026-08-21 record; regenerate `breast_shortlist.csv` and re-derive
+> them before the review.
+
 **Summary: one arm is ready, one is borderline, one has defects a surgeon will find in minutes.**
 Sending all three unqualified would cost credibility we do not need to spend.
 

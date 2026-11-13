@@ -16,6 +16,31 @@ export interface Row {
 
 export interface Payload {
   disease_name: string; funnel: { step: string; n: number }[]; rows: Row[]; returned: number
+  /** Recorded associations in the whole pool, and that count over the pool size: what a score compares with. */
+  n_known: number; base_rate: number
+}
+
+/** `/api/reviews`: one recorded review (webapp revision W4). Stored with names beside the indexes,
+    because a graph rebuild renumbers node indexes; `gene_index_now` is today's gene for the stored
+    graph symbol, null when that symbol is no longer in the disease's list. */
+export const VERDICTS = { advance: 'Advance', more_evidence: 'Needs more evidence', reject: 'Reject' } as const
+export type Verdict = keyof typeof VERDICTS
+export const verdictStatus = (v: string) => (v === 'advance' ? 'success' : v === 'reject' ? 'destructive' : 'warning')
+
+export interface Review {
+  review_id: string; reviewed_at: string; reviewer: string
+  verdict: Verdict; verdict_label?: string; comment: string
+  disease_index: number; disease_name: string; gene_index: number; graph_symbol: string
+  hgnc_symbol: string | null; hgnc_id: string | null; rank: number; score: number
+  model_name: string; saved_model: string; model_version: string | null
+  gene_index_now: number | null
+}
+
+/** `score` is the calibrated champion's probability of a RECORDED association (nb3 7.5 asserts the
+    calibration). One decimal below 10%, whole percent above. */
+export const pct = (v: number) => {
+  const p = 100 * v
+  return p < 10 ? `${p.toFixed(1)}%` : `${Math.round(p)}%`
 }
 
 /** One model feature, placed against this disease's own pool.
@@ -81,13 +106,6 @@ export interface Drivers { n_features: number; drivers: Driver[] }
 export const tractLabel = (r: Pick<Row, 'ot_sm_tractable' | 'ot_ab_tractable'>) =>
   r.ot_sm_tractable && r.ot_ab_tractable ? 'Small molecule + antibody'
     : r.ot_sm_tractable ? 'Small molecule' : r.ot_ab_tractable ? 'Antibody' : 'Not assessed'
-
-/** The three links from the shortlist to the evidence page (scope §4.1). */
-export const TRUST_LINKS = [
-  { section: 'graph', label: '1 · What the model can see' },
-  { section: 'reconstruction', label: '2 · How well it reconstructs this disease' },
-  { section: 'family', label: '3 · Does it hold across the family' },
-] as const
 
 /** `/api/candidates/sources`: what the six searches returned for the pair, after de-duplication
     and the mention filter. No LLM has touched it. */

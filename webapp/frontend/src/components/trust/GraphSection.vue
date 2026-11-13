@@ -42,6 +42,33 @@
     label: r.label.includes('+') ? 'both' : r.label.replace(/_/g, ' '), count: r.count,
   })))
   const labelled = computed(() => props.graph.label_evidence.reduce((s, r) => s + r.count, 0))
+  // Readable names for the graph's 19 relation keys, worded after the edge labels the Graph Explorer
+  // shows (`display_relation`, GRAPH_BUILDING §4.4). The counts stay grouped by relation, because one
+  // relation can carry several display labels (disease_protein has four), so the key rides in the tooltip.
+  const RELATION_LABEL: Record<string, string> = {
+    protein_protein: 'protein interacts with protein',
+    phenotype_protein: 'gene linked to phenotype (via disease)',
+    disease_phenotype_positive: 'disease has phenotype',
+    disease_phenotype_negative: 'disease lacks phenotype',
+    disease_phenotype_disease: 'disease annotated with a disease-term phenotype',
+    disease_protein: 'gene associated with disease',
+    bioprocess_protein: 'gene in biological process',
+    cellcomp_protein: 'gene in cellular component',
+    molfunc_protein: 'gene has molecular function',
+    pathway_protein: 'gene member of pathway',
+    disease_disease: 'disease hierarchy (MONDO)',
+    bioprocess_bioprocess: 'biological process hierarchy',
+    cellcomp_cellcomp: 'cellular component hierarchy',
+    molfunc_molfunc: 'molecular function hierarchy',
+    phenotype_phenotype: 'phenotype hierarchy',
+    pathway_pathway: 'pathway hierarchy',
+    drug_protein: 'drug acts on protein',
+    indication: 'drug approved or filed for disease',
+    drug_investigated_for: 'drug investigated for disease',
+  }
+  const relationBars = computed(() => props.graph.relations.map((r) => ({
+    label: RELATION_LABEL[r.label] ?? r.label.replace(/_/g, ' '), count: r.count, note: r.label,
+  })))
   const diseaseProtein = computed(() => props.graph.relations.find((r) => r.label === 'disease_protein')?.count ?? 0)
 </script>
 
@@ -90,7 +117,7 @@
         </section>
         <section class="flex flex-col gap-2">
           <p class="text-sm font-semibold">How things connect</p>
-          <BarList :items="graph.relations" unit="edges" />
+          <BarList :items="relationBars" unit="edges" />
           <p class="mt-2 text-xs text-muted-foreground">
             Counts are accepted against the frozen <ActTerm t="primekg" /> reference rather than trusted from
             the build. Faithful assembly is a lineage property, not a claim about the model's quality.

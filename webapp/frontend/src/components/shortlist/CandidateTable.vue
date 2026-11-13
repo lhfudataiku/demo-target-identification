@@ -25,9 +25,11 @@
   import ActInfo from '@/components/act/ActInfo.vue'
   import ActTerm from '@/components/act/ActTerm.vue'
   import { useSelectionStore } from '@/stores/selection'
-  import { tractLabel, type Payload, type Row } from './types'
+  import { pct, tractLabel, type Payload, type Row } from './types'
 
-  const props = defineProps<{ data: Payload | null; loading: boolean; selectedGene: number | null }>()
+  const props = defineProps<{ data: Payload | null; loading: boolean; selectedGene: number | null
+                              /** Genes with a recorded review: a badge, never a filter. */
+                              reviewed: Set<number> }>()
   const emit = defineEmits<{ (e: 'select', row: Row): void }>()
 
   // Population: these refetch, because they change what is in the list.
@@ -54,7 +56,7 @@
   // View: filters the rows already loaded, without a refetch. The funnel still
   // describes the population, so nothing here can hide how big the list is.
   const search = ref('')
-  const tract = ref('')          // '' | sm | ab | either
+  const tract = ref('')          // '' | sm | ab  ("either" is the Population's Tractable checkbox)
   const klass = ref('')
   const strike = ref(false)      // strike out, never remove
 
@@ -64,7 +66,6 @@
     if (search.value && !r.gene_name.toLowerCase().includes(search.value.toLowerCase())) return false
     if (tract.value === 'sm' && !r.ot_sm_tractable) return false
     if (tract.value === 'ab' && !r.ot_ab_tractable) return false
-    if (tract.value === 'either' && !(r.ot_sm_tractable || r.ot_ab_tractable)) return false
     if (klass.value && r.ot_class_l1 !== klass.value) return false
     return true
   }))
@@ -79,6 +80,13 @@
         () => { page.value = 1 })
 
   const methodOpen = ref(false)
+  // What every score is compared with: this disease's own rate of recorded associations.
+  const baseRate = computed(() => (props.data
+    ? `${pct(props.data.base_rate)} of this disease's ${props.data.funnel[0]?.n.toLocaleString()} candidates (${props.data.n_known.toLocaleString()}) already have a recorded association`
+    : ''))
+  const scoreInfo = computed(() =>
+    `The calibrated model's chance that this gene–disease pair is a recorded association. For comparison, ${baseRate.value}. `
+    + 'Genes without a recorded association are unlabeled, not negative, so for a novel candidate this value is a floor — and it is never the chance of being a good target.')
   const rowClass = (r: Row) => [
     props.selectedGene === r.gene_index ? 'bg-accent' : 'hover:bg-accent/50',
     strike.value && r.has_safety_liability ? 'line-through opacity-50' : '',
@@ -91,13 +99,10 @@
       <CardTitle>Ranked candidates</CardTitle>
       <CardDescription>
         <template v-if="data && diseaseName">
-          {{ rows.length.toLocaleString() }} candidates at rank ≤ {{ maxRank }} for {{ diseaseName }},
-          strongest evidence first. Nothing is pre-filtered; select a row to review its evidence below.
+          {{ rows.length.toLocaleString() }}<template v-if="data.funnel.length">
+            of {{ data.funnel[0].n.toLocaleString() }}</template> candidates · rank ≤ {{ maxRank }}
         </template>
-        <template v-else>
-          Every gene the graph connects to the disease, ordered by the champion model's score within this
-          disease. Nothing is pre-filtered.
-        </template>
+        <template v-else>Every gene the graph connects to the disease, ranked within it.</template>
       </CardDescription>
     </CardHeader>
     <CardContent class="flex flex-col gap-4">
@@ -160,21 +165,21 @@
             <Search class="pointer-events-none absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
             <Input v-model="search" placeholder="Gene symbol" class="w-44 pl-8" />
           </div>
-          <span class="flex items-center">
-            <NativeSelect v-model="tract">
-              <NativeSelectOption value="">Any tractability</NativeSelectOption>
-              <NativeSelectOption value="sm">Small molecule</NativeSelectOption>
-              <NativeSelectOption value="ab">Antibody</NativeSelectOption>
-              <NativeSelectOption value="either">Either</NativeSelectOption>
-            </NativeSelect>
-            <ActInfo text="Small molecule: a drug-like pocket. Antibody: reachable from outside the cell. Either: at least one." />
-          </span>
+          <!-- Same order as the Class and Tractability columns below. -->
           <span class="flex items-center">
             <NativeSelect v-model="klass">
               <NativeSelectOption value="">Any target class</NativeSelectOption>
               <NativeSelectOption v-for="c in classes" :key="c" :value="c">{{ c }}</NativeSelectOption>
             </NativeSelect>
             <ActInfo text="Open Targets' protein family — enzyme, membrane receptor, transcription factor and so on." />
+          </span>
+          <span class="flex items-center">
+            <NativeSelect v-model="tract">
+              <NativeSelectOption value="">Any tractability</NativeSelectOption>
+              <NativeSelectOption value="sm">Small molecule</NativeSelectOption>
+              <NativeSelectOption value="ab">Antibody</NativeSelectOption>
+            </NativeSelect>
+            <ActInfo text="Small molecule: a drug-like pocket. Antibody: reachable from outside the cell. To keep genes reachable by either, use Tractable above." />
           </span>
           <label class="flex items-center gap-2 text-sm">
             <Checkbox v-model="strike" /> Strike out liabilities
@@ -191,7 +196,8 @@
         <Table>
           <TableHeader>
             <TableRow class="bg-muted/30">
-              <TableHead class="w-16">Rank<ActInfo text="Position in this disease's list. The score behind it is uncalibrated, so the ordering is what carries meaning — not the number." /></TableHead>
+              <TableHead class="w-16">Rank<ActInfo text="Position in this disease's list, highest score first. Ranks are not comparable between diseases: the pools differ in size and density." /></TableHead>
+              <TableHead class="w-20">Score<ActInfo :text="scoreInfo" /></TableHead>
               <TableHead>Gene<ActInfo text="HGNC symbol of the candidate protein." /></TableHead>
               <TableHead>Class<ActInfo text="Open Targets protein family." /></TableHead>
               <TableHead>Tractability</TableHead>
@@ -208,7 +214,11 @@
                       @click="emit('select', r)" @keydown.enter.prevent="emit('select', r)"
                       @keydown.space.prevent="emit('select', r)">
               <TableCell class="font-mono tabular-nums text-muted-foreground">{{ r.rank_in_disease }}</TableCell>
-              <TableCell class="font-mono font-medium text-primary">{{ r.gene_name }}</TableCell>
+              <TableCell class="font-mono tabular-nums">{{ pct(r.score) }}</TableCell>
+              <TableCell class="font-mono font-medium text-primary">
+                {{ r.gene_name }}
+                <StatusBadge v-if="reviewed.has(r.gene_index)" status="muted" class="ml-1.5 font-sans">Reviewed</StatusBadge>
+              </TableCell>
               <TableCell class="text-muted-foreground">{{ r.ot_class_l1 || 'Not assessed' }}</TableCell>
               <TableCell class="text-muted-foreground">{{ tractLabel(r) }}</TableCell>
               <TableCell>
@@ -275,11 +285,13 @@
             <ActTerm t="gene-disease-pair">gene–disease pair</ActTerm> from graph-structure features (listed in
             the glossary), and the genes are sorted by that score <b class="text-foreground">within this
             disease</b>.</p>
-          <p>The score is <ActTerm t="uncalibrated">uncalibrated</ActTerm> — it orders candidates correctly but
-            is not a probability, so 0.8 does not mean an 80% chance of being a real target.
-            <b class="text-foreground">The order carries the meaning, not the number</b>, and a rank of 9 here is
-            not comparable to a rank of 9 for another disease, because the pools differ in both size and
-            density.</p>
+          <p>The score is <ActTerm t="calibrated-score">calibrated</ActTerm>: on held-out diseases the predicted
+            and observed rates agree, and at the head of each list the score runs slightly low. It reads as the chance of a
+            <b class="text-foreground">recorded association</b><template v-if="data">, against a base rate of
+            {{ pct(data.base_rate) }} for this disease</template>. It is not the chance of being a good target, and
+            for a novel gene it is a floor, because genes without a record are unlabeled rather than negative.
+            A rank of 9 here is not comparable to a rank of 9 for another disease, because the pools differ in
+            both size and density.</p>
           <p><b class="text-foreground">Nothing is pre-filtered.</b> Every count above renders the rank cut-off
             it was measured at, so a number can never acquire two values.</p>
         </CollapsibleContent>

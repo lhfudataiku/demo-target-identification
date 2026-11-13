@@ -48,13 +48,13 @@ single gene they can argue about.
 **Start with a disease they know.** Open **HER2-positive breast carcinoma** and ask the room: *does
 the top of this list look right?* A breast oncologist reads the PI3K/AKT and RAS–MAPK axis in the
 first rows. Those are targets the field has already validated, and the model has put them first. The
-model reconstructs this disease's known targets at **AUC 0.9365**, but the page shows no AUC: the
+model reconstructs this disease's known targets at **AUC 0.9385**, but the page shows no AUC: the
 scientist's own judgment is the test, and the list speaks first.
 
 **Then let them narrow it on their own terms.** Nothing is pre-filtered. The controls are the
 scientist's: novel only, tractable, small molecule or antibody, target class, exclude secreted
 proteins, rank cut-off. The funnel above the list shows what each step removed. Turn on *novel only*,
-*tractable* and *exclude secreted*: 12,272 candidates become 38 in the top 200. The third is
+*tractable* and *exclude secreted*: 12,252 candidates become 29 in the top 200. The fourth is
 `SMARCA2`, an epigenetic regulator that the graph does not link to this disease as a target.
 
 That row is what the list is for. Leave `ERBB2` aside, however recognisable: it is already a positive
@@ -70,7 +70,7 @@ molecule, with no drug for HER2+ and no recorded liability. Each box links to th
 detail.
 
 **Why this ranking? — the machine-learning layer.** *Every rank names the evidence that drove it.*
-The model (`m7-f14`, chosen on held-out diseases) attributes the score to its inputs. The five that
+The model (`m7-f14-cal`, chosen on held-out diseases) attributes the score to its inputs. The five that
 drove this score are shown, each placed against the rest of this disease's candidates. A scientist
 can see whether the rank rests on pathway structure, on interaction partners or on how well-studied
 the gene is.
@@ -90,18 +90,18 @@ and show the path to genes already linked to the disease.
 **Ask about the gene — the assistant.** *Ask anything, and every sentence shows its source or says it
 has none.* The evidence assistant answers free questions about the pair. It draws on trials,
 literature and the graph, and each graph answer shows the query that produced it. A sentence it
-cannot ground is marked as such. *Explore in Agent Hub* opens the same agent inside Dataiku. Show the
+cannot ground is marked as such. Show the
 marking, not the fluency: that marking is what makes an agent usable in science.
 
 **Two things the page refuses to do.** Say both aloud.
 
 - Drug and liability badges are shown but cannot be filtered on. Filtering out known liabilities
-  sounds prudent, yet it would remove **9 of the HER2+ top 15, ERBB2 among them**: liabilities are
+  sounds prudent, yet it would remove **8 of the HER2+ top 15, and ERBB2 itself (#29)**: liabilities are
   found by drugging a target, so the flag marks the best-studied targets.
 - The score orders candidates and does not measure them. Rank 9 means ninth, not 90% likely.
 
 **Close the page with the footnote, not a headline.** Remove every known target and re-rank the rest:
-the top is enriched for genes that later became drug targets, **16.88× at top 10** against approved
+the top is enriched for genes that later became drug targets, **22.94× at top 10** against approved
 drugs. *"We report this because it is measured, not because we ask you to act on it. It suggests the
 same machinery is worth pointing at data where the answer is not known yet: yours."*
 
@@ -125,23 +125,23 @@ This section is about provenance, not quality: it shows exactly what went in, an
 
 **2 · How faithfully it reconstructs known biology.** *Measured on diseases the model never trained
 on, and shown as a distribution, not one number.* Train and test are split by disease family, so
-"diabetes" and "type 2 diabetes" never sit on opposite sides. Over **6,754,128 disease–gene pairs**
-and **670 held-out diseases**, the macro per-disease AUC is **0.8230**. Show the distribution with
+"diabetes" and "type 2 diabetes" never sit on opposite sides. Over **6,685,686 disease–gene pairs**
+and **604 held-out diseases**, the macro per-disease AUC is **0.8180**. Show the distribution with
 HER2+ marked, because usefulness is not uniform, and knowing which diseases reconstruct well is worth
-more than the average. Pooling all pairs would read **0.8932**, about seven points higher, because
+more than the average. Pooling all pairs would read **0.8908**, about seven points higher, because
 large diseases would carry small ones. The demo reports the per-disease figure.
 
 Raise the known weakness here before the room does. Well-studied genes have more edges, so any graph
-model leans toward them. Compared with genes of the same connectivity, the top 10 is still **3.29×**
+model leans toward them. Compared with genes of the same connectivity, the top 10 is still **3.06×**
 enriched for real targets. Yet among known targets, the least-connected genes score lower than the
 most-connected. *"Where your field is under-studied, it will under-rank. Here is the size of that
 effect."*
 
 **3 · Does it hold across the disease family.** *Robust: the same model on every term in the family,
 each with its uncertainty.* Most teams own one therapeutic area, so one well-chosen disease proves
-little. Across **505 disease families**, reconstruction holds at **0.8009**. Within breast cancer, each
+little. Across **478 disease families**, reconstruction holds at **0.8003**. Within breast cancer, each
 subtype carries its interval, and thin subtypes are flagged rather than hidden. The subtypes really
-do differ: HER2-positive and triple-negative breast share only **2** novel candidates in their top
+do differ: HER2-positive and triple-negative breast share only **1** novel candidate in their top
 50. *"We can tell you which of your subtypes this resolves before you build on it."*
 
 All three sections rest on one discipline: an assertion notebook re-derives each headline model
@@ -159,7 +159,7 @@ afternoon by one recipe, and the record of why stays in the flow for the next pe
 are worth testing is the scientist's call. Making them cheap to test is the platform's job.
 
 State one limitation before it is found. Ranking by association does not predict therapeutic value:
-across diseases the two are uncorrelated (r = **+0.002**). On a drug-target benchmark, a simple lookup
+across diseases the two are essentially uncorrelated (r = **+0.167**, R² under 3%, not significant). On a drug-target benchmark, a simple lookup
 of how many diseases a gene already targets beats the model. That benchmark measures gene popularity,
 so it is never presented as a score.
 
@@ -172,10 +172,10 @@ problem, which is ours, not a science problem, which is theirs.
 
 ## Presenter notes
 
-**Before the demo.** Re-check the scripted path on the live app: the funnel from 12,272 to 38, and
-`SMARCA2` at #3 (#51 unfiltered). Those counts come from the served list on 2026-10-29, and no
+**Before the demo.** Re-check the scripted path on the live app: the funnel from 12,252 to 29, and
+`SMARCA2` fourth (#46 unfiltered). Those counts come from the served list on 2026-11-10, and no
 notebook asserts them. If you show a graph path, choose it from the live ranking: the often-quoted MRN
-complex is not a HER2+ story (RAD50, NBN and MRE11 rank 55, 99 and 401).
+complex is not a HER2+ story (RAD50, NBN and MRE11 rank 58, 54 and 165).
 
 **Diseases.** The shortlist serves twelve diseases across oncology, autoimmune and
 cardio-renal-metabolic areas. Page 2's family section covers breast, stomach and uterine cancer; the

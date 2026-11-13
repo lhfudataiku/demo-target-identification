@@ -11,14 +11,19 @@
 #                 project bundle; it cannot be re-fetched from a stable public URL.
 # ----------------------------------------------------------------------------
 
+import io
+
 import dataiku
 import pandas as pd
 
 folder = dataiku.Folder("raw_files")
-path = folder.get_path() + "/DataS1_interactome.tsv"
+# get_download_stream, NOT get_path(): in DEMO_KG_PREP (R3, 2026-11-08) the local path of the
+# copied folder raised PermissionError; the stream goes through DSS and also works in containers.
+with folder.get_download_stream("/DataS1_interactome.tsv") as stream:
+    raw = io.BytesIO(stream.read())
 
 df = pd.read_csv(
-    path, sep="\t", comment="#", header=None,
+    raw, sep="\t", comment="#", header=None,
     names=["proteinA_entrezid", "proteinB_entrezid", "data_sources"],
     dtype={"proteinA_entrezid": "Int64", "proteinB_entrezid": "Int64"},
 ).dropna(subset=["proteinA_entrezid", "proteinB_entrezid"])

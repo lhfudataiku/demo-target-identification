@@ -1,8 +1,24 @@
-# Assembly zone — the graph-algorithm core (Python).
-# Stacks per-source *_edges (8-col, name-free), attaches node names from the vocab
-# tables, applies PrimeKG harmonization (clean, reverse-all, disease grouping, giant
-# component), derives emergent nodes + node_index. Outputs PrimeKG-exact kg /
-# graph_nodes / graph_edges.
+# compute_kg_edges -- Assembly zone, DEMO_KG_LS.
+#
+# WHAT IT DOES
+#   Turns the stacked raw edges into a clean, undirected, fully named graph that follows PrimeKG's
+#   harmonization rules. It is step 2 of the four-recipe assembly:
+#
+#     stack_edge_sources (Stack)  -> kg_stacked
+#     compute_kg_edges   (this)   -> kg_grounded + graph_nodes_unindexed
+#     assign_node_index  (Window) -> graph_nodes            (node_index over a fixed sort)
+#     attach_node_index  (Python) -> kg, graph_edges, edge_metadata
+#
+#   Steps, in order:
+#     1. Read kg_stacked.
+#     2. Make every edge two-way (store both x->y and y->x).
+#     3. Attach a name to both endpoints; drop edges whose endpoints have no name.
+#     4. Replace MONDO diseases with their PrimeKG disease group.
+#     5. Keep only the largest connected component.
+#     6. Write the edges and the distinct node set (without node_index).
+#
+# A node's identity everywhere in this recipe is the 4-part key (id, type, name, source). The same
+# key is used by assign_node_index and attach_node_index, so it must not change here.
 import dataiku
 import networkx as nx
 import pandas as pd
@@ -10,44 +26,57 @@ import pandas as pd
 EDGE_COLS = ["x_id", "x_type", "x_source", "y_id", "y_type", "y_source",
              "relation", "display_relation"]
 
-# ---- stacked edge sources (moved out 2026-08-14) ----------------------------
-# The per-source stack is now the `stack_edge_sources` Stack recipe: 12 inputs, mode=UNION,
-# a post-filter dropping self-loops, and distinct. Verified equivalent -- both the old
-# pd.concat path and the Stack produce exactly 1,474,753 rows.
+# ---- 1. read the stacked edges -----------------------------------------------
+# kg_stacked is the union of the 12 per-source edge tables (Stack recipe, mode=UNION, self-loops
+# removed, distinct).
 #
-# mode=UNION is load-bearing: `datatypes` (gene_disease_edges) and `ppi_sources` (ppi_edges)
-# exist on only 2 of the 12 inputs, and INTERSECT would silently drop both -- taking the
-# edge_metadata side table (844,166 rows) with them.
+# - mode=UNION is load-bearing: the provenance columns `datatypes` (gene_disease_edges) and
+#   `ppi_sources` (ppi_edges) exist on only 2 of the 12 inputs. INTERSECT would silently drop both,
+#   and the edge_metadata side table with them.
+# - The Stack deliberately has no non-blank filter. Rows with a missing id survive it and are removed
+#   in step 3 instead, because their endpoint cannot be named.
 #
-# The original also called .dropna(subset=EDGE_COLS), which was DEAD CODE: .astype(str) ran
-# first and turned any null into the literal string "nan", so dropna never matched. Those rows
-# survive the stack and are removed later by the name-grounding join instead. The Stack
-# therefore omits it deliberately -- adding isNonBlank() would drop rows the original kept.
-#
-# infer_with_pandas=False + explicit str cast on the 8 key columns only: with inference on,
-# get_dataframe() infers dtypes per 65,536-row chunk and digit-only id columns come back as
-# int64 in some chunks, which silently breaks every downstream key comparison. The metadata
-# columns are deliberately NOT cast -- their nulls must stay null or edge_metadata's
-# dropna(how="all") keeps everything.
+# infer_with_pandas=False plus a str cast on the 8 key columns is MANDATORY. With inference on,
+# get_dataframe() guesses dtypes per 65,536-row chunk, so digit-only id columns come back as int64 in
+# some chunks and every later key comparison silently fails. The metadata columns are deliberately
+# NOT cast: their nulls must stay null, or edge_metadata's dropna(how="all") keeps every row.
 kg = dataiku.Dataset("kg_stacked").get_dataframe(infer_with_pandas=False)
 for c in EDGE_COLS:
     kg[c] = kg[c].astype(str)
 
 print("STACKED (post-clean, pre-reverse):", len(kg))   # expected row count for the Stack recipe
 
-# ---- reverse ALL edges (undirected) ----------------------------------------
-# metadata columns are properties of the edge, not of x/y specifically -- carried through
-# unchanged on the reversed copy (not swapped).
+# ---- 2. make every edge two-way ----------------------------------------------
+# The graph is undirected: "drug A targets gene B" is the same link from either end. The sources do
+# not agree on which end is x, and some (e.g. protein-protein) already list a pair both ways. Adding
+# every reversed copy and de-duplicating gives exactly one row per direction, whatever the source did.
+#
+# Why store both directions:
+#   - PrimeKG's published kg.csv stores each link once per direction; matching that layout keeps the
+#     output comparable to PrimeKG row for row.
+#   - "All neighbours of node N" is then simply x_index == N. A consumer that only filters the x side
+#     still sees every neighbour.
+#
+# Consequences for consumers:
+#   - Row counts are 2x the number of links. Count distinct neighbours, not rows, for degree.
+#   - relation / display_relation are NOT flipped on the reversed copy, so a label worded from one
+#     end (e.g. a drug-side action) also appears on the row read from the other end.
+#   - The metadata columns (datatypes, ppi_sources) describe the edge, not an endpoint, so they are
+#     copied unchanged rather than swapped.
 rev = kg.rename(columns={"x_id": "y_id", "x_type": "y_type", "x_source": "y_source",
                          "y_id": "x_id", "y_type": "x_type", "y_source": "x_source"})
 kg = pd.concat([kg, rev], ignore_index=True).drop_duplicates()
 kg = kg[~((kg.x_id == kg.y_id) & (kg.x_type == kg.y_type) & (kg.x_source == kg.y_source))]
 
-# ---- node-name lookup by (type, id) from the vocab tables ------------------
+# ---- 3. name both endpoints (grounding) --------------------------------------
+# Lookup (type, id) -> name from the six vocabulary tables. An edge with an endpoint that has no
+# name is dropped: every edge must resolve to two real nodes.
 gn = dataiku.Dataset("gene_names").get_dataframe()
 mt = dataiku.Dataset("mondo_terms").get_dataframe()
 rt = dataiku.Dataset("reactome_terms").get_dataframe()
 dv = dataiku.Dataset("drug_vocab").get_dataframe()
+# GO and HPO ids are digit-suffixed strings; pandas' type guessing would turn them into numbers and
+# strip leading zeros, so both are read with inference off.
 gt = dataiku.Dataset("go_terms").get_dataframe(infer_with_pandas=False)
 ht = dataiku.Dataset("hpo_terms").get_dataframe(infer_with_pandas=False)
 name_by_key = {}
@@ -55,11 +84,8 @@ name_by_key.update({("gene/protein", str(int(e))): s for e, s in zip(gn.entrez_i
 name_by_key.update({("disease", str(m)): n for m, n in zip(mt.mondo_id.astype(str), mt.name)})
 name_by_key.update({("pathway", str(p)): n for p, n in zip(rt.pathway_id, rt.name)})
 name_by_key.update({("drug", str(d)): n for d, n in zip(dv.drugbank_id, dv.drug_name)})
-# Task 10 additions (2026-08-06). GO namespace -> the y_type/x_type string used by
-# harmonize_go_protein/_hierarchy (must match exactly). infer_with_pandas=False on both
-# reads -- go_id/hpo_id are digit-suffixed strings that pandas' own type-sniffer will
-# otherwise numeric-coerce, silently stripping leading zeros (hit this bug building the
-# HP<->MONDO reclassification upstream; same root cause here).
+# GO namespace -> node type. These strings must match exactly the types written by
+# harmonize_go_protein / harmonize_go_hierarchy.
 NS_TO_TYPE = {"bioprocess": "biological_process", "molfunc": "molecular_function",
               "cellcomp": "cellular_component"}
 name_by_key.update({(NS_TO_TYPE[ns], g): n for g, n, ns in zip(gt.go_id, gt.name, gt.namespace)})
@@ -69,7 +95,10 @@ kg["x_name"] = [name_by_key.get((t, i)) for t, i in zip(kg.x_type, kg.x_id)]
 kg["y_name"] = [name_by_key.get((t, i)) for t, i in zip(kg.y_type, kg.y_id)]
 kg = kg.dropna(subset=["x_name", "y_name"])  # grounding-drop: endpoints must resolve to a node
 
-# ---- disease grouping (PrimeKG published map) ------------------------------
+# ---- 4. group diseases (PrimeKG's published grouping map) --------------------
+# A MONDO disease that belongs to a PrimeKG group takes the group's id and name, and its source
+# becomes "MONDO_grouped". Grouping can merge two endpoints or two edges into one, so duplicates and
+# self-loops are removed again afterwards.
 gmap = dataiku.Dataset("disease_group_map").get_dataframe()
 g_id = dict(zip(gmap.node_id.astype(str), gmap.group_id_bert.astype(str)))
 g_name = dict(zip(gmap.node_id.astype(str), gmap.group_name_bert))
@@ -81,7 +110,16 @@ for s in ("x", "y"):
 kg = kg.drop_duplicates()
 kg = kg[~((kg.x_id == kg.y_id) & (kg.x_type == kg.y_type) & (kg.x_source == kg.y_source) & (kg.x_name == kg.y_name))]
 
-# ---- giant connected component ---------------------------------------------
+# ---- 5. keep only the largest connected component ----------------------------
+# After grounding and grouping, a few small islands can be cut off from the main graph (e.g. two
+# nodes linked only to each other, or a cluster whose only bridge was dropped in step 3).
+# Build an undirected graph on the 4-part node key, find the biggest connected piece, and keep only
+# edges inside it. Both ends of an edge are always in the same piece, so whole edges are kept or
+# dropped. PrimeKG applies the same rule.
+#
+# Why: path-based features (e.g. DWPC) count chains of edges from a gene to a disease; a node on an
+# island has no path to the rest of the graph and would only add zero-value rows. Nodes on islands
+# disappear entirely, because step 6 builds the node list from the surviving edges.
 kg["xk"] = list(zip(kg.x_id, kg.x_type, kg.x_name, kg.x_source))
 kg["yk"] = list(zip(kg.y_id, kg.y_type, kg.y_name, kg.y_source))
 G = nx.Graph()
@@ -90,15 +128,12 @@ giant = set(max(nx.connected_components(G), key=len))
 kg = kg[kg.xk.isin(giant) & kg.yk.isin(giant)].copy()
 
 
-# ---- SPLIT (2026-08-14): node_index assignment moved out of this recipe ------
-# `node_index` used to be assigned here by pandas `.reset_index()`, i.e. POSITIONALLY --
-# it depended on concat row order, so every rebuild silently renumbered every node and
-# broke every hardcoded index downstream (personas, disease_split_key, WATCH lists).
-# It is now assigned by the `assign_node_index` Window recipe over an explicit
-# ORDER BY node_type, node_source, node_id, node_name -- a total order on the node key,
-# so the mapping is a pure function of the node SET and reproducible across rebuilds.
-# This recipe therefore emits the node set WITHOUT indices, and the edges keyed by the
-# 4-part natural key; `attach_node_index` joins the indices back on afterwards.
+# ---- 6. write edges and the node set (no node_index here) --------------------
+# node_index is NOT assigned here. Numbering by row position (the old .reset_index()) depended on
+# concat order, so every rebuild silently renumbered nodes and broke hard-coded indices downstream
+# (personas, disease_split_key, WATCH lists). assign_node_index numbers nodes over an explicit sort
+# (node_type, node_source, node_id, node_name), so the numbering depends only on which nodes exist;
+# attach_node_index then joins the numbers back onto these edges by the 4-part key.
 nodes = pd.concat([
     kg[["x_id", "x_type", "x_name", "x_source"]].rename(columns={
         "x_id": "node_id", "x_type": "node_type", "x_name": "node_name", "x_source": "node_source"}),

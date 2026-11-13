@@ -4,6 +4,8 @@
 # ----------------------------------------------------------------------------
 # SOURCE PROVENANCE  (recorded 2026-08-13)
 # Source        : Reactome pathway hierarchy + protein mappings
+# PINNED (R3, 2026-11-08): DEMO_KG_PREP reads this file from `pinned_sources` (compute_pinned_sources);
+# the URL above is where it was pulled from, recorded in the folder's MANIFEST.json.
 # URL in use    : https://reactome.org/download/current/          <-- UNPINNED, literally "current"
 # Version used  : release 97 (from https://reactome.org/ContentService/data/database/version,
 #                 queried 2026-08-13) -> 2,883 rows in `reactome_terms`
@@ -16,16 +18,21 @@ import io
 
 import dataiku
 import pandas as pd
-import requests
 
-BASE = "https://reactome.org/download/current/"
-HEADERS = {"User-Agent": "Mozilla/5.0"}
+# Pinned by compute_pinned_sources (decision D9, R3 2026-11-08): this recipe reads the copy in
+# the `pinned_sources` folder and never the URL, so a rebuild reproduces the same pull. The
+# folder's MANIFEST.json records each file's URL, retrieval time, SHA-256 and release version.
+PINNED = dataiku.Folder("pinned_sources")
+
+
+def pinned(path):
+    with PINNED.get_download_stream(path) as s:
+        return s.read()
+
 
 
 def get(name):
-    r = requests.get(BASE + name, timeout=180, headers=HEADERS)
-    r.raise_for_status()
-    return r.text
+    return pinned("reactome/" + name).decode("utf-8")
 
 
 terms = pd.read_csv(io.StringIO(get("ReactomePathways.txt")), sep="\t", header=None,

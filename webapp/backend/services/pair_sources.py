@@ -179,7 +179,15 @@ def _mention(ctx: dict[str, Any], rec: dict[str, Any]) -> str | None:
 
 
 def _search_one(tool_id: str, q: str) -> list[dict[str, Any]]:
-    return get_project().get_agent_tool(tool_id).run({"query": q}).get("output") or []
+    """One Cortex search. A failed tool call answers with `error` and no `output`; reading only
+    `output` turned every failure into "0 records" with no reason (2026-11-10: the webapp's run-as
+    user had lost its Snowflake authorisation, and the tabs showed nothing). Cortex search is
+    semantic and always returns its top k, so a call that succeeds is never empty: raise instead,
+    and the failure is recorded per query and shown on the tab."""
+    res = get_project().get_agent_tool(tool_id).run({"query": q})
+    if res.get("error") or "output" not in res:
+        raise RuntimeError(str(res.get("error") or "the tool returned no output"))
+    return res.get("output") or []
 
 
 def search_fresh(ctx: dict[str, Any]) -> dict[str, Any]:
@@ -373,16 +381,48 @@ def _path(disease: int, gene: int) -> str:
     return f"{disease}/{gene}.json"
 
 
+def _same_pair(stored: dict[str, Any], disease: int, gene: int) -> bool:
+    """Whether a cached file was written for the pair these indexes name TODAY.
+
+    The file is named by `node_index`, which a graph rebuild renumbers (R5 renumbered 76,786 nodes):
+    after it, every one of the 26 cached files pointed at a different pair, and one of them a served
+    pair, which would have shown another pair's trials and papers with no error. So the stored
+    symbol and disease name must match the current ones, or the file counts as a miss.
+    """
+    try:
+        now = context(disease, gene)
+    except LookupError:
+        return False
+    return (stored.get("symbol"), stored.get("disease_name")) == (now["symbol"], now["disease_name"])
+
+
 def _read(disease: int, gene: int) -> dict[str, Any] | None:
     try:
         with _folder().get_file(_path(disease, gene)) as r:
             doc = json.loads(r.content)
     except Exception:
         return None
-    return doc if doc.get("versions") == VERSIONS else None
+    if doc.get("versions") != VERSIONS:
+        return None
+    if not _usable(doc.get("search") or {}):
+        return None
+    return doc if _same_pair(doc.get("context") or {}, disease, gene) else None
+
+
+def _usable(search: dict[str, Any]) -> bool:
+    """Whether a search result is worth caching or serving from cache. A corpus whose every call
+    failed is not, so the next visit retries. Nor is a result with nothing retrieved in either
+    corpus: Cortex always returns its top k, so that can only be a failure recorded before failures
+    were detected (the files written 2026-11-10 while the run-as user had no Snowflake access)."""
+    corpora = [search.get(c) or {} for c in TOOLS]
+    if any(c.get("error") for c in corpora):
+        return False
+    return any((c.get("retrieved") or 0) > 0 for c in corpora)
 
 
 def _write(doc: dict[str, Any]) -> None:
+    if not _usable(doc.get("search") or {}):
+        return
     _folder().put_file(_path(doc["context"]["disease_index"], doc["context"]["gene_index"]),
                        json.dumps(doc).encode("utf-8"))
 

@@ -17,6 +17,21 @@ green as of 2026-08-28. Run it after any graph rebuild, seed-gate move, champion
 config edit; a `STALE` line means the flow and the document have diverged and one of them has
 to move.
 
+> **Re-measured 2026-11-07 on `m7-f14-cal` and the MONDO-ID split — the panel choice holds.**
+> The analysis below is the 2026-08-27 record and keeps its numbers. `nb7` now asserts the
+> re-measured values (green again), which moved as follows: validation diseases 670 → 607 in
+> 481 families; oncology 246 → 202 diseases (144 → 127 usable), autoimmune 23 → 22 (12 → 11),
+> CVRM 32 → 40 (17 → 26); families with 3+ terms 25 → 19; breast 19 → 20 terms, lung 17 → 15
+> (14 → 12 usable), heme 29 → 30. Autoimmune now has **no** family with 2+ terms and CVRM **one**
+> with 2+ usable terms (was 1 / 0) — still no subtype panel outside oncology, so Act 3 stays
+> oncology. Top-50 overlap: breast 0.4299 → 0.4491 (near-duplicate pairs 22 → 27), uterine
+> 0.4777 → 0.5084 (1 → 5), stomach 0.4510 → 0.3976; common genes breast 8 → 10, uterine
+> 24 → 26, stomach 17 → 19. HER2+ vs TNBC share 1 novel (was 2) and 12 overall (was 14) of their
+> top 50. Known targets in the top 20: RA 4 → 5, DCM 3 → 2, endometrial serous 3 → 2, PsA 2 → 3.
+> The CSVs under `built/` and `analysis/` are the August snapshot and were not regenerated.
+>
+> **Re-measured again 2026-11-10** after the champion was retrained on the rebuilt graph (R6): validation diseases 604 in 478 families; oncology 200 diseases (125 usable); heme 31 terms (19 usable); autoimmune, CVRM, family shapes and breast / lung / uterine terms unchanged. Top-50 overlap: breast 0.4274 (near-duplicate pairs 25), uterine 0.5084 (3), stomach 0.4160; common genes breast 9, uterine 25, stomach 18. HER2+ vs TNBC share 2 novel and 11 overall of their top 50. Known targets in the top 20: RA 3, DCM 3, endometrial serous 3, gastric 2 (endometrioid 4, FH 3, PsA 3 unchanged). `nb7` asserts every value here; it now resolves family anchors by MONDO id, because the rebuild renumbered them.
+
 Six diseases in `analysis/eyeball_test.csv` are no longer served (obesity, multiple
 sclerosis, SLE, atopic eczema, myeloma, ALL). Their ranks are the *evidence for rejecting
 them* — obesity's GLP1R at #526, MS's 0-of-8 — so nb7 asserts only the served diseases;

@@ -19,8 +19,8 @@ def check(name,doc,live,tol=0.0,fmt="{:,}"):
 va=dataiku.Dataset("validation_auc_by_disease").get_dataframe()
 print(f"AUC|diseases={len(va)}|macro={va.auc_disease.mean():.4f}|"
       f"pos>=10 macro={va[va.n_pos>=10].auc_disease.mean():.4f}")
-check("10.1 macro per-disease AUC",0.8230,round(float(va.auc_disease.mean()),4),tol=0.0006,fmt="{:.4f}")
-check("10.1 validation diseases",670,len(va))
+check("10.1 macro per-disease AUC",0.818,round(float(va.auc_disease.mean()),4),tol=0.0006,fmt="{:.4f}")
+check("10.1 validation diseases",604,len(va))
 
 # ==== 7.3  per-family validation, and the plot that replaces a 45-number table ====
 
@@ -80,9 +80,9 @@ plot_buffer.seek(0)
 display(Image(data=plot_buffer.getvalue()))
 plt.close(fig)
 
-check("7.3 per-family macro AUC", 0.8009, round(float(macro_auc), 4),
+check("7.3 per-family macro AUC", 0.8003, round(float(macro_auc), 4),
       tol=0.0006, fmt="{:.4f}")
-check("7.3 families", 505, len(fa))
+check("7.3 families", 478, len(fa))
 
 # ==== 7.4  THE key plot: association AUC does not predict therapeutic relevance ====
 
@@ -113,8 +113,8 @@ print(
 )
 print(f"ORTH|well-powered n={len(wp)}|pearson={rw:+.4f}")
 
-check("7.4 orthogonality pearson r", 0.002, round(float(r), 3), tol=0.004, fmt="{:+.3f}")
-check("7.4 orthogonality R2", 0.0000, round(float(r*r), 4), tol=0.0004, fmt="{:.4f}")
+check("7.4 orthogonality pearson r", 0.167, round(float(r), 3), tol=0.004, fmt="{:+.3f}")
+check("7.4 orthogonality R2", 0.0278, round(float(r*r), 4), tol=0.0004, fmt="{:.4f}")
 
 fig, ax = plt.subplots(figsize=(7.2, 6))
 
@@ -170,7 +170,7 @@ plt.close(fig)
 
 print(f"DRUG|diseases={len(db)}|macro drug AUC={db.auc_drug_targets.mean():.4f}|"
       f"below 0.5={int((db.auc_drug_targets<0.5).sum())}")
-check("7.4 drug-target macro AUC",0.6886,round(float(db.auc_drug_targets.mean()),4),tol=0.0006,fmt="{:.4f}")
+check("7.4 drug-target macro AUC",0.6703,round(float(db.auc_drug_targets.mean()),4),tol=0.0006,fmt="{:.4f}")
 
 # ==== 7.2  hub-bias meter -- it has no recipe, so this notebook IS its artifact ====
 
@@ -184,6 +184,20 @@ for q in range(5):
     print(f"HUB|Q{q+1}|{ps:6.2f}|{ts:6.2f}|{ts/ps:5.2f}x")
 q5=100*(top.dq==4).mean()/(100*(sc3.dq==4).mean())
 print(f"HUBTOP|highest-degree quintile over-representation at top-50: {q5:.2f}x")
+
+# ==== 7.5  calibration -- what the webapp's Score column may say ====
+# The shortlist shows proba_1 as the chance of a RECORDED association. That wording holds only while the
+# calibrated score tracks the observed rate on held-out diseases, so it is asserted here, not quoted.
+# ECE over 10 equal-mass bins; the top-20 pair shows the head is slightly cautious (predicted < observed).
+_y=sc3.is_target.to_numpy().astype(float); _p=sc3.proba_1.to_numpy().astype(float)
+_b=np.clip(np.digitize(_p,np.quantile(_p,np.linspace(0,1,11))[1:-1]),0,9)
+_ece=sum((_b==k).mean()*abs(_p[_b==k].mean()-_y[_b==k].mean()) for k in range(10) if (_b==k).any())
+_t20=sc3.sort_values(["disease_index","proba_1"],ascending=[True,False]).groupby("disease_index").head(20)
+print(f"CAL|ece={_ece:.4f}|mean_pred={_p.mean():.4f}|observed={_y.mean():.4f}|"
+      f"top20_pred={_t20.proba_1.mean():.4f}|top20_obs={_t20.is_target.mean():.4f}")
+check("7.5 calibration ECE (10 equal-mass bins)",0.0034,round(float(_ece),4),tol=0.001,fmt="{:.4f}")
+check("7.5 top-20 per disease, mean calibrated score",0.2612,round(float(_t20.proba_1.mean()),4),tol=0.005,fmt="{:.4f}")
+check("7.5 top-20 per disease, observed association rate",0.31,round(float(_t20.is_target.mean()),4),tol=0.005,fmt="{:.4f}")
 print(f"\nSUMMARY|{len(FAIL)} STALE")
 for nm,d,l in FAIL: print(f"FAILED|{nm}|doc={d}|live={l}")
 
@@ -209,8 +223,8 @@ def _macro(key):
     return ((g.rsum-g.npos*(g.npos+1)/2)/(g.npos*g.nneg)).mean(), len(g)
 _sk,_nsk=_macro("disease_split_key")
 print(f"HEADER|pooled={_pooled:.4f}|per_split_key={_sk:.4f}|split_keys={_nsk}")
-check("header pooled AUC",0.8932,round(float(_pooled),4),tol=0.0006,fmt="{:.4f}")
-check("header per-split-key AUC",0.8046,round(float(_sk),4),tol=0.0006,fmt="{:.4f}")
+check("header pooled AUC",0.8908,round(float(_pooled),4),tol=0.0006,fmt="{:.4f}")
+check("header per-split-key AUC",0.7999,round(float(_sk),4),tol=0.0006,fmt="{:.4f}")
 
 print(f"\nSUMMARY|{len(FAIL)} STALE")
 for nm,_d,_l in FAIL: print(f"FAILED|{nm}|doc={_d}|live={_l}")

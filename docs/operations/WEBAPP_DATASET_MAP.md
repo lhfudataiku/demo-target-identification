@@ -65,12 +65,13 @@ all.
 | function | route | dataset | fields read | scope served |
 |---|---|---|---|---|
 | disease picker | `GET /api/candidates/diseases` | `dashboard_candidates` | `disease_index`, `disease_name`, `gene_index`, `is_target` | 12 diseases, grouped to a count and a known count |
-| ranked list, filters, funnel | `GET /api/candidates` | `dashboard_candidates` | `disease_index`, `disease_name`, `gene_index`, `gene_name`, `rank_in_disease`, `score`, `rank_percentile`, `is_target`, `druggability_class`, `ot_class_l1`, `ot_sm_tractable`, `ot_ab_tractable`, `has_safety_liability`, `safety_flag`, `approved_for_disease`, `investigational_for_disease` | one disease's pool; filters are novel only, tractable (small molecule or antibody), not secreted, and `rank <= max_rank` (default 200, max 5,000) |
+| ranked list, filters, funnel | `GET /api/candidates` | `dashboard_candidates` | `disease_index`, `disease_name`, `gene_index`, `gene_name`, `rank_in_disease`, `score`, `rank_percentile`, `is_target`, `druggability_class`, `ot_class_l1`, `ot_sm_tractable`, `ot_ab_tractable`, `has_safety_liability`, `safety_flag`, `approved_for_disease`, `investigational_for_disease` | one disease's pool; filters are novel only, tractable (small molecule or antibody), not secreted, and `rank <= max_rank` (default 200, max 5,000). Since 2026-11-12 (webapp revision W2) the response also carries `n_known` and `base_rate`, the disease's recorded associations over its whole pool, computed from the same rows before any filter |
 | candidate card | `GET /api/candidates/gene` | `dashboard_candidates` | `disease_pool_size`, `safety_events`, and 13 of the champion's 14 inputs: `dwpc_GBGD`, `dwpc_GFGD`, `dwpc_GGD`, `dwpc_GPGD`, `gene_n_pathways`, `gene_ppi_degree`, `ppi_adamic_adar`, `ppi_common_neighbors_z`, `ppi_evidence_depth`, `ppi_jaccard`, `ppi_multi_source_frac`, `prox_closest`, `shared_pathway_frac` (`prox_kernel` is not in the dataset and the card names it as missing) | one pair; each feature is placed as a percentile within its own disease's pool |
 | gene identity header | `GET /api/candidates/identity` | `candidate_identity` | `node_index`, `node_id`, `node_name`, `hgnc_id`, `symbol`, `name`, `locus_type`, `location`, `alias_symbol`, `prev_symbol`, `gene_group`, `date_modified`, `ensembl_gene_id`, `uniprot_ids`, `source_file` | 20,861 gene nodes (all of them; 15,018 appear on the shortlist); one row per gene |
 | drug records | `GET /api/candidates/drugs` | `drug_evidence_records` | `disease_index`, `gene_index`, `drug_id`, `drug_name`, `max_stage`, `relation`, `action_type`, `source_release` | 86,123 records over 1,554 diseases; **only 2,294 fall in the 12 shortlist diseases**, and they cover every pair the flags mark |
 | top-5 SHAP drivers | `GET /api/candidates/drivers` | `candidate_shap_top5` | `disease_index`, `gene_index`, `shap_top5` (a JSON list of `feature`, `shap`, `value`, `percentile`) | 105,702 pairs, one per shortlist pair |
 | trials and literature | `GET /api/candidates/sources`, `/sources/selection` | `dashboard_candidates`; `candidate_identity`; folder `act4_evidence_cache` | `disease_index`, `disease_name`, `anchor_name`; `node_index`, `node_name`, `symbol`, `name`, `alias_symbol`, `prev_symbol`; one JSON file per pair at `{disease_index}/{gene_index}.json` | any selected pair; the `prefill_evidence_cache` scenario fills 21 HER2+ pairs (ranks 1–20, plus ERBB2 and SMARCA2) |
+| recorded reviews | `POST /api/reviews`, `GET /api/reviews?disease=` | `dashboard_candidates`; `candidate_identity`; folder `shortlist_reviews` (**written**) | `disease_index`, `disease_name`, `gene_index`, `gene_name`, `rank_in_disease`, `score`; `node_index`, `hgnc_id`, `symbol`; one JSON file per review at `{YYYY-MM}/{UTC timestamp}_{id}.json` | POST: one pair, one new file, never edited. GET: every review whose stored `disease_name` is the disease's, matched to today's gene by stored graph symbol (webapp revision W4, D3) |
 | evidence assistant | `POST /api/assistant` | all of the above | the list row, the drivers, the drug records, the identity, and the cached trials and papers for the pair | one pair; tools: `graph search` (`b6Rpbve`, Kuzu folder `ytvuniN8`), Cortex CT.gov (`4I2L6YL`), Cortex PubMed (`FNxhpfF`) |
 
 `dashboard_candidates` stored **63 columns; the webapp reads 32**, and since M6 it stores only those 32. The other 31 were unread. They
@@ -94,21 +95,21 @@ is read entire as `label, count`.
 | `graph_label_evidence` | `datatypes` | 3 |
 
 **Section 2 — reconstruction and calibration** (`GET /api/calibration`). The scope is the validation
-split: **670 held-out diseases (668 with an AUC) in 505 disease families**.
+split: **607 held-out diseases (606 with an AUC) in 481 disease families**.
 
 | dataset | fields read | rows and scope |
 |---|---|---|
-| `validation_auc_by_disease` | `auc_disease` | 670 diseases → macro AUC, median, histogram, count below chance |
-| `validation_auc_by_disease` (since M6; was `persona_enrichment`) | `disease_index`, `disease`, `auc_disease`, `rank_enrichment`, `n_pos` | 670 → each disease's place in the distribution, and the enrichment quartiles |
-| `orthogonality_scatter` | `auc_disease`, `auc_drug_targets` | 670 rows, 130 with a drug-target AUC → Pearson r |
-| `family_auc_by_family` | `auc_family` | 505 families, 503 with an AUC → family macro AUC |
+| `validation_auc_by_disease` | `auc_disease` | 607 diseases → macro AUC, median, histogram, count below chance |
+| `validation_auc_by_disease` (since M6; was `persona_enrichment`) | `disease_index`, `disease`, `auc_disease`, `rank_enrichment`, `n_pos` | 607 → each disease's place in the distribution, and the enrichment quartiles |
+| `orthogonality_scatter` | `auc_disease`, `auc_drug_targets` | 607 rows, 122 with a drug-target AUC → Pearson r |
+| `family_auc_by_family` | `auc_family` | 481 families, 480 with an AUC → family macro AUC |
 | `split_audit_2` | `split`, `rows`, `positives`, `pos_rate_pct`, `n_diseases`, `n_split_keys`, `n_anchor_families`, `overlap_*`, `straddling_split_keys` | 3 splits; leakage columns must sum to 0 |
 | `hub_bias_meter` | `quintile`, `median_degree`, `mean_proba`, `pct_predicted_positive`, `n_genes`, `rho_degree_proba`, `threshold` | 5 degree quintiles |
 | `disease_eligibility` | `is_eligible`, `count` | 2 rows (1,157 eligible of 27,153 diseases) |
 | `enriched_dwpc_GGD`, `enriched_dwpc_GPGD`, `enriched_dwpc_GCD` (zone 10) | the `COUNT_RECORDS` and `BUILD_START_DATE` metrics only | the three pool-admission routes |
-| saved model `hJLGoYn4` (zone 31) | the active version's precision, recall, F1, AUPRC, pooled AUC and lift | the champion card |
+| saved model `W8VhjZOZ` (`m7-f14-cal`, zone 31) | the active version's precision, recall, F1, AUPRC, pooled AUC and lift | the champion card |
 
-`persona_enrichment` carries the same 668 AUCs as `validation_auc_by_disease`, and its
+`persona_enrichment` carries the same AUCs (606 on the 2026-11 split) as `validation_auc_by_disease`, and its
 `rank_enrichment` is `(hits_at_50 / 50) / (n_pos / (n_pos + n_neg))`. **Both can be computed from
 `validation_auc_by_disease` alone**: recomputed that way, the difference is at most 7e-15. M4's
 rebuild did exactly that, and M6 retired `persona_enrichment` from the main project.
@@ -131,10 +132,13 @@ no family.
 
 - **Outside the serving zones, metadata only:** the three zone-10 DWPC metrics and the saved model's
   metrics (§2.2), and the Kuzu folder `ytvuniN8` in zone 04. The graph tool reads that folder; it is
-  merged from `DEMO_KG_LS.UBUlwwxT` by `compute_ytvuniN8`. D14 says the backend reads only serving
+  merged from `DEMO_KG_LS.6kiPwQC7` (`kg_ls_v0-3-j2B2cE`, since 2026-11-12) by `compute_ytvuniN8`. D14 says the backend reads only serving
   zones, so it should name these as exceptions.
 - **`act4_evidence_cache`** (`CB9xqCGg`): written by the webapp and the `prefill_evidence_cache`
   scenario. No recipe touches it, and `dku flow zones` lists it in no zone.
+- **`shortlist_reviews`** (`987Q2HfO`, zone S1, since 2026-11-12): written only by `POST /api/reviews`,
+  one file per review. The FilesInFolder dataset `shortlist_reviews_log` (S1) reads it as one row per
+  review for the next stage; no recipe reads either yet.
 - **Shortlist scope comes from the family panels.** `filter_persona_diseases` joins the validation
   split to `demo_panel_config` filtered on `in_act4`. So the build order is S3 → S4 → 40 → S1, not
   "shared core first" as D15 draws it (§5.4).

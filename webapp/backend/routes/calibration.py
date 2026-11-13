@@ -7,7 +7,7 @@ this route still derives live values where available.
   GET /api/calibration   the AUC distribution, each scored disease's place in it,
                          the hub-bias meter, orthogonality
 
-Read the AUC as RECONSTRUCTION FIDELITY, not predictive power: across 670
+Read the AUC as RECONSTRUCTION FIDELITY, not predictive power: across 604
 diseases, how reliably do already-validated targets land near the top.
 
 Three things this act must show together, because each is dishonest alone:
@@ -46,7 +46,7 @@ CHAMPION_FALLBACK = {
     "precision": 0.3865, "recall": 0.3664, "f1": 0.3762,
     "auprc": 0.3359, "auc_pooled": 0.8962, "lift": 2.3069,
 }
-CHAMPION_MODEL = "hJLGoYn4"      # m7-f14
+CHAMPION_MODEL = "W8VhjZOZ"      # m7-f14-cal (m7-f14 + sigmoid calibration, 2026-11-07)
 
 
 @functools.lru_cache(maxsize=1)
@@ -79,6 +79,7 @@ def _champion() -> dict[str, Any]:
                 else getattr(details, "details", {}).get("perf", {})) or {}
         out = {k: float(snip[src]) for k, src in keys.items()}
         out["source"] = f"live · version {vid}"
+        out["version"] = str(vid)
         return out
     except Exception as e:  # noqa: BLE001 -- the reason is the point
         logger.warning("champion metrics: live read failed, using recorded values: %s", e)
@@ -265,11 +266,11 @@ def calibration() -> dict[str, Any]:
         "enrichment": {"median": _q(0.5), "q1": _q(0.25), "q3": _q(0.75),
                        "max": round(float(enr.max()), 1) if len(enr) else None, "n": int(len(enr))},
         "n_diseases": len(vals),
-        # Macro, never pooled. Pooled reads 0.8932 and overstates by ~7 points
+        # Macro, never pooled. Pooled reads 0.8908 and overstates by ~7 points
         # because it lets large diseases carry small ones.
         "macro_auc": round(macro, 4),
-        # The true median: with an even count (668) it averages the two middle
-        # values. Taking the upper one served 0.8628 against the documented 0.8623.
+        # The true median: with an even count (606 since 2026-11-07) it averages the two
+        # middle values. Taking the upper one once served 0.8628 against the documented 0.8623.
         "median_auc": round(statistics.median(vals), 4) if vals else None,
         "below_chance": int(sum(1 for v in vals if v < 0.5)),
         "histogram": _hist(vals, 0.0, 1.0, 20),

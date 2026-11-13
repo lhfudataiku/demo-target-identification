@@ -132,7 +132,7 @@ const RANKING: Record<string, GlossaryEntry> = {
   },
   'ranking-method': {
     term: 'how genes are ranked',
-    def: 'Every gene the graph connects to the disease enters the candidate pool. The champion model scores each gene–disease pair from 14 graph-structure features, and the genes are sorted by that score within the disease. The score is uncalibrated, so the order carries the meaning, not the number — and ranks are never comparable between diseases.',
+    def: 'Every gene the graph connects to the disease enters the candidate pool. The champion model scores each gene–disease pair from 14 graph-structure features, and the genes are sorted by that score within the disease. The score is calibrated: it reads as the chance of a recorded association, compared with the disease’s base rate. Ranks are never comparable between diseases.',
   },
   'champion-model': {
     term: 'champion model',
@@ -140,11 +140,11 @@ const RANKING: Record<string, GlossaryEntry> = {
   },
   rank: {
     term: 'rank',
-    def: 'Position in this disease’s list, highest score first. The score behind it is uncalibrated, so the ordering is what carries meaning — not the number.',
+    def: 'Position in this disease’s list, highest score first. Ranks are not comparable between diseases, because the pools differ in size and density.',
   },
-  uncalibrated: {
-    term: 'uncalibrated',
-    def: 'The score sorts candidates correctly but is not a probability — 0.8 does not mean an 80% chance of being a real target. Compare positions, never the values.',
+  'calibrated-score': {
+    term: 'calibrated score',
+    def: 'The model’s chance that a gene–disease pair is already a recorded association (Open Targets genetic or somatic evidence, or a phenotype-derived link). On held-out diseases predicted and observed rates agree, so 20% means about one pair in five, against the disease’s base rate. It is not the chance of being a good target, and for a novel gene it is a floor: genes without a record are unlabeled, not negative.',
   },
   'top-50': {
     term: 'top 50',

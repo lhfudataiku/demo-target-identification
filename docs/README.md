@@ -40,6 +40,7 @@ evidence and generated documents appear first; planning and historical material 
 | [`demo/WEBAPP_DESIGN.md`](demo/WEBAPP_DESIGN.md) | The technical companion to the narrative: Vue/FastAPI architecture, routes, interactions and data contracts. `FLOW_MAP.md` remains the generated flow authority |
 | [`demo/panel_selection.html`](demo/panel_selection.html) | **Which families and diseases the demo carries.** Measured 2026-08-27 over all 670 validation diseases: subtype structure exists only in oncology, so Act 3 is breast + uterine and therapeutic-area breadth comes from Act 4's singletons. Every candidate tested by looking up where the field's validated targets actually rank. **Read before repointing the persona filter.** Supporting tables in [`demo/panel_selection/`](demo/panel_selection/), all asserted by `nb7` |
 | [`demo/BREAST_SURGEON_BRIEFING.md`](demo/BREAST_SURGEON_BRIEFING.md) | Clinician-facing validation set for the breast panel, including the defects a surgeon finds immediately |
+| [`demo/FUTURE_DIRECTIONS.md`](demo/FUTURE_DIRECTIONS.md) | **Future research direction, written at release (2026-11-10).** What the served shortlist cannot yet tell apart (the large cancer lists are one list; complex inflation; drug targets without genetic evidence), the label, graph and feature limitations behind it, and candidate Part 1 additions (Open Targets animal models, tissue expression, protein complexes, cancer dependency). Not a plan of record |
 
 ## Platform, operations and reference
 
@@ -64,7 +65,16 @@ skill.
 
 ## Planning
 
-No plan is in progress. Completed plans move to [`../archive/`](../archive/): the most recent is the flow migration, done
+**In progress:** nothing.
+
+Completed plans move to [`../archive/`](../archive/): the most recent is the webapp revision, done
+2026-11-13 (`DEC-DEMO-006`; [`WEBAPP_REVISION_WORKPLAN.md`](../archive/WEBAPP_REVISION_WORKPLAN.md)).
+It shortened the shortlist page, cleaned up its filters, showed the calibrated score, kept one
+assistant, and let a scientist record a review per candidate. Before it came the graph revision, done
+2026-11-10 (`DEC-ARCH-008`, `DEC-MEAS-006`, `DEC-MODEL-002`, `DEC-OPS-008`;
+[`GRAPH_REVISION_WORKPLAN.md`](../archive/GRAPH_REVISION_WORKPLAN.md)). It moved data loading into
+`DEMO_KG_PREP` with pinned sources, corrected two relations, made edge labels readable, rebuilt the
+graph and Part 2, and measured label sensitivity (R7). Before it came the flow migration, done
 2026-10-29 (`DEC-ARCH-006`, `DEC-OPS-007`, `DEC-MEAS-005`, `DEC-ARCH-007`; its workplan and evidence
 design are [`FLOW_MIGRATION_WORKPLAN.md`](../archive/FLOW_MIGRATION_WORKPLAN.md) and
 [`EVIDENCE_PROJECT_DESIGN.md`](../archive/EVIDENCE_PROJECT_DESIGN.md)). Before it came the webapp

@@ -11,7 +11,7 @@
   import { ArrowExternalLink, ChevronDown, ChevronRight } from '@dataiku/vue-icons'
   import { StatusBadge } from 'bs-blueprint'
   import { apiUrl } from '@/utils/api'
-  import { tractLabel, type Detail, type Identity, type Row } from './types'
+  import { pct, tractLabel, type Detail, type Identity, type Row } from './types'
 
   const props = defineProps<{ row: Row; detail: Detail | null; diseaseName: string }>()
 
@@ -49,6 +49,7 @@
     <p class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
       Selected candidate · rank {{ row.rank_in_disease.toLocaleString() }}<template v-if="detail?.pool_size">
         of {{ detail.pool_size.toLocaleString() }}</template> for {{ diseaseName }}
+      · {{ pct(row.score) }} chance of a recorded association
     </p>
     <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
       <h2 class="font-mono text-3xl font-semibold tracking-tight">{{ row.gene_name }}</h2>
@@ -108,22 +109,12 @@
           <p><span class="text-muted-foreground">Locus type:</span> {{ identity.locus_type ?? '—' }}</p>
         </CollapsibleContent>
       </Collapsible>
-      <p class="font-mono text-2xs text-muted-foreground">
-        {{ identity.source }} · {{ identity.source_file }} · matched by NCBI Gene ID
-        {{ identity.ncbi_gene_id }}<template v-if="identity.date_modified">
-          · record modified {{ identity.date_modified.slice(0, 10) }}</template>
-      </p>
     </template>
     <p v-else-if="identity" class="text-xs text-muted-foreground">
       The HGNC file this app loads has no record for NCBI Gene ID {{ identity.ncbi_gene_id }}.
     </p>
     <p v-else-if="identityError" class="text-xs text-muted-foreground">
       Gene identity unavailable: {{ identityError }}
-    </p>
-
-    <p class="font-mono text-2xs text-muted-foreground">
-      <template v-if="row.rank_percentile !== null">top {{ row.rank_percentile }}% of the pool · </template>graph
-      node_index {{ row.gene_index }}
     </p>
   </div>
 </template>

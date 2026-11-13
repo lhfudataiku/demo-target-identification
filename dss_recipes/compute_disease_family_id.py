@@ -70,6 +70,20 @@ disease_nodes = nodes[(nodes.node_type == "disease") & (nodes.node_source == "MO
 id_to_index = dict(zip(disease_nodes.node_id.astype(str), disease_nodes.node_index.astype(int)))
 index_to_name = dict(zip(nodes.node_index.astype(int), nodes.node_name))
 
+# STABLE IDENTITY (graph revision, 2026-11). node_index is renumbered whenever the graph's node set
+# changes, so nothing that decides a family or a fold may depend on its order or value. Every
+# tie-break below orders by the MONDO id instead, and the split routes on disease_split_key_mondo.
+# A grouped node's id is its members' MONDO ids joined by "_"; the first one stands for the group.
+# disease_family_id and disease_split_key stay node_index values because readers resolve them
+# through graph_nodes (demo panel config, hierarchy annotation, per-key AUC, the webapp).
+all_disease = nodes[nodes.node_type == "disease"]
+index_to_mondo = {int(i): int(str(n).split("_")[0])
+                  for i, n in zip(all_disease.node_index, all_disease.node_id)}
+
+
+def mondo_order(i):
+    return index_to_mondo[int(i)]
+
 doid_to_mondo = (mondo_refs[mondo_refs.ontology == "DOID"]
                  .groupby("ontology_id").mondo_id.apply(list).to_dict())
 anchor_indices, anchor_names = set(), {}
@@ -99,7 +113,7 @@ def lift_key(anchor):
              if fanout.get(p, 0) <= SPLIT_PARENT_FANOUT_CAP]
     if not cands:
         return anchor, "anchor (no parent under cap)"
-    return min(cands, key=lambda p: (fanout.get(p, 0), p)), "lifted to parent"
+    return min(cands, key=lambda p: (fanout.get(p, 0), mondo_order(p))), "lifted to parent"
 
 
 # build the elevated key set once, then key every disease against it
@@ -127,7 +141,7 @@ def nearest_split_key(d):
                     if p in SPLIT_KEYS:
                         found.add(p)
         if found:
-            return min(found), "under a split key"
+            return min(found, key=mondo_order), "under a split key"
         frontier = nxt
     return None, None
 
@@ -155,7 +169,7 @@ def nearest_anchor(d):
     if not found:
         return None, None, None
     min_depth = min(found.values())
-    best = min(a for a, dep in found.items() if dep == min_depth)
+    best = min((a for a, dep in found.items() if dep == min_depth), key=mondo_order)
     return best, min_depth, anchor_names.get(best)
 
 
@@ -171,9 +185,14 @@ for d in target_diseases:
                  "anchor_name": name, "hop_depth": depth,
                  "disease_split_key": int(split_key),
                  "split_key_name": index_to_name.get(int(split_key)),
-                 "split_key_rule": rule})
+                 "split_key_rule": rule,
+                 "disease_split_key_mondo": mondo_order(split_key)})
 
 out = pd.DataFrame(rows)
+# Two split keys sharing a MONDO number would only share a fold (no leakage), but report it.
+_shared = out.groupby("disease_split_key_mondo").disease_split_key.nunique()
+if (_shared > 1).any():
+    print("WARNING: split keys sharing a MONDO number:", _shared[_shared > 1].to_dict())
 print("disease_family_id rows:", out.shape,
       "| covered by an anchor:", out.anchor_name.notna().sum(),
       "| self-fallback:", out.anchor_name.isna().sum())
@@ -181,4 +200,5 @@ print("families (old anchor key) :", out.disease_family_id.nunique())
 print("families (lifted split key):", out.disease_split_key.nunique())
 print(out.split_key_rule.value_counts().to_string())
 dataiku.Dataset("disease_family_id").write_with_schema(out)
+
 

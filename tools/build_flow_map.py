@@ -141,6 +141,10 @@ def build():
                 return "dataset", oid
             return "foreign", "{}.{}".format(item.get("projectKey"), oid)
         if otype is None:
+            # A FilesInFolder dataset's link to its folder is listed as `FilesInFolder-><project>.<name>`;
+            # it is not a cross-project reference, and the dataset itself is listed on its own.
+            if "->" in oid:
+                return "other", oid
             if "." in oid:
                 return "foreign", oid
             if oid in localset:
