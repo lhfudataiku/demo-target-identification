@@ -67,8 +67,8 @@ when the champion changes and that no notebook would catch.
 | `docs/demo/WEBAPP_DESIGN.md:778` | 6 | 16.6 | \| A headline number typed into card copy \| act 2 carried a literal `1.9%` positive rate  |
 | `docs/demo/WEBAPP_DESIGN.md:922` | 9.6 | 1.85 | Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0 |
 | `docs/demo/WEBAPP_DESIGN.md:922` | 9.6 | 0.05 | Association AUC and drug-target AUC are essentially uncorrelated across diseases: r = **+0 |
-| `docs/graph/GRAPH_BUILDING.md:570` | 7.3 | 129,606 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
-| `docs/graph/GRAPH_BUILDING.md:570` | 7.3 | 2,851,510 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
+| `docs/graph/GRAPH_BUILDING.md:636` | 7.3 | 129,606 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
+| `docs/graph/GRAPH_BUILDING.md:636` | 7.3 | 2,851,510 | \| 2026-11-06 \| **Relation corrections and readable labels.** Disease→phenotype annotatio |
 | `docs/overview/PROJECT_CONTEXT.md:113` | 2.3 | 0.81 | disease module predicts association (Guney et al., *Nat Commun* 2016, AUC ≈ 0.81; Menche e |
 | `docs/overview/PROJECT_CONTEXT.md:137` | 3 | 0.69 | measurement.** It is the *worst* term in the breast panel — AUC **0.69**, beaten by its ow |
 | `docs/overview/PROJECT_CONTEXT.md:278` | 4.5 | 0.8228 | \| macro per-disease AUC \| 0.8228 \| **0.8197** \| |
