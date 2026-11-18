@@ -416,6 +416,72 @@ across the project boundary any more (PROJECT_CONTEXT §4.3).
 > deleted**. Since 2026-11-12 the graph project holds three Kuzu folders: `Mp25kL`, `ZKGaRg` and
 > `j2B2cE`.
 
+### 6.1 Conditional styling: propagating and recovering
+
+Conditional styling is not stored in DSS. It is not in a snapshot, in a built folder's
+`configuration.json`, or in the editor's metadata dataset. Each webapp keeps it in the browser's
+`localStorage` on the DSS site, as the `conditionalStylings` field of one key per webapp and graph:
+
+| Webapp | `localStorage` key |
+|---|---|
+| Part 1 Graph Editor | `visual-graph-editor:graph-visual-state:v1:DEMO_KG_LS:lVWgU2m:<editor graphId>` |
+| Part 1 Graph Explorer | `visual-graph-explorer:graph-visual-state:v1:DEMO_KG_LS:wBcApLN:j2B2cE` |
+| Part 2 Graph Explorer | `visual-graph-explorer:graph-visual-state:v1:DEMO_TARGET_IDENTIFICATION:wBcApLN:j2B2cE` |
+
+Three consequences follow:
+
+- **The rules live only in browsers.** A bundle or deploy never carries them, and the design node
+  (`design.solutions.dataiku-dss.io`) and prod (`prod.solutions.dataiku-dss.io`) keep separate copies,
+  because `localStorage` is separate per site. Each person who wants the styling needs it in their own
+  browser, once per instance. Styling that every viewer sees has to travel with the snapshot instead:
+  the per-group colour, size and icon settings (`nodes_view`, `edges_view`).
+- **A key can be missing or emptied.** The Explorer writes its key only when it saves view state, not
+  when it opens. On 2026-11-16 the editor's rules disappeared after a backend restart and a graph rebuild.
+- **The rules point at group ids** (`cPkSWg`, …). Both Explorers open the same built graph `j2B2cE`
+  (Part 1 folder `6kiPwQC7`, Part 2 folder `ytvuniN8`), so one rule set fits all three webapps as long as
+  the groups keep their ids. A new snapshot changes the Explorer keys' last segment.
+
+**Rule of operation: author the styling only in the Part 1 Graph Editor on the design node, then
+propagate it.** [`tools/vg_styling.js`](../../tools/vg_styling.js) does this. Paste the whole file into
+the DevTools console on any page of the instance, then:
+
+| Call | Effect |
+|---|---|
+| `vgStyling.status()` | Reads only. Lists the three targets, whether each key exists, and its rule count. |
+| `vgStyling.propagate()` | Dry run. Shows what would be copied from this browser's editor to both Explorers. |
+| `vgStyling.propagate(null, true)` | Writes the editor's rules into both Explorers on this instance. |
+| `vgStyling.exportBundle()` | Copies the editor's rules, with state templates, to the clipboard as a bundle. |
+| `vgStyling.propagate(<bundle>)` | Dry run with a bundle pasted from another instance; the editor is a target too. |
+| `vgStyling.propagate(<bundle>, true)` | Writes the bundle's rules into the editor and both Explorers. |
+| `vgStyling.exportBundle('<key>')` | Recovery: bundles another key's rules (an Explorer's) when the editor lost them. |
+| `vgStyling.undo(<stamp>)` | Restores every key a run updated, from its `.backup-<stamp>` copies. |
+
+Every write backs up the existing value first. A missing key is created from a full state template (an
+existing Explorer key for Explorers, the source editor's state for the editor), with its last saved
+query cleared. The script refuses an empty rule set, and a bundle made for another snapshot.
+
+**After styling changes in the editor:**
+
+1. On the design node, in the browser where you styled the graph, run `vgStyling.propagate()`, check the
+   table, then `vgStyling.propagate(null, true)`. Reload both Explorers.
+2. Still on the design node, run `vgStyling.exportBundle()`.
+3. On prod, in the same browser, paste the file, then run `vgStyling.propagate(<paste>)` and
+   `vgStyling.propagate(<paste>, true)`. Reload the editor and both Explorers.
+4. For another person's browser, send them the bundle and repeat step 3 on each instance they use.
+
+**To recover lost editor rules**, find a browser or profile whose `vgStyling.status()` still shows rules
+in any key on the design node; the Explorer keys are copies and count. In that browser run
+`vgStyling.exportBundle('<key with rules>')`, then `vgStyling.propagate(<paste>, true)` on the same
+instance: it writes the rules back into the editor and both Explorers. If no browser holds any rules,
+rebuild them by hand in the editor.
+
+**When the graph or webapps change**, edit the configuration block at the top of the script: `SNAPSHOT`
+for a new snapshot, and `EXPLORERS` for a new Explorer webapp.
+
+The script was checked on 2026-11-17 against simulated `localStorage` for the design-then-prod sequence,
+an existing editor key under another graph id, recovery from an Explorer key, a bundle without an\neditor key, undo, and both refusals. On the same day the Part 2
+Explorer was styled in a browser with the narrower function this script replaces.
+
 ## 7. Final graph statistics
 
 ### 7.1 Nodes and edges
